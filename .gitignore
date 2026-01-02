@@ -39,3 +39,5 @@ replay_*.log
 *.hprof
 *.jfr
 /neoforge/runs
+/fabric/runs
+env

@@ -1,81 +1,64 @@
 plugins {
-    id 'fabric-loom' version "${loom_version}"
+    id 'multiloader-loader'
+    id 'net.fabricmc.fabric-loom-remap'
 }
-
-base {
-//    archivesBaseName("${mod_id}-fabric-${mod_version}+${minecraft_version}")
-}
-
-repositories {
-
-}
-
 dependencies {
-
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
-
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    compileOnly(project(":common"))
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 }
 
 loom {
-
-    accessWidenerPath.set(project(":common").file("src/main/resources/${mod_id}.accesswidener"))
-
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
     mixin {
+        useLegacyMixinAp = true
         defaultRefmapName.set("${mod_id}.refmap.json")
     }
-
     runs {
-
-        named("client"){
+        client {
             client()
+            setConfigName('Fabric Client')
             ideConfigGenerated(true)
-            configName("Fabric Minecraft Client")
-            runDir("run")
+            runDir('runs/client')
         }
-
-        named("server"){
+        server {
             server()
+            setConfigName('Fabric Server')
             ideConfigGenerated(true)
-            configName("Fabric Minecraft Server")
-            runDir("run")
+            runDir('runs/server')
         }
     }
 }
 
-processResources {
-
-    filesMatching("fabric.mod.json") {
-        expand project.properties
-    }
-
-    from project(":common").sourceSets.main.resources
-
-}
-
-java {
-
-    withSourcesJar()
-    //withJavadocJar()
-
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
-jar {
-    inputs.property "archivesName", project.base.archivesName
-
-    from("LICENSE") {
-        rename { "${it}_${inputs.properties.archivesName}"}
+// Implement mcgradleconventions loader attribute
+def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements', 'includeInternal', 'modCompileClasspath'].each { variant ->
+    configurations.named("$variant") {
+        attributes {
+            attribute(loaderAttribute, 'fabric')
+        }
     }
 }
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = "UTF-8"
-
-    source(project(":common").sourceSets.main.allSource)
+sourceSets.configureEach {
+    [it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName].each { variant->
+        configurations.named("$variant") {
+            attributes {
+                attribute(loaderAttribute, 'fabric')
+            }
+        }
+    }
+}
+loom.remapConfigurations.configureEach {
+    configurations.named(it.name) {
+        attributes {
+            attribute(loaderAttribute, 'fabric')
+        }
+    }
 }

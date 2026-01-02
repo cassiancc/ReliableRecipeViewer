@@ -1,20 +1,44 @@
-<h1 align="center">Extended ItemView (Eiv)</h1>
+<h1 align="center">EIV Canary</h1>
 
 <p align="center">
-  <img width="500" height="500" src="https://i.ibb.co/fYrqVKdC/EIV-Extended-Item-View.png">
+  <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/eiv/canary.webp">
 </p>
 
-# Items, Recipes & more
+## Overview
 
-A mod all around simplifying your life by showing you the recipes you need! :D
+[Extended Item View](https://modrinth.com/mod/eiv) is a mod that provides recipe viewer functionality on modern Minecraft versions, including 1.21.4-1.21.10. However, it has not yet made the jump to 1.21.11 and beyond. Rather than drop EIV support on my mods, I opted to provide this fork (which has been contributed to upstream, should 2Bad4Mods return and wish to use any of it.)
 
 Currently supported functions are:
 
-- **recipe viewing**
-- **bookmarking items**
-- **hiding/showing overlay**
+- recipe viewing
+- bookmarking items
+- item-transfer (fast-move items in crafting gui)
+- hiding/showing overlay
+- item highlighting (double-click on searchbar)
+- cheatmode
 
-**NOTE: _Must be installed on both the client and server_**
+For more details, see the [Extended Item View](https://modrinth.com/mod/eiv).
+
+**NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
+
+## FAQ
+
+- Will this mod be ported to other versions/loaders?
+    - This port will be kept up to date with the latest version of Minecraft. No backports are planned/necessary, please use the original mod.
+
+## Mod Compatibility
+
+Mods with EIV integration can be used with this fork, which should not make unneeded changes to the API. You can find a list of mods with EIV integration in my [Modrinth Collection](https://modrinth.com/collection/4feLcYR6).
+
+Developers wishing to use the mod can make use of EIV's easy to use API. More info on [EIV's GitHub page](https://github.com/liushmn/ExtendedItemView). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
+
+## License
+[![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](github.com/cassiancc/bygone-fortress)
+
+EIV Canary is available under the open source MIT License, matching the original mod.
+
+## Credits
+This is a port of [Extended Item View](https://modrinth.com/mod/eiv) to Fabric 1.21.11 that I made for personal use. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. This fork will be retired if/when 2Bad4Mods returns.
 
 
 # Developer Guide
@@ -30,7 +54,6 @@ repositories {
                 url = "https://api.modrinth.com/maven"
             }
         }
-        forRepositories(fg.repository) // Only add this if you're using ForgeGradle, otherwise remove this line
         filter {
             includeGroup "maven.modrinth"
         }
@@ -38,11 +61,11 @@ repositories {
 }
 
 dependencies {
-	//For fabric
-	modImplementation "maven.modrinth:eiv:${eiv_version}+${minecraft_version}"
+	// Fabric and Architectury Loom
+	modImplementation "maven.modrinth:eiv-canary:${eiv_version}+${minecraft_version}-fabric"
 
-	//For forge
-	implementation "maven.modrinth:eiv:${eiv_version}+${minecraft_version}"
+	// NeoForge and Multiloader Template
+	implementation "maven.modrinth:eiv-canary:${eiv_version}+${minecraft_version}-neoforge"
 }
 ```
 
@@ -78,7 +101,7 @@ Don't forget to add it as an entrypoint to your mod
 }
 ```
 
-### Forge (mods.toml) & NeoForge (neoforge.mods.toml)
+### NeoForge (neoforge.mods.toml)
 ```toml
 # ...
 eiv="de.you.modid.eiv.EivIntegration"
@@ -232,11 +255,11 @@ In this case we are using the current index of `this.input` as the the index for
 
 ## Server side recipe representation
 
-Since the significant change of Minecraft's recipe system with the 1.21.3, they do most of the recipe work server side and do not tell the client which recipes exist.
-Unfortunately, we need the recipes client side so we have to synch the recipes between server and client.
-To keep a consistent concept EIV requires a server side representation of all recipes regardless whether it's a mod or vanilla recipe.
+Since the significant change of Minecraft's recipe system with the 1.21.3 update, recipes are handled serverside and the client is not told which recipes exist.
+Unfortunately, we need the recipes clientside, so we have to synchronize the recipes between the server and client ourselves.
+For consistency, EIV requires a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
 
-Creating a server side representation for your mod recipes is quite easy, simply create a class that implements `IEivServerModRecipe` and override the methods:
+Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `IEivServerRecipe` and override the methods:
 
 ```java
 public class YourServerRecipe implements IEivServerRecipe {
@@ -264,7 +287,7 @@ public class YourServerRecipe implements IEivServerRecipe {
     }
 }
 ```
-**INFO**: There's a class called `EivTagUtil` that provides a lot of helper functions for en- and decoding different objects
+**INFO**: There's a class called `EivTagUtil` that provides a lot of helper functions for en- and decoding different objects. Note that `writeToTag` is called on the server, while `loadFromTag` is called on the client.
 
 ## Register your recipes
 
@@ -280,12 +303,12 @@ public class EivIntegration implements IExtendedItemViewIntegration {
     public void onIntegrationInitialize() {
 
         //For the server 
-        ItemViewRecipes.INSTANCE.addRecipeProvider(list -> {
+        ItemView.addRecipeProvider(list -> {
             //Here you can add all your server recipes
         });
 
         //For the client
-        ItemViewRecipes.INSTANCE.registerRecipeWrapper(YourServerRecipe.TYPE, modRecipe -> {
+        ItemView.registerRecipeWrapper(YourServerRecipe.TYPE, modRecipe -> {
             
             //Here you tell EIV how to process incoming server recipes
             //Requires you to return a list of client-side view-recipes (IEivViewRecipe)
@@ -306,7 +329,7 @@ Whenever there is an update, the client is informed about the update and the mod
 Stack-Sensitives are "item-variants" that only differ in their itemstacks' components.<br>
 Vanilla examples are: _Enchanted Books, Potions, Tipped Arrows..._<br>
 <br>
-If you want to add your own "item-variants" to the ItemView-overlay simply call `ItemView.addStackSensitive();` in a reload callback (`ItemView.addReloadCallback();`).<br>
+If you want to add your own item stacks to the ItemView-overlay simply call `ItemView.addStackSensitive();` in a reload callback (`ItemView.addReloadCallback();`).<br>
 <br>
 You can also exclude items from the overlay by calling `ItemView.excludeItem();` This method does not need to be called in a reload callback, since it's only client-side.
 
@@ -353,8 +376,8 @@ To be able to shift items from the players inventory into it's crafting gui you 
 ## General hints
 
 The `ItemView` class is the main API class for EIV, so you can always look in there if you wonder whether something can be realized with EIV or not (yet).<br>
-It is also recommended to look into the github repo's code before opening an issue, since many things are explained by code comments.<br>
+This fork is distributed alongside its source code on Modrinth maven, so its JavaDocs are visible in your IDE as well as here on GitHub.<br>
 <br>
-If you still have questions, you can always contact me via [Discord](https://discord.gg/vDuYhAAamG)<br>
+If you still have questions, you can always contact me via [Discord](https://discord.cassian.cc)<br>
 <br>
 Have fun modding!

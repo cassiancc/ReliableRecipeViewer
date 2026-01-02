@@ -1,8 +1,0 @@
-name: ExtendedItemView
-author: ${mod_authors}
-version: ${mod_version}-${plugin_version}
-main: de.crafty.eiv.servercompat.EivPlugin
-
-api-version: '1.21'
-
-eiv-compat: "de.crafty.eiv.servercompat.builtin.BuiltinEivCompatIntegration"
