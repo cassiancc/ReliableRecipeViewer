@@ -39,7 +39,7 @@ public class EntityViewType implements IEivRecipeViewType {
 
     @Override
     public int getDisplayHeight() {
-        return 152;
+        return 102;
     }
 
     @Override
@@ -47,10 +47,10 @@ public class EntityViewType implements IEivRecipeViewType {
         return Identifier.fromNamespaceAndPath(CommonEIV.MODID, "textures/gui/type/entity.png");
     }
 
-    //Mob loot should not exceed 54 slots
+    //Mob loot should not exceed 27 slots
     @Override
     public int getSlotCount() {
-        return 54;
+        return 27;
     }
 
     @Override
@@ -72,11 +72,6 @@ public class EntityViewType implements IEivRecipeViewType {
     @Override
     public ItemStack getIcon() {
         return new ItemStack(Items.IRON_SWORD);
-    }
-
-    @Override
-    public List<ItemStack> getCraftReferences() {
-        return SPAWN_EGGS;
     }
 
     @Override

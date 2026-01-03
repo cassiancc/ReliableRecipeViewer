@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -73,7 +74,7 @@ public class EntityViewRecipe implements IEivViewRecipe {
 
     @Override
     public List<SlotContent> getIngredients() {
-        return List.of();
+        return List.of(SlotContent.of(SpawnEggItem.byId(this.entityType)));
     }
 
     @Override

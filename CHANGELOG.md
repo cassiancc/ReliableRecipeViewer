@@ -5,3 +5,4 @@
 - Added a "Search ItemView" hint to the search bar.
 - Item View position can now be swapped between the left and right panels.
 - EIV's settings can now be modified in Mod Menu.
+- Adjusted "Entity Fighting" View Type to take up less of the screen.
