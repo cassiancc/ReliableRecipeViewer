@@ -8,6 +8,10 @@
     "${mod_authors}"
   ],
   "contact": {
+    "repo": "https://github.com/cassiancc/ExtendedItemView",
+    "issues": "https://github.com/cassiancc/ExtendedItemView/issues",
+    "homepage": "https://modrinth.com/mod/eiv-canary",
+    "sources": "https://github.com/cassiancc/ExtendedItemView"
   },
   "license": "${mod_license}",
   "icon": "assets/eiv/icon.png",
@@ -34,6 +38,10 @@
     "java": ">=21",
     "fabric-api": "*"
   },
+  "provides": [
+    "eiv_canary",
+    "eiv-canary"
+  ],
   "suggests": {
   }
 }
