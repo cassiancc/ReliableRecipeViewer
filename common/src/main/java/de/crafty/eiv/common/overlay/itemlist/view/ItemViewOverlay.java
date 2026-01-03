@@ -102,7 +102,12 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
                 .sprite(SETTINGS_WHEEL, 14, 14)
                 .build();
 
-        btn.setPosition(0, info.screenHeight() - 18);
+        int position = 0;
+        if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
+            position = info.screenWidth() - 18;
+        }
+
+        btn.setPosition(position, info.screenHeight() - 18);
 
         ctx.addRenderable(btn);
     }
@@ -115,7 +120,12 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
 
         this.height = screen.height;
 
-        this.x = invInfo.screenWidth() - this.width;
+        if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
+            this.x = 0;
+        } else {
+            this.x = invInfo.screenWidth() - this.width;
+        }
+
         this.y = 0;
 
         this.itemStartX = this.x + 2;
@@ -291,7 +301,7 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
             this.updateSlots();
         }, true).sprite(Identifier.fromNamespaceAndPath(CommonEIV.MODID, "next"), 10, 10).width(16).build();
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
-        next.setPosition(info.screenWidth() -18, 3);
+        next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
 
 
         next.visible = ItemViewOverlay.INSTANCE.isEnabled();

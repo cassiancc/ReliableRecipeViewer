@@ -48,6 +48,11 @@ public class EivClientSettingsScreen extends Screen {
                         .create(0, 0, 250, 20, Component.translatable("eiv.client_settings.append_namespace"),
                                 (cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b))
         );
+        linearLayout.addChild(
+                CycleButton.booleanBuilder(Component.translatable("eiv.client_settings.right_index.right"), Component.translatable("eiv.client_settings.right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex())
+                        .create(0, 0, 250, 20, Component.translatable("eiv.client_settings.right_index"),
+                                (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b))
+        );
 
         this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build());
 

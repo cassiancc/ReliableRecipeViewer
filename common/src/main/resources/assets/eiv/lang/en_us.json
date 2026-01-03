@@ -49,5 +49,8 @@
   "eiv.client_settings.resize_mode.cut": "Cut",
   "eiv.client_settings.append_namespace": "Namespace Tooltips",
   "eiv.client_settings.append_namespace.show": "Show",
-  "eiv.client_settings.append_namespace.hide": "Hide"
+  "eiv.client_settings.append_namespace.hide": "Hide",
+  "eiv.client_settings.right_index": "Item View Position",
+  "eiv.client_settings.right_index.right": "Right",
+  "eiv.client_settings.right_index.left": "Left"
 }

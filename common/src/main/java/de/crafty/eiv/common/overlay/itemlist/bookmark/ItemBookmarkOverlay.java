@@ -116,9 +116,14 @@ public class ItemBookmarkOverlay extends AbstractEivItemListOverlay {
     }
 
 
-    public void initForScreen(AbstractContainerScreen<? extends AbstractContainerMenu> screen, InventoryPositionInfo currentInfo) {
+    public void initForScreen(AbstractContainerScreen<? extends AbstractContainerMenu> screen, InventoryPositionInfo invInfo) {
 
-        this.x = 0;
+
+        if (Configs.CLIENT_SETTINGS.isRightIndex()) {
+            this.x = 0;
+        } else {
+            this.x = invInfo.screenWidth() - this.width;
+        }
         this.y = 0;
 
         this.width = screen.width - ((screen.width - 176) / 2 + 176) - 14 - 2 * ITEM_ENTRY_SIZE;

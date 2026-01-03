@@ -3,3 +3,4 @@
 - Hide EIV keybind is now unset by default.
 - Added buttons to change the current page.
 - Added a "Search ItemView" hint to the search bar.
+- Item View position can now be swapped between the left and right panels.
