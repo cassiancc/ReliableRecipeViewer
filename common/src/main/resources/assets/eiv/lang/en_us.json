@@ -26,6 +26,7 @@
   "commands.eiv.reloadedStackSensitives": "Reload success (Stack-Sensitives)",
   "key.eiv.toggle_overlay": "Toggle Overlay",
   "eiv.bookmarks": "Bookmarks",
+  "eiv.search_hint": "Search Item View...",
 
   "key.category.eiv.eiv": "Extended ItemView",
   "key.eiv.bookmark": "Add Bookmark",

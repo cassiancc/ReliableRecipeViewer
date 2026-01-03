@@ -1,5 +1,6 @@
 package de.crafty.eiv.common.overlay.itemlist.view;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import de.crafty.eiv.common.CommonEIV;
 import de.crafty.eiv.common.CommonEIVClient;
 import de.crafty.eiv.common.api.recipe.IEivViewRecipe;
@@ -40,8 +41,11 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
 
     private EditBox searchbar = null;
 
-    private static final int HEADER_HEIGHT = 20;
-    private static final int FOOTER_HEIGHT = 40;
+    public SpriteIconButton next = null;
+    public SpriteIconButton back = null;
+
+    private static final int HEADER_HEIGHT = 30;
+    private static final int FOOTER_HEIGHT = 20;
 
     private long lastSearchbarClick = -1;
 
@@ -74,6 +78,7 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
         super.onScreenChanged(info);
         this.updateQuery(this.getCurrentQuery());
         this.createSearchbarElement(OverlayManager.INSTANCE.currentInfo());
+        this.createButtons(OverlayManager.INSTANCE.currentInfo());
     }
 
 
@@ -81,6 +86,8 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
     protected void placeWidgets(ScreenContext ctx) {
 
         ctx.addRenderable(this.searchbar);
+        ctx.addRenderable(this.next);
+        ctx.addRenderable(this.back);
 
         InventoryPositionInfo info = OverlayManager.INSTANCE.currentInfo();
 
@@ -163,14 +170,14 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         super.mouseClicked(event, doubleClick);
 
-        if (this.searchbar.isHovered() && event.button() == 1) {
+        if (this.searchbar.isHovered() && event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
             this.searchbar.setValue("");
             this.searchbar.setFocused(true);
             OverlayManager.INSTANCE.currentInfo().screen().setFocused(this.searchbar);
         }
 
 
-        if (this.searchbar.isHovered() && event.button() == 0) {
+        if (this.searchbar.isHovered() && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             if (this.lastSearchbarClick != -1 && System.currentTimeMillis() - this.lastSearchbarClick <= 400) {
                 this.itemFilterMode = !this.itemFilterMode;
                 this.lastSearchbarClick = -1;
@@ -201,19 +208,14 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
         Font font = client.font;
 
 
-        if (Configs.CLIENT_SETTINGS.isItemWrapMode())
-            this.drawScaledString(font, guiGraphics, Component.literal("ItemView"), this.x + this.width / 2, this.y + 6, -1);
-        else
-            this.drawScaledString(font, guiGraphics, Component.literal("ItemView"), this.effectiveX + this.effectiveWidth / 2, this.effectiveY + 6, -1);
+        var page = Component.literal((this.getPage() + 1) + "/" + (this.getMaxPageIndex() + 1));
 
 
         if (this.fittingPerPage() > 0) {
-
-
             if (Configs.CLIENT_SETTINGS.isItemWrapMode())
-                guiGraphics.drawCenteredString(font, (this.getPage() + 1) + "/" + (this.getMaxPageIndex() + 1), this.x + this.width - this.width / 2, this.y + this.height - 2 - 20 - 10, -1);
+                this.drawScaledString(font, guiGraphics, page, this.x + this.width / 2, this.y + 10, -1);
             else
-                guiGraphics.drawCenteredString(font, (this.getPage() + 1) + "/" + (this.getMaxPageIndex() + 1), this.effectiveX + this.effectiveWidth / 2, this.effectiveY + this.effectiveHeight - 2 - 20 - 10, -1);
+                this.drawScaledString(font, guiGraphics, page, this.effectiveX + this.effectiveWidth / 2, this.effectiveY + 10, -1);
         }
 
 
@@ -269,12 +271,32 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
         newSearchbar.setMaxLength(32);
         newSearchbar.setValue(this.getCurrentQuery());
         newSearchbar.setResponder(this::updateQuery);
+        newSearchbar.setHint(Component.translatable("eiv.search_hint"));
 
         newSearchbar.visible = this.isEnabled();
 
         this.searchbar = newSearchbar;
     }
 
+    public void createButtons(InventoryPositionInfo info){
+
+        back = SpriteIconButton.builder(Component.literal("<"), (button)-> {
+            int fittingPerPage = this.fittingPerPage();
+            this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
+            this.updateSlots();
+        }, true).sprite(Identifier.fromNamespaceAndPath(CommonEIV.MODID, "back"), 10, 10).width(16).build();
+        next = SpriteIconButton.builder(Component.literal(">"), (button)->{
+            int fittingPerPage = this.fittingPerPage();
+            this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
+            this.updateSlots();
+        }, true).sprite(Identifier.fromNamespaceAndPath(CommonEIV.MODID, "next"), 10, 10).width(16).build();
+        back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
+        next.setPosition(info.screenWidth() -18, 3);
+
+
+        next.visible = ItemViewOverlay.INSTANCE.isEnabled();
+        back.visible = ItemViewOverlay.INSTANCE.isEnabled();
+    }
 
     public void openRecipeView(ItemStack stack, ItemViewOpenType openType) {
         if (stack.isEmpty())
