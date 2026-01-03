@@ -53,6 +53,11 @@ public class EivClientSettingsScreen extends Screen {
                         .create(0, 0, 250, 20, Component.translatable("eiv.client_settings.right_index"),
                                 (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b))
         );
+        linearLayout.addChild(
+                CycleButton.booleanBuilder(Component.translatable("eiv.client_settings.center_search.centered"), Component.translatable("eiv.client_settings.center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch())
+                        .create(0, 0, 250, 20, Component.translatable("eiv.client_settings.center_search"),
+                                (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b))
+        );
 
         this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build());
 

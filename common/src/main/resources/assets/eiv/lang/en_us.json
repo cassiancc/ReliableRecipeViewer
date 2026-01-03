@@ -52,5 +52,8 @@
   "eiv.client_settings.append_namespace.hide": "Hide",
   "eiv.client_settings.right_index": "Item View Position",
   "eiv.client_settings.right_index.right": "Right",
-  "eiv.client_settings.right_index.left": "Left"
+  "eiv.client_settings.right_index.left": "Left",
+  "eiv.client_settings.center_search": "Searchbar Position",
+  "eiv.client_settings.center_search.centered": "Centered",
+  "eiv.client_settings.center_search.with_index": "With Item View"
 }

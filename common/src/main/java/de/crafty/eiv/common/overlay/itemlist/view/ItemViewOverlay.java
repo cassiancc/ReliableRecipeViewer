@@ -45,7 +45,13 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
     public SpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
-    private static final int FOOTER_HEIGHT = 20;
+    private static final int FOOTER_HEIGHT;
+
+    static {
+        if (Configs.CLIENT_SETTINGS.isCenterSearch())
+            FOOTER_HEIGHT = 0;
+        else FOOTER_HEIGHT = 20;
+    }
 
     private long lastSearchbarClick = -1;
 
@@ -262,9 +268,19 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
 
     public void createSearchbarElement(InventoryPositionInfo info) {
         boolean wrapMode = Configs.CLIENT_SETTINGS.isItemWrapMode();
-        int boxWidth = Math.min(100, (wrapMode ? this.width : this.effectiveWidth) - 4);
 
-        int x = wrapMode ? (this.x + this.width / 2 - boxWidth / 2) : (this.effectiveX + this.effectiveWidth / 2 - boxWidth / 2);
+
+
+        int boxWidth;
+        int x;
+        if (Configs.CLIENT_SETTINGS.isCenterSearch()) {
+           boxWidth = (int) (info.screenWidth()/2.4);
+           x = (int) (info.screenWidth()/3.4);
+        } else {
+           boxWidth = Math.min(100, (wrapMode ? this.width : this.effectiveWidth) - 4);
+           x = wrapMode ? (this.x + this.width / 2 - boxWidth / 2) : (this.effectiveX + this.effectiveWidth / 2 - boxWidth / 2);
+        }
+
         int y = info.screenHeight() - 22;
 
 
