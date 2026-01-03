@@ -25,6 +25,9 @@
     ],
     "eiv": [
       "de.crafty.eiv.common.builtin.BuiltInEivIntegration"
+    ],
+    "modmenu": [
+      "de.crafty.eiv.fabric.integration.ModMenuIntegration"
     ]
   },
   "mixins": [
