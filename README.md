@@ -1,7 +1,7 @@
 <h1 align="center">EIV Canary</h1>
 
 <p align="center">
-  <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/eiv/canary.webp">
+  <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/eiv/icon.png">
 </p>
 
 ## Overview
