@@ -8,6 +8,7 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -36,7 +37,7 @@ public abstract class MixinCreativeModeInventoryScreen extends AbstractContainer
             if(OverlayManager.INSTANCE.isTextWidgetFocused()) {
                 box.keyPressed(keyEvent);
 
-                if ((keyEvent.key() != 256 && keyEvent.key() != 258))
+                if ((keyEvent.key() != GLFW.GLFW_KEY_ESCAPE && keyEvent.key() != GLFW.GLFW_KEY_TAB))
                     cir.setReturnValue(true);
             }
 

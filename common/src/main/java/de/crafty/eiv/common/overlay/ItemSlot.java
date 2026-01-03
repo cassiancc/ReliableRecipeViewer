@@ -76,7 +76,7 @@ public class ItemSlot {
             guiGraphics.fill(this.x, this.y, this.x + 20, this.y + 20, new Color(255, 255, 255, 32).getRGB());
 
 
-        guiGraphics.renderItem(this.stack, this.x + 2, this.y + 2);
+        guiGraphics.renderFakeItem(this.stack, this.x + 2, this.y + 2);
 
 
         if (this.isHovered())

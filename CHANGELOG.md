@@ -1,2 +1,3 @@
 - Mod namespace tooltips can now be disabled.
 - Mod namespace tooltips now respect `getCreatorNamespace`.
+- Hide EIV keybind is now unset by default.

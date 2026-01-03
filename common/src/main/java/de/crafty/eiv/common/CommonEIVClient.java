@@ -17,6 +17,7 @@ import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.MenuType;
 import org.apache.commons.io.FileUtils;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -35,18 +36,18 @@ public class CommonEIVClient {
     public static final KeyMapping.Category EIV_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MODID, "eiv"));
     public static final KeyMapping.Category EIV_ADMIN_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MODID, "eiv_admin"));
     
-    public static final KeyMapping USAGE_KEYBIND = new KeyMapping("key.eiv.usage", 85, EIV_CATEGORY);
+    public static final KeyMapping USAGE_KEYBIND = new KeyMapping("key.eiv.usage", GLFW.GLFW_KEY_U, EIV_CATEGORY);
 
-    public static final KeyMapping RECIPE_KEYBIND = new KeyMapping("key.eiv.recipe", 82, EIV_CATEGORY);
+    public static final KeyMapping RECIPE_KEYBIND = new KeyMapping("key.eiv.recipe", GLFW.GLFW_KEY_R, EIV_CATEGORY);
 
-    public static final KeyMapping TOGGLE_OVERLAY_KEYBIND = new KeyMapping("key.eiv.toggle_overlay", 79, EIV_CATEGORY);
+    public static final KeyMapping TOGGLE_OVERLAY_KEYBIND = new KeyMapping("key.eiv.toggle_overlay", GLFW.GLFW_KEY_UNKNOWN, EIV_CATEGORY);
 
-    public static final KeyMapping ADD_BOOKMARK_KEYBIND = new KeyMapping("key.eiv.bookmark", 65, EIV_CATEGORY);
+    public static final KeyMapping ADD_BOOKMARK_KEYBIND = new KeyMapping("key.eiv.bookmark", GLFW.GLFW_KEY_A, EIV_CATEGORY);
 
     public static final KeyMapping GO_BACK_RECIPE = new KeyMapping("key.eiv.go_back", InputConstants.Type.MOUSE, 3, EIV_CATEGORY);
     public static final KeyMapping GO_FORWARD_RECIPE = new KeyMapping("key.eiv.go_forward", InputConstants.Type.MOUSE, 4, EIV_CATEGORY);
 
-    public static final KeyMapping USE_CHEATMODE = new KeyMapping("key.eiv.cheatmode", 342, EIV_ADMIN_CATEGORY);
+    public static final KeyMapping USE_CHEATMODE = new KeyMapping("key.eiv.cheatmode", GLFW.GLFW_KEY_LEFT_ALT, EIV_ADMIN_CATEGORY);
 
     public static final List<KeyMapping> EIV_KEY_MAPPINGS = List.of(USAGE_KEYBIND, RECIPE_KEYBIND, TOGGLE_OVERLAY_KEYBIND, ADD_BOOKMARK_KEYBIND, GO_BACK_RECIPE, GO_FORWARD_RECIPE, USE_CHEATMODE);
 
