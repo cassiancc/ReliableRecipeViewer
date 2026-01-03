@@ -4,18 +4,28 @@ import de.crafty.eiv.common.resolver.IEivClientResolver;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.Optional;
 
 public class FabricEivResolver implements IEivClientResolver {
 
     @Override
-    public String getModNameForItem(Item item) {
-        Optional<ModContainer> optional = FabricLoader.getInstance().getModContainer(BuiltInRegistries.ITEM.getKey(item).getNamespace());
-
-        return optional.map(modContainer -> modContainer.getMetadata().getName()).orElse("???");
+    public String getModNameForItem(ItemStack stack) {
+        String namespace = stack.getCreatorNamespace();
+        String key = "modmenu.nameTranslation."+namespace;
+        Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer(namespace);
+        if (modContainer.isPresent()) {
+            return modContainer.get().getMetadata().getName();
+        } else if (I18n.exists(key)) {
+            return I18n.get(key);
+        } else {
+            return WordUtils.capitalize(namespace);
+        }
     }
 
 

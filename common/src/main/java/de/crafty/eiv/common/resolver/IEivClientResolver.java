@@ -6,6 +6,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 public interface IEivClientResolver {
 
-    String getModNameForItem(Item item);
+    String getModNameForItem(ItemStack item);
 
     UVInfo getUVInfo(TextureAtlasSprite sprite);
 

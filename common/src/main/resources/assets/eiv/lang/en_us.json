@@ -45,5 +45,8 @@
   "eiv.client_settings.background.disabled": "Hide",
   "eiv.client_settings.resize_mode": "Resize Mode",
   "eiv.client_settings.resize_mode.wrap": "Wrap",
-  "eiv.client_settings.resize_mode.cut": "Cut"
+  "eiv.client_settings.resize_mode.cut": "Cut",
+  "eiv.client_settings.append_namespace": "Namespace Tooltips",
+  "eiv.client_settings.append_namespace.show": "Show",
+  "eiv.client_settings.append_namespace.hide": "Hide"
 }

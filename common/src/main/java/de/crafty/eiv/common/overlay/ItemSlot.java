@@ -1,6 +1,7 @@
 package de.crafty.eiv.common.overlay;
 
 import de.crafty.eiv.common.CommonEIVClient;
+import de.crafty.eiv.common.config.Configs;
 import de.crafty.eiv.common.network.EivNetworkManager;
 import de.crafty.eiv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import de.crafty.eiv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -68,8 +69,8 @@ public class ItemSlot {
         if (CommonEIVClient.isCheatmodeActive())
             tooltip.addLast(Component.literal("Taking x").withStyle(ChatFormatting.GRAY).append(Component.literal(String.valueOf(this.currentCheatmodeCount)).withStyle(ChatFormatting.GOLD)));
 
-        tooltip.addLast(Component.literal(CommonEIVClient.resolver().getModNameForItem(this.stack.getItem())).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
-
+        if (Configs.CLIENT_SETTINGS.isAppendModNamespace())
+            tooltip.addLast(Component.literal(CommonEIVClient.resolver().getModNameForItem(this.stack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
 
         if (this.isHovered())
             guiGraphics.fill(this.x, this.y, this.x + 20, this.y + 20, new Color(255, 255, 255, 32).getRGB());

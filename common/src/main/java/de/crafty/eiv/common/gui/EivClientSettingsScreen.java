@@ -35,13 +35,18 @@ public class EivClientSettingsScreen extends Screen {
 
         linearLayout.addChild(
                 CycleButton.booleanBuilder(Component.translatable("eiv.client_settings.background.enabled"), Component.translatable("eiv.client_settings.background.disabled"), Configs.CLIENT_SETTINGS.drawBackground())
-                        .create(0, 0, 150, 20, Component.translatable("eiv.client_settings.background"),
+                        .create(0, 0, 250, 20, Component.translatable("eiv.client_settings.background"),
                                 (cycleButton, b) -> Configs.CLIENT_SETTINGS.setDrawBackground(b))
         );
         linearLayout.addChild(
                 CycleButton.booleanBuilder(Component.translatable("eiv.client_settings.resize_mode.wrap"), Component.translatable("eiv.client_settings.resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode())
-                        .create(0, 0, 150, 20, Component.translatable("eiv.client_settings.resize_mode"),
+                        .create(0, 0, 250, 20, Component.translatable("eiv.client_settings.resize_mode"),
                                 (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b))
+        );
+        linearLayout.addChild(
+                CycleButton.booleanBuilder(Component.translatable("eiv.client_settings.append_namespace.show"), Component.translatable("eiv.client_settings.append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace())
+                        .create(0, 0, 250, 20, Component.translatable("eiv.client_settings.append_namespace"),
+                                (cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b))
         );
 
         this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build());

@@ -7,11 +7,11 @@ public class ClientConfig extends AbstractEivConfig {
 
     private boolean background = true;
     private boolean itemWrapMode = true;
+    private boolean appendModNamespace = true;
 
     public ClientConfig() {
         super("client_settings");
     }
-
 
     public boolean drawBackground() {
         return this.background;
@@ -29,15 +29,25 @@ public class ClientConfig extends AbstractEivConfig {
         this.itemWrapMode = itemWrapMode;
     }
 
+    public boolean isAppendModNamespace() {
+        return appendModNamespace;
+    }
+
+    public void setAppendModNamespace(boolean appendModNamespace) {
+        this.appendModNamespace = appendModNamespace;
+    }
+
     @Override
     protected void loadData() {
         this.background = this.data().get("background").getAsBoolean();
         this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
+        this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
     }
 
     @Override
     protected void saveData() {
         this.data().addProperty("background", this.background);
         this.data().addProperty("itemWrapMode", this.itemWrapMode);
+        this.data().addProperty("appendModNamespace", this.appendModNamespace);
     }
 }

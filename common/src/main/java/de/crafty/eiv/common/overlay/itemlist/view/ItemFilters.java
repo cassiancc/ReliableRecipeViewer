@@ -68,7 +68,7 @@ public class ItemFilters {
 
         for (ItemStack stack : fullStackList()) {
 
-            String modName = CommonEIVClient.resolver().getModNameForItem(stack.getItem());
+            String modName = CommonEIVClient.resolver().getModNameForItem(stack);
             if (modName == null)
                 continue;
 

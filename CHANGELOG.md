@@ -1,0 +1,2 @@
+- Mod namespace tooltips can now be disabled.
+- Mod namespace tooltips now respect `getCreatorNamespace`.

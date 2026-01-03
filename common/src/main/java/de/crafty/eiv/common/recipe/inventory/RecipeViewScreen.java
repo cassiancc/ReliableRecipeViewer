@@ -4,6 +4,7 @@ import de.crafty.eiv.common.CommonEIVClient;
 import de.crafty.eiv.common.CommonEIV;
 import de.crafty.eiv.common.api.recipe.IEivRecipeViewType;
 import de.crafty.eiv.common.api.recipe.IEivViewRecipe;
+import de.crafty.eiv.common.config.Configs;
 import de.crafty.eiv.common.network.payload.transfer.ServerboundTransferPayload;
 import de.crafty.eiv.common.overlay.itemlist.view.ItemViewOverlay;
 import de.crafty.eiv.common.recipe.rendering.AnimationTicker;
@@ -286,8 +287,9 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         if (this.hoveredSlot != null && this.hoveredSlot.hasItem())
             this.getMenu().getAdditionalStackModifier(this.hoveredSlot.getContainerSlot()).addTooltip(itemStack, tooltip);
 
-        //TODO make more performance
-        tooltip.addLast(Component.literal(CommonEIVClient.resolver().getModNameForItem(itemStack.getItem())).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
+        //TODO make more performant
+        if (Configs.CLIENT_SETTINGS.isAppendModNamespace())
+            tooltip.addLast(Component.literal(CommonEIVClient.resolver().getModNameForItem(itemStack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
 
         return tooltip;
     }
