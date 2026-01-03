@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class OverlayManager {
@@ -116,7 +117,7 @@ public class OverlayManager {
         boolean b = false;
 
         if (CommonEIVClient.TOGGLE_OVERLAY_KEYBIND.matches(event)) {
-            PRESENT_OVERLAYS.forEach(abstractEivOverlay -> abstractEivOverlay.setEnabled(!abstractEivOverlay.isEnabled()));
+            toggleOverlays();
             return true;
         }
 
@@ -129,6 +130,16 @@ public class OverlayManager {
         }
 
         return b;
+    }
+
+    public static void toggleOverlays() {
+        PRESENT_OVERLAYS.forEach(abstractEivOverlay -> abstractEivOverlay.setEnabled(!abstractEivOverlay.isEnabled()));
+    }
+
+    public static boolean checkOverlays() {
+        AtomicBoolean b = new AtomicBoolean(false);
+        PRESENT_OVERLAYS.forEach(abstractEivOverlay -> b.set(abstractEivOverlay.isEnabled()));
+        return b.get();
     }
 
     public boolean charTyped(char c, int i) {

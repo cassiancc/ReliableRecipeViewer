@@ -55,5 +55,9 @@
   "eiv.client_settings.right_index.left": "Left",
   "eiv.client_settings.center_search": "Searchbar Position",
   "eiv.client_settings.center_search.centered": "Centered",
-  "eiv.client_settings.center_search.with_index": "With Item View"
+  "eiv.client_settings.center_search.with_index": "With Item View",
+  "eiv.client_settings.itemview": "Item View",
+  "eiv.client_settings.itemview.enabled": "Enabled",
+  "eiv.client_settings.itemview.disabled": "Disabled"
+
 }

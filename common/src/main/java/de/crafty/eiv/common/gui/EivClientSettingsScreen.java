@@ -1,6 +1,7 @@
 package de.crafty.eiv.common.gui;
 
 import de.crafty.eiv.common.config.Configs;
+import de.crafty.eiv.common.overlay.OverlayManager;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
@@ -31,7 +32,13 @@ public class EivClientSettingsScreen extends Screen {
 
         this.layout.addToHeader(new StringWidget(TITLE, this.font));
 
-        LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical());
+        LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
+
+        linearLayout.addChild(
+                CycleButton.booleanBuilder(Component.translatable("eiv.client_settings.itemview.enabled"), Component.translatable("eiv.client_settings.itemview.disabled"), OverlayManager.checkOverlays())
+                        .create(0, 0, 250, 20, Component.translatable("eiv.client_settings.itemview"),
+                                (cycleButton, b) -> OverlayManager.toggleOverlays())
+        );
 
         linearLayout.addChild(
                 CycleButton.booleanBuilder(Component.translatable("eiv.client_settings.background.enabled"), Component.translatable("eiv.client_settings.background.disabled"), Configs.CLIENT_SETTINGS.drawBackground())
