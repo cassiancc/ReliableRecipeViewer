@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 public class RecipeViewMenu extends AbstractContainerMenu {
 
     //For screen and space calculation
-    protected static final int MAX_POSSIBLE_HEIGHT = 224;
+    protected static final int MAX_POSSIBLE_HEIGHT = 214;
     protected static final int BUFFER_ZONE = 16;
     protected static final int TOP_SPACE = 24;
     protected static final int BOTTOM_SPACE = 24;
