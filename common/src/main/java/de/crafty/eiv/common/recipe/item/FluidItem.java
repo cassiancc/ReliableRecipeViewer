@@ -52,14 +52,8 @@ public class FluidItem extends BlockItem {
         }
 
         public FluidItemProperties setItemId(ResourceKey<Item> id) {
-            this.setId(id);
+            this.setId(id).useBlockDescriptionPrefix();
             return this;
-        }
-
-        @Override
-        protected @NotNull String effectiveDescriptionId() {
-            String s = super.effectiveDescriptionId();
-            return s.replaceFirst("item.", "block.");
         }
 
         @Override
