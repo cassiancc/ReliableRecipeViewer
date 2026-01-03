@@ -69,11 +69,17 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
         boolean prev = this.isEnabled();
         super.setEnabled(enabled);
 
-        if (prev != enabled && enabled)
+        if (prev != enabled && enabled) {
             this.searchbar.visible = true;
+            this.next.visible = true;
+            this.back.visible = true;
+        }
 
-        if (prev != enabled && !enabled)
+        if (prev != enabled && !enabled) {
             this.searchbar.visible = false;
+            this.next.visible = false;
+            this.back.visible = false;
+        }
         setFooterHeight();
     }
 
