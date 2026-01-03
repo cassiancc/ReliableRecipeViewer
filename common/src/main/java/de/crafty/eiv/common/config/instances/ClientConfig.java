@@ -1,6 +1,7 @@
 package de.crafty.eiv.common.config.instances;
 
 import de.crafty.eiv.common.config.AbstractEivConfig;
+import de.crafty.eiv.common.overlay.itemlist.view.ItemViewOverlay;
 
 public class ClientConfig extends AbstractEivConfig {
 
@@ -53,6 +54,7 @@ public class ClientConfig extends AbstractEivConfig {
 
     public void setCenterSearch(boolean centerSearch) {
         this.centerSearch = centerSearch;
+        ItemViewOverlay.setFooterHeight();
     }
 
     @Override

@@ -45,9 +45,13 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
     public SpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
-    private static final int FOOTER_HEIGHT;
+    private static int FOOTER_HEIGHT;
 
     static {
+        setFooterHeight();
+    }
+
+    public static void setFooterHeight() {
         if (Configs.CLIENT_SETTINGS.isCenterSearch())
             FOOTER_HEIGHT = 0;
         else FOOTER_HEIGHT = 20;
