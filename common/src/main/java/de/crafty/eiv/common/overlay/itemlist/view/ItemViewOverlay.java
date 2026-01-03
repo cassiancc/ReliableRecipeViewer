@@ -39,17 +39,13 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
     public static final ItemViewOverlay INSTANCE = new ItemViewOverlay();
     private static final Identifier SETTINGS_WHEEL = Identifier.fromNamespaceAndPath(CommonEIV.MODID, "settings_wheel");
 
-    private EditBox searchbar = null;
+    private SearchBar searchbar = null;
 
     public SpriteIconButton next = null;
     public SpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
-    private static int FOOTER_HEIGHT;
-
-    static {
-        setFooterHeight();
-    }
+    private static int FOOTER_HEIGHT = 20;
 
     public static void setFooterHeight() {
         if (Configs.CLIENT_SETTINGS.isCenterSearch())
@@ -57,15 +53,14 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
         else FOOTER_HEIGHT = 20;
     }
 
-    private long lastSearchbarClick = -1;
-
     private String currentQuery;
-    private boolean itemFilterMode;
+    boolean itemFilterMode;
 
     public ItemViewOverlay() {
         super(-1, -1, -1, -1);
         this.currentQuery = "";
         this.itemFilterMode = false;
+
     }
 
 
@@ -79,6 +74,7 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
 
         if (prev != enabled && !enabled)
             this.searchbar.visible = false;
+        setFooterHeight();
     }
 
 
@@ -187,30 +183,6 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        super.mouseClicked(event, doubleClick);
-
-        if (this.searchbar.isHovered() && event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
-            this.searchbar.setValue("");
-            this.searchbar.setFocused(true);
-            OverlayManager.INSTANCE.currentInfo().screen().setFocused(this.searchbar);
-        }
-
-
-        if (this.searchbar.isHovered() && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
-            if (this.lastSearchbarClick != -1 && System.currentTimeMillis() - this.lastSearchbarClick <= 400) {
-                this.itemFilterMode = !this.itemFilterMode;
-                this.lastSearchbarClick = -1;
-            } else
-                this.lastSearchbarClick = System.currentTimeMillis();
-
-        }
-
-        return false;
-    }
-
-
-    @Override
     protected void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (this.fittingPerPage() == 0)
             return;
@@ -295,9 +267,7 @@ public class ItemViewOverlay extends AbstractEivItemListOverlay {
             return;
 
 
-
-
-        EditBox newSearchbar = new EditBox(Minecraft.getInstance().font, x, y, boxWidth, 20, Component.literal("eiv:searchbar"));
+        SearchBar newSearchbar = new SearchBar(Minecraft.getInstance().font, x, y, boxWidth, 20, Component.literal("eiv:searchbar"), this);
         newSearchbar.setMaxLength(32);
         newSearchbar.setValue(this.getCurrentQuery());
         newSearchbar.setResponder(this::updateQuery);
