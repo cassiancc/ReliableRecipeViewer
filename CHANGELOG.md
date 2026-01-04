@@ -7,3 +7,4 @@
 - EIV's settings can now be modified in Mod Menu.
 - Adjusted "Entity Fighting" View Type to take up less of the screen.
 - Added a toggle for EIV to the client settings screen.
+- Recipe view types can now safely provide `null` as a background.
