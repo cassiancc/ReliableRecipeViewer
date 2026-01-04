@@ -2,11 +2,12 @@ package de.crafty.eiv.common.mixin.world.entity.npc;
 
 import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.npc.villager.VillagerTrades;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+//? <26 {
+import net.minecraft.world.entity.npc.villager.VillagerTrades;
 
 @Mixin(VillagerTrades.TreasureMapForEmeralds.class)
 public interface TreasureMapForEmeraldsAccessor {
@@ -25,8 +26,14 @@ public interface TreasureMapForEmeraldsAccessor {
 
     @Accessor("displayName")
     String displayName();
-    
+
     @Accessor("destinationType")
     Holder<MapDecorationType> destinationType();
-    
+
 }
+
+//?} else {
+/*@Mixin(Structure.class)
+public interface TreasureMapForEmeraldsAccessor {
+}
+*///?}

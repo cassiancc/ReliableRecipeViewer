@@ -19,8 +19,10 @@ import de.crafty.eiv.common.builtin.smoking.SmokingServerRecipe;
 import de.crafty.eiv.common.builtin.stonecutting.StonecutterServerRecipe;
 import de.crafty.eiv.common.builtin.tipped_arrow.TippedArrowServerRecipe;
 import de.crafty.eiv.common.builtin.transmute.TransmuteServerRecipe;
+//? <26 {
 import de.crafty.eiv.common.builtin.villager.VillagerServerRecipe;
 import de.crafty.eiv.common.builtin.villager.VillagerViewRecipe;
+//?}
 import de.crafty.eiv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import de.crafty.eiv.common.mixin.world.item.crafting.IngredientAccessor;
 import de.crafty.eiv.common.mixin.world.item.crafting.TransmuteRecipeAccessor;
@@ -51,7 +53,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
+//? if <26 {
 import net.minecraft.world.entity.npc.villager.VillagerTrades;
+//?}
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -328,6 +332,7 @@ public class BuiltInEivIntegration implements IExtendedItemViewIntegration {
         });
 
         //Trading
+        //? <26 {
         ItemView.addRecipeProvider(recipeList -> {
 
             VillagerTrades.TRADES.forEach((profession, byProfessionLevel) -> {
@@ -373,6 +378,7 @@ public class BuiltInEivIntegration implements IExtendedItemViewIntegration {
             });
 
         });
+        //?}
 
         //Wrapper
         ItemView.registerRecipeWrapper(BurningServerRecipe.TYPE, unwrapped -> List.of(new BurningViewRecipe(unwrapped)));
@@ -415,9 +421,11 @@ public class BuiltInEivIntegration implements IExtendedItemViewIntegration {
             return recipes;
         });
         ItemView.registerRecipeWrapper(BrewingServerRecipe.TYPE, unwrapped -> List.of(new BrewingViewRecipe(unwrapped)));
+        //? <26 {
         ItemView.registerRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> {
             return unwrapped.getOffers().stream().map(VillagerViewRecipe::new).toList();
         });
+        //?}
         ItemView.registerRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityViewRecipe(unwrapped)));
     }
 

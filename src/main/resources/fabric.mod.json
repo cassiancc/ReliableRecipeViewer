@@ -34,7 +34,7 @@
     "eiv.mixins.json",
     "eiv.fabric.mixins.json"
   ],
-  "accessWidener": "eiv.accesswidener",
+  "accessWidener": "${accesswidener}",
   "depends": {
     "fabricloader": ">=0.17.0",
     "minecraft": "${minecraft_version_range}",

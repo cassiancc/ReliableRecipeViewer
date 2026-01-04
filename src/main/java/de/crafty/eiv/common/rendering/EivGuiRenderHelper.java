@@ -2,7 +2,6 @@ package de.crafty.eiv.common.rendering;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -24,7 +23,7 @@ public class EivGuiRenderHelper {
         IEivWrappedRenderState wrappedState = (IEivWrappedRenderState) entityRenderState;
         wrappedState.extendedItemView$enableMultiRendering();
 
-        entityRenderState.lightCoords = LightTexture.FULL_BRIGHT;
+        entityRenderState.lightCoords = 15728880;
         guiGraphics.submitEntityRenderState(entityRenderState, scale, translation, rotation, cameraAngleOverride, x0, y0, x1, y1);
     }
 

@@ -44,7 +44,7 @@ public class CommonEIVClient {
 
     public static final List<KeyMapping> EIV_KEY_MAPPINGS = List.of(USAGE_KEYBIND, RECIPE_KEYBIND, TOGGLE_OVERLAY_KEYBIND, ADD_BOOKMARK_KEYBIND, GO_BACK_RECIPE, GO_FORWARD_RECIPE, USE_CHEATMODE);
 
-    private static Platform HELPER = Platform.INSTANCE;
+    private static final Platform HELPER = Platform.INSTANCE;
 
 
     public static void boostrap() {
@@ -53,10 +53,7 @@ public class CommonEIVClient {
     }
 
     public static Platform resolver() {
-        if (HELPER != null)
-            return HELPER;
-
-        throw new IllegalStateException("ClientResolver not set");
+        return HELPER;
     }
 
 
