@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.smelting;
 
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -14,7 +14,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
-public class SmeltingClientRecipe implements IRrvClientRecipe {
+public class SmeltingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
     private final AnimationTicker smeltingTicker;

@@ -1,16 +1,16 @@
 package cc.cassian.rrv.common.builtin.stonecutting;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-public class StonecutterServerRecipe implements IRrvServerRecipe {
+public class StonecutterServerRecipe implements ReliableServerRecipe {
 
-    public static final RrvRecipeType<StonecutterServerRecipe> TYPE = RrvRecipeType.register(
+    public static final ReliableServerRecipeType<StonecutterServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("stonecutting"),
             () -> new StonecutterServerRecipe(null, ItemStack.EMPTY)
     );
@@ -34,21 +34,21 @@ public class StonecutterServerRecipe implements IRrvServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("input", RrvTagUtil.writeIngredient(this.input));
-        tag.put("result", RrvTagUtil.encodeItemStackOnServer(this.result));
+        tag.put("input", TagUtil.writeIngredient(this.input));
+        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
 
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.input = RrvTagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
-        this.result = RrvTagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.input = TagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
+        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
 
     }
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 }

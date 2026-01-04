@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.recipe.cache;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
@@ -80,13 +80,13 @@ public class LowEndRecipeCache {
         this.expectedTypes = expectedTypes;
     }
 
-    public void startCaching(RrvRecipeType<?> type, int amount) {
+    public void startCaching(ReliableServerRecipeType<?> type, int amount) {
         if (this.cachingData != CacheData.EMPTY) {
             LOGGER.error("Recrrved new update while caching, skipping request...");
             return;
         }
 
-        if (RrvRecipeType.idFromType(type) == null) {
+        if (ReliableServerRecipeType.idFromType(type) == null) {
             LOGGER.error("Recrrved unknown recipe type: {}", type);
         }
 
@@ -113,7 +113,7 @@ public class LowEndRecipeCache {
         ClientRecipeManager.INSTANCE.status().setStatusProgress(this.cachingData.recrrved().size() + "/" + this.cachingData.expectedAmount());
     }
 
-    public void endCaching(RrvRecipeType<?> type) {
+    public void endCaching(ReliableServerRecipeType<?> type) {
         if (this.cachingData == CacheData.EMPTY) {
             LOGGER.error("Recrrved end-packet while idling => bad request");
             return;
@@ -139,7 +139,7 @@ public class LowEndRecipeCache {
     }
 
 
-    record CacheData(RrvRecipeType<?> type, int expectedAmount, List<ServerRecipeManager.ServerRecipeEntry> recrrved) {
+    record CacheData(ReliableServerRecipeType<?> type, int expectedAmount, List<ServerRecipeManager.ServerRecipeEntry> recrrved) {
 
         static final CacheData EMPTY = null;
 

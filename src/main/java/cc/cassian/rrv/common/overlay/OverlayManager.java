@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.overlay;
 
-import cc.cassian.rrv.common.CommonRRVClient;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -116,7 +116,7 @@ public class OverlayManager {
     public boolean keyPressed(KeyEvent event) {
         boolean b = false;
 
-        if (CommonRRVClient.TOGGLE_OVERLAY_KEYBIND.matches(event)) {
+        if (ReliableRecipeViewerClient.TOGGLE_OVERLAY_KEYBIND.matches(event)) {
             toggleOverlays();
             return true;
         }

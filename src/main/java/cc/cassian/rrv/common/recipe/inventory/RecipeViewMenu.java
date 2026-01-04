@@ -1,9 +1,9 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
-import cc.cassian.rrv.common.CommonRRVClient;
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,17 +33,17 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     private final Player player;
     private ViewContainer viewContainer;
 
-    private List<? extends IRrvClientRecipe> recipes;
-    private IRrvClientRecipeType viewType;
+    private List<? extends ReliableClientRecipe> recipes;
+    private ReliableClientRecipeType viewType;
 
     private int maxPossiblePerPage;
     private int maxPageIndex;
     private int currentPage;
 
-    private final List<IRrvClientRecipe> currentDisplay;
+    private final List<ReliableClientRecipe> currentDisplay;
 
-    private final LinkedHashMap<IRrvClientRecipeType, List<IRrvClientRecipe>> sortedByType;
-    private final List<IRrvClientRecipeType> viewTypeOrder;
+    private final LinkedHashMap<ReliableClientRecipeType, List<ReliableClientRecipe>> sortedByType;
+    private final List<ReliableClientRecipeType> viewTypeOrder;
     private int currentTypeIndex;
 
     private int menuWidth, menuHeight;
@@ -60,8 +60,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     private final List<RecipeTransferData> transferData;
 
 
-    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends IRrvClientRecipe> recipes, ItemStack origin, SlotContent.Type originType, ArrayList<RecipeViewScreen> viewHistory) {
-        super(CommonRRVClient.RECIPE_VIEW_MENU, containerId);
+    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, SlotContent.Type originType, ArrayList<RecipeViewScreen> viewHistory) {
+        super(ReliableRecipeViewerClient.RECIPE_VIEW_MENU, containerId);
 
         this.viewHistory = viewHistory;
 
@@ -76,26 +76,26 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.optionalSlotRenderers = new HashMap<>();
 
         this.sortedByType = new LinkedHashMap<>();
-        HashMap<IRrvClientRecipeType, HashMap<Integer, List<IRrvClientRecipe>>> prioOrder = new HashMap<>();
+        HashMap<ReliableClientRecipeType, HashMap<Integer, List<ReliableClientRecipe>>> prioOrder = new HashMap<>();
 
         recipes.forEach(iRrvRecipe -> {
-            List<IRrvClientRecipe> list = prioOrder.getOrDefault(iRrvRecipe.getViewType(), new HashMap<>()).getOrDefault(iRrvRecipe.getPriority(), new ArrayList<>());
+            List<ReliableClientRecipe> list = prioOrder.getOrDefault(iRrvRecipe.getViewType(), new HashMap<>()).getOrDefault(iRrvRecipe.getPriority(), new ArrayList<>());
             list.add(iRrvRecipe);
-            HashMap<Integer, List<IRrvClientRecipe>> map = prioOrder.getOrDefault(iRrvRecipe.getViewType(), new HashMap<>());
+            HashMap<Integer, List<ReliableClientRecipe>> map = prioOrder.getOrDefault(iRrvRecipe.getViewType(), new HashMap<>());
             map.put(iRrvRecipe.getPriority(), list);
             prioOrder.put(iRrvRecipe.getViewType(), map);
         });
 
         prioOrder.forEach((viewType, map) -> {
-            List<IRrvClientRecipe> list = new ArrayList<>();
+            List<ReliableClientRecipe> list = new ArrayList<>();
             map.values().forEach(list::addAll);
             this.sortedByType.put(viewType, list);
         });
 
         //Sorting recipe types
         this.viewTypeOrder = new ArrayList<>();
-        List<IRrvClientRecipeType> unsortedTypes = this.sortedByType.keySet().stream().toList();
-        HashMap<String, IRrvClientRecipeType> byId = new HashMap<>();
+        List<ReliableClientRecipeType> unsortedTypes = this.sortedByType.keySet().stream().toList();
+        HashMap<String, ReliableClientRecipeType> byId = new HashMap<>();
         unsortedTypes.forEach(viewType -> {
             byId.put(viewType.getId().toString(), viewType);
         });
@@ -114,7 +114,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
 
         if (recipes.isEmpty())
-            CommonRRV.LOGGER.error("Attempting to open Menu with 0 recipes");
+            ReliableRecipeViewer.LOGGER.error("Attempting to open Menu with 0 recipes");
 
         player = inventory.player;
         this.updateByViewType();
@@ -123,12 +123,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             return;
 
         this.viewContainer = new ViewContainer(0);
-        this.viewType = IRrvClientRecipeType.NONE;
+        this.viewType = ReliableClientRecipeType.NONE;
 
     }
 
     public RecipeViewMenu(int containerId, Inventory inventory) {
-        this(null, containerId, inventory, IRrvClientRecipe.PLACEHOLDER, ItemStack.EMPTY, SlotContent.Type.ANY, new ArrayList<>());
+        this(null, containerId, inventory, ReliableClientRecipe.PLACEHOLDER, ItemStack.EMPTY, SlotContent.Type.ANY, new ArrayList<>());
     }
 
 
@@ -251,7 +251,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.currentPage > 0;
     }
 
-    public List<IRrvClientRecipeType> getViewTypeOrder() {
+    public List<ReliableClientRecipeType> getViewTypeOrder() {
         return this.viewTypeOrder;
     }
 
@@ -259,12 +259,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.currentTypeIndex;
     }
 
-    protected List<IRrvClientRecipe> getCurrentDisplay() {
+    protected List<ReliableClientRecipe> getCurrentDisplay() {
         return this.currentDisplay;
     }
 
-    private List<IRrvClientRecipe> getRecipeDisplay() {
-        List<IRrvClientRecipe> recipesOnPage = new ArrayList<>();
+    private List<ReliableClientRecipe> getRecipeDisplay() {
+        List<ReliableClientRecipe> recipesOnPage = new ArrayList<>();
         for (int i = this.currentPage * this.maxPossiblePerPage; i < Math.min(this.getRecipes().size(), (this.currentPage + 1) * this.maxPossiblePerPage); i++) {
             recipesOnPage.add(this.getRecipes().get(i));
         }
@@ -278,17 +278,17 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
         this.slots.clear();
 
-        this.currentDisplay.forEach(IRrvClientRecipe::fadeRecipe);
+        this.currentDisplay.forEach(ReliableClientRecipe::fadeRecipe);
         this.currentDisplay.clear();
 
         this.currentDisplay.addAll(this.getRecipeDisplay());
-        this.currentDisplay.forEach(IRrvClientRecipe::initRecipe);
+        this.currentDisplay.forEach(ReliableClientRecipe::initRecipe);
 
         this.currentCraftReference = 0;
 
         for (int i = 0; i < this.currentDisplay.size(); i++) {
 
-            IRrvClientRecipe recipe = this.currentDisplay.get(i);
+            ReliableClientRecipe recipe = this.currentDisplay.get(i);
             recipe.getIngredients().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
             recipe.getResults().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
 
@@ -362,7 +362,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         if (minecraft.player == null)
             return RecipeTransferData.EMPTY;
 
-        IRrvClientRecipe currentLooking = this.getCurrentDisplay().get(displayId);
+        ReliableClientRecipe currentLooking = this.getCurrentDisplay().get(displayId);
 
 
         RecipeViewMenu.SlotFillContext context = new RecipeViewMenu.SlotFillContext();
@@ -626,7 +626,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.recipes = this.sortedByType.getOrDefault(this.viewTypeOrder.get(this.currentTypeIndex), new ArrayList<>());
         this.resetContentPointers();
 
-        Optional<? extends IRrvClientRecipe> optional = recipes.stream().findFirst();
+        Optional<? extends ReliableClientRecipe> optional = recipes.stream().findFirst();
 
         if (optional.isPresent()) {
             this.viewType = optional.get().getViewType();
@@ -673,7 +673,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     protected void tickContents() {
 
         for (int i = 0; i < this.currentDisplay.size(); i++) {
-            IRrvClientRecipe recipe = this.currentDisplay.get(i);
+            ReliableClientRecipe recipe = this.currentDisplay.get(i);
 
             SlotFillContext slotFillContext = new SlotFillContext();
             recipe.bindSlots(slotFillContext);
@@ -692,7 +692,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     protected void updateDependencies() {
         for (int i = 0; i < this.currentDisplay.size(); i++) {
-            IRrvClientRecipe recipe = this.currentDisplay.get(i);
+            ReliableClientRecipe recipe = this.currentDisplay.get(i);
 
             SlotFillContext slotFillContext = new SlotFillContext();
             recipe.bindSlots(slotFillContext);
@@ -705,11 +705,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         }
     }
 
-    public List<? extends IRrvClientRecipe> getRecipes() {
+    public List<? extends ReliableClientRecipe> getRecipes() {
         return this.recipes;
     }
 
-    public IRrvClientRecipeType getViewType() {
+    public ReliableClientRecipeType getViewType() {
         return this.viewType;
     }
 

@@ -1,11 +1,10 @@
 package cc.cassian.rrv.common.builtin.villager;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.mixin.world.entity.npc.*;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.common.mixin.world.entity.npc.*;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -54,9 +53,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-public class VillagerServerRecipe implements IRrvServerRecipe {
+public class VillagerServerRecipe implements ReliableServerRecipe {
 
-	public static final RrvRecipeType<VillagerServerRecipe> TYPE = RrvRecipeType.register(
+	public static final ReliableServerRecipeType<VillagerServerRecipe> TYPE = ReliableServerRecipeType.register(
 			Identifier.withDefaultNamespace("villager_trading"),
 			() -> new VillagerServerRecipe(null, 0, null)
 	);
@@ -220,7 +219,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
     }
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 
@@ -247,7 +246,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                 (listing, out) -> {
                     EmeraldForItemsAccessor accessor = (EmeraldForItemsAccessor) listing;
 
-                    out.put("cost", RrvTagUtil.encodeItemStackOnServer(accessor.getItemStack().itemStack()));
+                    out.put("cost", TagUtil.encodeItemStackOnServer(accessor.getItemStack().itemStack()));
                     out.putInt("emeraldCount", accessor.getEmeraldAmount());
                     out.putInt("villagerXp", accessor.getVillagerXp());
                     out.putInt("maxUses", accessor.getMaxUses());
@@ -255,7 +254,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    ItemStack cost = RrvTagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("cost"));
+                    ItemStack cost = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("cost"));
                     int emeraldCount = in.getIntOr("emeraldCount", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -282,7 +281,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                         offerStacks.add(accessor.itemStack().copy());
 
 
-                    out.put("offers", RrvTagUtil.writeList(offerStacks, (origin, tag) -> RrvTagUtil.encodeItemStackOnServer(origin)));
+                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
                     out.putInt("emeraldCost", accessor.emeraldCost());
                     out.putInt("villagerXp", accessor.villagerXp());
                     out.putInt("maxUses", accessor.maxUses());
@@ -290,7 +289,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                 (profession, professionLevel, in) -> {
 
 
-                    List<ItemStack> offers = RrvTagUtil.readList(in, "offers", RrvTagUtil::decodeItemStackOnClient);
+                    List<ItemStack> offers = TagUtil.readList(in, "offers", TagUtil::decodeItemStackOnClient);
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -309,7 +308,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                     ItemStack stewStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
                     stewStack.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, accessor.effects());
 
-                    out.put("stew", RrvTagUtil.encodeItemStackOnServer(stewStack));
+                    out.put("stew", TagUtil.encodeItemStackOnServer(stewStack));
                     out.putInt("emeraldCost", 1);
                     out.putInt("villagerXp", accessor.xp());
                     out.putInt("maxUses", 12);
@@ -317,7 +316,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    ItemStack stew = RrvTagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("stew"));
+                    ItemStack stew = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("stew"));
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -381,8 +380,8 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                         List<ItemStack> costStacks = costs.get(enchantment);
 
                         CompoundTag offerTag = new CompoundTag();
-                        offerTag.put("offerStacks", RrvTagUtil.writeList(stacks, (origin, tag) -> RrvTagUtil.encodeItemStackOnServer(origin)));
-                        offerTag.put("costStacks", RrvTagUtil.writeList(costStacks, (origin, tag) -> RrvTagUtil.encodeItemStackOnServer(origin)));
+                        offerTag.put("offerStacks", TagUtil.writeList(stacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
+                        offerTag.put("costStacks", TagUtil.writeList(costStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
                         offersTag.put(enchantment.identifier().toDebugFileName(), offerTag);
                     });
 
@@ -403,8 +402,8 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                     CompoundTag offersTag = in.getCompoundOrEmpty("offers");
                     offersTag.values().stream().map(tag -> tag.asCompound().orElseGet(CompoundTag::new)).forEach(offerTag -> {
 
-                        List<ItemStack> offerStacks = RrvTagUtil.readList(offerTag, "offerStacks", RrvTagUtil::decodeItemStackOnClient);
-                        List<ItemStack> costStacks = RrvTagUtil.readList(offerTag, "costStacks", RrvTagUtil::decodeItemStackOnClient);
+                        List<ItemStack> offerStacks = TagUtil.readList(offerTag, "offerStacks", TagUtil::decodeItemStackOnClient);
+                        List<ItemStack> costStacks = TagUtil.readList(offerTag, "costStacks", TagUtil::decodeItemStackOnClient);
 
                         VillagerOffer offer = new VillagerOffer(profession, professionLevel, villagerType, offerStacks, costStacks, List.of(new ItemStack(Items.BOOK)), villagerXp, maxUses);
                         villagerOffers.add(offer);
@@ -468,8 +467,8 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                         offerStacks.add(offerStack);
                     });
 
-                    out.put("offers", RrvTagUtil.writeList(offerStacks, (origin, tag) -> RrvTagUtil.encodeItemStackOnServer(origin)));
-                    out.putString("fromItem", RrvTagUtil.itemToString(accessor.fromItem()));
+                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
+                    out.putString("fromItem", TagUtil.itemToString(accessor.fromItem()));
                     out.putInt("fromCount", accessor.fromCount());
                     out.putInt("emeraldCost", accessor.emeraldCost());
                     out.putInt("villagerXp", accessor.villagerXp());
@@ -478,8 +477,8 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    List<ItemStack> offers = RrvTagUtil.readList(in, "offers", RrvTagUtil::decodeItemStackOnClient);
-                    Item fromItem = RrvTagUtil.itemFromString(in.getStringOr("fromItem", ""));
+                    List<ItemStack> offers = TagUtil.readList(in, "offers", TagUtil::decodeItemStackOnClient);
+                    Item fromItem = TagUtil.itemFromString(in.getStringOr("fromItem", ""));
                     int fromCount = in.getIntOr("fromCount", 0);
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
@@ -545,16 +544,16 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                     costStack.set(DataComponents.LORE, lore);
 
 
-                    out.put("offers", RrvTagUtil.writeList(offerStacks, (origin, tag) -> RrvTagUtil.encodeItemStackOnServer(origin)));
-                    out.put("costStack", RrvTagUtil.encodeItemStackOnServer(costStack));
+                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
+                    out.put("costStack", TagUtil.encodeItemStackOnServer(costStack));
                     out.putInt("villagerXp", accessor.villagerXp());
                     out.putInt("maxUses", accessor.maxUses());
                 },
                 (profession, professionLevel, in) -> {
 
 
-                    List<ItemStack> offerStacks = RrvTagUtil.readList(in, "offers", RrvTagUtil::decodeItemStackOnClient);
-                    ItemStack costStack = RrvTagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("costStack"));
+                    List<ItemStack> offerStacks = TagUtil.readList(in, "offers", TagUtil::decodeItemStackOnClient);
+                    ItemStack costStack = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("costStack"));
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
 
@@ -576,7 +575,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
 
                     ItemStack offerStack = new ItemStack(accessor.getItem());
 
-                    out.put("offerStack", RrvTagUtil.encodeItemStackOnServer(offerStack));
+                    out.put("offerStack", TagUtil.encodeItemStackOnServer(offerStack));
 
                     out.putInt("emeraldCost", accessor.getValue());
                     out.putInt("villagerXp", accessor.getVillagerXp());
@@ -585,7 +584,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    ItemStack offerStack = RrvTagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("offerStack"));
+                    ItemStack offerStack = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("offerStack"));
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -631,8 +630,8 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                     } else
                         offerStacks.add(accessor.toItem().copy());
 
-                    out.put("offerStacks", RrvTagUtil.writeList(offerStacks, (origin, tag) -> RrvTagUtil.encodeItemStackOnServer(origin)));
-                    out.put("costStack", RrvTagUtil.encodeItemStackOnServer(costStack));
+                    out.put("offerStacks", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
+                    out.put("costStack", TagUtil.encodeItemStackOnServer(costStack));
                     out.putInt("emeraldCost", accessor.emeraldCost());
                     out.putInt("villagerXp", accessor.getVillagerXp());
                     out.putInt("maxUses", accessor.getMaxUses());
@@ -640,8 +639,8 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    List<ItemStack> offerStacks = RrvTagUtil.readList(in, "offerStacks", RrvTagUtil::decodeItemStackOnClient);
-                    ItemStack costStack = RrvTagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("costStack"));
+                    List<ItemStack> offerStacks = TagUtil.readList(in, "offerStacks", TagUtil::decodeItemStackOnClient);
+                    ItemStack costStack = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("costStack"));
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -667,7 +666,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
                     CompoundTag tradesTag = new CompoundTag();
 
                     accessor.getTrades().forEach((villagerType, item) -> {
-                        tradesTag.putString(villagerType.identifier().toString(), RrvTagUtil.itemToString(item));
+                        tradesTag.putString(villagerType.identifier().toString(), TagUtil.itemToString(item));
                     });
 
                     out.put("trades", tradesTag);
@@ -683,7 +682,7 @@ public class VillagerServerRecipe implements IRrvServerRecipe {
 
                     tradesTag.forEach((s, tag) -> {
                         ResourceKey<VillagerType> villagerType = BuiltInRegistries.VILLAGER_TYPE.get(Identifier.parse(s)).orElseThrow().key();
-                        Item item = RrvTagUtil.itemFromString(tag.asString().orElseThrow());
+                        Item item = TagUtil.itemFromString(tag.asString().orElseThrow());
                         trades.put(villagerType, item);
                     });
 

@@ -1,9 +1,9 @@
 package cc.cassian.rrv.common.builtin.smithing;
 
 import com.mojang.datafixers.util.Pair;
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
@@ -12,9 +12,9 @@ import net.minecraft.world.item.crafting.TransmuteResult;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import org.jetbrains.annotations.Nullable;
 
-public class SmithingServerRecipe implements IRrvServerRecipe {
+public class SmithingServerRecipe implements ReliableServerRecipe {
 
-    public static final RrvRecipeType<SmithingServerRecipe> TYPE = RrvRecipeType.register(
+    public static final ReliableServerRecipeType<SmithingServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("smithing"),
             () -> new SmithingServerRecipe(false, null, null, null, null, null)
     );
@@ -64,9 +64,9 @@ public class SmithingServerRecipe implements IRrvServerRecipe {
     public void writeToTag(CompoundTag tag) {
 
         tag.putBoolean("isTrim", this.isTrim);
-        tag.put("base", RrvTagUtil.writeIngredient(this.base));
-        tag.put("template", RrvTagUtil.writeIngredient(this.template));
-        tag.put("addition", RrvTagUtil.writeIngredient(this.addition));
+        tag.put("base", TagUtil.writeIngredient(this.base));
+        tag.put("template", TagUtil.writeIngredient(this.template));
+        tag.put("addition", TagUtil.writeIngredient(this.addition));
 
         if(this.pattern != null)
             tag.put("pattern", TrimPattern.DIRECT_CODEC.encode(this.pattern, NbtOps.INSTANCE, new CompoundTag()).getOrThrow());
@@ -79,16 +79,16 @@ public class SmithingServerRecipe implements IRrvServerRecipe {
     public void loadFromTag(CompoundTag tag) {
 
         this.isTrim = tag.getBooleanOr("isTrim", false);
-        this.base = RrvTagUtil.readIngredient(tag.getCompound("base").orElseGet(CompoundTag::new));
-        this.template = RrvTagUtil.readIngredient(tag.getCompound("template").orElseGet(CompoundTag::new));
-        this.addition = RrvTagUtil.readIngredient(tag.getCompound("addition").orElseGet(CompoundTag::new));
+        this.base = TagUtil.readIngredient(tag.getCompound("base").orElseGet(CompoundTag::new));
+        this.template = TagUtil.readIngredient(tag.getCompound("template").orElseGet(CompoundTag::new));
+        this.addition = TagUtil.readIngredient(tag.getCompound("addition").orElseGet(CompoundTag::new));
 
         this.pattern = TrimPattern.DIRECT_CODEC.decode(NbtOps.INSTANCE, tag.getCompound("pattern").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
         this.upgradeResult = TransmuteResult.CODEC.decode(NbtOps.INSTANCE, tag.getCompound("upgradeResult").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
     }
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 }

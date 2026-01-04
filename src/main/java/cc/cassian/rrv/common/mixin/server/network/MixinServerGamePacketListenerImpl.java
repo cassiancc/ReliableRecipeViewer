@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin.server.network;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -37,7 +37,7 @@ public abstract class MixinServerGamePacketListenerImpl {
                 });
             }
             else
-                CommonRRV.LOGGER.error("Cannot resolve payload handler for id: {}", payloadId);
+                ReliableRecipeViewer.LOGGER.error("Cannot resolve payload handler for id: {}", payloadId);
 
             ci.cancel();
         });

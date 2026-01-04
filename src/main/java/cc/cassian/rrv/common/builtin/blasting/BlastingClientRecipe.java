@@ -1,8 +1,8 @@
 package cc.cassian.rrv.common.builtin.blasting;
 
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -15,7 +15,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
-public class BlastingClientRecipe implements IRrvClientRecipe {
+public class BlastingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
     private final AnimationTicker blastingTicker;
@@ -29,7 +29,7 @@ public class BlastingClientRecipe implements IRrvClientRecipe {
     }
 
     @Override
-    public IRrvClientRecipeType getViewType() {
+    public ReliableClientRecipeType getViewType() {
         return BlastingClientRecipeType.INSTANCE;
     }
 

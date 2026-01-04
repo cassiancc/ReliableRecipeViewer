@@ -1,8 +1,8 @@
 package cc.cassian.rrv.common.builtin.entity;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -11,9 +11,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class EntityServerRecipe implements IRrvServerRecipe {
+public class EntityServerRecipe implements ReliableServerRecipe {
 
-    public static final RrvRecipeType<EntityServerRecipe> TYPE = RrvRecipeType.register(
+    public static final ReliableServerRecipeType<EntityServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("entity_loot"),
             () -> new EntityServerRecipe(null, List.of())
     );
@@ -39,19 +39,19 @@ public class EntityServerRecipe implements IRrvServerRecipe {
     public void writeToTag(CompoundTag tag) {
 
         tag.putString("entity", BuiltInRegistries.ENTITY_TYPE.getKey(this.entityType).toString());
-        tag.put("stacks", RrvTagUtil.writeList(this.drops, (origin, tag1) -> RrvTagUtil.encodeItemStackOnServer(origin)));
+        tag.put("stacks", TagUtil.writeList(this.drops, (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
         this.entityType = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.parse(tag.getStringOr("entity", "")));
-        this.drops = RrvTagUtil.readList(tag, "stacks", RrvTagUtil::decodeItemStackOnClient);
+        this.drops = TagUtil.readList(tag, "stacks", TagUtil::decodeItemStackOnClient);
 
     }
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 

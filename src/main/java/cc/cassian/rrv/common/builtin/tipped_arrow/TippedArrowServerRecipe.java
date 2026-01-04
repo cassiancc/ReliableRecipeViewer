@@ -1,15 +1,15 @@
 package cc.cassian.rrv.common.builtin.tipped_arrow;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
-public class TippedArrowServerRecipe implements IRrvServerRecipe {
+public class TippedArrowServerRecipe implements ReliableServerRecipe {
 
-    public static final RrvRecipeType<TippedArrowServerRecipe> TYPE = RrvRecipeType.register(
+    public static final ReliableServerRecipeType<TippedArrowServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("tipped_arrow_crafting"),
             () -> new TippedArrowServerRecipe(ItemStack.EMPTY)
     );
@@ -27,19 +27,19 @@ public class TippedArrowServerRecipe implements IRrvServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("potionStack", RrvTagUtil.encodeItemStackOnServer(this.potionStack));
+        tag.put("potionStack", TagUtil.encodeItemStackOnServer(this.potionStack));
 
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.potionStack = RrvTagUtil.decodeItemStackOnClient(tag.getCompound("potionStack").orElseGet(CompoundTag::new));
+        this.potionStack = TagUtil.decodeItemStackOnClient(tag.getCompound("potionStack").orElseGet(CompoundTag::new));
 
     }
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 }

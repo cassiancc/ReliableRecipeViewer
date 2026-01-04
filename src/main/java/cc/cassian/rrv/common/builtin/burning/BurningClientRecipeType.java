@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.burning;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -10,7 +10,7 @@ import net.minecraft.world.item.Items;
 
 import java.util.List;
 
-public class BurningClientRecipeType implements IRrvClientRecipeType {
+public class BurningClientRecipeType implements ReliableClientRecipeType {
 
     public static final BurningClientRecipeType INSTANCE = new BurningClientRecipeType();
 
@@ -32,7 +32,7 @@ public class BurningClientRecipeType implements IRrvClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(CommonRRV.MODID, "textures/gui/type/burning.png");
+        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/burning.png");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.bookmark;
 
-import cc.cassian.rrv.common.CommonRRVClient;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
@@ -99,7 +99,7 @@ public class ItemBookmarkOverlay extends AbstractRrvItemListOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (CommonRRVClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
                 this.availableItems.remove(slot.getStack());
                 this.updateSlots();
                 if (this.itemSlots().isEmpty() && !this.availableItems.isEmpty()) {

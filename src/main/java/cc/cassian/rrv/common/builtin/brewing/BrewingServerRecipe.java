@@ -1,17 +1,17 @@
 package cc.cassian.rrv.common.builtin.brewing;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-public class BrewingServerRecipe implements IRrvServerRecipe {
+public class BrewingServerRecipe implements ReliableServerRecipe {
 
 
-    public static final RrvRecipeType<BrewingServerRecipe> TYPE = RrvRecipeType.register(
+    public static final ReliableServerRecipeType<BrewingServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("brewing"),
             () -> new BrewingServerRecipe(ItemStack.EMPTY, null, ItemStack.EMPTY)
     );
@@ -40,23 +40,23 @@ public class BrewingServerRecipe implements IRrvServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("result", RrvTagUtil.encodeItemStackOnServer(this.result));
-        tag.put("magicIngredient", RrvTagUtil.writeIngredient(this.magicIngredient));
-        tag.put("bottleIngredient", RrvTagUtil.encodeItemStackOnServer(this.bottleIngredient));
+        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
+        tag.put("magicIngredient", TagUtil.writeIngredient(this.magicIngredient));
+        tag.put("bottleIngredient", TagUtil.encodeItemStackOnServer(this.bottleIngredient));
 
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.result = RrvTagUtil.decodeItemStackOnClient(tag.getCompoundOrEmpty("result"));
-        this.magicIngredient = RrvTagUtil.readIngredient(tag.getCompoundOrEmpty("magicIngredient"));
-        this.bottleIngredient = RrvTagUtil.decodeItemStackOnClient(tag.getCompoundOrEmpty("bottleIngredient"));
+        this.result = TagUtil.decodeItemStackOnClient(tag.getCompoundOrEmpty("result"));
+        this.magicIngredient = TagUtil.readIngredient(tag.getCompoundOrEmpty("magicIngredient"));
+        this.bottleIngredient = TagUtil.decodeItemStackOnClient(tag.getCompoundOrEmpty("bottleIngredient"));
 
     }
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 }

@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.api.recipe;
+package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -13,14 +13,14 @@ import net.minecraft.world.item.ItemStack;
 import java.util.HashMap;
 import java.util.List;
 
-public interface IRrvClientRecipe {
+public interface ReliableClientRecipe {
 
-    List<IRrvClientRecipe> PLACEHOLDER = List.of(
-            new IRrvClientRecipe() {
+    List<ReliableClientRecipe> PLACEHOLDER = List.of(
+            new ReliableClientRecipe() {
 
 
                 @Override
-                public IRrvClientRecipeType getViewType() {
+                public ReliableClientRecipeType getViewType() {
                     return CraftingClientRecipeType.INSTANCE;
                 }
 
@@ -44,7 +44,7 @@ public interface IRrvClientRecipe {
     /**
      * @return The viewType of this recipe
      */
-    IRrvClientRecipeType getViewType();
+    ReliableClientRecipeType getViewType();
 
     /**
      * Bind the SlotContents of the recipe to the according slots

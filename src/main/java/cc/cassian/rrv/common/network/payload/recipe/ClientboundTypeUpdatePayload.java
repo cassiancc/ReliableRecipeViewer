@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.network.payload.recipe;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,7 +16,7 @@ public record ClientboundTypeUpdatePayload(ServerRecipeManager.ServerRecipeEntry
             ClientboundTypeUpdatePayload::new
     );
 
-    public static final Type<ClientboundTypeUpdatePayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "recipe_update"));
+    public static final Type<ClientboundTypeUpdatePayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_update"));
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

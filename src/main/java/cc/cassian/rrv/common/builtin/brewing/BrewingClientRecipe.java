@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.brewing;
 
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -13,7 +13,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
-public class BrewingClientRecipe implements IRrvClientRecipe {
+public class BrewingClientRecipe implements ReliableClientRecipe {
 
     private static final int[] BUBBLELENGTHS = new int[]{29, 24, 20, 16, 11, 6, 0};
 
@@ -36,7 +36,7 @@ public class BrewingClientRecipe implements IRrvClientRecipe {
     }
 
     @Override
-    public IRrvClientRecipeType getViewType() {
+    public ReliableClientRecipeType getViewType() {
         return BrewingClientRecipeType.INSTANCE;
     }
 

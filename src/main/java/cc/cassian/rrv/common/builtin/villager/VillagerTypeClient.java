@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.villager;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
@@ -18,7 +18,7 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 import java.util.Optional;
 
-public class VillagerTypeClient implements IRrvClientRecipeType {
+public class VillagerTypeClient implements ReliableClientRecipeType {
 
     protected static final VillagerTypeClient INSTANCE = new VillagerTypeClient();
 
@@ -59,7 +59,7 @@ public class VillagerTypeClient implements IRrvClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(CommonRRV.MODID, "textures/gui/type/villager.png");
+        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/villager.png");
     }
 
     @Override

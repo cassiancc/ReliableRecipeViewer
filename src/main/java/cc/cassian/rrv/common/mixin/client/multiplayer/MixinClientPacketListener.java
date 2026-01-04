@@ -1,8 +1,8 @@
 package cc.cassian.rrv.common.mixin.client.multiplayer;
 
 import com.mojang.brigadier.CommandDispatcher;
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import net.minecraft.client.Minecraft;
@@ -55,7 +55,7 @@ public abstract class MixinClientPacketListener extends ClientCommonPacketListen
             if (RrvNetworkManager.INSTANCE.clientPayloadHandlers().containsKey(payloadId)) {
                 RrvNetworkManager.INSTANCE.clientPayloadHandlers().get(payloadId).handle(new RrvNetworkManager.ClientContext(this.minecraft), RrvNetworkManager.INSTANCE.castPayload(payload));
             } else
-                CommonRRV.LOGGER.error("Cannot resolve payload handler for id: {}", payloadId);
+                ReliableRecipeViewer.LOGGER.error("Cannot resolve payload handler for id: {}", payloadId);
 
             ci.cancel();
         });

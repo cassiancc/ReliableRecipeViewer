@@ -1,8 +1,8 @@
-package cc.cassian.rrv.common.api.recipe;
+package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -52,30 +52,30 @@ public class ItemView {
      *
      * @param provider The recipe provider
      */
-    public static void addRecipeProvider(ItemViewRecipes.ServerRecipeProvider provider) {
+    public static void addServerRecipeProvider(ItemViewRecipes.ServerRecipeProvider provider) {
         ItemViewRecipes.INSTANCE.addRecipeProvider(provider);
     }
 
     /**
-     * ClientRecipeWrappers convert an incoming server recipe into a displayable viewRecipe later shown in the recipeView
+     * ClientRecipeWrappers convert an incoming server recipe into a displayable client recipe later shown in the recipe view.
      * <br>
      * <br>
-     * They can also split a server recipe up into multiple viewRecipes if desired, since they require a list to be returned
+     * They can also split a server recipe up into multiple client recipes if desired, since they require a list to be returned
      *
      * @param recipeType The server recipe type
      * @param wrapper    The wrapper
      * @param <T>        The class of the server recipe
      */
-    public static <T extends IRrvServerRecipe> void registerRecipeWrapper(RrvRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
+    public static <T extends ReliableServerRecipe> void registerClientRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
         ItemViewRecipes.INSTANCE.registerRecipeWrapper(recipeType, wrapper);
     }
 
 
     /**
-     * A method used to exclude an item from the ItemView overlay
+     * A method used to exclude an item from the ItemView index. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
      * <br>
      * <br>
-     * NOTE: The item still shows up in recipes
+     * NOTE: This does not hide the item from recipes, only the index.
      * <br>
      * <br>
      * <b>Example</b>: minecraft:air
@@ -87,7 +87,7 @@ public class ItemView {
     }
 
     /**
-     * Register multiple items to exclude at once
+     * Register multiple items to exclude at once. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
      *
      * @param items An array of items to exclude
      */
@@ -194,8 +194,8 @@ public class ItemView {
 
         public static final StreamCodec<RegistryFriendlyByteBuf, StackSensitive> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.COMPOUND_TAG,
-                stackSensitive -> RrvTagUtil.encodeItemStackOnServer(stackSensitive.stack()),
-                (compoundTag) -> new StackSensitive(RrvTagUtil.decodeItemStackOnClient(compoundTag))
+                stackSensitive -> TagUtil.encodeItemStackOnServer(stackSensitive.stack()),
+                (compoundTag) -> new StackSensitive(TagUtil.decodeItemStackOnClient(compoundTag))
         );
 
         @Override

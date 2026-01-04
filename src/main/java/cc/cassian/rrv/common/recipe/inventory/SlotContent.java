@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import com.mojang.datafixers.util.Either;
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
@@ -112,7 +112,7 @@ public class SlotContent {
 
         this.content.forEach(stack -> {
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            tag.putString(CommonRRV.MODID + "_recipeTag", this.itemTag().get().location().toString());
+            tag.putString(ReliableRecipeViewer.MOD_ID + "_recipeTag", this.itemTag().get().location().toString());
             CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
         });
 

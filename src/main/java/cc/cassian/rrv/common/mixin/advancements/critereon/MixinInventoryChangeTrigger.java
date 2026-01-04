@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin.advancements.critereon;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
@@ -18,7 +18,7 @@ public abstract class MixinInventoryChangeTrigger extends SimpleCriterionTrigger
 
     @Inject(method = "trigger(Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"))
     private void onInventoryChange(ServerPlayer serverPlayer, Inventory inventory, ItemStack itemStack, CallbackInfo ci){
-        CommonRRV.networkManager().sendPacket(serverPlayer, new ClientboundUpdateTransferCachePayload());
+        ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundUpdateTransferCachePayload());
     }
 
 }

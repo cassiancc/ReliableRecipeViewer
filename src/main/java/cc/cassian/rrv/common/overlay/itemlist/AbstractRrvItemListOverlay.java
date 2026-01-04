@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist;
 
-import cc.cassian.rrv.common.CommonRRVClient;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
@@ -46,7 +46,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     @Override
     protected boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY) {
 
-        if (CommonRRVClient.isCheatmodeActive()) {
+        if (ReliableRecipeViewerClient.isCheatmodeActive()) {
             for (ItemSlot slot : this.itemSlots()) {
                 if (!slot.isHovered())
                     continue;

@@ -1,11 +1,10 @@
 package cc.cassian.rrv.common.recipe;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
-import cc.cassian.rrv.common.network.payload.recipe.*;
 import cc.cassian.rrv.common.network.payload.recipe.*;
 import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
@@ -29,7 +28,7 @@ public class ServerRecipeManager {
 
     public static final ServerRecipeManager INSTANCE = new ServerRecipeManager();
 
-    private static final HashMap<RrvRecipeType<?>, List<ServerRecipeEntry>> PRESENT_RECIPES = new LinkedHashMap<>();
+    private static final HashMap<ReliableServerRecipeType<?>, List<ServerRecipeEntry>> PRESENT_RECIPES = new LinkedHashMap<>();
 
     private MinecraftServer server;
     private RecipeManager recipeManager;
@@ -66,7 +65,7 @@ public class ServerRecipeManager {
             return;
 
 
-        CommonRRV.LOGGER.info("Reloading all Recipes...");
+        ReliableRecipeViewer.LOGGER.info("Reloading all Recipes...");
 
         ItemView.getStackSensitive().clear();
         ItemView.getReloadCallbacks().forEach(ItemView.ReloadCallback::onReload);
@@ -87,8 +86,8 @@ public class ServerRecipeManager {
         if (this.server == null)
             return;
 
-        CommonRRV.LOGGER.info("Broadcasting Stack-Sensitives...");
-        CommonRRV.LOGGER.info("Informing {} players about {} stack-sensitives", this.server.getPlayerList().getPlayers().size(), ItemView.getStackSensitive().size());
+        ReliableRecipeViewer.LOGGER.info("Broadcasting Stack-Sensitives...");
+        ReliableRecipeViewer.LOGGER.info("Informing {} players about {} stack-sensitives", this.server.getPlayerList().getPlayers().size(), ItemView.getStackSensitive().size());
         this.server.getPlayerList().getPlayers().forEach(this::updateStackSensitives);
 
 
@@ -100,18 +99,18 @@ public class ServerRecipeManager {
             collected.addAll(stackSensitives);
         });
 
-        CommonRRV.networkManager().sendPacket(player, new ClientboundStartStackSensitivesPayload(collected.size()));
+        ReliableRecipeViewer.networkManager().sendPacket(player, new ClientboundStartStackSensitivesPayload(collected.size()));
         collected.forEach(stackSensitive -> {
-            CommonRRV.networkManager().sendPacket(player, new ClientboundStackSensitivePayload(stackSensitive));
+            ReliableRecipeViewer.networkManager().sendPacket(player, new ClientboundStackSensitivePayload(stackSensitive));
         });
-        CommonRRV.networkManager().sendPacket(player, new ClientboundFinishStackSensitivesPayload());
+        ReliableRecipeViewer.networkManager().sendPacket(player, new ClientboundFinishStackSensitivesPayload());
     }
 
     public void broadcastAllRecipes() {
         if (this.server == null) {
             return;
         }
-        CommonRRV.LOGGER.info("Broadcasting recipes...");
+        ReliableRecipeViewer.LOGGER.info("Broadcasting recipes...");
         this.server.getPlayerList().getPlayers().forEach(this::informAboutRecipes);
     }
 
@@ -120,28 +119,28 @@ public class ServerRecipeManager {
         if (PRESENT_RECIPES.isEmpty())
             return;
 
-        CommonRRV.LOGGER.info("Informing {} about {} recipe types", serverPlayer.getName(), PRESENT_RECIPES.size());
+        ReliableRecipeViewer.LOGGER.info("Informing {} about {} recipe types", serverPlayer.getName(), PRESENT_RECIPES.size());
 
-        CommonRRV.networkManager().sendPacket(serverPlayer, new ClientboundStartUpdatesPayload());
+        ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundStartUpdatesPayload());
 
-        CommonRRV.networkManager().sendPacket(serverPlayer, new ClientboundCacheStartPayload(PRESENT_RECIPES.size()));
+        ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundCacheStartPayload(PRESENT_RECIPES.size()));
         PRESENT_RECIPES.forEach((type, entries) -> {
-            CommonRRV.networkManager().sendPacket(serverPlayer, new ClientboundTypeUpdateStartPayload(type, entries.size()));
+            ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundTypeUpdateStartPayload(type, entries.size()));
             entries.forEach(recipe -> {
-                CommonRRV.networkManager().sendPacket(serverPlayer, new ClientboundTypeUpdatePayload(recipe));
+                ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundTypeUpdatePayload(recipe));
             });
-            CommonRRV.networkManager().sendPacket(serverPlayer, new ClientboundTypeUpdateEndPayload(type));
+            ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundTypeUpdateEndPayload(type));
         });
-        CommonRRV.networkManager().sendPacket(serverPlayer, new ClientboundFinishUpdatesPayload());
+        ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundFinishUpdatesPayload());
 
     }
 
     public void reloadRecipes() {
         PRESENT_RECIPES.clear();
 
-        List<IRrvServerRecipe> serverRecipes = new ArrayList<>();
+        List<ReliableServerRecipe> serverRecipes = new ArrayList<>();
         ItemViewRecipes.INSTANCE.getRecipeProviders().forEach(serverModRecipeProvider -> {
-            List<IRrvServerRecipe> recipes = new ArrayList<>();
+            List<ReliableServerRecipe> recipes = new ArrayList<>();
             serverModRecipeProvider.provide(recipes);
             serverRecipes.addAll(recipes);
         });
@@ -156,7 +155,7 @@ public class ServerRecipeManager {
     }
 
 
-    public record ServerRecipeEntry(Identifier modRecipeId, IRrvServerRecipe recipe) {
+    public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
 
         public static final StreamCodec<FriendlyByteBuf, ServerRecipeEntry> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8,
@@ -166,7 +165,7 @@ public class ServerRecipeManager {
                 (s, compoundTag) -> new ServerRecipeEntry(Identifier.tryParse(s), ServerRecipeEntry.fromTag(compoundTag))
         );
 
-        public <T extends IRrvServerRecipe> T asWrapped() {
+        public <T extends ReliableServerRecipe> T asWrapped() {
             return (T) this.recipe;
         }
 
@@ -178,21 +177,21 @@ public class ServerRecipeManager {
                 this.recipe().writeToTag(dataTag);
                 tag.put("recipeData", dataTag);
             }catch (Exception e) {
-                CommonRRV.LOGGER.error("Failed to encode recipe {}: {}, please contact the mod author", this.modRecipeId(), e.getMessage());
+                ReliableRecipeViewer.LOGGER.error("Failed to encode recipe {}: {}, please contact the mod author", this.modRecipeId(), e.getMessage());
             }
 
             return tag;
         }
 
-        public static IRrvServerRecipe fromTag(CompoundTag tag) {
+        public static ReliableServerRecipe fromTag(CompoundTag tag) {
             if (!tag.contains("recipeType"))
                 return null;
 
-            RrvRecipeType<?> recipeType = RrvRecipeType.byId(Identifier.parse(tag.getString("recipeType").orElseThrow()));
+            ReliableServerRecipeType<?> recipeType = ReliableServerRecipeType.byId(Identifier.parse(tag.getString("recipeType").orElseThrow()));
             if (recipeType == null)
                 return null;
 
-            IRrvServerRecipe modRecipe = recipeType.getEmptyConstructor().construct();
+            ReliableServerRecipe modRecipe = recipeType.getEmptyConstructor().construct();
             modRecipe.loadFromTag(tag.getCompound("recipeData").orElseGet(CompoundTag::new));
             return modRecipe;
         }

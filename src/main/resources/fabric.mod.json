@@ -18,10 +18,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "cc.cassian.rrv.fabric.FabricRRV"
+      "cc.cassian.rrv.fabric.FabricEntrypoint"
     ],
     "client": [
-      "cc.cassian.rrv.fabric.FabricRRVClient"
+      "cc.cassian.rrv.fabric.FabricClientEntrypoint"
     ],
     "rrv": [
       "cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration"

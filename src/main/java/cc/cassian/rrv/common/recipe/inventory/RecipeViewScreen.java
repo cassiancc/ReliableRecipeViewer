@@ -1,9 +1,9 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
-import cc.cassian.rrv.common.CommonRRVClient;
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -36,7 +36,7 @@ import java.util.List;
 
 public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
-    private static final Identifier VIEW_LOCATION = Identifier.fromNamespaceAndPath(CommonRRV.MODID, "textures/gui/recipe_view.png");
+    private static final Identifier VIEW_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/recipe_view.png");
 
     //Timestamp when opening the view
     private final long timestamp;
@@ -84,9 +84,9 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     @Override
     public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
 
-        if (CommonRRVClient.GO_BACK_RECIPE.matchesMouse(mouseButtonEvent) && this.getMenu().goBack())
+        if (ReliableRecipeViewerClient.GO_BACK_RECIPE.matchesMouse(mouseButtonEvent) && this.getMenu().goBack())
             return true;
-        if (CommonRRVClient.GO_FORWARD_RECIPE.matchesMouse(mouseButtonEvent) && this.getMenu().goForward())
+        if (ReliableRecipeViewerClient.GO_FORWARD_RECIPE.matchesMouse(mouseButtonEvent) && this.getMenu().goForward())
             return true;
 
         return super.mouseReleased(mouseButtonEvent);
@@ -95,10 +95,10 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     @Override
     public boolean keyPressed(KeyEvent keyEvent) {
 
-        if (CommonRRVClient.GO_BACK_RECIPE.matches(keyEvent) && this.getMenu().goBack())
+        if (ReliableRecipeViewerClient.GO_BACK_RECIPE.matches(keyEvent) && this.getMenu().goBack())
             return true;
 
-        if (CommonRRVClient.GO_FORWARD_RECIPE.matches(keyEvent) && this.getMenu().goForward())
+        if (ReliableRecipeViewerClient.GO_FORWARD_RECIPE.matches(keyEvent) && this.getMenu().goForward())
             return true;
 
         return super.keyPressed(keyEvent);
@@ -192,7 +192,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         int guiLeft = this.leftPos + this.getMenu().guiOffsetLeft();
 
         for (int i = 0; i < this.getMenu().getCurrentDisplay().size(); i++) {
-            final IRrvClientRecipe currentView = this.getMenu().getCurrentDisplay().get(i);
+            final ReliableClientRecipe currentView = this.getMenu().getCurrentDisplay().get(i);
 
             int guiTop = this.topPos + this.getMenu().guiOffsetTop(i);
 
@@ -209,7 +209,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                             if (!currentView.canTransferToScreen((AbstractContainerScreen<?>) Minecraft.getInstance().screen))
                                 return;
 
-                            IRrvClientRecipe.RecipeTransferMap map = new IRrvClientRecipe.RecipeTransferMap();
+                            ReliableClientRecipe.RecipeTransferMap map = new ReliableClientRecipe.RecipeTransferMap();
                             currentView.mapRecipeItems(map, (AbstractContainerScreen<?>) Minecraft.getInstance().screen);
 
 
@@ -217,7 +217,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
                             HashMap<Integer, HashMap<Integer, ItemStack>> usedPlayerSlots = Minecraft.getInstance().hasShiftDown() ? transferData.getStackedData().getUsedPlayerSlots() : transferData.getUsedPlayerSlots();
                             //TODO make component required in recipes
-                            CommonRRV.networkManager().sendPacketToServer(new ServerboundTransferPayload(map.getTransferMap(), usedPlayerSlots));
+                            ReliableRecipeViewer.networkManager().sendPacketToServer(new ServerboundTransferPayload(map.getTransferMap(), usedPlayerSlots));
 
                         }
 
@@ -275,10 +275,10 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
         CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        if (tagTag.contains(CommonRRV.MODID + "_recipeTag")) {
+        if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_recipeTag")) {
             tooltip.add(
                     Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
-                            .append(Component.literal("#" + tagTag.getStringOr(CommonRRV.MODID + "_recipeTag", "Error")).withStyle(ChatFormatting.GRAY))
+                            .append(Component.literal("#" + tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_recipeTag", "Error")).withStyle(ChatFormatting.GRAY))
 
             );
         }
@@ -288,7 +288,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         //TODO make more performant
         if (Configs.CLIENT_SETTINGS.isAppendModNamespace())
-            tooltip.addLast(Component.literal(CommonRRVClient.resolver().getModNameForItem(itemStack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
+            tooltip.addLast(Component.literal(ReliableRecipeViewerClient.resolver().getModNameForItem(itemStack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
 
         return tooltip;
     }
@@ -370,7 +370,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         if (timeOpen % 25 == 0 && timeOpen >= 25)
             this.getMenu().tickContents();
 
-        this.getMenu().getCurrentDisplay().forEach(IRrvClientRecipe::tick);
+        this.getMenu().getCurrentDisplay().forEach(ReliableClientRecipe::tick);
     }
 
     public int getLeftPos() {
@@ -397,7 +397,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.topPos + (this.imageHeight - 3), 0, 256 - 3, this.imageWidth, 3, 256, 256);
 
 
-        IRrvClientRecipeType viewType = this.getMenu().getViewType();
+        ReliableClientRecipeType viewType = this.getMenu().getViewType();
 
         //Render icons
 
@@ -445,7 +445,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 guiGraphics.pose().popMatrix();
             });
             this.renderInvalidSlots(guiGraphics, i);
-            this.getMenu().getCurrentDisplay().get(i).renderRecipe(this, new IRrvClientRecipe.RecipePosition(guiLeft, guiTop, viewType.getDisplayWidth(), viewType.getDisplayHeight()), guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
+            this.getMenu().getCurrentDisplay().get(i).renderRecipe(this, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, viewType.getDisplayWidth(), viewType.getDisplayHeight()), guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
             guiGraphics.pose().popMatrix();
         }
 
@@ -457,7 +457,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         if (!button.isHovered())
             return;
 
-        IRrvClientRecipe current = this.getMenu().getCurrentDisplay().get(displayId);
+        ReliableClientRecipe current = this.getMenu().getCurrentDisplay().get(displayId);
 
         RecipeTransferData data = this.getMenu().getTransferData().get(displayId);
         if (data.isSuccess())
@@ -483,7 +483,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
 
-    record ViewTypeButton(RecipeViewScreen viewScreen, int x, int y, int width, int height, IRrvClientRecipeType viewType,
+    record ViewTypeButton(RecipeViewScreen viewScreen, int x, int y, int width, int height, ReliableClientRecipeType viewType,
                           int viewTypeId) {
 
 

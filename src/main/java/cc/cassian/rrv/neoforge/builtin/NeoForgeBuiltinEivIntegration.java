@@ -4,7 +4,7 @@
 import cc.cassian.rrv.common.api.recipe.ItemView;
 import cc.cassian.rrv.common.builtin.BuiltInRrvIntegration;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.neoforge.mixin.neoforge.common.BasicItemListingAccessor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;

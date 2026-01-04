@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.network;
 
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;

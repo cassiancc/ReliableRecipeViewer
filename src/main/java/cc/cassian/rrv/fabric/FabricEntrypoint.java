@@ -1,7 +1,7 @@
 //? fabric {
 package cc.cassian.rrv.fabric;
 
-import cc.cassian.rrv.common.api.ReliableRecipeViewerPlugin;
+import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.command.RrvCommand;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
@@ -19,9 +19,9 @@ import net.minecraft.world.level.material.Fluids;
 
 import java.util.HashMap;
 
-import static cc.cassian.rrv.common.CommonRRV.*;
+import static cc.cassian.rrv.common.ReliableRecipeViewer.*;
 
-public class FabricRRV implements ModInitializer {
+public class FabricEntrypoint implements ModInitializer {
 
 
     @Override

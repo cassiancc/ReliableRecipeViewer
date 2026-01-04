@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
-import cc.cassian.rrv.common.CommonRRVClient;
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -68,7 +68,7 @@ public class ItemFilters {
 
         for (ItemStack stack : fullStackList()) {
 
-            String modName = CommonRRVClient.resolver().getModNameForItem(stack);
+            String modName = ReliableRecipeViewerClient.resolver().getModNameForItem(stack);
             if (modName == null)
                 continue;
 

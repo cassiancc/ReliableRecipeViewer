@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.network.payload.compat;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -32,7 +32,7 @@ public record ClientboundCompatPayload(CompoundTag data) implements CustomPacket
             }
     );
 
-    public static final CustomPacketPayload.Type<ClientboundCompatPayload> TYPE = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "compat"));
+    public static final CustomPacketPayload.Type<ClientboundCompatPayload> TYPE = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "compat"));
 
 
     @Override

@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.network.payload.recipe;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,7 +16,7 @@ public record ClientboundCacheStartPayload(int types) implements CustomPacketPay
             ClientboundCacheStartPayload::new
     );
 
-    public static final Type<ClientboundCacheStartPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "cache_start"));
+    public static final Type<ClientboundCacheStartPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "cache_start"));
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

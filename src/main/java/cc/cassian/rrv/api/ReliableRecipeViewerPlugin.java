@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.api;
+package cc.cassian.rrv.api;
 
 /**
  * Each mod should have their own RRV integration and register everything RRV related in there

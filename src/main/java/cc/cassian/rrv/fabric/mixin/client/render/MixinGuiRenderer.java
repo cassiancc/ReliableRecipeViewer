@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 
 /**
- * Technically, we don't need this mixin for fabric since they have implemented their own solution by default,
+ * Technically, we don't need this mixin for fabric since Fabric implements their own solution by default,
  * but we're prepared for possible changes
  * @param <T>
  */

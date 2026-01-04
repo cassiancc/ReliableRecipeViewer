@@ -2,7 +2,7 @@ package cc.cassian.rrv.common.config;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -29,10 +29,10 @@ public abstract class AbstractRrvConfig {
 
     public void load() {
         try {
-            File file = new File(CommonRRV.CONFIG_PATH + this.fileName + ".json");
+            File file = new File(ReliableRecipeViewer.CONFIG_PATH + this.fileName + ".json");
 
             if (!file.exists()) {
-                CommonRRV.LOGGER.info("Config file: {}.json not present, creating a new one...", this.fileName);
+                ReliableRecipeViewer.LOGGER.info("Config file: {}.json not present, creating a new one...", this.fileName);
                 this.save();
                 return;
             }
@@ -40,10 +40,10 @@ public abstract class AbstractRrvConfig {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             this.data = new GsonBuilder().create().fromJson(fileContent, JsonObject.class);
 
-            CommonRRV.LOGGER.info("Loading config file: {}.json", this.fileName);
+            ReliableRecipeViewer.LOGGER.info("Loading config file: {}.json", this.fileName);
             this.loadData();
         } catch (Exception e) {
-            CommonRRV.LOGGER.error("Failed to load config file: {}.json", this.fileName, e);
+            ReliableRecipeViewer.LOGGER.error("Failed to load config file: {}.json", this.fileName, e);
         }
 
     }
@@ -53,23 +53,23 @@ public abstract class AbstractRrvConfig {
         try {
 
             this.saveData();
-            File configDirectory = new File(CommonRRV.CONFIG_PATH);
-            File saveFile = new File(CommonRRV.CONFIG_PATH + this.fileName + ".json");
+            File configDirectory = new File(ReliableRecipeViewer.CONFIG_PATH);
+            File saveFile = new File(ReliableRecipeViewer.CONFIG_PATH + this.fileName + ".json");
 
             if(configDirectory.mkdirs())
-                CommonRRV.LOGGER.info("Couldn't find config directory, creating new one...");
+                ReliableRecipeViewer.LOGGER.info("Couldn't find config directory, creating new one...");
 
 
             if (saveFile.createNewFile())
-                CommonRRV.LOGGER.info("Created new config file: {}.json", this.fileName);
+                ReliableRecipeViewer.LOGGER.info("Created new config file: {}.json", this.fileName);
 
             String encoded = new GsonBuilder().setPrettyPrinting().create().toJson(this.data);
 
             FileUtils.writeStringToFile(saveFile, encoded, StandardCharsets.UTF_8);
-            CommonRRV.LOGGER.info("Saved config file: {}.json", this.fileName);
+            ReliableRecipeViewer.LOGGER.info("Saved config file: {}.json", this.fileName);
 
         } catch (Exception e) {
-            CommonRRV.LOGGER.error("Failed to save config file: {}.json", this.fileName, e);
+            ReliableRecipeViewer.LOGGER.error("Failed to save config file: {}.json", this.fileName, e);
         }
 
     }

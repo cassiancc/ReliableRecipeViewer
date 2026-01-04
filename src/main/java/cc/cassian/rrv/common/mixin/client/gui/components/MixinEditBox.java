@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.mixin.client.gui.components;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MixinEditBox extends AbstractWidget {
 
     @Unique
-    private static final Identifier FILTERMODE_LOCATION = Identifier.fromNamespaceAndPath(CommonRRV.MODID, "widget/searchbar_filtermode");
+    private static final Identifier FILTERMODE_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "widget/searchbar_filtermode");
 
     public MixinEditBox(int $$0, int $$1, int $$2, int $$3, Component $$4) {
         super($$0, $$1, $$2, $$3, $$4);

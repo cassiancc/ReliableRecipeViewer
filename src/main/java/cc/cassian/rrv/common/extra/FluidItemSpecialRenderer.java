@@ -2,7 +2,7 @@ package cc.cassian.rrv.common.extra;
 
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.serialization.MapCodec;
-import cc.cassian.rrv.common.CommonRRVClient;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.Minecraft;
@@ -54,7 +54,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         color = new Color(unmodified.getRed(), unmodified.getGreen(), unmodified.getBlue(), 255).getRGB();
 
         TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(fluid.defaultFluidState().createLegacyBlock()).particleIcon();
-        RRVClientResolver.UVInfo uvInfo = CommonRRVClient.resolver().getUVInfo(sprite);
+        RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
 
         float u0 = uvInfo.u0();
         float u1 = uvInfo.u1();
@@ -98,7 +98,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         
         @Override
         public @NotNull SpecialModelRenderer<?> bake(BakingContext bakingContext) {
-            return new FluidItemSpecialRenderer(new FluidItemModel(bakingContext.entityModelSet().bakeLayer(CommonRRVClient.FLUID_ITEM_MODEL_LAYER)));
+            return new FluidItemSpecialRenderer(new FluidItemModel(bakingContext.entityModelSet().bakeLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER)));
         }
 
         @Override

@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.shapeless;
 
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.builtin.transmute.TransmuteServerRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShapelessClientRecipe implements IRrvClientRecipe {
+public class ShapelessClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent result;
     private final List<SlotContent> ingredients;
@@ -36,7 +36,7 @@ public class ShapelessClientRecipe implements IRrvClientRecipe {
     }
 
     @Override
-    public IRrvClientRecipeType getViewType() {
+    public ReliableClientRecipeType getViewType() {
         return ShapelessClientRecipeRecipeType.INSTANCE;
     }
 

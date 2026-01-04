@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens.inventory;
 
-import cc.cassian.rrv.common.CommonRRVClient;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
@@ -147,13 +147,13 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         if (this.hoveredSlot == null)
             return;
 
-        if (CommonRRVClient.USAGE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
+        if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
             ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ItemViewOverlay.ItemViewOpenType.INPUT);
 
-        if (CommonRRVClient.RECIPE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
+        if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
             ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ItemViewOverlay.ItemViewOpenType.RESULT);
 
-        if (CommonRRVClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem()) {
+        if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem()) {
             ItemBookmarkOverlay.INSTANCE.bookmarkItem(this.hoveredSlot.getItem());
 
         }

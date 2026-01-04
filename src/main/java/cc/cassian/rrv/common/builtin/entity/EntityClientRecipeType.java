@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.entity;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -12,7 +12,7 @@ import net.minecraft.world.item.SpawnEggItem;
 
 import java.util.List;
 
-public class EntityClientRecipeType implements IRrvClientRecipeType {
+public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     public static final EntityClientRecipeType INSTANCE = new EntityClientRecipeType();
     private static final List<ItemStack> SPAWN_EGGS = BuiltInRegistries.ITEM.stream().filter(item -> item instanceof SpawnEggItem).map(ItemStack::new).toList();
@@ -42,7 +42,7 @@ public class EntityClientRecipeType implements IRrvClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(CommonRRV.MODID, "textures/gui/type/entity.png");
+        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/entity.png");
     }
 
     //Mob loot should not exceed 54 slots

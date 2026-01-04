@@ -1,8 +1,8 @@
 //? fabric {
 package cc.cassian.rrv.fabric;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.CommonRRVClient;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.extra.FluidItemModel;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.fabricmc.api.ClientModInitializer;
@@ -18,33 +18,33 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 
-public class FabricRRVClient implements ClientModInitializer {
+public class FabricClientEntrypoint implements ClientModInitializer {
 
 
-    private static FabricRRVClient instance;
+    private static FabricClientEntrypoint instance;
 
     @Override
     public void onInitializeClient() {
         instance = this;
 
-        CommonRRVClient.boostrap();
+        ReliableRecipeViewerClient.boostrap();
 
         //? >26 {
         /*CommonRRVClient.RRV_KEY_MAPPINGS.forEach(KeyMappingHelper::registerKeyMapping);
         ModelLayerRegistry.registerModelLayer(CommonRRVClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
         *///?} else {
-        CommonRRVClient.RRV_KEY_MAPPINGS.forEach(KeyBindingHelper::registerKeyBinding);
-        EntityModelLayerRegistry.registerModelLayer(CommonRRVClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
+        ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyBindingHelper::registerKeyBinding);
+        EntityModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
         //?}
 
-        Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(CommonRRV.MODID, "recipe_view"), CommonRRVClient.RECIPE_VIEW_MENU);
-        MenuScreens.register(CommonRRVClient.RECIPE_VIEW_MENU, RecipeViewScreen::new);
+        Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewerClient.RECIPE_VIEW_MENU);
+        MenuScreens.register(ReliableRecipeViewerClient.RECIPE_VIEW_MENU, RecipeViewScreen::new);
 
-        CommonRRVClient.loadConfigs();
+        ReliableRecipeViewerClient.loadConfigs();
     }
 
 
-    public static FabricRRVClient getInstance() {
+    public static FabricClientEntrypoint getInstance() {
         return instance;
     }
 

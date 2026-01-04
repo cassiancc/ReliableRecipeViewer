@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.api.recipe;
+package cc.cassian.rrv.api.recipe;
 
 import net.minecraft.resources.Identifier;
 
@@ -8,9 +8,9 @@ import java.util.HashMap;
  * Representation of a server-side recipe type
  * @param <T> The class of the server recipe
  */
-public interface RrvRecipeType<T extends IRrvServerRecipe> {
+public interface ReliableServerRecipeType<T extends ReliableServerRecipe> {
 
-    HashMap<Identifier, RrvRecipeType<?>> RRV_RECIPE_TYPES = new HashMap<>();
+    HashMap<Identifier, ReliableServerRecipeType<?>> RRV_RECIPE_TYPES = new HashMap<>();
 
 
     /**
@@ -21,7 +21,7 @@ public interface RrvRecipeType<T extends IRrvServerRecipe> {
 
     /**
      *
-     * @return A method that constructs a default instance of the server recipe which is later updated with network data on load in {@link IRrvServerRecipe}
+     * @return A method that constructs a default instance of the server recipe which is later updated with network data on load in {@link ReliableServerRecipe}
      */
     EmptyRecipeConstructor<T> getEmptyConstructor();
 
@@ -33,9 +33,9 @@ public interface RrvRecipeType<T extends IRrvServerRecipe> {
      * @return The recipe type
      * @param <S> The server recipe class
      */
-    static <S extends IRrvServerRecipe> RrvRecipeType<S> register(Identifier id, EmptyRecipeConstructor<S> emptyRecipeConstructor) {
+    static <S extends ReliableServerRecipe> ReliableServerRecipeType<S> register(Identifier id, EmptyRecipeConstructor<S> emptyRecipeConstructor) {
 
-        RrvRecipeType<S> type = new RrvRecipeType<S>() {
+        ReliableServerRecipeType<S> type = new ReliableServerRecipeType<S>() {
             @Override
             public Identifier getId() {
                 return id;
@@ -57,7 +57,7 @@ public interface RrvRecipeType<T extends IRrvServerRecipe> {
      * @param id The id
      * @return The server recipe type by id
      */
-    static RrvRecipeType<?> byId(Identifier id){
+    static ReliableServerRecipeType<?> byId(Identifier id){
         return RRV_RECIPE_TYPES.getOrDefault(id, null);
     }
 
@@ -66,7 +66,7 @@ public interface RrvRecipeType<T extends IRrvServerRecipe> {
      * @param recipeType The recipe type
      * @return The id of the type
      */
-    static Identifier idFromType(RrvRecipeType<?> recipeType) {
+    static Identifier idFromType(ReliableServerRecipeType<?> recipeType) {
         return recipeType.getId();
     }
 
@@ -75,7 +75,7 @@ public interface RrvRecipeType<T extends IRrvServerRecipe> {
      * Functional interface providing a construction method for a default server recipe instance
      * @param <T> The class of the recipe
      */
-    interface EmptyRecipeConstructor<T extends IRrvServerRecipe> {
+    interface EmptyRecipeConstructor<T extends ReliableServerRecipe> {
 
         T construct();
 

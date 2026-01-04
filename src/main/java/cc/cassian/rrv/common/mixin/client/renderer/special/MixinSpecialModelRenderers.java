@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.mixin.client.renderer.special;
 
 import com.mojang.serialization.MapCodec;
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidItemSpecialRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderers;
@@ -23,6 +23,6 @@ public abstract class MixinSpecialModelRenderers {
 
     @Inject(method = "bootstrap", at = @At("HEAD"))
     private static void injectFluidItemRenderer(CallbackInfo ci) {
-        ID_MAPPER.put(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "fluiditem"), FluidItemSpecialRenderer.Unbaked.MAP_CODEC);
+        ID_MAPPER.put(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem"), FluidItemSpecialRenderer.Unbaked.MAP_CODEC);
     }
 }

@@ -1,8 +1,8 @@
 package cc.cassian.rrv.common.builtin;
 
 import com.mojang.datafixers.util.Either;
-import cc.cassian.rrv.common.api.ReliableRecipeViewerPlugin;
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.builtin.blasting.BlastingServerRecipe;
 import cc.cassian.rrv.common.builtin.brewing.BrewingServerRecipe;
 import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
@@ -79,14 +79,14 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerC
 
 import java.util.*;
 
-import static cc.cassian.rrv.common.CommonRRV.*;
+import static cc.cassian.rrv.common.ReliableRecipeViewer.*;
 
 public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
 
-    public static final Identifier WIDGETS = Identifier.fromNamespaceAndPath(MODID, "textures/gui/rrv_widgets.png");
+    public static final Identifier WIDGETS = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/rrv_widgets.png");
 
     //Default slot rendering
-    public static final Identifier DEFAULT_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(MODID, "textures/gui/default_slot.png");
+    public static final Identifier DEFAULT_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/default_slot.png");
 
     private static final TagKey<Item> EXCLUDED_ITEMS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
     private static final TagKey<Block> EXCLUDED_BLOCKS = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
@@ -133,7 +133,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         //providers
 
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
 
             BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
                 if (entityType.getDefaultLootTable().isEmpty())
@@ -190,7 +190,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
 
         //Burning
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             FuelValues fuelValues = ServerRecipeManager.INSTANCE.getServer().fuelValues();
             fuelValues.fuelItems().forEach(item -> {
                 recipeList.add(new BurningServerRecipe(item, fuelValues.burnDuration(new ItemStack(item))));
@@ -199,28 +199,28 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
 
         //Smelting
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMELTING).forEach(recipe -> {
                 recipeList.add(new SmeltingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
         //Blasting
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.BLASTING).forEach(recipe -> {
                 recipeList.add(new BlastingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
         //Smoking
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMOKING).forEach(recipe -> {
                 recipeList.add(new SmokingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
         //Crafting
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CRAFTING).forEach(recipe -> {
                 if (recipe instanceof ShapelessRecipe shapelessRecipe)
                     recipeList.add(new ShapelessServerRecipe(shapelessRecipe.ingredients, shapelessRecipe.result));
@@ -286,21 +286,21 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
 
         //Campfire
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(campfireCookingRecipe -> {
                 recipeList.add(new CampfireServerRecipe(campfireCookingRecipe.input(), campfireCookingRecipe.result));
             });
         });
 
         //Stonecutting
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipe -> {
                 recipeList.add(new StonecutterServerRecipe(stonecutterRecipe.input(), stonecutterRecipe.result));
             });
         });
 
         //Smithing
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMITHING).forEach(smithingRecipe -> {
 
                 if (smithingRecipe instanceof SmithingTrimRecipe trimRecipe)
@@ -314,7 +314,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
 
         //Brewing
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
 
             PotionBrewing potionBrewing = ServerRecipeManager.INSTANCE.getServer().potionBrewing();
             List<PotionBrewing.Mix<Potion>> potionMixes = ((PotionBrewingAccessor) potionBrewing).getPotionMixes();
@@ -335,7 +335,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         //Trading
         //? <26 {
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
 
             VillagerTrades.TRADES.forEach((profession, byProfessionLevel) -> {
 
@@ -397,17 +397,17 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         *///?}
 
         //Wrapper
-        ItemView.registerRecipeWrapper(BurningServerRecipe.TYPE, unwrapped -> List.of(new BurningClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(SmeltingServerRecipe.TYPE, unwrapped -> List.of(new SmeltingClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(BlastingServerRecipe.TYPE, unwrapped -> List.of(new BlastingClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(SmokingServerRecipe.TYPE, unwrapped -> List.of(new SmokingClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(ShapedServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(TransmuteServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(TippedArrowServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(CampfireServerRecipe.TYPE, unwrapped -> List.of(new CampfireClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(StonecutterServerRecipe.TYPE, unwrapped -> List.of(new StonecutterClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(SmithingServerRecipe.TYPE, unwrapped -> {
+        ItemView.registerClientRecipeWrapper(BurningServerRecipe.TYPE, unwrapped -> List.of(new BurningClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(SmeltingServerRecipe.TYPE, unwrapped -> List.of(new SmeltingClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(BlastingServerRecipe.TYPE, unwrapped -> List.of(new BlastingClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(SmokingServerRecipe.TYPE, unwrapped -> List.of(new SmokingClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(ShapedServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(TransmuteServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(TippedArrowServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(CampfireServerRecipe.TYPE, unwrapped -> List.of(new CampfireClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(StonecutterServerRecipe.TYPE, unwrapped -> List.of(new StonecutterClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(SmithingServerRecipe.TYPE, unwrapped -> {
             List<SmithingClientRecipe> recipes = new ArrayList<>();
 
             if (unwrapped.getBase() != null && unwrapped.getTemplate() != null) {
@@ -436,11 +436,11 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
             return recipes;
         });
-        ItemView.registerRecipeWrapper(BrewingServerRecipe.TYPE, unwrapped -> List.of(new BrewingClientRecipe(unwrapped)));
-        ItemView.registerRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> {
+        ItemView.registerClientRecipeWrapper(BrewingServerRecipe.TYPE, unwrapped -> List.of(new BrewingClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> {
             return unwrapped.getOffers().stream().map(VillagerClientRecipe::new).toList();
         });
-        ItemView.registerRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
     }
 
 

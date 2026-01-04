@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin.network.protocol.common.custom;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -17,7 +17,7 @@ public abstract class MixinDiscardedPayload implements CustomPacketPayload {
 
     @Inject(method = "codec", at = @At("HEAD"))
     private static <T extends FriendlyByteBuf> void injectCompat(Identifier Identifier, int maxPayloadSize, CallbackInfoReturnable<StreamCodec<T, DiscardedPayload>> cir){
-        CommonRRV.LOGGER.info("Injecting DiscardedPayload codec for {}", Identifier);
+        ReliableRecipeViewer.LOGGER.info("Injecting DiscardedPayload codec for {}", Identifier);
     }
 
 }

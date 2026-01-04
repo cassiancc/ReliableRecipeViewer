@@ -6,7 +6,7 @@
 
 ## Overview
 
-[Extended Item View](https://modrinth.com/mod/rrv) is a mod that provides recipe viewer functionality on modern Minecraft versions, including 1.21.4-1.21.10. However, it has not yet made the jump to 1.21.11 and beyond. Rather than drop RRV support on my mods, I opted to provide this fork (which has been contributed to upstream, should 2Bad4Mods return and wish to use any of it.)
+[Reliable Recipe Viewer](https://modrinth.com/mod/rrv) is a mod that provides recipe viewer functionality on modern Minecraft versions, from 1.21.11 to 26.1. It's based on [Extended Item View](https://modrinth.com/mod/rrv), which supported 1.21.4-1.21.10. Since EIV never made the jump to 1.21.11 and beyond and had a few issues I opted to provide this fork.
 
 Currently supported functions are:
 
@@ -28,8 +28,6 @@ For more details, see the [Extended Item View](https://modrinth.com/mod/rrv).
 
 ## Mod Compatibility
 
-Mods with RRV integration can be used with this fork, which should not make unneeded changes to the API. You can find a list of mods with RRV integration in my [Modrinth Collection](https://modrinth.com/collection/4feLcYR6).
-
 Developers wishing to use the mod can make use of RRV's easy to use API. More info on [RRV's GitHub page](https://github.com/liushmn/ExtendedItemView). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
 
 ## License
@@ -38,7 +36,7 @@ Developers wishing to use the mod can make use of RRV's easy to use API. More in
 RRV Canary is available under the open source MIT License, matching the original mod.
 
 ## Credits
-This is a port of [Extended Item View](https://modrinth.com/mod/rrv) to Fabric 1.21.11 that I made for personal use. RRV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-rrv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. This fork will be retired if/when 2Bad4Mods returns.
+This started as a port of [Extended Item View](https://modrinth.com/mod/rrv) to Fabric 1.21.11 that I made for personal use. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. I have opted to redesign some elements of the mod with the goal to make it a more reliable recipe viewer to use.
 
 
 # Developer Guide
@@ -62,20 +60,20 @@ repositories {
 
 dependencies {
 	// Fabric and Architectury Loom
-	modImplementation "maven.modrinth:rrv-canary:${rrv_version}+${minecraft_version}-fabric"
+	modImplementation "maven.modrinth:rrv:${rrv_version}+${minecraft_version}-fabric"
 
 	// NeoForge and Multiloader Template
-	implementation "maven.modrinth:rrv-canary:${rrv_version}+${minecraft_version}-neoforge"
+	implementation "maven.modrinth:rrv:${rrv_version}+${minecraft_version}-neoforge"
 }
 ```
 
 ## Creating your mod's integration
 
 Before you can implement your own recipes you first have to create an rrv-integration for your Mod.
-This is done by creating a class implementing `IExtendedItemViewIntegration`:
+This is done by creating a class implementing `ReliableRecipeViewerPlugin`:
 
 ```java
-public class RrvIntegration implements IExtendedItemViewIntegration {
+public class MyModRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
     
     @Override
     public void onIntegrationInitialize() {
@@ -94,7 +92,7 @@ Don't forget to add it as an entrypoint to your mod
 	"entrypoints": {
     ...,
 		"rrv": [
-			"de.you.modid.rrv.RrvIntegration"
+			"com.example.mod.rrv.MyModRecipeViewerIntegration"
 		]
 	},
 ...
@@ -104,26 +102,26 @@ Don't forget to add it as an entrypoint to your mod
 ### NeoForge (neoforge.mods.toml)
 ```toml
 # ...
-rrv="de.you.modid.rrv.RrvIntegration"
+rrv="com.example.mod.rrv.MyModRecipeViewerIntegration"
 # ...
 ```
 
 ## Adding a new recipe type
 
 Since you want to add a complete new way of crafting, you first need to create your viewtype.
-Simply create a class implementing `IRrvRecipeViewType` and override the required methods:
+Simply create a class implementing `ReliableClientRecipeType` and override the required methods:
 
 ```java
-public class YourCustomViewType implements IRrvRecipeViewType {
+public class ExampleModClientRecipeType implements ReliableClientRecipeType {
 
     //Create an instance of your viewtype here
     //Relevant for next steps
-    protected static final YourCustomViewType INSTANCE = new YourCustomViewType();
+    protected static final ReliableClientRecipeType INSTANCE = new ReliableClientRecipeType();
     
     
     @Override
     public Component getDisplayName() {
-        return Component.literal("YourCustomViewType"); //This is the name of your viewtype displayed later in the recipe-view
+        return Component.literal("Example Crafting"); //This is the name of your recipe type, displayed later in the recipe view
     }
 
     @Override
@@ -138,7 +136,7 @@ public class YourCustomViewType implements IRrvRecipeViewType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath("yourmodid", "path/to/your/texture"); //Your type's gui texture
+        return Identifier.fromNamespaceAndPath("example-mod", "path/to/your/texture"); //Your type's gui texture.
     }
 
     @Override
@@ -158,7 +156,7 @@ public class YourCustomViewType implements IRrvRecipeViewType {
 
     @Override
     public Identifier getId() {
-        return Identifier.fromNamespaceAndPath("yourmodid", "your_type_id"); //A unique id for your viewtype
+        return Identifier.fromNamespaceAndPath("example-mod", "your_type_id"); //A unique id for your viewtype
     }
 
     @Override
@@ -176,10 +174,10 @@ public class YourCustomViewType implements IRrvRecipeViewType {
 ## Adding your recipe blueprint
 
 Now you need to add your recipe's class to tell RRV about things like rendering & items.
-Just create a class implementing `IRrvViewRecipe` and override the required methods.
+Just create a class implementing `ReliableClientRecipe` and override the required methods.
 
 ```java
-public class YourCustomViewRecipe implements IRrvViewRecipe {
+public class ExampleModClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, output;
 
@@ -206,14 +204,14 @@ public class YourCustomViewRecipe implements IRrvViewRecipe {
         slotFillContext.bindSlot(0, this.input);
         slotFillContext.bindSlot(1, this.output);
 
-        //When you want to add custom information to some of your items simply add a stack modifier to the corresponding slots
+        // When you want to add custom information to some of your items simply add a stack modifier to the corresponding slots
         slotFillContext.addAdditionalStackModifier(0, (stack, tooltip) -> {
             tooltip.add(Component.literal("A cool item"));
         });
 
-        //You can also bind a slot as "optional" and provide it with a valid SlotRenderer to ensure a slot is
-        //only rendered if there's an item in it
-	//The default SlotRenderer is used for rendering minecraft's default slot texture
+        // You can also bind a slot as "optional" and provide it with a valid SlotRenderer to ensure a slot 
+        // is only rendered if there's an item in it
+	    // The default SlotRenderer is used for rendering Minecraft's default slot texture
         slotFillContext.bindOptionalSlot(0, this.result, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
 
     }
@@ -231,13 +229,13 @@ public class YourCustomViewRecipe implements IRrvViewRecipe {
 ```
 ### The SlotContent
 
-In RRV everything concerning recipe content is handled via a class called `SlotContent`.
-It is a representation of all itemstacks a slot holds. The content is constantly ticked while a the player is looking at a recipe to achieve an overview over the possible in- & outputs.
-To wrap your ingredients and results (items, itemstacks, list of items, ...) just call `SlotContent.of();`
+In RRV, everything concerning recipe content is handled via a class called `SlotContent`.
+It is a representation of all item stacks a slot holds. The content is constantly ticked while a the player is looking at a recipe to achieve an overview over the possible in- & outputs.
+To wrap your ingredients and results (items, item stacks, fluid stacks, lists of items, ...) just call `SlotContent.of();`
 
 ### Slot dependencies
 
-If there is a slot that should not tick independantly you can bind it as a dependant slot:
+If there is a slot that should not tick independently you can bind it as a dependant slot:
 
 ```java
     @Override
@@ -245,29 +243,29 @@ If there is a slot that should not tick independantly you can bind it as a depen
 
         //...
 
-        slotFillContext.bindDepedantSlot(0, this.input::index, this.input2);
+        slotFillContext.bindDependentSlot(0, this.input::index, this.input2);
 
     }
 ```
 
 The method requires an integer supplier which tells the `SlotContent` at which position it is currently ticking.
-In this case we are using the current index of `this.input` as the the index for `this.input2`. So they are always synchronized.
+In this case, we are using the current index of `this.input` as the index for `this.input2`. So they are always synchronized.
 
 ## Server side recipe representation
 
-Since the significant change of Minecraft's recipe system with the 1.21.3 update, recipes are handled serverside and the client is not told which recipes exist.
-Unfortunately, we need the recipes clientside, so we have to synchronize the recipes between the server and client ourselves.
+Minecraft's recipe system was changed in 1.21.2 so that all recipes only exist on the server and the client is not told which recipes exist.
+Since this mod requires recipes to exist clientside, we have to synchronize the recipes between the server and client ourselves.
 For consistency, RRV requires a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
 
-Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `IRrvServerRecipe` and override the methods:
+Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `ReliableServerRecipe` and override the methods:
 
 ```java
-public class YourServerRecipe implements IRrvServerRecipe {
+public class ExampleServerRecipe implements ReliableServerRecipe {
 
 
     //Create a server recipe type (the id does not have to match your client side viewtype id)
     public static final ModRecipeType<YourServerRecipe> TYPE = ModRecipeType.register(
-            Identifier.fromNamespaceAndPath("yourmodid", "your_recipe_id"),
+            Identifier.fromNamespaceAndPath("example-mod", "your_recipe_id"),
             () -> new YourServerRecipe()
     );
 
@@ -287,7 +285,7 @@ public class YourServerRecipe implements IRrvServerRecipe {
     }
 }
 ```
-**INFO**: There's a class called `RrvTagUtil` that provides a lot of helper functions for en- and decoding different objects. Note that `writeToTag` is called on the server, while `loadFromTag` is called on the client.
+**INFO**: The API includes a `TagUtil` class that provides a lot of helper functions for encoding and decoding different objects. Note that `writeToTag` is called on the server, while `loadFromTag` is called on the client.
 
 ## Register your recipes
 
@@ -297,21 +295,21 @@ Registering your recipes requires you to call 2 methods in your `onIntegrationIn
 - `ItemView.registerRecipeWrapper();`
 
 ```java
-public class RrvIntegration implements IExtendedItemViewIntegration {
+public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
 
     @Override
     public void onIntegrationInitialize() {
 
         //For the server 
-        ItemView.addRecipeProvider(list -> {
+        ItemView.addServerRecipeProvider(list -> {
             //Here you can add all your server recipes
         });
 
         //For the client
-        ItemView.registerRecipeWrapper(YourServerRecipe.TYPE, modRecipe -> {
+        ItemView.registerClientRecipeWrapper(YourServerRecipe.TYPE, modRecipe -> {
             
             //Here you tell RRV how to process incoming server recipes
-            //Requires you to return a list of client-side view-recipes (IRrvViewRecipe)
+            //Requires you to return a list of client recipes (ReliableClientRecipe)
             
             return List.of();
         });
@@ -321,8 +319,8 @@ public class RrvIntegration implements IExtendedItemViewIntegration {
 }
 ```
 
-Recipe providers registered by `ItemView.addRecipeProvider();` are used by the server recipe manager to maintain and update the recipe cache.
-Whenever there is an update, the client is informed about the update and the mod recipe wrappers registered by `ItemView.registerRecipeWrapper();` are used to convert incoming server recipes into displayable view-recipes.
+Recipe providers registered by `ItemView.addServerRecipeProvider();` are used by the server recipe manager to maintain and update the recipe cache.
+Whenever there is an update, the client is informed about the update and the mod recipe wrappers registered by `ItemView.registeClientrRecipeWrapper();` are used to convert incoming server recipes into displayable client recipes.
 
 ### Stack-Sensitives
 
@@ -341,7 +339,7 @@ If you now want to create item-transfer functionality, read the section below.
 
 ## Adding recipe-transfer functionality
 
-To be able to shift items from the players inventory into it's crafting gui you have to override a few more methods of your class that implements `IRrvViewRecipe`:
+To be able to shift items from the players inventory into it's crafting gui you have to override a few more methods of your class that implements `ReliableClientRecipe`:
 
 ```java
 
@@ -376,7 +374,8 @@ To be able to shift items from the players inventory into it's crafting gui you 
 ## General hints
 
 The `ItemView` class is the main API class for RRV, so you can always look in there if you wonder whether something can be realized with RRV or not (yet).<br>
-This fork is distributed alongside its source code on Modrinth maven, so its JavaDocs are visible in your IDE as well as here on GitHub.<br>
+
+This fork is distributed alongside its source code on Modrinth Maven, so its Javadocs are visible in your IDE as well as here on GitHub.<br>
 <br>
 If you still have questions, you can always contact me via [Discord](https://discord.cassian.cc)<br>
 <br>

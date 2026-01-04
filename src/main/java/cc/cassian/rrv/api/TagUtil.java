@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.recipe.util;
+package cc.cassian.rrv.api;
 
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
@@ -24,7 +24,7 @@ import java.util.Objects;
 /**
  * Helper class for network encoding based on CompoundTags
  */
-public class RrvTagUtil {
+public class TagUtil {
 
 
     private static <T> ListTag createRegistryList(List<T> objects, DefaultedRegistry<T> registry) {
@@ -97,7 +97,7 @@ public class RrvTagUtil {
         if(ingredientContent.right().isEmpty())
             return new CompoundTag();
 
-        tag.put("items", RrvTagUtil.createItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList()));
+        tag.put("items", TagUtil.createItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList()));
         return tag;
     }
 
@@ -119,7 +119,7 @@ public class RrvTagUtil {
             return Ingredient.of(Objects.requireNonNull(BuiltInRegistries.ITEM.get(tagKey).get()));
         }
 
-        List<Holder<Item>> itemList = RrvTagUtil.reconstructItemList(tag, "items").stream().map(Holder::direct).toList();
+        List<Holder<Item>> itemList = TagUtil.reconstructItemList(tag, "items").stream().map(Holder::direct).toList();
         return !itemList.isEmpty() ? Ingredient.of(HolderSet.direct(itemList)) : null;
     }
 

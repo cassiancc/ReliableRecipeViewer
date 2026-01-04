@@ -1,24 +1,26 @@
 package cc.cassian.rrv.common.recipe;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ItemView;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
+@ApiStatus.Internal
 public class ClientRecipeCache {
 
     public static final ClientRecipeCache INSTANCE = new ClientRecipeCache();
 
 
-    private final LinkedHashMap<RrvRecipeType<?>, List<ServerRecipeManager.ServerRecipeEntry>> serverEntryMap;
+    private final LinkedHashMap<ReliableServerRecipeType<?>, List<ServerRecipeManager.ServerRecipeEntry>> serverEntryMap;
 
     private final HashMap<Identifier, List<Identifier>> multiRecipeMap;
-    private final HashMap<Identifier, IRrvClientRecipe> recipeMap;
+    private final HashMap<Identifier, ReliableClientRecipe> recipeMap;
     private final HashMap<Item, List<Identifier>> byItemIngredient, byItemResult;
 
     private final HashMap<Item, List<ItemView.StackSensitive>> stackSensitives;
@@ -50,12 +52,12 @@ public class ClientRecipeCache {
     }
 
 
-    public IRrvClientRecipe getRecipe(final Identifier recipeId) {
+    public ReliableClientRecipe getRecipe(final Identifier recipeId) {
         return recipeMap.getOrDefault(recipeId, null);
     }
 
 
-    public void updateType(RrvRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
+    public void updateType(ReliableServerRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
         this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> {
             this.multiRecipeMap.getOrDefault(entry.modRecipeId(), new ArrayList<>()).forEach(Identifier -> {
                 this.recipeMap.remove(Identifier);
@@ -74,8 +76,8 @@ public class ClientRecipeCache {
     }
 
 
-    public List<IRrvClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
-        List<IRrvClientRecipe> recipes = new ArrayList<>();
+    public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
+        List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> {
             recipes.add(this.recipeMap.get(Identifier));
         });
@@ -85,9 +87,9 @@ public class ClientRecipeCache {
         return recipes;
     }
 
-    public List<IRrvClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
+    public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
 
-        List<IRrvClientRecipe> recipes = new ArrayList<>();
+        List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> {
             recipes.add(this.recipeMap.get(Identifier));
         });
@@ -97,7 +99,7 @@ public class ClientRecipeCache {
         return recipes;
     }
 
-    public void sortModType(RrvRecipeType<?> type) {
+    public void sortModType(ReliableServerRecipeType<?> type) {
         ItemViewRecipes.ClientRecipeWrapper<?> wrapper = ItemViewRecipes.INSTANCE.wrapperMap().getOrDefault(type, null);
 
         if (wrapper == null || !this.serverEntryMap.containsKey(type))
@@ -105,12 +107,12 @@ public class ClientRecipeCache {
 
 
         for (ServerRecipeManager.ServerRecipeEntry modEntry : this.serverEntryMap.get(type)) {
-            List<? extends IRrvClientRecipe> wrappedRecipes;
+            List<? extends ReliableClientRecipe> wrappedRecipes;
 
             try {
                 wrappedRecipes = wrapper.wrap(modEntry.asWrapped());
             }catch (Exception e) {
-                CommonRRV.LOGGER.error("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.modRecipeId(), e.getMessage());
+                ReliableRecipeViewer.LOGGER.error("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.modRecipeId(), e.getMessage());
                 continue;
             }
 
@@ -118,7 +120,7 @@ public class ClientRecipeCache {
                 continue;
 
             for (int id = 0; id < wrappedRecipes.size(); id++) {
-                IRrvClientRecipe wrapped = wrappedRecipes.get(id);
+                ReliableClientRecipe wrapped = wrappedRecipes.get(id);
 
                 Identifier uniqueId = this.getUniqueId(modEntry, id);
                 List<Identifier> summarized = this.multiRecipeMap.getOrDefault(modEntry.modRecipeId(), new ArrayList<>());

@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.builtin.smoking;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingClientRecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -13,7 +13,7 @@ public class SmokingClientRecipeRecipeType extends SmeltingClientRecipeType {
 
     public static final SmokingClientRecipeRecipeType INSTANCE = new SmokingClientRecipeRecipeType();
 
-    private static final Identifier BLASTING_LOCATION = Identifier.fromNamespaceAndPath(CommonRRV.MODID, "textures/gui/type/smoking.png");
+    private static final Identifier BLASTING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smoking.png");
 
     @Override
     public Component getDisplayName() {
@@ -32,7 +32,7 @@ public class SmokingClientRecipeRecipeType extends SmeltingClientRecipeType {
 
     @Override
     public Identifier getId() {
-        return Identifier.fromNamespaceAndPath(CommonRRV.MODID, "furnace_smoking");
+        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "furnace_smoking");
     }
 
     @Override

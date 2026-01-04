@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.network.payload.mode;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -15,13 +15,13 @@ public record ServerboundPickCheatmodeItemPayload(ItemStack stack, int amount) i
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundPickCheatmodeItemPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.COMPOUND_TAG,
-            serverboundPickCheatmodeItemPayload -> RrvTagUtil.encodeItemStackOnClient(serverboundPickCheatmodeItemPayload.stack()),
+            serverboundPickCheatmodeItemPayload -> TagUtil.encodeItemStackOnClient(serverboundPickCheatmodeItemPayload.stack()),
             ByteBufCodecs.INT,
             ServerboundPickCheatmodeItemPayload::amount,
-            (compoundTag, amount) -> new ServerboundPickCheatmodeItemPayload(RrvTagUtil.decodeItemStackOnServer(compoundTag), amount)
+            (compoundTag, amount) -> new ServerboundPickCheatmodeItemPayload(TagUtil.decodeItemStackOnServer(compoundTag), amount)
     );
 
-    public static final Type<ServerboundPickCheatmodeItemPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "pick_cheatmode_item"));
+    public static final Type<ServerboundPickCheatmodeItemPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "pick_cheatmode_item"));
 
 
     @Override

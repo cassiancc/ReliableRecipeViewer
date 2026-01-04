@@ -1,15 +1,17 @@
 package cc.cassian.rrv.common.recipe;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 
+@ApiStatus.Internal
 public class ClientRecipeManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("ClientRecipeManager");
@@ -81,7 +83,7 @@ public class ClientRecipeManager {
     public void requestServerRrvData() {
         //TODO only send when not caching
         if (this.status.isIdle())
-            CommonRRV.networkManager().sendPacketToServer(new ServerboundRequestRrvUpdate());
+            ReliableRecipeViewer.networkManager().sendPacketToServer(new ServerboundRequestRrvUpdate());
 
     }
 

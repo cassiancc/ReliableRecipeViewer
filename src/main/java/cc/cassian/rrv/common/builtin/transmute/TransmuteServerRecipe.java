@@ -1,8 +1,8 @@
 package cc.cassian.rrv.common.builtin.transmute;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -10,9 +10,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
 
-public class TransmuteServerRecipe implements IRrvServerRecipe {
+public class TransmuteServerRecipe implements ReliableServerRecipe {
 
-    public static final RrvRecipeType<TransmuteServerRecipe> TYPE = RrvRecipeType.register(
+    public static final ReliableServerRecipeType<TransmuteServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("transmutation_crafting"),
             () -> new TransmuteServerRecipe(null, null, List.of())
 
@@ -43,25 +43,25 @@ public class TransmuteServerRecipe implements IRrvServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("input", RrvTagUtil.writeIngredient(this.input));
+        tag.put("input", TagUtil.writeIngredient(this.input));
 
-        tag.put("materials", RrvTagUtil.writeIngredient(this.material));
+        tag.put("materials", TagUtil.writeIngredient(this.material));
 
-        tag.put("results", RrvTagUtil.writeList(this.results, (origin, tag1) -> RrvTagUtil.encodeItemStackOnServer(origin)));
+        tag.put("results", TagUtil.writeList(this.results, (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
 
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.input = RrvTagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
-        this.material = RrvTagUtil.readIngredient(tag.getCompound("materials").orElseGet(CompoundTag::new));
+        this.input = TagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
+        this.material = TagUtil.readIngredient(tag.getCompound("materials").orElseGet(CompoundTag::new));
 
-        this.results = RrvTagUtil.readList(tag, "results", RrvTagUtil::decodeItemStackOnClient);
+        this.results = TagUtil.readList(tag, "results", TagUtil::decodeItemStackOnClient);
     }
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 }

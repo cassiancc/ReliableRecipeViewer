@@ -1,19 +1,20 @@
-package cc.cassian.rrv.common.api.recipe;
+package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 /**
  * Client-Side representation of a recipe type
  */
-public interface IRrvClientRecipeType {
+public interface ReliableClientRecipeType {
 
-    IRrvClientRecipeType NONE = new IRrvClientRecipeType() {
+    ReliableClientRecipeType NONE = new ReliableClientRecipeType() {
 
         @Override
         public Component getDisplayName() {
@@ -77,7 +78,7 @@ public interface IRrvClientRecipeType {
      *
      * @return The path to the recipe type's gui texture
      */
-    Identifier getGuiTexture();
+    @Nullable Identifier getGuiTexture();
 
     /**
      *
@@ -136,7 +137,7 @@ public interface IRrvClientRecipeType {
          * @param viewRecipe The recipe that is checked
          * @return Whether the craft-reference can redirect to the viewRecipe
          */
-        boolean matches(ItemStack craftReference, IRrvClientRecipe viewRecipe);
+        boolean matches(ItemStack craftReference, ReliableClientRecipe viewRecipe);
 
     }
 }

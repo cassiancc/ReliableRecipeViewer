@@ -3,7 +3,7 @@ package cc.cassian.rrv.common.config.instances;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +26,7 @@ public class BookmarkConfig extends AbstractRrvConfig {
                try {
                    ItemBookmarkOverlay.INSTANCE.availableItems().add(ItemStack.CODEC.decode(JsonOps.INSTANCE, encodedItem).getOrThrow().getFirst());
                }catch (Exception e) {
-                   CommonRRV.LOGGER.error("Failed to load item from json: {}", encodedItem);
+                   ReliableRecipeViewer.LOGGER.error("Failed to load item from json: {}", encodedItem);
                }
             });
         }
@@ -42,7 +42,7 @@ public class BookmarkConfig extends AbstractRrvConfig {
             try {
                 itemList.add(ItemStack.CODEC.encode(itemStack, JsonOps.INSTANCE, new JsonObject()).getOrThrow().getAsJsonObject());
             }catch (Exception e) {
-                CommonRRV.LOGGER.error("Could not save bookmarked item: {}", itemStack.toString());
+                ReliableRecipeViewer.LOGGER.error("Could not save bookmarked item: {}", itemStack.toString());
             }
         });
 

@@ -1,9 +1,9 @@
 package cc.cassian.rrv.common.recipe;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.ItemView;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
@@ -31,7 +31,7 @@ public class ItemViewRecipes {
     /**
      * A map of recipe wrappers
      */
-    private final HashMap<RrvRecipeType<?>, ClientRecipeWrapper<?>> recipeWrappers;
+    private final HashMap<ReliableServerRecipeType<?>, ClientRecipeWrapper<?>> recipeWrappers;
 
     /**
      * A map of recipe providers
@@ -60,7 +60,7 @@ public class ItemViewRecipes {
      * @param <T>
      */
     @Deprecated
-    public <T extends IRrvServerRecipe> void registerRecipeWrapper(RrvRecipeType<T> recipeType, ClientRecipeWrapper<T> wrapper) {
+    public <T extends ReliableServerRecipe> void registerRecipeWrapper(ReliableServerRecipeType<T> recipeType, ClientRecipeWrapper<T> wrapper) {
         this.recipeWrappers.put(recipeType, wrapper);
     }
 
@@ -77,7 +77,7 @@ public class ItemViewRecipes {
     }
 
 
-    public HashMap<RrvRecipeType<?>, ClientRecipeWrapper<?>> wrapperMap() {
+    public HashMap<ReliableServerRecipeType<?>, ClientRecipeWrapper<?>> wrapperMap() {
         return this.recipeWrappers;
     }
 
@@ -172,16 +172,16 @@ public class ItemViewRecipes {
     }
 
 
-    public interface ClientRecipeWrapper<T extends IRrvServerRecipe> {
+    public interface ClientRecipeWrapper<T extends ReliableServerRecipe> {
 
-        List<? extends IRrvClientRecipe> wrap(T unwrapped);
+        List<? extends ReliableClientRecipe> wrap(T unwrapped);
 
     }
 
 
     public interface ServerRecipeProvider {
 
-        void provide(List<IRrvServerRecipe> recipeList);
+        void provide(List<ReliableServerRecipe> recipeList);
 
     }
 

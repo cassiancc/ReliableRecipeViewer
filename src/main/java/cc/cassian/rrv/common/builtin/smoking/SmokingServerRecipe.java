@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.smoking;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingServerRecipe;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -9,7 +9,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 public class SmokingServerRecipe extends SmeltingServerRecipe {
 
-    public static final RrvRecipeType<SmokingServerRecipe> TYPE = RrvRecipeType.register(
+    public static final ReliableServerRecipeType<SmokingServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("smoking"),
             () -> new SmokingServerRecipe(null, ItemStack.EMPTY)
     );
@@ -21,7 +21,7 @@ public class SmokingServerRecipe extends SmeltingServerRecipe {
 
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 }

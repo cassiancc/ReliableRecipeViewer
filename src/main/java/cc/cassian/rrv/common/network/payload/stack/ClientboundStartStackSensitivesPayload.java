@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.network.payload.stack;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,7 +16,7 @@ public record ClientboundStartStackSensitivesPayload(int amount) implements Cust
             ClientboundStartStackSensitivesPayload::new
     );
 
-    public static final Type<ClientboundStartStackSensitivesPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "start_stack_sensitive"));
+    public static final Type<ClientboundStartStackSensitivesPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "start_stack_sensitive"));
 
 
     @Override

@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.builtin.blasting;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingClientRecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -13,7 +13,7 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
 
     public static final BlastingClientRecipeType INSTANCE = new BlastingClientRecipeType();
 
-    private static final Identifier BLASTING_LOCATION = Identifier.fromNamespaceAndPath(CommonRRV.MODID, "textures/gui/type/blasting.png");
+    private static final Identifier BLASTING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/blasting.png");
 
     @Override
     public Component getDisplayName() {
@@ -32,7 +32,7 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
 
     @Override
     public Identifier getId() {
-        return Identifier.fromNamespaceAndPath(CommonRRV.MODID, "furnace_blasting");
+        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "furnace_blasting");
     }
 
     @Override

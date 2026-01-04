@@ -1,9 +1,9 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.CommonRRVClient;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
@@ -35,7 +35,7 @@ import java.util.List;
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public static final ItemViewOverlay INSTANCE = new ItemViewOverlay();
-    private static final Identifier SETTINGS_WHEEL = Identifier.fromNamespaceAndPath(CommonRRV.MODID, "settings_wheel");
+    private static final Identifier SETTINGS_WHEEL = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "settings_wheel");
 
     private SearchBar searchbar = null;
 
@@ -179,7 +179,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (CommonRRVClient.ADD_BOOKMARK_KEYBIND.matches(event))
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event))
                 ItemBookmarkOverlay.INSTANCE.bookmarkItem(slot.getStack());
         }
 
@@ -288,12 +288,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
             this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "back"), 10, 10).width(16).build();
+        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
         next = SpriteIconButton.builder(Component.literal(">"), (button)->{
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
             this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "next"), 10, 10).width(16).build();
+        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
 
@@ -310,7 +310,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (clientPlayer == null)
             return;
 
-        List<IRrvClientRecipe> foundRecipes = openType.recipeProvider().retrieveRecipes(stack);
+        List<ReliableClientRecipe> foundRecipes = openType.recipeProvider().retrieveRecipes(stack);
 
         if (!foundRecipes.isEmpty()) {
             Screen parent = Minecraft.getInstance().screen;
@@ -361,7 +361,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         interface RecipeProvider {
 
-            List<IRrvClientRecipe> retrieveRecipes(ItemStack stack);
+            List<ReliableClientRecipe> retrieveRecipes(ItemStack stack);
         }
     }
 

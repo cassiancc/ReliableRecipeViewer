@@ -1,7 +1,7 @@
-package cc.cassian.rrv.common.api.recipe;
+package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -11,13 +11,13 @@ import net.minecraft.world.item.ItemStack;
  * <br>
  * Only send neccessary data here (everything else can be done in the {@link ItemViewRecipes.ClientRecipeWrapper})
  */
-public interface IRrvServerRecipe {
+public interface ReliableServerRecipe {
 
 
     /**
      * Responsible for encoding recipes on the <b>server</b>
      * <br><br>
-     * <b>Important</b>: Use {@link RrvTagUtil#encodeItemStackOnServer(ItemStack)}
+     * <b>Important</b>: Use {@link TagUtil#encodeItemStackOnServer(ItemStack)}
      * because you're on the server side
      * @param tag The compoundTag containing the encoded data
      */
@@ -26,7 +26,7 @@ public interface IRrvServerRecipe {
     /**
      * Responsible for decoding sent recipes on the <b>client</b>
      * <br><br>
-     * <b>Important</b>: Use {@link RrvTagUtil#decodeItemStackOnClient(CompoundTag)}
+     * <b>Important</b>: Use {@link TagUtil#decodeItemStackOnClient(CompoundTag)}
      * because you're on the client side
      * @param tag The compoundTag containing the decoded data
      *
@@ -38,5 +38,5 @@ public interface IRrvServerRecipe {
      *
      * @return The server recipe's type registered by <b>RrvRecipeType.register();</b>
      */
-    RrvRecipeType<? extends IRrvServerRecipe> getRecipeType();
+    ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType();
 }

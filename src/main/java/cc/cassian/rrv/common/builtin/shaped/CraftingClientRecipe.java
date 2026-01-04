@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.shaped;
 
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.builtin.tipped_arrow.TippedArrowServerRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -15,7 +15,7 @@ import net.minecraft.world.item.Items;
 import java.util.HashMap;
 import java.util.List;
 
-public class CraftingClientRecipe implements IRrvClientRecipe {
+public class CraftingClientRecipe implements ReliableClientRecipe {
 
     private final HashMap<Integer, SlotContent> ingredientSlotContents = new HashMap<>();
     private final SlotContent result;
@@ -52,7 +52,7 @@ public class CraftingClientRecipe implements IRrvClientRecipe {
     }
 
     @Override
-    public IRrvClientRecipeType getViewType() {
+    public ReliableClientRecipeType getViewType() {
         return CraftingClientRecipeType.INSTANCE;
     }
 

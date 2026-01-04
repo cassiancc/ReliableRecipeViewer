@@ -1,15 +1,15 @@
 package cc.cassian.rrv.common.network;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.recipe.*;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -40,7 +40,7 @@ public class RrvPayloadConverter {
         }
 
         if (payloadType.equals(ClientboundTypeUpdateStartPayload.TYPE.id())) {
-            ClientboundTypeUpdateStartPayload p = new ClientboundTypeUpdateStartPayload(RrvRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))), data.getIntOr("amount", 0));
+            ClientboundTypeUpdateStartPayload p = new ClientboundTypeUpdateStartPayload(ReliableServerRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))), data.getIntOr("amount", 0));
             Minecraft.getInstance().getConnection().handleCustomPayload(p);
         }
 
@@ -49,14 +49,14 @@ public class RrvPayloadConverter {
             CompoundTag fullTag = data.getCompoundOrEmpty("entry");
 
             Identifier recipeId = Identifier.parse(fullTag.getStringOr("recipeId", ""));
-            IRrvServerRecipe recipe = ServerRecipeManager.ServerRecipeEntry.fromTag(fullTag.getCompoundOrEmpty("recipe"));
+            ReliableServerRecipe recipe = ServerRecipeManager.ServerRecipeEntry.fromTag(fullTag.getCompoundOrEmpty("recipe"));
 
             ClientboundTypeUpdatePayload p = new ClientboundTypeUpdatePayload(new ServerRecipeManager.ServerRecipeEntry(recipeId, recipe));
             Minecraft.getInstance().getConnection().handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundTypeUpdateEndPayload.TYPE.id())) {
-            ClientboundTypeUpdateEndPayload p = new ClientboundTypeUpdateEndPayload(RrvRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))));
+            ClientboundTypeUpdateEndPayload p = new ClientboundTypeUpdateEndPayload(ReliableServerRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))));
             Minecraft.getInstance().getConnection().handleCustomPayload(p);
         }
 
@@ -71,7 +71,7 @@ public class RrvPayloadConverter {
         }
 
         if (payloadType.equals(ClientboundStackSensitivePayload.TYPE.id())) {
-            ClientboundStackSensitivePayload p = new ClientboundStackSensitivePayload(new ItemView.StackSensitive(RrvTagUtil.decodeItemStackOnClient(data.getCompoundOrEmpty("sensitive"))));
+            ClientboundStackSensitivePayload p = new ClientboundStackSensitivePayload(new ItemView.StackSensitive(TagUtil.decodeItemStackOnClient(data.getCompoundOrEmpty("sensitive"))));
             Minecraft.getInstance().getConnection().handleCustomPayload(p);
         }
 

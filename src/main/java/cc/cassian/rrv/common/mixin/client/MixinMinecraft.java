@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin.client;
 
-import cc.cassian.rrv.common.CommonRRVClient;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,7 +14,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "close", at = @At("RETURN"))
     private void saveData(CallbackInfo ci) {
-        CommonRRVClient.saveConfigs();
+        ReliableRecipeViewerClient.saveConfigs();
     }
 
 

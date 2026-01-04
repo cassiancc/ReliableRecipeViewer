@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.entity;
 
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -22,7 +22,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityClientRecipe implements IRrvClientRecipe {
+public class EntityClientRecipe implements ReliableClientRecipe {
 
     private final EntityType<?> entityType;
     private final List<SlotContent> drops;
@@ -53,7 +53,7 @@ public class EntityClientRecipe implements IRrvClientRecipe {
     }
 
     @Override
-    public IRrvClientRecipeType getViewType() {
+    public ReliableClientRecipeType getViewType() {
         return EntityClientRecipeType.INSTANCE;
     }
 

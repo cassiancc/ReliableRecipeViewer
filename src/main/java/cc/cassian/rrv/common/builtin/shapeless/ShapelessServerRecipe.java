@@ -1,8 +1,8 @@
 package cc.cassian.rrv.common.builtin.shapeless;
 
-import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
-import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -10,9 +10,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
 
-public class ShapelessServerRecipe implements IRrvServerRecipe {
+public class ShapelessServerRecipe implements ReliableServerRecipe {
 
-    public static final RrvRecipeType<ShapelessServerRecipe> TYPE = RrvRecipeType.register(
+    public static final ReliableServerRecipeType<ShapelessServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("shapeless_crafting"),
             () -> new ShapelessServerRecipe(List.of(), ItemStack.EMPTY)
     );
@@ -38,20 +38,20 @@ public class ShapelessServerRecipe implements IRrvServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("ingredients", RrvTagUtil.writeList(this.ingredients, (origin, tag1) -> RrvTagUtil.writeIngredient(origin)));
-        tag.put("result", RrvTagUtil.encodeItemStackOnServer(this.result));
+        tag.put("ingredients", TagUtil.writeList(this.ingredients, (origin, tag1) -> TagUtil.writeIngredient(origin)));
+        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.ingredients = RrvTagUtil.readList(tag, "ingredients", RrvTagUtil::readIngredient);
-        this.result = RrvTagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.ingredients = TagUtil.readList(tag, "ingredients", TagUtil::readIngredient);
+        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
 
     }
 
     @Override
-    public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+    public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 }

@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.builtin.campfire;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -10,11 +10,11 @@ import net.minecraft.world.item.Items;
 
 import java.util.List;
 
-public class CampfireClientRecipeType implements IRrvClientRecipeType {
+public class CampfireClientRecipeType implements ReliableClientRecipeType {
 
     protected static final CampfireClientRecipeType INSTANCE = new CampfireClientRecipeType();
 
-    private static final Identifier CAMPFIRE_LOCATION = Identifier.fromNamespaceAndPath(CommonRRV.MODID, "textures/gui/type/campfire.png");
+    private static final Identifier CAMPFIRE_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/campfire.png");
 
     @Override
     public Component getDisplayName() {

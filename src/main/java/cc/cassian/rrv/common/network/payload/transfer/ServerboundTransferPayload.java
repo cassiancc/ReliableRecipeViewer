@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.network.payload.transfer;
 
-import cc.cassian.rrv.common.CommonRRV;
-import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,7 +24,7 @@ public record ServerboundTransferPayload(HashMap<Integer, Integer> transferMap,
 
     );
 
-    public static final Type<ServerboundTransferPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(CommonRRV.MODID, "recipe_transfer"));
+    public static final Type<ServerboundTransferPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_transfer"));
 
 
     private CompoundTag encodeMap() {
@@ -41,7 +41,7 @@ public record ServerboundTransferPayload(HashMap<Integer, Integer> transferMap,
 
             CompoundTag playerSlotsTag = new CompoundTag();
             usedSlots.forEach((playerSlot, stack) -> {
-                playerSlotsTag.put(String.valueOf(playerSlot), RrvTagUtil.encodeItemStackOnClient(stack));
+                playerSlotsTag.put(String.valueOf(playerSlot), TagUtil.encodeItemStackOnClient(stack));
             });
 
             usedPlayerSlots.put(String.valueOf(recipeSlot), playerSlotsTag);
@@ -69,7 +69,7 @@ public record ServerboundTransferPayload(HashMap<Integer, Integer> transferMap,
             CompoundTag playerSlotsTag = encodedUsedPlayerSlots.getCompound(recipeSlot).orElseGet(CompoundTag::new);
             playerSlotsTag.keySet().forEach(playerSlot -> {
 
-                ItemStack stack = RrvTagUtil.decodeItemStackOnServer(playerSlotsTag.getCompound(playerSlot).orElseGet(CompoundTag::new));
+                ItemStack stack = TagUtil.decodeItemStackOnServer(playerSlotsTag.getCompound(playerSlot).orElseGet(CompoundTag::new));
                 usedSlots.put(Integer.valueOf(playerSlot), stack);
             });
 

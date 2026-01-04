@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.recipe.item;
 
-import cc.cassian.rrv.common.CommonRRV;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -58,7 +58,7 @@ public class FluidItem extends BlockItem {
 
         @Override
         public @NotNull Identifier effectiveModel() {
-            return Identifier.fromNamespaceAndPath(CommonRRV.MODID, "fluiditem");
+            return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem");
         }
 
     }

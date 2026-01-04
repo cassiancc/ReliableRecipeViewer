@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.overlay;
 
-import cc.cassian.rrv.common.CommonRRVClient;
+import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
@@ -66,11 +66,11 @@ public class ItemSlot {
         Minecraft mc = Minecraft.getInstance();
         List<Component> tooltip = new ArrayList<>(Screen.getTooltipFromItem(mc, this.stack));
 
-        if (CommonRRVClient.isCheatmodeActive())
+        if (ReliableRecipeViewerClient.isCheatmodeActive())
             tooltip.addLast(Component.literal("Taking x").withStyle(ChatFormatting.GRAY).append(Component.literal(String.valueOf(this.currentCheatmodeCount)).withStyle(ChatFormatting.GOLD)));
 
         if (Configs.CLIENT_SETTINGS.isAppendModNamespace())
-            tooltip.addLast(Component.literal(CommonRRVClient.resolver().getModNameForItem(this.stack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
+            tooltip.addLast(Component.literal(ReliableRecipeViewerClient.resolver().getModNameForItem(this.stack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
 
         if (this.isHovered())
             guiGraphics.fill(this.x, this.y, this.x + 20, this.y + 20, new Color(255, 255, 255, 32).getRGB());
@@ -94,11 +94,11 @@ public class ItemSlot {
         if (clientPlayer == null)
             return;
 
-        if (mouseButton == 2 && CommonRRVClient.isCheatmodeActive()) {
+        if (mouseButton == 2 && ReliableRecipeViewerClient.isCheatmodeActive()) {
             this.currentCheatmodeCount = this.stack.getMaxStackSize();
         }
 
-        if (mouseButton == 0 && CommonRRVClient.isCheatmodeActive()) {
+        if (mouseButton == 0 && ReliableRecipeViewerClient.isCheatmodeActive()) {
             RrvNetworkManager.INSTANCE.sendPacketToServer(new ServerboundPickCheatmodeItemPayload(this.stack.copy(), this.currentCheatmodeCount));
             return;
         }
