@@ -17,7 +17,7 @@ public interface ReliableServerRecipe {
     /**
      * Responsible for encoding recipes on the <b>server</b>
      * <br><br>
-     * <b>Important</b>: Use {@link TagUtil#encodeItemStackOnServer(ItemStack)}
+     * <b>Important</b>: Use {@link TagUtil#writeItemStack(ItemStack)}
      * because you're on the server side
      * @param tag The compoundTag containing the encoded data
      */
@@ -26,7 +26,7 @@ public interface ReliableServerRecipe {
     /**
      * Responsible for decoding sent recipes on the <b>client</b>
      * <br><br>
-     * <b>Important</b>: Use {@link TagUtil#decodeItemStackOnClient(CompoundTag)}
+     * <b>Important</b>: Use {@link TagUtil#readItemStack(CompoundTag)}
      * because you're on the client side
      * @param tag The compoundTag containing the decoded data
      *

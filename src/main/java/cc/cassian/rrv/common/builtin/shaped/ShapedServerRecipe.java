@@ -54,7 +54,7 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
         this.ingredients.forEach((slotId, ingredient) -> {
             tag.put("ci_" + slotId, TagUtil.writeIngredient(ingredient));
         });
-        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
+        tag.put("result", TagUtil.writeItemStack(this.result));
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
         });
 
         this.ingredients = ingredients;
-        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.result = TagUtil.readItemStack(tag.getCompound("result").orElseGet(CompoundTag::new));
     }
 
     @Override

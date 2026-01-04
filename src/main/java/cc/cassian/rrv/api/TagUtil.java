@@ -1,8 +1,8 @@
 package cc.cassian.rrv.api;
 
-import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +67,32 @@ public class TagUtil {
     }
 
     /**
+     * Encodes an ItemStack
+     * @param stack The stack to encode
+     * @return The encoded stack as CompoundTag
+     */
+    public static CompoundTag writeItemStack(ItemStack stack) {
+        if (ServerRecipeManager.INSTANCE.getServer() == null) {
+            return encodeItemStackOnClient(stack);
+        } else {
+            return encodeItemStackOnServer(stack);
+        }
+    }
+
+    /**
+     * Decodes an {@link ItemStack}
+     * @param tag  The encoded stack as CompoundTag
+     * @return The decoded {@link ItemStack}
+     */
+    public static ItemStack readItemStack(CompoundTag tag) {
+        if (ServerRecipeManager.INSTANCE.getServer() == null) {
+            return decodeItemStackOnClient(tag);
+        } else {
+            return decodeItemStackOnServer(tag);
+        }
+    }
+
+    /**
      * Decodes an ItemStack on the server side
      * @param tag The tag to decode
      * @return The decoded stack
@@ -106,7 +133,7 @@ public class TagUtil {
      * @param tag The tag to decode
      * @return The decoded ingredient
      */
-    public static Ingredient readIngredient(CompoundTag tag) {
+    public static @Nullable Ingredient readIngredient(CompoundTag tag) {
         if (tag.isEmpty())
             return null;
 
@@ -121,7 +148,7 @@ public class TagUtil {
 
         List<Holder<Item>> itemList = TagUtil.reconstructItemList(tag, "items").stream().map(Holder::direct).toList();
         return !itemList.isEmpty() ? Ingredient.of(HolderSet.direct(itemList)) : null;
-    }
+	}
 
 
 

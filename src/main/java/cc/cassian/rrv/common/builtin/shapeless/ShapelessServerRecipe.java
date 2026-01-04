@@ -39,14 +39,14 @@ public class ShapelessServerRecipe implements ReliableServerRecipe {
     public void writeToTag(CompoundTag tag) {
 
         tag.put("ingredients", TagUtil.writeList(this.ingredients, (origin, tag1) -> TagUtil.writeIngredient(origin)));
-        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
+        tag.put("result", TagUtil.writeItemStack(this.result));
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
         this.ingredients = TagUtil.readList(tag, "ingredients", TagUtil::readIngredient);
-        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.result = TagUtil.readItemStack(tag.getCompound("result").orElseGet(CompoundTag::new));
 
     }
 

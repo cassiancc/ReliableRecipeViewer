@@ -40,18 +40,18 @@ public class BrewingServerRecipe implements ReliableServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
+        tag.put("result", TagUtil.writeItemStack(this.result));
         tag.put("magicIngredient", TagUtil.writeIngredient(this.magicIngredient));
-        tag.put("bottleIngredient", TagUtil.encodeItemStackOnServer(this.bottleIngredient));
+        tag.put("bottleIngredient", TagUtil.writeItemStack(this.bottleIngredient));
 
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.result = TagUtil.decodeItemStackOnClient(tag.getCompoundOrEmpty("result"));
+        this.result = TagUtil.readItemStack(tag.getCompoundOrEmpty("result"));
         this.magicIngredient = TagUtil.readIngredient(tag.getCompoundOrEmpty("magicIngredient"));
-        this.bottleIngredient = TagUtil.decodeItemStackOnClient(tag.getCompoundOrEmpty("bottleIngredient"));
+        this.bottleIngredient = TagUtil.readItemStack(tag.getCompoundOrEmpty("bottleIngredient"));
 
     }
 

@@ -27,14 +27,14 @@ public class TippedArrowServerRecipe implements ReliableServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("potionStack", TagUtil.encodeItemStackOnServer(this.potionStack));
+        tag.put("potionStack", TagUtil.writeItemStack(this.potionStack));
 
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.potionStack = TagUtil.decodeItemStackOnClient(tag.getCompound("potionStack").orElseGet(CompoundTag::new));
+        this.potionStack = TagUtil.readItemStack(tag.getCompound("potionStack").orElseGet(CompoundTag::new));
 
     }
 

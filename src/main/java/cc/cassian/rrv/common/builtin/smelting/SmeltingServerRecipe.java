@@ -35,14 +35,14 @@ public class SmeltingServerRecipe implements ReliableServerRecipe {
     public void writeToTag(CompoundTag tag) {
 
         tag.put("input", TagUtil.writeIngredient(this.input));
-        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
+        tag.put("result", TagUtil.writeItemStack(this.result));
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
         this.input = TagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
-        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.result = TagUtil.readItemStack(tag.getCompound("result").orElseGet(CompoundTag::new));
     }
 
     @Override
