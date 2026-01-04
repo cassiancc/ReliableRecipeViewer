@@ -16,6 +16,7 @@ tasks.named<ProcessResources>("processResources") {
         this["mod_description"] = prop("mod.description")
         this["mod_authors"] = prop("mod.authors")
         this["mod_license"] = prop("mod.license")
+        this["minecraft_version_range"] = prop("deps.minecraft_version_range")
     }
 
     filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml")) {

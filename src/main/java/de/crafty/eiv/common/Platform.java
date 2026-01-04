@@ -1,12 +1,12 @@
 package de.crafty.eiv.common;
 
 //? fabric {
-import de.crafty.eiv.common.resolver.IEivClientResolver;
 import de.crafty.eiv.fabric.FabricPlatformImpl;
 //?}
 //? neoforge {
 /*import de.crafty.eiv.neoforge.NeoforgePlatformImpl;
 *///?}
+import de.crafty.eiv.common.resolver.IEivClientResolver;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 

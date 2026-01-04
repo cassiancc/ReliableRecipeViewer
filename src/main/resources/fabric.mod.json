@@ -37,7 +37,7 @@
   "accessWidener": "eiv.accesswidener",
   "depends": {
     "fabricloader": ">=0.17.0",
-    "minecraft": ">1.21.10 <26.1",
+    "minecraft": "${minecraft_version_range}",
     "java": ">=21",
     "fabric-api": "*"
   },

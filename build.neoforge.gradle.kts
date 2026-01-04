@@ -8,8 +8,16 @@ tasks.named<ProcessResources>("processResources") {
     fun prop(name: String) = project.property(name) as String
 
     val props = HashMap<String, String>().apply {
-        this["version"] = prop("mod.version")
+        this["mod_version"] = prop("mod.version")
         this["minecraft"] = prop("deps.minecraft")
+        this["mod_id"] = prop("mod.id")
+        this["mod_name"] = prop("mod.name")
+        this["mod_description"] = prop("mod.description")
+        this["mod_authors"] = prop("mod.authors")
+        this["mod_license"] = prop("mod.license")
+        this["neoforge_loader_version_range"] = "[1,)"
+        this["neoforge_version_range"] = "[21.11,)"
+        this["minecraft_version_range"] = prop("deps.minecraft_version_range")
     }
 
     filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml")) {
