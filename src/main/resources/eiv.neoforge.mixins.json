@@ -3,7 +3,6 @@
   "package": "de.crafty.eiv.neoforge.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
-  "refmap": "eiv.refmap.json",
   "mixins": [
     "neoforge.client.network.MixinRegistryManager",
     "neoforge.client.network.RegistrySnapshotAccessor",

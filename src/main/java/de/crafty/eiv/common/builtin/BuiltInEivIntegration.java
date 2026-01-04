@@ -19,10 +19,8 @@ import de.crafty.eiv.common.builtin.smoking.SmokingServerRecipe;
 import de.crafty.eiv.common.builtin.stonecutting.StonecutterServerRecipe;
 import de.crafty.eiv.common.builtin.tipped_arrow.TippedArrowServerRecipe;
 import de.crafty.eiv.common.builtin.transmute.TransmuteServerRecipe;
-//? <26 {
-import de.crafty.eiv.common.builtin.villager.VillagerServerRecipe;
 import de.crafty.eiv.common.builtin.villager.VillagerViewRecipe;
-//?}
+import de.crafty.eiv.common.builtin.villager.VillagerServerRecipe;
 import de.crafty.eiv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import de.crafty.eiv.common.mixin.world.item.crafting.IngredientAccessor;
 import de.crafty.eiv.common.mixin.world.item.crafting.TransmuteRecipeAccessor;
@@ -44,6 +42,7 @@ import de.crafty.eiv.common.builtin.smoking.SmokingViewRecipe;
 import de.crafty.eiv.common.builtin.stonecutting.StonecutterViewRecipe;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -56,6 +55,8 @@ import net.minecraft.world.entity.EntityType;
 //? if <26 {
 import net.minecraft.world.entity.npc.villager.VillagerTrades;
 //?}
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -63,6 +64,9 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.*;
+import net.minecraft.world.item.trading.TradeSet;
+import net.minecraft.world.item.trading.VillagerTrade;
+import net.minecraft.world.item.trading.VillagerTrades;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -378,7 +382,21 @@ public class BuiltInEivIntegration implements IExtendedItemViewIntegration {
             });
 
         });
-        //?}
+        //?} else {
+        /*ItemView.addRecipeProvider(recipeList -> {
+            HolderLookup.RegistryLookup<VillagerType> villagerTypeRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_TYPE);
+            HolderLookup.RegistryLookup<VillagerTrade> villagerTradeRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_TRADE);
+            HolderLookup.RegistryLookup<VillagerProfession> villagerProfessionRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_PROFESSION);
+            HolderLookup.RegistryLookup<TradeSet> tradeSetRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.TRADE_SET);
+
+            villagerProfessionRegistryLookup.listElements().forEach((professionReference) -> {
+                professionReference.value().tradeSetsByLevel().forEach((level, tradeSetKey) -> {
+                    recipeList.add(new VillagerServerRecipe(professionReference.key(), level, tradeSetRegistryLookup.getOrThrow(tradeSetKey).value().getTrades()));
+                });
+            });
+
+        });
+        *///?}
 
         //Wrapper
         ItemView.registerRecipeWrapper(BurningServerRecipe.TYPE, unwrapped -> List.of(new BurningViewRecipe(unwrapped)));
@@ -421,11 +439,9 @@ public class BuiltInEivIntegration implements IExtendedItemViewIntegration {
             return recipes;
         });
         ItemView.registerRecipeWrapper(BrewingServerRecipe.TYPE, unwrapped -> List.of(new BrewingViewRecipe(unwrapped)));
-        //? <26 {
         ItemView.registerRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> {
             return unwrapped.getOffers().stream().map(VillagerViewRecipe::new).toList();
         });
-        //?}
         ItemView.registerRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityViewRecipe(unwrapped)));
     }
 

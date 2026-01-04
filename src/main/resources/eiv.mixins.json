@@ -3,7 +3,6 @@
   "package": "de.crafty.eiv.common.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
-  "refmap": "eiv.refmap.json",
   "mixins": [
     "advancements.critereon.MixinInventoryChangeTrigger",
     "network.protocol.common.custom.MixinCustomPacketPayload",
@@ -20,6 +19,7 @@
     "world.entity.npc.SuspiciousStewForEmeraldAccessor",
     "world.entity.npc.TippedArrowForItemsAndEmeraldsAccessor",
     "world.entity.npc.TreasureMapForEmeraldsAccessor",
+    "world.entity.npc.VillagerTradeAccessor",
     "world.item.alchemy.PotionBrewingAccessor",
     "world.item.crafting.IngredientAccessor",
     "world.item.crafting.MixinRecipeManager",

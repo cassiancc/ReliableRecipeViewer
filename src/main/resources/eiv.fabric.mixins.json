@@ -3,7 +3,6 @@
   "package": "de.crafty.eiv.fabric.mixin",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_21",
-  "refmap": "eiv.refmap.json",
   "mixins": [
   ],
   "injectors": {
