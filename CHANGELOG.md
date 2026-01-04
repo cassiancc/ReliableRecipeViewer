@@ -1,10 +1,10 @@
 - Mod namespace tooltips can now be disabled.
 - Mod namespace tooltips now respect `getCreatorNamespace`.
-- Hide EIV keybind is now unset by default.
+- Hide RRV keybind is now unset by default.
 - Added buttons to change the current page.
 - Added a "Search ItemView" hint to the search bar.
 - Item View position can now be swapped between the left and right panels.
-- EIV's settings can now be modified in Mod Menu.
+- RRV's settings can now be modified in Mod Menu.
 - Adjusted "Entity Fighting" View Type to take up less of the screen.
-- Added a toggle for EIV to the client settings screen.
+- Added a toggle for RRV to the client settings screen.
 - Recipe view types can now safely provide `null` as a background.

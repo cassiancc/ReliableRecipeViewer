@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "eiv",
+  "id": "rrv",
   "version": "${mod_version}",
   "name": "${mod_name}",
   "description": "${mod_description}",
@@ -10,29 +10,29 @@
   "contact": {
     "repo": "https://github.com/cassiancc/ExtendedItemView",
     "issues": "https://github.com/cassiancc/ExtendedItemView/issues",
-    "homepage": "https://modrinth.com/mod/eiv-canary",
+    "homepage": "https://modrinth.com/mod/rrv-canary",
     "sources": "https://github.com/cassiancc/ExtendedItemView"
   },
   "license": "${mod_license}",
-  "icon": "assets/eiv/icon.png",
+  "icon": "assets/rrv/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "de.crafty.eiv.fabric.FabricEIV"
+      "cc.cassian.rrv.fabric.FabricRRV"
     ],
     "client": [
-      "de.crafty.eiv.fabric.FabricEIVClient"
+      "cc.cassian.rrv.fabric.FabricRRVClient"
     ],
-    "eiv": [
-      "de.crafty.eiv.common.builtin.BuiltInEivIntegration"
+    "rrv": [
+      "cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration"
     ],
     "modmenu": [
-      "de.crafty.eiv.fabric.integration.ModMenuIntegration"
+      "cc.cassian.rrv.fabric.integration.ModMenuIntegration"
     ]
   },
   "mixins": [
-    "eiv.mixins.json",
-    "eiv.fabric.mixins.json"
+    "rrv.mixins.json",
+    "rrv.fabric.mixins.json"
   ],
   "accessWidener": "${accesswidener}",
   "depends": {
@@ -41,10 +41,6 @@
     "java": ">=21",
     "fabric-api": "*"
   },
-  "provides": [
-    "eiv_canary",
-    "eiv-canary"
-  ],
   "suggests": {
   }
 }

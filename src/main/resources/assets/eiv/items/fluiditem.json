@@ -1,9 +1,0 @@
-{
-  "model": {
-    "type": "minecraft:special",
-    "base": "eiv:item/fluiditem",
-    "model": {
-      "type": "eiv:fluiditem"
-    }
-  }
-}

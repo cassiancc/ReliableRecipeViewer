@@ -17,7 +17,7 @@ tasks.named<ProcessResources>("processResources") {
         this["mod_authors"] = prop("mod.authors")
         this["mod_license"] = prop("mod.license")
         this["minecraft_version_range"] = prop("deps.minecraft_version_range")
-        this["accesswidener"] = "eiv.accesswidener"
+        this["accesswidener"] = "rrv.accesswidener"
     }
 
     filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml")) {

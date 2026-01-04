@@ -1,0 +1,86 @@
+package cc.cassian.rrv.common.network;
+
+import cc.cassian.rrv.common.api.recipe.RrvRecipeType;
+import cc.cassian.rrv.common.api.recipe.IRrvServerRecipe;
+import cc.cassian.rrv.common.api.recipe.ItemView;
+import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
+import cc.cassian.rrv.common.network.payload.recipe.*;
+import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
+import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
+import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import cc.cassian.rrv.common.recipe.util.RrvTagUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
+
+public class RrvPayloadConverter {
+
+
+    public static void convertFromCompat(RrvNetworkManager.ClientContext ctx, ClientboundCompatPayload payload) {
+
+        CompoundTag payloadTag = payload.data();
+        if (payloadTag.isEmpty())
+            return;
+
+        Identifier payloadType = Identifier.parse(payloadTag.getStringOr("payloadType", ""));
+        CompoundTag data = payloadTag.getCompoundOrEmpty("payloadData");
+
+        if (Minecraft.getInstance().getConnection() == null)
+            return;
+
+        if (payloadType.equals(ClientboundCacheStartPayload.TYPE.id())) {
+            ClientboundCacheStartPayload p = new ClientboundCacheStartPayload(data.getIntOr("types", 0));
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+        if (payloadType.equals(ClientboundStartUpdatesPayload.TYPE.id())) {
+            ClientboundStartUpdatesPayload p = new ClientboundStartUpdatesPayload();
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+        if (payloadType.equals(ClientboundTypeUpdateStartPayload.TYPE.id())) {
+            ClientboundTypeUpdateStartPayload p = new ClientboundTypeUpdateStartPayload(RrvRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))), data.getIntOr("amount", 0));
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+        if (payloadType.equals(ClientboundTypeUpdatePayload.TYPE.id())) {
+
+            CompoundTag fullTag = data.getCompoundOrEmpty("entry");
+
+            Identifier recipeId = Identifier.parse(fullTag.getStringOr("recipeId", ""));
+            IRrvServerRecipe recipe = ServerRecipeManager.ServerRecipeEntry.fromTag(fullTag.getCompoundOrEmpty("recipe"));
+
+            ClientboundTypeUpdatePayload p = new ClientboundTypeUpdatePayload(new ServerRecipeManager.ServerRecipeEntry(recipeId, recipe));
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+        if (payloadType.equals(ClientboundTypeUpdateEndPayload.TYPE.id())) {
+            ClientboundTypeUpdateEndPayload p = new ClientboundTypeUpdateEndPayload(RrvRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))));
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+        if (payloadType.equals(ClientboundFinishUpdatesPayload.TYPE.id())) {
+            ClientboundFinishUpdatesPayload p = new ClientboundFinishUpdatesPayload();
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+        if (payloadType.equals(ClientboundStartStackSensitivesPayload.TYPE.id())) {
+            ClientboundStartStackSensitivesPayload p = new ClientboundStartStackSensitivesPayload(data.getIntOr("amount", 0));
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+        if (payloadType.equals(ClientboundStackSensitivePayload.TYPE.id())) {
+            ClientboundStackSensitivePayload p = new ClientboundStackSensitivePayload(new ItemView.StackSensitive(RrvTagUtil.decodeItemStackOnClient(data.getCompoundOrEmpty("sensitive"))));
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+        if (payloadType.equals(ClientboundFinishStackSensitivesPayload.TYPE.id())) {
+            ClientboundFinishStackSensitivesPayload p = new ClientboundFinishStackSensitivesPayload();
+            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+        }
+
+
+    }
+
+}

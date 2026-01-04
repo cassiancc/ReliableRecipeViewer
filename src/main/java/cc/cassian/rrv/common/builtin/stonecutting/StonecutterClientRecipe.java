@@ -1,0 +1,59 @@
+package cc.cassian.rrv.common.builtin.stonecutting;
+
+import cc.cassian.rrv.common.api.recipe.IRrvClientRecipe;
+import cc.cassian.rrv.common.api.recipe.IRrvClientRecipeType;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
+
+import java.util.List;
+
+public class StonecutterClientRecipe implements IRrvClientRecipe {
+
+
+    private final SlotContent input, result;
+
+    public StonecutterClientRecipe(StonecutterServerRecipe stonecutterRecipe) {
+        this.input = SlotContent.of(stonecutterRecipe.getInput());
+        this.result = SlotContent.of(stonecutterRecipe.getResult());
+    }
+
+    @Override
+    public IRrvClientRecipeType getViewType() {
+        return StonecutterClientRecipeType.INSTANCE;
+    }
+
+    @Override
+    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+        slotFillContext.bindSlot(0, this.input);
+        slotFillContext.bindSlot(1, this.result);
+    }
+
+    @Override
+    public List<SlotContent> getIngredients() {
+        return List.of(this.input);
+    }
+
+    @Override
+    public List<SlotContent> getResults() {
+        return List.of(this.result);
+    }
+
+    @Override
+    public boolean supportsItemTransfer() {
+        return true;
+    }
+
+    @Override
+    public Class<? extends AbstractContainerScreen<?>> getTransferClass() {
+        return StonecutterScreen.class;
+    }
+
+    @Override
+    public void mapRecipeItems(RecipeTransferMap transferMap, AbstractContainerScreen<?> screen) {
+
+        transferMap.linkSlots(0, 0);
+
+    }
+}

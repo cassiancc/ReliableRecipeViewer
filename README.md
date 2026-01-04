@@ -1,12 +1,12 @@
-<h1 align="center">EIV Canary</h1>
+<h1 align="center">RRV Canary</h1>
 
 <p align="center">
-  <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/eiv/icon.png">
+  <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/rrv/icon.png">
 </p>
 
 ## Overview
 
-[Extended Item View](https://modrinth.com/mod/eiv) is a mod that provides recipe viewer functionality on modern Minecraft versions, including 1.21.4-1.21.10. However, it has not yet made the jump to 1.21.11 and beyond. Rather than drop EIV support on my mods, I opted to provide this fork (which has been contributed to upstream, should 2Bad4Mods return and wish to use any of it.)
+[Extended Item View](https://modrinth.com/mod/rrv) is a mod that provides recipe viewer functionality on modern Minecraft versions, including 1.21.4-1.21.10. However, it has not yet made the jump to 1.21.11 and beyond. Rather than drop RRV support on my mods, I opted to provide this fork (which has been contributed to upstream, should 2Bad4Mods return and wish to use any of it.)
 
 Currently supported functions are:
 
@@ -17,7 +17,7 @@ Currently supported functions are:
 - item highlighting (double-click on searchbar)
 - cheatmode
 
-For more details, see the [Extended Item View](https://modrinth.com/mod/eiv).
+For more details, see the [Extended Item View](https://modrinth.com/mod/rrv).
 
 **NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
 
@@ -28,17 +28,17 @@ For more details, see the [Extended Item View](https://modrinth.com/mod/eiv).
 
 ## Mod Compatibility
 
-Mods with EIV integration can be used with this fork, which should not make unneeded changes to the API. You can find a list of mods with EIV integration in my [Modrinth Collection](https://modrinth.com/collection/4feLcYR6).
+Mods with RRV integration can be used with this fork, which should not make unneeded changes to the API. You can find a list of mods with RRV integration in my [Modrinth Collection](https://modrinth.com/collection/4feLcYR6).
 
-Developers wishing to use the mod can make use of EIV's easy to use API. More info on [EIV's GitHub page](https://github.com/liushmn/ExtendedItemView). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
+Developers wishing to use the mod can make use of RRV's easy to use API. More info on [RRV's GitHub page](https://github.com/liushmn/ExtendedItemView). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
 
 ## License
 [![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](github.com/cassiancc/bygone-fortress)
 
-EIV Canary is available under the open source MIT License, matching the original mod.
+RRV Canary is available under the open source MIT License, matching the original mod.
 
 ## Credits
-This is a port of [Extended Item View](https://modrinth.com/mod/eiv) to Fabric 1.21.11 that I made for personal use. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. This fork will be retired if/when 2Bad4Mods returns.
+This is a port of [Extended Item View](https://modrinth.com/mod/rrv) to Fabric 1.21.11 that I made for personal use. RRV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-rrv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. This fork will be retired if/when 2Bad4Mods returns.
 
 
 # Developer Guide
@@ -62,20 +62,20 @@ repositories {
 
 dependencies {
 	// Fabric and Architectury Loom
-	modImplementation "maven.modrinth:eiv-canary:${eiv_version}+${minecraft_version}-fabric"
+	modImplementation "maven.modrinth:rrv-canary:${rrv_version}+${minecraft_version}-fabric"
 
 	// NeoForge and Multiloader Template
-	implementation "maven.modrinth:eiv-canary:${eiv_version}+${minecraft_version}-neoforge"
+	implementation "maven.modrinth:rrv-canary:${rrv_version}+${minecraft_version}-neoforge"
 }
 ```
 
 ## Creating your mod's integration
 
-Before you can implement your own recipes you first have to create an eiv-integration for your Mod.
+Before you can implement your own recipes you first have to create an rrv-integration for your Mod.
 This is done by creating a class implementing `IExtendedItemViewIntegration`:
 
 ```java
-public class EivIntegration implements IExtendedItemViewIntegration {
+public class RrvIntegration implements IExtendedItemViewIntegration {
     
     @Override
     public void onIntegrationInitialize() {
@@ -93,8 +93,8 @@ Don't forget to add it as an entrypoint to your mod
 ...,
 	"entrypoints": {
     ...,
-		"eiv": [
-			"de.you.modid.eiv.EivIntegration"
+		"rrv": [
+			"de.you.modid.rrv.RrvIntegration"
 		]
 	},
 ...
@@ -104,17 +104,17 @@ Don't forget to add it as an entrypoint to your mod
 ### NeoForge (neoforge.mods.toml)
 ```toml
 # ...
-eiv="de.you.modid.eiv.EivIntegration"
+rrv="de.you.modid.rrv.RrvIntegration"
 # ...
 ```
 
 ## Adding a new recipe type
 
 Since you want to add a complete new way of crafting, you first need to create your viewtype.
-Simply create a class implementing `IEivRecipeViewType` and override the required methods:
+Simply create a class implementing `IRrvRecipeViewType` and override the required methods:
 
 ```java
-public class YourCustomViewType implements IEivRecipeViewType {
+public class YourCustomViewType implements IRrvRecipeViewType {
 
     //Create an instance of your viewtype here
     //Relevant for next steps
@@ -148,7 +148,7 @@ public class YourCustomViewType implements IEivRecipeViewType {
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        //Tell EIV where your slots are located by calling slotDefinition.addItemSlot();
+        //Tell RRV where your slots are located by calling slotDefinition.addItemSlot();
         //NOTE: Slot position is relative to your gui texture
 
         slotDefinition.addItemSlot(0, 10, 20);
@@ -175,11 +175,11 @@ public class YourCustomViewType implements IEivRecipeViewType {
 
 ## Adding your recipe blueprint
 
-Now you need to add your recipe's class to tell EIV about things like rendering & items.
-Just create a class implementing `IEivViewRecipe` and override the required methods.
+Now you need to add your recipe's class to tell RRV about things like rendering & items.
+Just create a class implementing `IRrvViewRecipe` and override the required methods.
 
 ```java
-public class YourCustomViewRecipe implements IEivViewRecipe {
+public class YourCustomViewRecipe implements IRrvViewRecipe {
 
     private final SlotContent input, output;
 
@@ -195,14 +195,14 @@ public class YourCustomViewRecipe implements IEivViewRecipe {
     }
 
     @Override
-    public IEivRecipeViewType getViewType() {
+    public IRrvRecipeViewType getViewType() {
         return YourCustomViewType.INSTANCE; //Here you need your type's instance you created before
     }
 
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 
-        //Tell EIV which SlotContent belongs to which of your previously defined slots
+        //Tell RRV which SlotContent belongs to which of your previously defined slots
         slotFillContext.bindSlot(0, this.input);
         slotFillContext.bindSlot(1, this.output);
 
@@ -231,7 +231,7 @@ public class YourCustomViewRecipe implements IEivViewRecipe {
 ```
 ### The SlotContent
 
-In EIV everything concerning recipe content is handled via a class called `SlotContent`.
+In RRV everything concerning recipe content is handled via a class called `SlotContent`.
 It is a representation of all itemstacks a slot holds. The content is constantly ticked while a the player is looking at a recipe to achieve an overview over the possible in- & outputs.
 To wrap your ingredients and results (items, itemstacks, list of items, ...) just call `SlotContent.of();`
 
@@ -257,12 +257,12 @@ In this case we are using the current index of `this.input` as the the index for
 
 Since the significant change of Minecraft's recipe system with the 1.21.3 update, recipes are handled serverside and the client is not told which recipes exist.
 Unfortunately, we need the recipes clientside, so we have to synchronize the recipes between the server and client ourselves.
-For consistency, EIV requires a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
+For consistency, RRV requires a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
 
-Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `IEivServerRecipe` and override the methods:
+Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `IRrvServerRecipe` and override the methods:
 
 ```java
-public class YourServerRecipe implements IEivServerRecipe {
+public class YourServerRecipe implements IRrvServerRecipe {
 
 
     //Create a server recipe type (the id does not have to match your client side viewtype id)
@@ -282,12 +282,12 @@ public class YourServerRecipe implements IEivServerRecipe {
     }
 
     @Override
-    public ModRecipeType<? extends IEivServerModRecipe> getRecipeType() {
+    public ModRecipeType<? extends IRrvServerModRecipe> getRecipeType() {
         return TYPE;
     }
 }
 ```
-**INFO**: There's a class called `EivTagUtil` that provides a lot of helper functions for en- and decoding different objects. Note that `writeToTag` is called on the server, while `loadFromTag` is called on the client.
+**INFO**: There's a class called `RrvTagUtil` that provides a lot of helper functions for en- and decoding different objects. Note that `writeToTag` is called on the server, while `loadFromTag` is called on the client.
 
 ## Register your recipes
 
@@ -297,7 +297,7 @@ Registering your recipes requires you to call 2 methods in your `onIntegrationIn
 - `ItemView.registerRecipeWrapper();`
 
 ```java
-public class EivIntegration implements IExtendedItemViewIntegration {
+public class RrvIntegration implements IExtendedItemViewIntegration {
 
     @Override
     public void onIntegrationInitialize() {
@@ -310,8 +310,8 @@ public class EivIntegration implements IExtendedItemViewIntegration {
         //For the client
         ItemView.registerRecipeWrapper(YourServerRecipe.TYPE, modRecipe -> {
             
-            //Here you tell EIV how to process incoming server recipes
-            //Requires you to return a list of client-side view-recipes (IEivViewRecipe)
+            //Here you tell RRV how to process incoming server recipes
+            //Requires you to return a list of client-side view-recipes (IRrvViewRecipe)
             
             return List.of();
         });
@@ -336,12 +336,12 @@ You can also exclude items from the overlay by calling `ItemView.excludeItem();`
 ## Conclusion
 
 And there you go! Just reproduce these steps for each of your recipe types and you'll be fine.
-Note: You can always look at EIV's builtin code, to see how everything works in practice.
+Note: You can always look at RRV's builtin code, to see how everything works in practice.
 If you now want to create item-transfer functionality, read the section below.
 
 ## Adding recipe-transfer functionality
 
-To be able to shift items from the players inventory into it's crafting gui you have to override a few more methods of your class that implements `IEivViewRecipe`:
+To be able to shift items from the players inventory into it's crafting gui you have to override a few more methods of your class that implements `IRrvViewRecipe`:
 
 ```java
 
@@ -375,7 +375,7 @@ To be able to shift items from the players inventory into it's crafting gui you 
 
 ## General hints
 
-The `ItemView` class is the main API class for EIV, so you can always look in there if you wonder whether something can be realized with EIV or not (yet).<br>
+The `ItemView` class is the main API class for RRV, so you can always look in there if you wonder whether something can be realized with RRV or not (yet).<br>
 This fork is distributed alongside its source code on Modrinth maven, so its JavaDocs are visible in your IDE as well as here on GitHub.<br>
 <br>
 If you still have questions, you can always contact me via [Discord](https://discord.cassian.cc)<br>

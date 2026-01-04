@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "rrv:item/fluiditem",
+    "model": {
+      "type": "rrv:fluiditem"
+    }
+  }
+}
