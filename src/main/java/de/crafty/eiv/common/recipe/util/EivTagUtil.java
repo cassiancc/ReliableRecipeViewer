@@ -206,7 +206,7 @@ public class EivTagUtil {
     /**
      * Decodes a list of objects
      * @param srcTag The parent tag containing the list
-     * @param key They key referring to the list
+     * @param key The key referring to the list
      * @param builder A CompoundReconstructor defining the decoding method for a single object
      * @return The decoded list
      * @param <T> The type of the list

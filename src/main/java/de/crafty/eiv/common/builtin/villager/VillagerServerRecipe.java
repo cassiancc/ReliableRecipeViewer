@@ -2,8 +2,9 @@ package de.crafty.eiv.common.builtin.villager;
 
 import de.crafty.eiv.common.api.recipe.EivRecipeType;
 import de.crafty.eiv.common.api.recipe.IEivServerRecipe;
-import de.crafty.eiv.common.mixin.world.entity.npc.VillagerTradeAccessor;
+import de.crafty.eiv.common.mixin.world.entity.npc.*;
 import de.crafty.eiv.common.recipe.ServerRecipeManager;
+import de.crafty.eiv.common.recipe.util.EivTagUtil;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -15,117 +16,152 @@ import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 //? <26 {
 import net.minecraft.world.entity.npc.villager.VillagerTrades;
-//?} else {
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.MapItemColor;
+import net.minecraft.world.item.enchantment.Enchantable;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.providers.EnchantmentProvider;
+import net.minecraft.world.item.enchantment.providers.EnchantmentsByCost;
+import net.minecraft.world.item.enchantment.providers.EnchantmentsByCostWithDifficulty;
+import net.minecraft.world.item.enchantment.providers.SingleEnchantment;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
+import net.minecraft.world.entity.npc.villager.VillagerType;
+import org.jetbrains.annotations.Nullable;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.tags.EnchantmentTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Mth;
+ //?} else {
 /*import net.minecraft.world.entity.npc.villager.VillagerType;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
-
+*///?}
+import net.minecraft.world.item.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-*///?}
+import java.util.stream.Collectors;
 
 
 public class VillagerServerRecipe implements IEivServerRecipe {
 
-    public static final EivRecipeType<VillagerServerRecipe> TYPE = EivRecipeType.register(
-            Identifier.withDefaultNamespace("villager_trading"),
-            () -> new VillagerServerRecipe(null, 0, null)
-    );
+	public static final EivRecipeType<VillagerServerRecipe> TYPE = EivRecipeType.register(
+			Identifier.withDefaultNamespace("villager_trading"),
+			() -> new VillagerServerRecipe(null, 0, null)
+	);
 
-    //? >26 {
-    /*private ResourceKey<VillagerProfession> profession;
-    private int professionLevel;
-    private HolderSet<VillagerTrade> serverTrades;
-    private List<VillagerTrade> clientTrades;
-
-
-    public VillagerServerRecipe(ResourceKey<VillagerProfession> key, int level, HolderSet<VillagerTrade> trades) {
-        this.profession = key;
-        this.professionLevel = level;
-        this.serverTrades = trades;
-    }
+	//? >26 {
+	/*private ResourceKey<VillagerProfession> profession;
+	private int professionLevel;
+	private HolderSet<VillagerTrade> serverTrades;
+	private List<VillagerTrade> clientTrades;
+	private List<ItemStack> cost1;
+	private List<ItemStack> cost2;
+	private List<ItemStack> offerStacks;
 
 
-    @Override
-    public void writeToTag(CompoundTag tag) {
-        tag.putString("profession", this.profession.identifier().toString());
-        tag.putInt("professionLevel", this.professionLevel);
-        ListTag trades = new ListTag();
-        this.serverTrades.forEach(tradeHolder -> {
-            VillagerTrade.CODEC.encodeStart(NbtOps.INSTANCE, tradeHolder.value()).result().ifPresent(trades::add);
-        });
-        tag.put("trades", trades);
+	public VillagerServerRecipe(ResourceKey<VillagerProfession> key, int level, HolderSet<VillagerTrade> trades) {
+		this.profession = key;
+		this.professionLevel = level;
+		this.serverTrades = trades;
+	}
 
-    }
+	@Override
+	public void writeToTag(CompoundTag tag) {
+		tag.putString("profession", this.profession.identifier().toString());
+		tag.putInt("professionLevel", this.professionLevel);
+		ListTag trades = new ListTag();
+		this.serverTrades.forEach(tradeHolder -> {
+			VillagerTrade.CODEC.encodeStart(NbtOps.INSTANCE, tradeHolder.value()).result().ifPresent(trades::add);
+			tag.put("offerStacks", EivTagUtil.writeList(offerStacks(tradeHolder.value()), (origin, tag1) -> EivTagUtil.encodeItemStackOnServer(origin)));
+			tag.put("cost1", EivTagUtil.writeList(cost1(tradeHolder.value()), (origin, tag1) -> EivTagUtil.encodeItemStackOnServer(origin)));
+			tag.put("cost2", EivTagUtil.writeList(cost2(tradeHolder.value()), (origin, tag1) -> EivTagUtil.encodeItemStackOnServer(origin)));
+		});
+		tag.put("trades", trades);
+	}
 
-    @Override
-    public void loadFromTag(CompoundTag tag) {
-        if (tag.contains("profession"))
-            this.profession = BuiltInRegistries.VILLAGER_PROFESSION.get(Identifier.parse(tag.getString("profession").orElseThrow())).orElseThrow().key();
+	@Override
+	public void loadFromTag(CompoundTag tag) {
+		if (tag.contains("profession"))
+			this.profession = BuiltInRegistries.VILLAGER_PROFESSION.get(Identifier.parse(tag.getString("profession").orElseThrow())).orElseThrow().key();
 
-        this.professionLevel = tag.getIntOr("professionLevel", 0);
+		this.professionLevel = tag.getIntOr("professionLevel", 0);
 
 		ArrayList<VillagerTrade> trades = new ArrayList<>();
-        if (tag.contains("trades")) {
-            tag.getListOrEmpty("trades").forEach(trade -> {
-                trades.add(VillagerTrade.CODEC.decode(NbtOps.INSTANCE, trade).result().orElseThrow().getFirst());
-            });
-        }
-        this.clientTrades = trades;
-    }
+		if (tag.contains("trades")) {
+			tag.getListOrEmpty("trades").forEach(trade -> {
+				trades.add(VillagerTrade.CODEC.decode(NbtOps.INSTANCE, trade).result().orElseThrow().getFirst());
+			});
+		}
+		this.clientTrades = trades;
 
-    @Override
-    public EivRecipeType<? extends IEivServerRecipe> getRecipeType() {
-        return TYPE;
-    }
+		this.cost1 = EivTagUtil.readList(tag, "cost1", EivTagUtil::decodeItemStackOnClient);
+		this.cost2 = EivTagUtil.readList(tag, "cost2", EivTagUtil::decodeItemStackOnClient);
+		this.offerStacks = EivTagUtil.readList(tag, "offerStacks", EivTagUtil::decodeItemStackOnClient);
+	}
 
-    public List<VillagerTrade> getClientTrades() {
-        return clientTrades;
-    }
+	@Override
+	public EivRecipeType<? extends IEivServerRecipe> getRecipeType() {
+		return TYPE;
+	}
 
-    public ResourceKey<VillagerProfession> getProfession() {
-        return profession;
-    }
+	public List<VillagerTrade> getClientTrades() {
+		return clientTrades;
+	}
 
-    public List<VillagerOffer> getOffers() {
-        ArrayList<VillagerOffer> villagerOffers = new ArrayList<>();
-        getClientTrades().forEach(trade -> villagerOffers.add(new VillagerOffer(trade, profession, professionLevel, offerStacks(trade), cost1(trade), cost2(trade))));
-        return villagerOffers;
-    }
+	public ResourceKey<VillagerProfession> getProfession() {
+		return profession;
+	}
 
-    public List<ItemStack> offerStacks(VillagerTrade trade) {
-        VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
-        return List.of(tradeAccessor.getGives());
-    }
+	public List<VillagerOffer> getOffers() {
+		ArrayList<VillagerOffer> villagerOffers = new ArrayList<>();
+		getClientTrades().forEach(trade -> villagerOffers.add(new VillagerOffer(trade, profession, professionLevel, offerStacks, cost1, cost2)));
+		return villagerOffers;
+	}
 
-    public List<ItemStack> cost1(VillagerTrade trade) {
-        VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
-        var wants = tradeAccessor.getWants();
-        int wantedCount = wants.count().getInt(new LootContext.Builder(new LootParams.Builder(ServerRecipeManager.INSTANCE.getServer().overworld()).create(new ContextKeySet.Builder().build())).create(Optional.empty()));
-        return List.of(wants.item().value().getDefaultInstance().copyWithCount(wantedCount));
-    }
+	public List<ItemStack> offerStacks(VillagerTrade trade) {
+		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
+		return List.of(tradeAccessor.getGives());
+	}
 
-    public List<ItemStack> cost2(VillagerTrade trade) {
-        VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
-        if (tradeAccessor.getAdditionalWants().isPresent()) {
-            var wants = tradeAccessor.getAdditionalWants().get();
-            int wantedCount = wants.count().getInt(new LootContext.Builder(new LootParams.Builder(ServerRecipeManager.INSTANCE.getServer().overworld()).create(new ContextKeySet.Builder().build())).create(Optional.empty()));
-            return List.of(wants.item().value().getDefaultInstance().copyWithCount(wantedCount));
-        } else return List.of();
-    }
+	public List<ItemStack> cost1(VillagerTrade trade) {
+		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
+		var wants = tradeAccessor.getWants();
+		int wantedCount = wants.count().getInt(new LootContext.Builder(new LootParams.Builder(ServerRecipeManager.INSTANCE.getServer().overworld()).create(new ContextKeySet.Builder().build())).create(Optional.empty()));
+		return List.of(wants.item().value().getDefaultInstance().copyWithCount(wantedCount));
+	}
+
+	public List<ItemStack> cost2(VillagerTrade trade) {
+		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
+		if (tradeAccessor.getAdditionalWants().isPresent()) {
+			var wants = tradeAccessor.getAdditionalWants().get();
+			int wantedCount = wants.count().getInt(new LootContext.Builder(new LootParams.Builder(ServerRecipeManager.INSTANCE.getServer().overworld()).create(new ContextKeySet.Builder().build())).create(Optional.empty()));
+			return List.of(wants.item().value().getDefaultInstance().copyWithCount(wantedCount));
+		} else return List.of();
+	}
 
 
-    public record VillagerOffer(VillagerTrade trade, ResourceKey<VillagerProfession> profession, int professionLevel, List<ItemStack> offerStacks, List<ItemStack> cost1, List<ItemStack> cost2) {
-        public ResourceKey<VillagerType> requiredtype() {
-            return VillagerType.PLAINS;
-        }
+	public record VillagerOffer(VillagerTrade trade, ResourceKey<VillagerProfession> profession, int professionLevel, List<ItemStack> offerStacks, List<ItemStack> cost1, List<ItemStack> cost2) {
+		public ResourceKey<VillagerType> requiredtype() {
+			return VillagerType.PLAINS;
+		}
 
-    }
+	}
 
-    *///?} else {
+	*///?} else {
 
     private ResourceKey<VillagerProfession> profession;
     private int professionLevel;
@@ -560,14 +596,14 @@ public class VillagerServerRecipe implements IEivServerRecipe {
                         for (DyeColor color1 : DyeColor.values()) {
                             offerStacks.add(DyedItemColor.applyDyes(offerStack.copy(), List.of(DyeItem.byColor(color1))));
 
-                            /^for (DyeColor color2 : DyeColor.values()) {
+                            for (DyeColor color2 : DyeColor.values()) {
                                 offerStacks.add(DyedItemColor.applyDyes(offerStack.copy(), List.of(DyeItem.byColor(color1), DyeItem.byColor(color2))));
 
 
                                 for (DyeColor color3 : DyeColor.values()) {
                                     offerStacks.add(DyedItemColor.applyDyes(offerStack.copy(), List.of(DyeItem.byColor(color1), DyeItem.byColor(color2), DyeItem.byColor(color3))));
                                 }
-                            }^/
+                            }
                         }
                     } else
                         offerStacks.add(offerStack);
