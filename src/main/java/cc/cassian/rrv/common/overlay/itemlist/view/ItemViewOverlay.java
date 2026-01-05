@@ -112,6 +112,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 )
                 .size(18, 18)
                 .sprite(SETTINGS_WHEEL, 14, 14)
+                .withTootip()
                 .build();
 
         int position = 0;

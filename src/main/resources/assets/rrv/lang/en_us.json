@@ -42,8 +42,8 @@
   "key.rrv.cheatmode": "Use Cheatmode",
 
   "cheatmode.rrv.denied": "You do not have permission to use the cheatmode",
-  "rrv.client_settings.title": "Client Settings",
-  "rrv.client_settings.btn": "Client Settings",
+  "rrv.client_settings.title": "RRV Client Settings",
+  "rrv.client_settings.btn": "RRV Client Settings",
   "rrv.client_settings.background": "Background",
   "rrv.client_settings.background.enabled": "Draw",
   "rrv.client_settings.background.disabled": "Hide",
