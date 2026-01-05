@@ -1,5 +1,7 @@
 package cc.cassian.rrv.common.builtin;
 
+import cc.cassian.rrv.common.builtin.tag.TagClientRecipe;
+import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
@@ -185,6 +187,10 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                 if (!loot.isEmpty())
                     recipeList.add(new EntityServerRecipe(entityType, loot));
+            });
+
+            BuiltInRegistries.ITEM.listTagIds().forEach((tag) -> {
+                recipeList.add(new TagServerRecipe(tag));
             });
 
         });
@@ -441,6 +447,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             return unwrapped.getOffers().stream().map(VillagerClientRecipe::new).toList();
         });
         ItemView.registerClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
+        ItemView.registerClientRecipeWrapper(TagServerRecipe.TYPE, unwrapped -> List.of(new TagClientRecipe(unwrapped)));
     }
 
 

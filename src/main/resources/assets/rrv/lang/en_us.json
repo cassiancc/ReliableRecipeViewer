@@ -20,6 +20,7 @@
   "view.rrv.type.trading.minecraft.savanna": "Savanna Villager",
   "view.rrv.type.entity": "Entity Fighting",
   "view.rrv.type.entity.playerKill": "\u00a78» Player Only",
+  "view.rrv.type.item_tag": "Item Tags",
 
   "rrv.fluid.unit": "mb",
   "commands.rrv.reloadedRecipes": "Reload success (Recipes)",

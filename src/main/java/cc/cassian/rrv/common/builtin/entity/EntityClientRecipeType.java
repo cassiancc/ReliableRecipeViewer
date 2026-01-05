@@ -37,7 +37,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayHeight() {
-        return 102;
+        return 122;
     }
 
     @Override
