@@ -10,7 +10,7 @@
   "contact": {
     "repo": "https://github.com/cassiancc/ExtendedItemView",
     "issues": "https://github.com/cassiancc/ExtendedItemView/issues",
-    "homepage": "https://modrinth.com/mod/rrv-canary",
+    "homepage": "https://modrinth.com/mod/rrv",
     "sources": "https://github.com/cassiancc/ExtendedItemView"
   },
   "license": "${mod_license}",

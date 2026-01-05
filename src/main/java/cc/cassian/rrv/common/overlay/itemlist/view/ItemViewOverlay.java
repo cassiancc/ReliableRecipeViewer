@@ -1,9 +1,11 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.builtin.tag.TagClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
@@ -254,8 +256,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         int boxWidth;
         int x;
         if (Configs.CLIENT_SETTINGS.isCenterSearch()) {
-           boxWidth = (int) (info.screenWidth()/2.4);
-           x = (int) (info.screenWidth()/3.4);
+           boxWidth = info.imageWidth();
+           x = (info.screenWidth()/2)-(boxWidth/2);
         } else {
            boxWidth = Math.min(100, (wrapMode ? this.width : this.effectiveWidth) - 4);
            x = wrapMode ? (this.x + this.width / 2 - boxWidth / 2) : (this.effectiveX + this.effectiveWidth / 2 - boxWidth / 2);
@@ -325,6 +327,32 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
 
             Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType == ItemViewOpenType.RESULT ? SlotContent.Type.RESULT : SlotContent.Type.INGREDIENT, viewHistory), clientPlayer.getInventory(), Component.empty()));
+        }
+
+
+    }
+
+    public void openRecipeView(ReliableClientRecipeType clientRecipeType) {
+
+        LocalPlayer clientPlayer = Minecraft.getInstance().player;
+        if (clientPlayer == null)
+            return;
+
+        List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();;
+
+        if (!foundRecipes.isEmpty()) {
+            Screen parent = Minecraft.getInstance().screen;
+
+            ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
+
+            if (parent instanceof RecipeViewScreen viewScreen) {
+                parent = viewScreen.getMenu().getParentScreen();
+                viewHistory = viewScreen.getMenu().getViewHistory();
+            }
+
+            int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
+
+            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, SlotContent.Type.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
         }
 
 

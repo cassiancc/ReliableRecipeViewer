@@ -29,6 +29,7 @@
   "key.rrv.toggle_overlay": "Toggle Overlay",
   "rrv.bookmarks": "Bookmarks",
   "rrv.search_hint": "Search Item View...",
+  "rrv.all_recipes_hint": "Click to show all recipes",
 
   "key.category.rrv.rrv": "Extended ItemView",
   "key.rrv.bookmark": "Add Bookmark",

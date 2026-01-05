@@ -177,7 +177,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.prevTypePage.setPosition(this.width / 2 - (5 * 24 + 4 * 2) / 2 - 2 - 12, this.topPos - 1 - 12 - 6);
         this.nextTypePage.setPosition(this.width / 2 + (5 * 24 + 4 * 2) / 2 + 2, this.topPos - 1 - 12 - 6);
 
-        this.guiTitle = this.getMenu().getViewType().getDisplayName();
+        this.guiTitle = this.getMenu().getClientRecipeType().getDisplayName();
         this.titleLabelX = this.imageWidth / 2 - this.font.width(this.guiTitle) / 2;
 
         this.page = this.createPageComponent();
@@ -259,15 +259,22 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int i, int j) {
-        guiGraphics.drawString(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -12566464, false);
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         guiGraphics.drawString(this.font, this.page, (this.imageWidth - font.width(this.page)) / 2, this.imageHeight - 12, -12566464, false);
+        if (isHoveringOverTitle(mouseX, mouseY)) {
+            guiGraphics.drawString(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -5606651, false); // colored title
+        } else {
+            guiGraphics.drawString(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -12566464, false); // normal title
+        }
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+        if (isHoveringOverTitle(mouseX, mouseY)) {
+            guiGraphics.setComponentTooltipForNextFrame(this.font, List.of(this.guiTitle, Component.translatable("rrv.all_recipes_hint")), mouseX, mouseY);
+        }
     }
 
 
@@ -355,10 +362,20 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                     return true;
             }
 
+            if (isHoveringOverTitle(mouseButtonEvent.x(), mouseButtonEvent.y())) {
+                ItemViewOverlay.INSTANCE.openRecipeView(this.menu.getClientRecipeType());
+            }
+
         }
 
         return super.mouseClicked(mouseButtonEvent, bl);
     }
+
+	private boolean isHoveringOverTitle(double mouseX, double mouseY) {
+        int xMin = this.width / 2 - 64 - 2 - 12;
+        int xMax = this.width / 2 + 64 + 2;
+		return (mouseX > xMin && mouseX < xMax) && (mouseY >= this.topPos && mouseY <= this.topPos + 16);
+	}
 
     private boolean isPrevTypeHovered(double mouseX, double mouseY) {
         return mouseX >= this.leftPos - 14 - 2 && mouseX <= this.leftPos - 2 && mouseY >= this.topPos + 2 && mouseY <= this.topPos + 2 + 14;
@@ -407,7 +424,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.topPos + (this.imageHeight - 3), 0, 256 - 3, this.imageWidth, 3, 256, 256);
 
 
-        ReliableClientRecipeType viewType = this.getMenu().getViewType();
+        ReliableClientRecipeType viewType = this.getMenu().getClientRecipeType();
 
         //Render icons
 
@@ -432,7 +449,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         if (this.getMenu().getCurrentCraftReference() > 0)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.topPos + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
 
-        if (this.getMenu().getCurrentCraftReference() < this.getMenu().getViewType().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
+        if (this.getMenu().getCurrentCraftReference() < this.getMenu().getClientRecipeType().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.topPos + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
 
         int guiLeft = this.leftPos + this.getMenu().guiOffsetLeft();
@@ -501,7 +518,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             if (!(mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height))
                 return false;
 
-            this.viewScreen.getMenu().setViewType(this.viewTypeId);
+            this.viewScreen.getMenu().setClientRecipeType(this.viewTypeId);
             AbstractWidget.playButtonClickSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
@@ -514,7 +531,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
 
         private void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.viewType() == this.viewScreen.getMenu().getViewType() ? 24 : 0, 24, 24, 256, 256);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.viewType() == this.viewScreen.getMenu().getClientRecipeType() ? 24 : 0, 24, 24, 256, 256);
             guiGraphics.renderFakeItem(this.viewType().getIcon(), this.x() + 4, this.y() + 4);
 
             this.onHover(guiGraphics, mouseX, mouseY);

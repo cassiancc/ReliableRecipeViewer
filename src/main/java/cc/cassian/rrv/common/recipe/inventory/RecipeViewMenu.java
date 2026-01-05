@@ -34,7 +34,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     private ViewContainer viewContainer;
 
     private List<? extends ReliableClientRecipe> recipes;
-    private ReliableClientRecipeType viewType;
+    private ReliableClientRecipeType clientRecipeType;
 
     private int maxPossiblePerPage;
     private int maxPageIndex;
@@ -59,8 +59,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     private int currentCraftReference;
     private final List<RecipeTransferData> transferData;
 
-
     public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, SlotContent.Type originType, ArrayList<RecipeViewScreen> viewHistory) {
+        this(parentScreen,containerId, inventory,recipes, origin, originType, viewHistory, ReliableClientRecipeType.NONE);
+    }
+
+    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, SlotContent.Type originType, ArrayList<RecipeViewScreen> viewHistory, ReliableClientRecipeType clientRecipeType) {
         super(ReliableRecipeViewerClient.RECIPE_VIEW_MENU, containerId);
 
         this.viewHistory = viewHistory;
@@ -78,12 +81,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.sortedByType = new LinkedHashMap<>();
         HashMap<ReliableClientRecipeType, HashMap<Integer, List<ReliableClientRecipe>>> prioOrder = new HashMap<>();
 
-        recipes.forEach(iRrvRecipe -> {
-            List<ReliableClientRecipe> list = prioOrder.getOrDefault(iRrvRecipe.getViewType(), new HashMap<>()).getOrDefault(iRrvRecipe.getPriority(), new ArrayList<>());
-            list.add(iRrvRecipe);
-            HashMap<Integer, List<ReliableClientRecipe>> map = prioOrder.getOrDefault(iRrvRecipe.getViewType(), new HashMap<>());
-            map.put(iRrvRecipe.getPriority(), list);
-            prioOrder.put(iRrvRecipe.getViewType(), map);
+        recipes.forEach(recipe -> {
+            List<ReliableClientRecipe> list = prioOrder.getOrDefault(recipe.getViewType(), new HashMap<>()).getOrDefault(recipe.getPriority(), new ArrayList<>());
+            list.add(recipe);
+            HashMap<Integer, List<ReliableClientRecipe>> map = prioOrder.getOrDefault(recipe.getViewType(), new HashMap<>());
+            map.put(recipe.getPriority(), list);
+            prioOrder.put(recipe.getViewType(), map);
         });
 
         prioOrder.forEach((viewType, map) -> {
@@ -101,11 +104,18 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         });
 
         List<String> ids = new ArrayList<>(byId.keySet());
+        //TODO customizable recipe type sorting
         ids.sort(String::compareTo);
 
         ids.forEach(id -> {
             this.viewTypeOrder.add(byId.get(id));
         });
+
+        // manually placed a clicked recipe type first
+        if (!clientRecipeType.equals(ReliableClientRecipeType.NONE)) {
+            this.viewTypeOrder.remove(clientRecipeType);
+            this.viewTypeOrder.addFirst(clientRecipeType);
+        }
 
         this.currentTypeIndex = 0;
 
@@ -123,7 +133,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             return;
 
         this.viewContainer = new ViewContainer(0);
-        this.viewType = ReliableClientRecipeType.NONE;
+        this.clientRecipeType = ReliableClientRecipeType.NONE;
 
     }
 
@@ -207,7 +217,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     }
 
     public void nextReference() {
-        this.currentCraftReference = Math.min(this.currentCraftReference + 1, this.viewType.getCraftReferences().size() - this.getDisplayableCraftReferences());
+        this.currentCraftReference = Math.min(this.currentCraftReference + 1, this.clientRecipeType.getCraftReferences().size() - this.getDisplayableCraftReferences());
         this.updateReferences();
     }
 
@@ -235,7 +245,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     }
 
-    public void setViewType(int typeId) {
+    public void setClientRecipeType(int typeId) {
         int prevIndex = this.currentTypeIndex;
         this.currentTypeIndex = typeId;
 
@@ -296,9 +306,9 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             recipe.getResults().forEach(slotContent -> slotContent.setType(SlotContent.Type.RESULT));
 
             SlotDefinition slotDefinition = new SlotDefinition();
-            this.viewType.placeSlots(slotDefinition);
+            this.clientRecipeType.placeSlots(slotDefinition);
             for (Slot slot : slotDefinition.getItemSlots()) {
-                int id = slot.getContainerSlot() + (i * this.getViewType().getSlotCount());
+                int id = slot.getContainerSlot() + (i * this.getClientRecipeType().getSlotCount());
 
                 this.addSlot(new Slot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i)));
             }
@@ -306,8 +316,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             SlotFillContext slotFillContext = new SlotFillContext();
             recipe.bindSlots(slotFillContext);
 
-            for (int j = 0; j < this.getViewType().getSlotCount(); j++) {
-                int slotId = j + (i * this.getViewType().getSlotCount());
+            for (int j = 0; j < this.getClientRecipeType().getSlotCount(); j++) {
+                int slotId = j + (i * this.getClientRecipeType().getSlotCount());
                 this.viewContainer.setItem(slotId, slotFillContext.contentBySlot(j).getByIndex(slotFillContext.contentBySlot(j).index()));
 
                 if (slotFillContext.getAdditionalTooltips().containsKey(j))
@@ -333,7 +343,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
 
         for (int i = 0; i < this.getDisplayableCraftReferences(); i++) {
-            this.addSlot(new Slot(this.viewContainer, this.viewType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i));
+            this.addSlot(new Slot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i));
         }
 
         this.updateReferences();
@@ -341,14 +351,14 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
 
     public int getDisplayableCraftReferences() {
-        List<ItemStack> craftReferences = this.getViewType().getCraftReferences();
+        List<ItemStack> craftReferences = this.getClientRecipeType().getCraftReferences();
         return Math.min(craftReferences.size(), (this.getHeight() - 4) / 25);
     }
 
     private void updateReferences() {
-        List<ItemStack> craftReferences = this.viewType.getCraftReferences();
-        for (int i = this.currentCraftReference; i < Math.min(this.viewType.getCraftReferences().size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
-            this.getSlot(this.viewType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i));
+        List<ItemStack> craftReferences = this.clientRecipeType.getCraftReferences();
+        for (int i = this.currentCraftReference; i < Math.min(this.clientRecipeType.getCraftReferences().size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
+            this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i));
         }
     }
 
@@ -629,7 +639,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         Optional<? extends ReliableClientRecipe> optional = recipes.stream().findFirst();
 
         if (optional.isPresent()) {
-            this.viewType = optional.get().getViewType();
+            this.clientRecipeType = optional.get().getViewType();
             this.maxPossiblePerPage = this.calculateRecipesPerPage();
 
             int i = this.getRecipes().size() / this.maxPossiblePerPage;
@@ -640,7 +650,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
 
             this.setMenuSizes();
-            this.viewContainer = new ViewContainer(this.viewType.getSlotCount() * this.maxPossiblePerPage + this.getDisplayableCraftReferences());
+            this.viewContainer = new ViewContainer(this.clientRecipeType.getSlotCount() * this.maxPossiblePerPage + this.getDisplayableCraftReferences());
 
             this.updateByPage();
 
@@ -648,7 +658,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     }
 
     private void setMenuSizes() {
-        this.menuHeight = TOP_SPACE + this.getRecipeDisplay().size() * this.getViewType().getDisplayHeight() + (this.getRecipeDisplay().size() * RecipeViewMenu.BUFFER_ZONE) + (BOTTOM_SPACE - BUFFER_ZONE);
+        this.menuHeight = TOP_SPACE + this.getRecipeDisplay().size() * this.getClientRecipeType().getDisplayHeight() + (this.getRecipeDisplay().size() * RecipeViewMenu.BUFFER_ZONE) + (BOTTOM_SPACE - BUFFER_ZONE);
 
         this.menuWidth = 176;
     }
@@ -663,11 +673,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     //Returns how far the viewtype-specific texture is away from the border
     protected int guiOffsetLeft() {
-        return (this.menuWidth - this.getViewType().getDisplayWidth()) / 2;
+        return (this.menuWidth - this.getClientRecipeType().getDisplayWidth()) / 2;
     }
 
     protected int guiOffsetTop(int displayIndex) {
-        return TOP_SPACE + (displayIndex * (this.getViewType().getDisplayHeight() + BUFFER_ZONE));
+        return TOP_SPACE + (displayIndex * (this.getClientRecipeType().getDisplayHeight() + BUFFER_ZONE));
     }
 
     protected void tickContents() {
@@ -678,11 +688,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             SlotFillContext slotFillContext = new SlotFillContext();
             recipe.bindSlots(slotFillContext);
 
-            for (int j = 0; j < this.getViewType().getSlotCount(); j++) {
+            for (int j = 0; j < this.getClientRecipeType().getSlotCount(); j++) {
 
                 //Exclude DependencySlots
                 if (!slotFillContext.contentDependencies.containsKey(j))
-                    this.viewContainer.setItem(j + (i * this.getViewType().getSlotCount()), slotFillContext.contentBySlot(j).next());
+                    this.viewContainer.setItem(j + (i * this.getClientRecipeType().getSlotCount()), slotFillContext.contentBySlot(j).next());
             }
 
         }
@@ -697,10 +707,10 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             SlotFillContext slotFillContext = new SlotFillContext();
             recipe.bindSlots(slotFillContext);
 
-            for (int j = 0; j < this.getViewType().getSlotCount(); j++) {
+            for (int j = 0; j < this.getClientRecipeType().getSlotCount(); j++) {
 
                 if (slotFillContext.contentDependencies.containsKey(j))
-                    this.viewContainer.setItem(j + (i * this.getViewType().getSlotCount()), slotFillContext.contentBySlot(j).getByIndex(Math.min(slotFillContext.contentDependencies.get(j).get(), slotFillContext.contentBySlot(j).size() - 1)));
+                    this.viewContainer.setItem(j + (i * this.getClientRecipeType().getSlotCount()), slotFillContext.contentBySlot(j).getByIndex(Math.min(slotFillContext.contentDependencies.get(j).get(), slotFillContext.contentBySlot(j).size() - 1)));
             }
         }
     }
@@ -709,8 +719,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.recipes;
     }
 
-    public ReliableClientRecipeType getViewType() {
-        return this.viewType;
+    public ReliableClientRecipeType getClientRecipeType() {
+        return this.clientRecipeType;
     }
 
     public ViewContainer getViewContainer() {
@@ -722,7 +732,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         if (this.getRecipes().isEmpty())
             return 0;
 
-        int recipeHeight = this.getViewType().getDisplayHeight();
+        int recipeHeight = this.getClientRecipeType().getDisplayHeight();
 
         int technicallyFitting = Math.min(this.getRecipes().size(), MAX_POSSIBLE_HEIGHT / recipeHeight);
         int imageheightRequired = (technicallyFitting * recipeHeight) + (technicallyFitting * BUFFER_ZONE + TOP_SPACE + BOTTOM_SPACE);

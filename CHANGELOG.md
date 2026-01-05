@@ -1,10 +1,22 @@
-- Mod namespace tooltips can now be disabled.
-- Mod namespace tooltips now respect `getCreatorNamespace`.
-- Hide RRV keybind is now unset by default.
-- Added buttons to change the current page.
-- Added a "Search ItemView" hint to the search bar.
-- Item View position can now be swapped between the left and right panels.
-- RRV's settings can now be modified in Mod Menu.
-- Adjusted "Entity Fighting" View Type to take up less of the screen.
-- Added a toggle for RRV to the client settings screen.
-- Recipe view types can now safely provide `null` as a background.
+- Features
+  - Clicking the recipe type title text now shows a complete recipe index.
+  - Item tags can now be viewed in RRV.
+- API Renames and Refactors
+  - `EivTagUtil` -> `TagUtil`
+  - `IExtendedItemViewIntegration`->`ReliableRecipeViewerPlugin`
+  - `EivServerRecipe` -> `ReliableServerRecipe`
+  - `EivRecipeType` -> `ReliableServerRecipeType`
+  - `EivViewRecipe` -> `ReliableClientRecipe`
+  - `EivRecipeViewType` `ReliableClientRecipeType`
+- Additional configuration options
+  - Mod namespace tooltips can now be disabled.
+  - Item View position can now be swapped between the left and right panels.
+  - Added a toggle for RRV to the client settings screen.
+- Tweaks
+  - Hide Item View keybind is unset by default.
+  - Added buttons to change the current page.
+  - Added a "Search Item View" hint to the search bar.
+  - Recipe view types (client recipe types) can safely provide `null` as a background.
+- Compatibility
+  - RRV's settings can be modified in Mod Menu.
+  - Mod namespace tooltips respect `getCreatorNamespace` and can be translated in the Mod Menu format.

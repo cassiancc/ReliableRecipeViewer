@@ -28,7 +28,7 @@ public class TagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayHeight() {
-        return 122;
+        return 142;
     }
 
     @Override

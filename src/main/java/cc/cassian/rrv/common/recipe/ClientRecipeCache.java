@@ -75,6 +75,10 @@ public class ClientRecipeCache {
         this.serverEntryMap.put(type, recipes);
     }
 
+    public List<ReliableClientRecipe> getRecipes() {
+        return List.copyOf(recipeMap.values());
+    }
+
 
     public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
         List<ReliableClientRecipe> recipes = new ArrayList<>();
