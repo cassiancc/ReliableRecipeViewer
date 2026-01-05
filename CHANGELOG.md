@@ -3,6 +3,7 @@
   - Item tags can now be viewed in RRV.
 - API Renames and Refactors
   - `EivTagUtil` -> `TagUtil`
+    - Added `readItemStack` and `writeItemStack` functions which automatically check for the correct side.
   - `IExtendedItemViewIntegration`->`ReliableRecipeViewerPlugin`
   - `EivServerRecipe` -> `ReliableServerRecipe`
   - `EivRecipeType` -> `ReliableServerRecipeType`
@@ -10,7 +11,7 @@
   - `EivRecipeViewType` `ReliableClientRecipeType`
 - Additional configuration options
   - Mod namespace tooltips can now be disabled.
-  - Item View position can now be swapped between the left and right panels.
+  - Item View position can now be swapped between the left and right panels. Fixes [#27](https://github.com/liushmn/ExtendedItemView/issues/27)
   - Added a toggle for RRV to the client settings screen.
 - Tweaks
   - Hide Item View keybind is unset by default.
@@ -20,3 +21,6 @@
 - Compatibility
   - RRV's settings can be modified in Mod Menu.
   - Mod namespace tooltips respect `getCreatorNamespace` and can be translated in the Mod Menu format.
+- Fixes
+  - Overlay can no longer be toggled by typing in the Creative Inventory search. Fixes [#26](https://github.com/liushmn/ExtendedItemView/issues/26)
+  - Clocks, compasses, and recovery compasses no longer work in the item view. Fixes [#28](https://github.com/liushmn/ExtendedItemView/issues/28)
