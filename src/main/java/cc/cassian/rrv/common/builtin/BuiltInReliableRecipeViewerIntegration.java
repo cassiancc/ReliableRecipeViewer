@@ -44,6 +44,7 @@ import cc.cassian.rrv.common.builtin.smoking.SmokingClientRecipe;
 import cc.cassian.rrv.common.builtin.stonecutting.StonecutterClientRecipe;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -387,7 +388,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
         //?} else {
-        /*ItemView.addRecipeProvider(recipeList -> {
+        /*ItemView.addServerRecipeProvider(recipeList -> {
             HolderLookup.RegistryLookup<VillagerType> villagerTypeRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_TYPE);
             HolderLookup.RegistryLookup<VillagerTrade> villagerTradeRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_TRADE);
             HolderLookup.RegistryLookup<VillagerProfession> villagerProfessionRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_PROFESSION);

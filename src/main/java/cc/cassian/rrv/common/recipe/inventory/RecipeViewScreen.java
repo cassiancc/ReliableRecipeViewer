@@ -19,6 +19,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -276,9 +277,18 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_recipeTag")) {
+            Component first = tooltip.getFirst();
+            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_recipeTag", "Error");
+            var itemTagKeyTranslation = "tag.item."+ Identifier.parse(tagKeyString).toLanguageKey().replace("/", ".");
+            if (I18n.exists(itemTagKeyTranslation)) {
+                tooltip.addFirst(Component.translatable(itemTagKeyTranslation));
+            } else {
+                tooltip.addFirst(Component.literal("#"+ tagKeyString));
+            }
+            tooltip.set(1, Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(first));
             tooltip.add(
                     Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
-                            .append(Component.literal("#" + tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_recipeTag", "Error")).withStyle(ChatFormatting.GRAY))
+                            .append(Component.literal("#" + tagKeyString).withStyle(ChatFormatting.GRAY))
 
             );
         }

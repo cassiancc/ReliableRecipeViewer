@@ -1,10 +1,10 @@
 package cc.cassian.rrv.common.builtin.villager;
 
+import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.common.mixin.world.entity.npc.*;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -44,6 +44,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.util.context.ContextKeySet;
 *///?}
 import net.minecraft.world.item.*;
 import java.util.ArrayList;
@@ -84,9 +87,9 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		this.serverTrades.forEach(tradeHolder -> {
 			CompoundTag compoundTag = new CompoundTag();
 			VillagerTrade.CODEC.encodeStart(NbtOps.INSTANCE, tradeHolder.value()).result().ifPresent((tag1)-> compoundTag.put("trade", tag1));
-			compoundTag.put("offerStacks", RrvTagUtil.writeList(offerStacks(tradeHolder.value()), (origin, tag1) -> RrvTagUtil.writeItemStack(origin)));
-			compoundTag.put("cost1", RrvTagUtil.writeList(cost1(tradeHolder.value()), (origin, tag1) -> RrvTagUtil.writeItemStack(origin)));
-			compoundTag.put("cost2", RrvTagUtil.writeList(cost2(tradeHolder.value()), (origin, tag1) -> RrvTagUtil.writeItemStack(origin)));
+			compoundTag.put("offerStacks", TagUtil.writeList(offerStacks(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
+			compoundTag.put("cost1", TagUtil.writeList(cost1(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
+			compoundTag.put("cost2", TagUtil.writeList(cost2(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
 			trades.add(compoundTag);
 		});
 		tag.put("trades", trades);
@@ -107,13 +110,13 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		}
 		this.clientTrades = trades;
 
-		this.cost1 = RrvTagUtil.readList(tag, "cost1", RrvTagUtil::readItemStack);
-		this.cost2 = RrvTagUtil.readList(tag, "cost2", RrvTagUtil::readItemStack);
-		this.offerStacks = RrvTagUtil.readList(tag, "offerStacks", RrvTagUtil::readItemStack);
+		this.cost1 = TagUtil.readList(tag, "cost1", TagUtil::readItemStack);
+		this.cost2 = TagUtil.readList(tag, "cost2", TagUtil::readItemStack);
+		this.offerStacks = TagUtil.readList(tag, "offerStacks", TagUtil::readItemStack);
 	}
 
 	@Override
-	public RrvRecipeType<? extends IRrvServerRecipe> getRecipeType() {
+	public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
 		return TYPE;
 	}
 

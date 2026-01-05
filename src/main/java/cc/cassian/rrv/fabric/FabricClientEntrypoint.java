@@ -30,8 +30,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         ReliableRecipeViewerClient.boostrap();
 
         //? >26 {
-        /*CommonRRVClient.RRV_KEY_MAPPINGS.forEach(KeyMappingHelper::registerKeyMapping);
-        ModelLayerRegistry.registerModelLayer(CommonRRVClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
+        /*ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyMappingHelper::registerKeyMapping);
+        ModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
         *///?} else {
         ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyBindingHelper::registerKeyBinding);
         EntityModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
