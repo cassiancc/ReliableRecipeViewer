@@ -54,7 +54,7 @@ public abstract class MixinGuiRenderer<T extends PictureInPictureRenderState> im
         if (!(renderer instanceof GuiEntityRenderer) || !(renderState instanceof GuiEntityRenderState guiEntityRenderState))
             return;
 
-        if(!(guiEntityRenderState.renderState() instanceof IRrvWrappedRenderState wrappedRenderState) || !wrappedRenderState.extendedItemView$isMultiRenderingEnabled())
+        if(!(guiEntityRenderState.renderState() instanceof IRrvWrappedRenderState wrappedRenderState) || !wrappedRenderState.rrv$isMultiRenderingEnabled())
             return;
 
         if (this.rrv$renderersLastFrame.containsKey(renderState))

@@ -203,11 +203,11 @@ public class OverlayManager {
 
     public void renderAllBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (Configs.CLIENT_SETTINGS.drawBackground())
-            PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).filter(AbstractRrvOverlay::isEnoughSpaceToRender).forEach(overlay -> overlay.renderBackground(guiGraphics, mouseX, mouseY, partialTicks));
+            PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.renderBackground(guiGraphics, mouseX, mouseY, partialTicks));
     }
 
     public void renderAll(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).filter(AbstractRrvOverlay::isEnoughSpaceToRender).forEach(overlay -> overlay.render(guiGraphics, mouseX, mouseY, partialTicks));
+        PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.render(guiGraphics, mouseX, mouseY, partialTicks));
 
         if (Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
             this.renderDebug(guiGraphics, mouseX, mouseY, partialTicks);

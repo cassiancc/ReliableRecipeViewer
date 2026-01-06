@@ -31,14 +31,14 @@
   "rrv.search_hint": "Search Item View...",
   "rrv.all_recipes_hint": "Click to show all recipes",
 
-  "key.category.rrv.rrv": "Extended ItemView",
+  "key.category.rrv.rrv": "Reliable Recipe Viewer",
   "key.rrv.bookmark": "Add Bookmark",
   "key.rrv.usage": "Show Usage",
   "key.rrv.recipe": "Show Recipes",
   "key.rrv.go_back": "Go Back",
   "key.rrv.go_forward": "Go Forward",
 
-  "key.category.rrv.rrv_admin": "Extended ItemView - Admin",
+  "key.category.rrv.rrv_admin": "Reliable Reciper Viewe - Admin",
   "key.rrv.cheatmode": "Use Cheatmode",
 
   "cheatmode.rrv.denied": "You do not have permission to use the cheatmode",

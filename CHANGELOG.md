@@ -24,3 +24,4 @@
 - Fixes
   - Overlay can no longer be toggled by typing in the Creative Inventory search. Fixes [#26](https://github.com/liushmn/ExtendedItemView/issues/26)
   - Clocks, compasses, and recovery compasses no longer work in the item view. Fixes [#28](https://github.com/liushmn/ExtendedItemView/issues/28)
+  - Workaround for [#24](https://github.com/liushmn/ExtendedItemView/issues/24)

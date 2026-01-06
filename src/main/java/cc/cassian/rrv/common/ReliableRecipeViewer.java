@@ -8,7 +8,7 @@ public class ReliableRecipeViewer {
 
     public static final String MOD_ID = "rrv";
 
-    public static final Logger LOGGER = LoggerFactory.getLogger("Extended ItemView");
+    public static final Logger LOGGER = LoggerFactory.getLogger("Reliable Recipe Viewer");
 
     public static final String CONFIG_PATH = "config/rrv/";
 

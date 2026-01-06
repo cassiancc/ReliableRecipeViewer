@@ -66,7 +66,7 @@ public abstract class AbstractRrvOverlay {
     }
 
     public boolean isEnoughSpaceToRender() {
-        return this.enoughSpaceToRender;
+        return true;
     }
 
     protected boolean keyPressed(KeyEvent keyEvent) {

@@ -8,7 +8,7 @@ package cc.cassian.rrv.common.rendering;
 public interface IRrvWrappedRenderState {
 
 
-    void extendedItemView$enableMultiRendering();
+    void rrv$enableMultiRendering();
 
-    boolean extendedItemView$isMultiRenderingEnabled();
+    boolean rrv$isMultiRenderingEnabled();
 }

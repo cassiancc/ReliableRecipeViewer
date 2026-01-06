@@ -153,6 +153,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     }
 
     protected int getMaxPageIndex() {
+        if (this.fittingPerPage() < 1) return 0;
         int maxPageIndex = ((this.availableItems().size() - 1) / (this.fittingPerPage()));
         if (this.startIndex % this.fittingPerPage() != 0 && this.startIndex % this.fittingPerPage() < this.availableItems().size() % this.fittingPerPage())
             maxPageIndex++;

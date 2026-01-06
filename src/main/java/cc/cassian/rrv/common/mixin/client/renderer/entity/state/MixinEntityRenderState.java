@@ -13,12 +13,12 @@ public abstract class MixinEntityRenderState implements IRrvWrappedRenderState {
     private boolean rrv$multiRendering = false;
 
     @Override
-    public void extendedItemView$enableMultiRendering() {
+    public void rrv$enableMultiRendering() {
         this.rrv$multiRendering = true;
     }
 
     @Override
-    public boolean extendedItemView$isMultiRenderingEnabled() {
+    public boolean rrv$isMultiRenderingEnabled() {
         return this.rrv$multiRendering;
     }
 }
