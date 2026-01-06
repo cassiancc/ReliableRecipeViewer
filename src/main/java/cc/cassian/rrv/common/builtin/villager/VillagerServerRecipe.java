@@ -5,11 +5,9 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.common.mixin.world.entity.npc.*;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
@@ -33,8 +31,6 @@ import net.minecraft.world.entity.npc.villager.VillagerType;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -48,12 +44,15 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.core.component.predicates.DataComponentPredicate;
+import net.minecraft.core.component.predicates.DataComponentPredicates;
+import net.minecraft.core.component.predicates.VillagerTypePredicate;
+import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.ListTag;
 *///?}
 import net.minecraft.world.item.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -85,9 +84,8 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		tag.putString("profession", this.profession.identifier().toString());
 		tag.putInt("professionLevel", this.professionLevel);
 		ListTag trades = new ListTag();
-		trades.add(VillagerTrade.CODEC.encodeStart(NbtOps.INSTANCE, tradeHolder.value()).result().orElseThrow());
+		trades.add(VillagerTrade.CODEC.encodeStart(ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), tradeHolder.value()).result().orElseThrow());
 		tag.put("trades", trades);
-		VillagerTrade.CODEC.encodeStart(NbtOps.INSTANCE, tradeHolder.value()).result().ifPresent((tag1)-> tag.put("trade", tag1));
 		tag.put("offerStacks", TagUtil.writeList(offerStacks(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
 		tag.put("cost1", TagUtil.writeList(cost1(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
 		tag.put("cost2", TagUtil.writeList(cost2(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
@@ -101,7 +99,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		this.professionLevel = tag.getIntOr("professionLevel", 0);
 
 		ArrayList<VillagerTrade> trades = new ArrayList<>();
-		tag.getListOrEmpty("trades").forEach(trade -> VillagerTrade.CODEC.decode(NbtOps.INSTANCE, trade).result().ifPresent(decodedTrade -> trades.add(decodedTrade.getFirst())));
+		tag.getListOrEmpty("trades").forEach(trade -> VillagerTrade.CODEC.decode(Minecraft.getInstance().player.level().registryAccess().createSerializationContext(NbtOps.INSTANCE), trade).result().ifPresent(decodedTrade -> trades.add(decodedTrade.getFirst())));
 		this.clientTrades = trades;
 
 		this.cost1 = TagUtil.readList(tag, "cost1", TagUtil::readItemStack);
@@ -124,7 +122,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 	public List<VillagerOffer> getOffers() {
 		ArrayList<VillagerOffer> villagerOffers = new ArrayList<>();
-		getClientTrades().forEach(trade -> villagerOffers.add(new VillagerOffer(trade, profession, professionLevel, offerStacks, cost1, cost2)));
+		getClientTrades().forEach(trade -> villagerOffers.add(new VillagerOffer(trade, profession, professionLevel, offerStacks, cost1, cost2, requiredType(trade))));
 		return villagerOffers;
 	}
 
@@ -136,7 +134,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	public List<ItemStack> cost1(VillagerTrade trade) {
 		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
 		var wants = tradeAccessor.getWants();
-		int wantedCount = wants.count().getInt(new LootContext.Builder(new LootParams.Builder(ServerRecipeManager.INSTANCE.getServer().overworld()).create(new ContextKeySet.Builder().build())).create(Optional.empty()));
+		int wantedCount = wants.count().getInt(lootContext());
 		return List.of(wants.item().value().getDefaultInstance().copyWithCount(wantedCount));
 	}
 
@@ -144,17 +142,33 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
 		if (tradeAccessor.getAdditionalWants().isPresent()) {
 			var wants = tradeAccessor.getAdditionalWants().get();
-			int wantedCount = wants.count().getInt(new LootContext.Builder(new LootParams.Builder(ServerRecipeManager.INSTANCE.getServer().overworld()).create(new ContextKeySet.Builder().build())).create(Optional.empty()));
+			int wantedCount = wants.count().getInt(lootContext());
 			return List.of(wants.item().value().getDefaultInstance().copyWithCount(wantedCount));
 		} else return List.of();
 	}
 
-
-	public record VillagerOffer(VillagerTrade trade, ResourceKey<VillagerProfession> profession, int professionLevel, List<ItemStack> offerStacks, List<ItemStack> cost1, List<ItemStack> cost2) {
-		public ResourceKey<VillagerType> requiredtype() {
-			return VillagerType.PLAINS;
+	public ResourceKey<VillagerType> requiredType(VillagerTrade trade) {
+		ResourceKey<VillagerType> villagerTypeHolder = VillagerType.PLAINS;
+		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
+		var predicate = tradeAccessor.getMerchantPredicate();
+		if (predicate.orElse(null) instanceof LootItemEntityPropertyCondition lootItemEntityPropertyCondition) {
+			for (Map.Entry<DataComponentPredicate.Type<?>, DataComponentPredicate> entry : lootItemEntityPropertyCondition.predicate().get().components().partial().entrySet()) {
+				DataComponentPredicate.Type<?> type = entry.getKey();
+				DataComponentPredicate dataComponentPredicate = entry.getValue();
+				if (type.equals(DataComponentPredicates.VILLAGER_VARIANT)) {
+					villagerTypeHolder = (((VillagerTypePredicate) dataComponentPredicate).villagerTypes().get(0)).unwrapKey().orElse(VillagerType.PLAINS);
+				}
+			}
 		}
+		return villagerTypeHolder;
+	}
 
+	private LootContext lootContext() {
+		return new LootContext.Builder(new LootParams.Builder(ServerRecipeManager.INSTANCE.getServer().overworld()).create(new ContextKeySet.Builder().build())).create(Optional.empty());
+	}
+
+
+	public record VillagerOffer(VillagerTrade trade, ResourceKey<VillagerProfession> profession, int professionLevel, List<ItemStack> offerStacks, List<ItemStack> cost1, List<ItemStack> cost2, ResourceKey<VillagerType> requiredType) {
 	}
 
 	*///?} else {
@@ -225,7 +239,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
     }
 
     public record VillagerOffer(ResourceKey<VillagerProfession> profession, int professionLevel,
-                                @Nullable ResourceKey<VillagerType> requiredtype, List<ItemStack> offerStacks,
+                                @Nullable ResourceKey<VillagerType> requiredType, List<ItemStack> offerStacks,
                                 List<ItemStack> cost1, List<ItemStack> cost2, int villagerXp, int maxUses) {
 
     }

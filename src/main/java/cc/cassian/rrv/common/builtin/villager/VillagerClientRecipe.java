@@ -112,8 +112,8 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         this.previewVillager.setNoAi(true);
         this.previewVillager.setYHeadRot((this.villagerLookLeft ? -1.0F : 1.0F) * 15.0F);
 
-        if (this.villagerOffer.requiredtype() != null)
-            this.previewVillager.setVillagerData(this.previewVillager.getVillagerData().withType(level.registryAccess().lookupOrThrow(Registries.VILLAGER_TYPE).getOrThrow(this.villagerOffer.requiredtype())));
+        if (this.villagerOffer.requiredType() != null)
+            this.previewVillager.setVillagerData(this.previewVillager.getVillagerData().withType(level.registryAccess().lookupOrThrow(Registries.VILLAGER_TYPE).getOrThrow(this.villagerOffer.requiredType())));
 
     }
 
@@ -149,11 +149,11 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
 
         this.renderVillager(guiGraphics, recipePosition, mouseX, mouseY, partialTicks);
 
-        if (this.villagerOffer.requiredtype() == null)
+        if (this.villagerOffer.requiredType() == null)
             return;
 
         if (mouseX >= 0 && mouseX <= 24 && mouseY >= 0 && mouseY <= 36) {
-            Identifier typeLocation = this.villagerOffer.requiredtype().identifier();
+            Identifier typeLocation = this.villagerOffer.requiredType().identifier();
             Component typeComponent = Component.translatable("view.rrv.type.trading." + typeLocation.getNamespace() + "." + typeLocation.getPath()).withStyle(ChatFormatting.GOLD);
             guiGraphics.setComponentTooltipForNextFrame(font, List.of(typeComponent), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
         }
