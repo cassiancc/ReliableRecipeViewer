@@ -2,6 +2,7 @@ plugins {
     id("net.neoforged.moddev")
     id ("dev.kikugie.postprocess.jsonlang")
     id("me.modmuss50.mod-publish-plugin")
+    id("maven-publish")
 }
 
 tasks.named<ProcessResources>("processResources") {
@@ -26,7 +27,7 @@ tasks.named<ProcessResources>("processResources") {
 }
 
 version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
-base.archivesName = property("mod.id") as String
+base.archivesName = "reliable-recipe-viewer"
 
 jsonlang {
     languageDirectories = listOf("assets/${property("mod.id")}/lang")
@@ -123,5 +124,16 @@ publishMods {
         accessToken = env.CURSEFORGE_API_KEY.orNull()
         minecraftVersions.add(stonecutter.current.version)
         minecraftVersions.addAll(additionalVersions)
+    }
+}
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "cc.cassian.rrv"
+            artifactId = "reliable-recipe-viewer-fabric"
+            version = "${property("mod.version")}+${property("deps.minecraft")}"
+
+            from(components["java"])
+        }
     }
 }

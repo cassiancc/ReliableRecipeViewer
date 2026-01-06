@@ -41,7 +41,7 @@ This started as a port of [Extended Item View](https://modrinth.com/mod/rrv) to 
 
 # Developer Guide
 
-## Adding the depedency
+## Adding the dependency
 ```gradle
 //Taken from https://support.modrinth.com/en/articles/8801191-modrinth-maven
 repositories {
@@ -60,20 +60,17 @@ repositories {
 
 dependencies {
 	// Fabric and Architectury Loom
-	modImplementation "maven.modrinth:rrv:${rrv_version}+${minecraft_version}-fabric"
-
-	// NeoForge and Multiloader Template
-	implementation "maven.modrinth:rrv:${rrv_version}+${minecraft_version}-neoforge"
+	modImplementation "maven.modrinth:rrv:${rrv_version}+${minecraft_version}"
 }
 ```
 
 ## Creating your mod's integration
 
-Before you can implement your own recipes you first have to create an rrv-integration for your Mod.
+Before you can implement your own recipes, you first have to create a RRV plugin for your mod.
 This is done by creating a class implementing `ReliableRecipeViewerPlugin`:
 
 ```java
-public class MyModRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
+public class ExampleModRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
     
     @Override
     public void onIntegrationInitialize() {
@@ -92,7 +89,7 @@ Don't forget to add it as an entrypoint to your mod
 	"entrypoints": {
     ...,
 		"rrv": [
-			"com.example.mod.rrv.MyModRecipeViewerIntegration"
+			"com.example.mod.rrv.ExampleModRecipeViewerIntegration"
 		]
 	},
 ...
@@ -102,13 +99,13 @@ Don't forget to add it as an entrypoint to your mod
 ### NeoForge (neoforge.mods.toml)
 ```toml
 # ...
-rrv="com.example.mod.rrv.MyModRecipeViewerIntegration"
+rrv="com.example.mod.rrv.ExampleModRecipeViewerIntegration"
 # ...
 ```
 
 ## Adding a new recipe type
 
-Since you want to add a complete new way of crafting, you first need to create your viewtype.
+Since you want to add a complete new way of crafting, you first need to create your client recipe type.
 Simply create a class implementing `ReliableClientRecipeType` and override the required methods:
 
 ```java
@@ -235,7 +232,7 @@ To wrap your ingredients and results (items, item stacks, fluid stacks, lists of
 
 ### Slot dependencies
 
-If there is a slot that should not tick independently you can bind it as a dependant slot:
+If there is a slot that should not tick independently you can bind it as a dependent slot:
 
 ```java
     @Override
@@ -253,7 +250,7 @@ In this case, we are using the current index of `this.input` as the index for `t
 
 ## Server side recipe representation
 
-Minecraft's recipe system was changed in 1.21.2 so that all recipes only exist on the server and the client is not told which recipes exist.
+Minecraft's recipe system was changed in 1.21.2 so that all recipes only exist on the server, meaning the client is not told which recipes exist.
 Since this mod requires recipes to exist clientside, we have to synchronize the recipes between the server and client ourselves.
 For consistency, RRV requires a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
 

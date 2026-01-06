@@ -4,13 +4,14 @@ plugins {
     id("net.fabricmc.fabric-loom")
     id("dev.kikugie.postprocess.jsonlang")
     id("me.modmuss50.mod-publish-plugin")
+    id("maven-publish")
 }
 
 tasks.named<ProcessResources>("processResources") {
     fun prop(name: String) = project.property(name) as String
 
     val props = HashMap<String, String>().apply {
-        this["mod_version"] = prop("mod.version")
+        this["mod_version"] = "${prop("mod.version")}+${prop("deps.minecraft")}"
         this["minecraft"] = prop("deps.minecraft")
         this["mod_name"] = prop("mod.name")
         this["mod_description"] = prop("mod.description")
@@ -26,7 +27,7 @@ tasks.named<ProcessResources>("processResources") {
 }
 
 version = "${property("mod.version")}+${property("deps.minecraft")}-fabric"
-base.archivesName = property("mod.id") as String
+base.archivesName = "reliable-recipe-viewer"
 
 loom {
     accessWidenerPath = rootProject.file("src/main/resources/${property("mod.id")}.classtweaker")
@@ -60,7 +61,7 @@ dependencies {
 
 tasks {
     processResources {
-        exclude("**/neoforge.mods.toml", "**/mods.toml")
+        exclude("**/neoforge.mods.toml", "**/mods.toml", "rrv.neoforge.mixins.json",)
     }
 
     register<Copy>("buildAndCollect") {
@@ -109,5 +110,17 @@ publishMods {
         minecraftVersions.add(property("publish.curseforge_minecraft_version").toString())
         minecraftVersions.addAll(additionalVersions)
         requires("fabric-api")
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "cc.cassian.rrv"
+            artifactId = "reliable-recipe-viewer-fabric"
+            version = "${property("mod.version")}+${property("deps.minecraft")}"
+
+            from(components["java"])
+        }
     }
 }
