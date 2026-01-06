@@ -1,12 +1,12 @@
 package cc.cassian.rrv.common.command;
 
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.permissions.Permissions;
 
 public class RrvCommand {
 
@@ -42,7 +42,7 @@ public class RrvCommand {
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
         commandDispatcher.register(
                 Commands.literal("rrv")
-                        .requires(commandSourceStack -> commandSourceStack.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+                        .requires(RrvUtil::hasPermission)
                         .then(Commands.literal("reloadRecipes").executes(RrvCommand::reloadRecipes))
                         .then(Commands.literal("reloadStackSensitives").executes(RrvCommand::reloadStackSensitives))
         );

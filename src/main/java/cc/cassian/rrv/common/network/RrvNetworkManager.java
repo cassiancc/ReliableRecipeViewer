@@ -15,6 +15,7 @@ import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -26,7 +27,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.Permissions;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 
@@ -211,7 +211,7 @@ public class RrvNetworkManager {
         //Cheatmode
         this.registerServerbound(ServerboundPickCheatmodeItemPayload.TYPE, ServerboundPickCheatmodeItemPayload.STREAM_CODEC, (context, payload) -> {
 
-            if (context.sender().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+            if (RrvUtil.hasPermission(context.sender())) {
                 context.sender().sendSystemMessage(
                         Component.literal("Cheated x").withStyle(ChatFormatting.GRAY)
                                 .append(

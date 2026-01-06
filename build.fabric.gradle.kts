@@ -40,12 +40,25 @@ jsonlang {
 
 repositories {
     mavenLocal()
-    maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
+    maven {
+        name = "Parchment Mappings"
+        url = uri("https://maven.parchmentmc.org")
+        content {
+            includeGroupAndSubgroups("org.parchmentmc")
+        }
+    }
     maven {
         name = "Terraformers (Mod Menu)"
         url = uri("https://maven.terraformersmc.com/releases/")
         content {
             includeGroupAndSubgroups("com.terraformersmc")
+        }
+    }
+    maven {
+        name = "Gegy"
+        url = uri("https://maven.gegy.dev/releases/")
+        content {
+            includeGroupAndSubgroups("dev.lambdaurora")
         }
     }
 }
@@ -56,6 +69,8 @@ dependencies {
         officialMojangMappings()
         if (hasProperty("deps.parchment"))
             parchment("org.parchmentmc.data:parchment-${property("deps.parchment")}@zip")
+        if (hasProperty("deps.mojbackward"))
+            mappings("dev.lambdaurora:yalmm-mojbackward:${property("deps.minecraft")}+build.${property("deps.mojbackward")}")
     })
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")

@@ -4,7 +4,6 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.util.Unit;
 
 /**
@@ -14,7 +13,11 @@ public class FluidItemModel extends Model<Unit> {
 
 
     public FluidItemModel(ModelPart modelPart) {
-        super(modelPart, RenderTypes::entityTranslucent);
+        //? if >1.21.10 {
+        /*super(modelPart, net.minecraft.client.renderer.rendertype.RenderTypes::entityTranslucent);
+        *///?} else {
+        super(modelPart, net.minecraft.client.renderer.rendertype.RenderType::entityTranslucent);
+        //?}
     }
 
     public static LayerDefinition createFluidLayer() {
