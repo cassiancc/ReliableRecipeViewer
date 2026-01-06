@@ -36,7 +36,7 @@ public abstract class MixinEffectsInInventory {
     private AbstractContainerScreen<?> screen;
 
     @Inject(method = "renderEffects", at = @At("HEAD"))
-    private void injectBlocking$0(GuiGraphics guiGraphics, Collection<MobEffectInstance> collection, int i, int j, int k, int l, int m, CallbackInfo ci){
+    private void injectBlocking$0(GuiGraphics guiGraphics, final Collection<MobEffectInstance> activeEffects, final int x0, final int yStep, final int mouseX, final int mouseY, final int maxWidth, CallbackInfo ci){
 
         List<Identifier> effectsToRemove = new ArrayList<>();
         for(BlockingGuiComponent guiBlock : OverlayManager.INSTANCE.allGuiBlockings()){
@@ -54,23 +54,15 @@ public abstract class MixinEffectsInInventory {
         OverlayManager.INSTANCE.removeGuiBlocking(effectsToRemove::contains, !effectsToRemove.isEmpty());
     }
 
-    @Inject(method = "renderBackground", at = @At("HEAD"))
-    private void injectBlocking$1(GuiGraphics guiGraphics, Font font, Component component, Component component2, int i, int j, boolean bl, int k2, CallbackInfoReturnable<Integer> cir){
+    @Inject(method = "renderBackground", at = @At("RETURN"))
+    private void injectBlocking$1(final GuiGraphics graphics, final Font font, final Component effectName, final Component duration, final int x0, final int y0, final boolean isAmbient, final int maxTextureWidth, CallbackInfoReturnable<Integer> cir){
 
-        if (component.getContents() instanceof TranslatableContents translatableContents) {
+        if (effectName.getContents() instanceof TranslatableContents translatableContents) {
             int k = OverlayManager.INSTANCE.currentInfo().topPos();
 
-            if (bl) {
-                OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                        Identifier.withDefaultNamespace("mobeffect_" + translatableContents.getKey()), i, k, 120, 32
-                ));
-
-            } else {
-                OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                        Identifier.withDefaultNamespace("mobeffect_" +  translatableContents.getKey()), i, k, 32, 32
-                ));
-
-            }
+            OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
+                    Identifier.withDefaultNamespace("mobeffect_" +  translatableContents.getKey()), x0, k, cir.getReturnValue(), 32
+            ));
         }
 
 
