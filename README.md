@@ -21,46 +21,32 @@ For more details, see the [Extended Item View](https://modrinth.com/mod/rrv).
 
 **NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
 
-## FAQ
-
-- Will this mod be ported to other versions/loaders?
-    - This port will be kept up to date with the latest version of Minecraft. No backports are planned/necessary, please use the original mod.
-
-## Mod Compatibility
-
-Developers wishing to use the mod can make use of RRV's easy to use API. More info on [RRV's GitHub page](https://github.com/liushmn/ExtendedItemView). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
-
-## License
-[![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](github.com/cassiancc/bygone-fortress)
-
-RRV is available under the open source MIT License, matching the original mod.
-
-## Credits
-This started as a port of [Extended Item View](https://modrinth.com/mod/rrv) to Fabric 1.21.11 that I made for personal use. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. I have opted to redesign some elements of the mod with the goal to make it a more reliable recipe viewer to use.
-
-
 # Developer Guide
+
+These instructions are for my maven, but Modrinth Maven should also be useable once this mod is available on Modrinth!
 
 ## Adding the dependency
 ```gradle
-//Taken from https://support.modrinth.com/en/articles/8801191-modrinth-maven
 repositories {
     exclusiveContent {
         forRepository {
             maven {
-                name = "Modrinth"
-                url = "https://api.modrinth.com/maven"
+              name = "Cassian's Maven"
+              url = uri("https://maven.cassian.cc")
             }
         }
         filter {
-            includeGroup "maven.modrinth"
+            includeGroupAndSubgroups("cc.cassian")
         }
     }
 }
 
 dependencies {
-	// Fabric and Architectury Loom
-	modImplementation "maven.modrinth:rrv:${rrv_version}+${minecraft_version}"
+    // Fabric 1.21.11 and below
+    modImplementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${property("deps.rrv")}")
+    
+    // Fabric 26.1 and above
+    implementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${property("deps.rrv")}")
 }
 ```
 
@@ -377,3 +363,21 @@ This fork is distributed alongside its source code on Modrinth Maven, so its Jav
 If you still have questions, you can always contact me via [Discord](https://discord.cassian.cc)<br>
 <br>
 Have fun modding!
+
+
+## FAQ
+
+- Will this mod be ported to other versions/loaders?
+  - This port will be kept up to date with the latest version of Minecraft. No backports are planned/necessary, please use the original mod.
+
+## Mod Compatibility
+
+Developers wishing to use the mod can make use of RRV's easy to use API. More info on [RRV's GitHub page](https://github.com/liushmn/ExtendedItemView). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
+
+## License
+[![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](github.com/cassiancc/bygone-fortress)
+
+RRV is available under the open source MIT License, matching the original mod.
+
+## Credits
+This started as a port of [Extended Item View](https://modrinth.com/mod/rrv) to Fabric 1.21.11 that I made for personal use. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. I have opted to redesign some elements of the mod with the goal to make it a more reliable recipe viewer to use.
