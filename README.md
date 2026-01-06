@@ -1,7 +1,7 @@
 <h1 align="center">RRV</h1>
 
 <p align="center">
-  <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/rrv/icon.png">
+  <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/rrv/icon2.png">
 </p>
 
 ## Overview
