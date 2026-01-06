@@ -1,3 +1,9 @@
+## [6.0.1]
+
+### Fixed
+- Crash with VoxelMap.
+
+## [6.0.0]
 - Features
   - Clicking the recipe type title text now shows a complete recipe index.
   - Item tags can now be viewed in RRV.
