@@ -18,9 +18,6 @@ public class TagClientRecipe implements ReliableClientRecipe {
 	private final TagKey<Item> tagKey;
 	private final List<SlotContent> items;
 
-	private int animationTick = 0;
-	private boolean hovered = false;
-
 	public TagClientRecipe(TagServerRecipe serverRecipe) {
 		this.tagKey = serverRecipe.getTagKey();
 
@@ -71,15 +68,4 @@ public class TagClientRecipe implements ReliableClientRecipe {
 		return this.items;
 	}
 
-
-	@Override
-	public void tick() {
-
-		if (this.hovered)
-			return;
-
-		this.animationTick++;
-		if (this.animationTick >= 360)
-			this.animationTick = 0;
-	}
 }
