@@ -55,6 +55,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 
 public class VillagerServerRecipe implements ReliableServerRecipe {
