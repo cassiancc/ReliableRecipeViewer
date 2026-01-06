@@ -61,13 +61,12 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 	public static final ReliableServerRecipeType<VillagerServerRecipe> TYPE = ReliableServerRecipeType.register(
 			Identifier.withDefaultNamespace("villager_trading"),
-			() -> new VillagerServerRecipe(null, 0, null, null)
+			() -> new VillagerServerRecipe(null, 0, null)
 	);
 
 	//? >26 {
 	/*private ResourceKey<VillagerProfession> profession;
 	private int professionLevel;
-	private HolderSet<VillagerTrade> serverTrades;
 	private List<VillagerTrade> clientTrades;
 	private Holder<VillagerTrade> tradeHolder;
 	private List<ItemStack> cost1;
@@ -75,11 +74,10 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	private List<ItemStack> offerStacks;
 
 
-	public VillagerServerRecipe(ResourceKey<VillagerProfession> key, int level, Holder<VillagerTrade> trade, HolderSet<VillagerTrade> trades) {
+	public VillagerServerRecipe(ResourceKey<VillagerProfession> key, int level, Holder<VillagerTrade> trade) {
 		this.profession = key;
 		this.professionLevel = level;
 		this.tradeHolder = trade;
-		this.serverTrades = trades;
 	}
 
 	@Override
@@ -87,9 +85,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		tag.putString("profession", this.profession.identifier().toString());
 		tag.putInt("professionLevel", this.professionLevel);
 		ListTag trades = new ListTag();
-		this.serverTrades.forEach(tradeHolder -> {
-			VillagerTrade.CODEC.encodeStart(NbtOps.INSTANCE, tradeHolder.value()).result().ifPresent(trades::add);
-		});
+		trades.add(VillagerTrade.CODEC.encodeStart(NbtOps.INSTANCE, tradeHolder.value()).result().orElseThrow());
 		tag.put("trades", trades);
 		VillagerTrade.CODEC.encodeStart(NbtOps.INSTANCE, tradeHolder.value()).result().ifPresent((tag1)-> tag.put("trade", tag1));
 		tag.put("offerStacks", TagUtil.writeList(offerStacks(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
@@ -174,10 +170,6 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
         this.professionLevel = professionLevel;
         this.dataObject = dataObject;
 
-    }
-
-    public VillagerServerRecipe(ResourceKey<VillagerProfession> profession, int professionLevel, VillagerDataObject<?> dataObject, Object o) {
-        this(profession, professionLevel, dataObject);
     }
 
     public List<VillagerOffer> getOffers() {

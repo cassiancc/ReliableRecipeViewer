@@ -44,7 +44,6 @@ import cc.cassian.rrv.common.builtin.smoking.SmokingClientRecipe;
 import cc.cassian.rrv.common.builtin.stonecutting.StonecutterClientRecipe;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -61,6 +60,7 @@ import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.item.trading.VillagerTrades;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.npc.villager.VillagerType;
+import net.minecraft.core.HolderLookup;
 *///?}
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
@@ -389,8 +389,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
         //?} else {
         /*ItemView.addServerRecipeProvider(recipeList -> {
-            HolderLookup.RegistryLookup<VillagerType> villagerTypeRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_TYPE);
-            HolderLookup.RegistryLookup<VillagerTrade> villagerTradeRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_TRADE);
             HolderLookup.RegistryLookup<VillagerProfession> villagerProfessionRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_PROFESSION);
             HolderLookup.RegistryLookup<TradeSet> tradeSetRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.TRADE_SET);
 
@@ -398,7 +396,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 professionReference.value().tradeSetsByLevel().forEach((level, tradeSetKey) -> {
                     var trades = tradeSetRegistryLookup.getOrThrow(tradeSetKey).value().getTrades();
                     trades.forEach(villagerTradeHolder -> {
-                        recipeList.add(new VillagerServerRecipe(professionReference.key(), level, villagerTradeHolder, trades));
+                        recipeList.add(new VillagerServerRecipe(professionReference.key(), level, villagerTradeHolder));
                     });
                 });
             });
