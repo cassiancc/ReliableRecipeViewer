@@ -72,8 +72,8 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public Class<? extends AbstractContainerScreen<?>> getTransferClass() {
-        return SmokerScreen.class;
+    public List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
+        return List.of(SmokerScreen.class);
     }
 
     @Override

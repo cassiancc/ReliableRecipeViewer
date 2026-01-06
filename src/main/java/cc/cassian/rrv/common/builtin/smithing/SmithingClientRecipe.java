@@ -95,8 +95,8 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public Class<? extends AbstractContainerScreen<?>> getTransferClass() {
-        return SmithingScreen.class;
+    public List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
+        return List.of(SmithingScreen.class);
     }
 
     @Override

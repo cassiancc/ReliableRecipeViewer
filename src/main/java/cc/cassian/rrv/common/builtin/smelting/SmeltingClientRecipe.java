@@ -72,8 +72,8 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public Class<? extends AbstractContainerScreen<?>> getTransferClass() {
-        return FurnaceScreen.class;
+    public List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
+        return List.of(FurnaceScreen.class);
     }
 
     @Override

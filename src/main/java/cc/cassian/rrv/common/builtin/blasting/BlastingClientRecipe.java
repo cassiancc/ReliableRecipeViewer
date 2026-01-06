@@ -71,8 +71,8 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public Class<? extends AbstractContainerScreen<?>> getTransferClass() {
-        return BlastFurnaceScreen.class;
+    public List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
+        return List.of(BlastFurnaceScreen.class);
     }
 
     @Override

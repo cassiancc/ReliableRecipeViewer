@@ -46,8 +46,8 @@ public class StonecutterClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public Class<? extends AbstractContainerScreen<?>> getTransferClass() {
-        return StonecutterScreen.class;
+    public List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
+        return List.of(StonecutterScreen.class);
     }
 
     @Override
