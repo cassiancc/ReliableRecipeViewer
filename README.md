@@ -1,4 +1,4 @@
-<h1 align="center">RRV Canary</h1>
+<h1 align="center">RRV</h1>
 
 <p align="center">
   <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/rrv/icon.png">
@@ -33,7 +33,7 @@ Developers wishing to use the mod can make use of RRV's easy to use API. More in
 ## License
 [![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](github.com/cassiancc/bygone-fortress)
 
-RRV Canary is available under the open source MIT License, matching the original mod.
+RRV is available under the open source MIT License, matching the original mod.
 
 ## Credits
 This started as a port of [Extended Item View](https://modrinth.com/mod/rrv) to Fabric 1.21.11 that I made for personal use. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. I have opted to redesign some elements of the mod with the goal to make it a more reliable recipe viewer to use.
