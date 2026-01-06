@@ -47,12 +47,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     private static final int HEADER_HEIGHT = 30;
     private static int FOOTER_HEIGHT = 20;
 
-    public static void setFooterHeight() {
-        if (Configs.CLIENT_SETTINGS.isCenterSearch())
-            FOOTER_HEIGHT = 0;
-        else FOOTER_HEIGHT = 20;
-    }
-
     private String currentQuery;
     boolean itemFilterMode;
 
@@ -80,7 +74,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             this.next.visible = false;
             this.back.visible = false;
         }
-        setFooterHeight();
     }
 
 
@@ -224,6 +217,19 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
+
+        double scrollPage = this.getPage();
+        if (scrollPage == 0) {
+            scrollPage = .5;
+        }
+
+        if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
+            guiGraphics.fill(this.x, this.y + 24, this.x + this.width, this.y + 28, new Color(255, 255, 255, 32).getRGB());
+            guiGraphics.fill(this.x, this.y + 24, (int) (this.x + (((double) this.width / getMaxPageIndex()) * (scrollPage))), this.y + 28, new Color(255, 255, 255, 255).getRGB());
+        } else {
+            guiGraphics.fill(this.effectiveX, this.effectiveY + 24, this.effectiveX + this.effectiveWidth, this.y + 28, new Color(255, 255, 255, 32).getRGB());
+            guiGraphics.fill(this.effectiveX, this.effectiveY + 24, (int) (this.effectiveX + (((double) this.effectiveWidth / getMaxPageIndex()) * (scrollPage))), this.y + 28, new Color(255, 255, 255, 255).getRGB());
+        }
 
     }
 

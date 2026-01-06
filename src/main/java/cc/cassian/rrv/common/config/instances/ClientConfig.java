@@ -54,7 +54,6 @@ public class ClientConfig extends AbstractRrvConfig {
 
     public void setCenterSearch(boolean centerSearch) {
         this.centerSearch = centerSearch;
-        ItemViewOverlay.setFooterHeight();
     }
 
     @Override
