@@ -6,7 +6,7 @@
 
 ## Overview
 
-[Reliable Recipe Viewer](https://modrinth.com/mod/rrv) is a mod that provides recipe viewer functionality on modern Minecraft versions, from 1.21.11 to 26.1. It's based on [Extended Item View](https://modrinth.com/mod/rrv), which supported 1.21.4-1.21.10. Since EIV never made the jump to 1.21.11 and beyond and had a few issues I opted to provide this fork.
+[Reliable Recipe Viewer](https://modrinth.com/mod/rrv) is a mod that provides recipe viewer functionality on modern Minecraft versions, from 1.21.11 to 26.1. It's based on [Extended Item View](https://modrinth.com/mod/eiv), which supported 1.21.4-1.21.10. Since EIV never made the jump to 1.21.11 and beyond and had a few issues I opted to provide this fork.
 
 Currently supported functions are:
 
@@ -17,7 +17,7 @@ Currently supported functions are:
 - item highlighting (double-click on searchbar)
 - cheatmode
 
-For more details, see the [Extended Item View](https://modrinth.com/mod/rrv).
+For more details, see [Extended Item View](https://modrinth.com/mod/eiv) on Modrinth.
 
 **NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
 
