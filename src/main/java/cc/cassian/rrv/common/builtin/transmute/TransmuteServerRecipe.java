@@ -47,7 +47,7 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
 
         tag.put("materials", TagUtil.writeIngredient(this.material));
 
-        tag.put("results", TagUtil.writeList(this.results, (origin, tag1) -> TagUtil.writeItemStack(origin)));
+        tag.put("results", TagUtil.writeList(this.results, (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
 
     }
 
@@ -57,7 +57,7 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
         this.input = TagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
         this.material = TagUtil.readIngredient(tag.getCompound("materials").orElseGet(CompoundTag::new));
 
-        this.results = TagUtil.readList(tag, "results", TagUtil::readItemStack);
+        this.results = TagUtil.readList(tag, "results", TagUtil::decodeItemStackOnClient);
     }
 
     @Override

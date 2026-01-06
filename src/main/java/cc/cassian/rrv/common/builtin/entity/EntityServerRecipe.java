@@ -39,7 +39,7 @@ public class EntityServerRecipe implements ReliableServerRecipe {
     public void writeToTag(CompoundTag tag) {
 
         tag.putString("entity", BuiltInRegistries.ENTITY_TYPE.getKey(this.entityType).toString());
-        tag.put("stacks", TagUtil.writeList(this.drops, (origin, tag1) -> TagUtil.writeItemStack(origin)));
+        tag.put("stacks", TagUtil.writeList(this.drops, (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
     }
 
     @Override

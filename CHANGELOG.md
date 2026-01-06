@@ -3,7 +3,6 @@
   - Item tags can now be viewed in RRV.
 - API Renames and Refactors
   - `EivTagUtil` -> `TagUtil`
-    - Added `readItemStack` and `writeItemStack` functions which automatically check for the correct side.
   - `IExtendedItemViewIntegration`->`ReliableRecipeViewerPlugin`
   - `EivServerRecipe` -> `ReliableServerRecipe`
   - `EivRecipeType` -> `ReliableServerRecipeType`

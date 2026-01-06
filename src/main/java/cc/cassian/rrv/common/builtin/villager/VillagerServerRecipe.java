@@ -39,6 +39,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
  //?} else {
 /*import net.minecraft.world.entity.npc.villager.VillagerType;
+import net.minecraft.world.item.trading.TradeCost;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -53,7 +54,7 @@ import net.minecraft.nbt.ListTag;
 *///?}
 import net.minecraft.world.item.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class VillagerServerRecipe implements ReliableServerRecipe {
@@ -66,8 +67,8 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	//? >26 {
 	/*private ResourceKey<VillagerProfession> profession;
 	private int professionLevel;
-	private List<VillagerTrade> clientTrades;
-	private Holder<VillagerTrade> tradeHolder;
+	private List<VillagerTrade> clientTrade;
+	private Holder<VillagerTrade> serverTrade;
 	private List<ItemStack> cost1;
 	private List<ItemStack> cost2;
 	private List<ItemStack> offerStacks;
@@ -76,7 +77,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	public VillagerServerRecipe(ResourceKey<VillagerProfession> key, int level, Holder<VillagerTrade> trade) {
 		this.profession = key;
 		this.professionLevel = level;
-		this.tradeHolder = trade;
+		this.serverTrade = trade;
 	}
 
 	@Override
@@ -84,11 +85,11 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		tag.putString("profession", this.profession.identifier().toString());
 		tag.putInt("professionLevel", this.professionLevel);
 		ListTag trades = new ListTag();
-		trades.add(VillagerTrade.CODEC.encodeStart(ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), tradeHolder.value()).result().orElseThrow());
+		trades.add(VillagerTrade.CODEC.encodeStart(ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), serverTrade.value()).result().orElseThrow());
 		tag.put("trades", trades);
-		tag.put("offerStacks", TagUtil.writeList(offerStacks(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
-		tag.put("cost1", TagUtil.writeList(cost1(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
-		tag.put("cost2", TagUtil.writeList(cost2(tradeHolder.value()), (origin, tag1) -> TagUtil.writeItemStack(origin)));
+		tag.put("offerStacks", TagUtil.writeList(offerStacks(serverTrade.value()), (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
+		tag.put("cost1", TagUtil.writeList(cost1(serverTrade.value()), (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
+		tag.put("cost2", TagUtil.writeList(cost2(serverTrade.value()), (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
 	}
 
 	@Override
@@ -100,11 +101,11 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 		ArrayList<VillagerTrade> trades = new ArrayList<>();
 		tag.getListOrEmpty("trades").forEach(trade -> VillagerTrade.CODEC.decode(Minecraft.getInstance().player.level().registryAccess().createSerializationContext(NbtOps.INSTANCE), trade).result().ifPresent(decodedTrade -> trades.add(decodedTrade.getFirst())));
-		this.clientTrades = trades;
+		this.clientTrade = trades;
 
-		this.cost1 = TagUtil.readList(tag, "cost1", TagUtil::readItemStack);
-		this.cost2 = TagUtil.readList(tag, "cost2", TagUtil::readItemStack);
-		this.offerStacks = TagUtil.readList(tag, "offerStacks", TagUtil::readItemStack);
+		this.cost1 = TagUtil.readList(tag, "cost1", TagUtil::decodeItemStackOnClient);
+		this.cost2 = TagUtil.readList(tag, "cost2", TagUtil::decodeItemStackOnClient);
+		this.offerStacks = TagUtil.readList(tag, "offerStacks", TagUtil::decodeItemStackOnClient);
 	}
 
 	@Override
@@ -113,7 +114,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	}
 
 	public List<VillagerTrade> getClientTrades() {
-		return clientTrades;
+		return clientTrade;
 	}
 
 	public ResourceKey<VillagerProfession> getProfession() {
@@ -128,23 +129,27 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 	public List<ItemStack> offerStacks(VillagerTrade trade) {
 		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
-		return List.of(tradeAccessor.getGives());
+		AtomicReference<ItemStack> stack = new AtomicReference<>(tradeAccessor.getGives().copy());
+		tradeAccessor.getGivenItemModifiers().forEach(modifier -> {
+			stack.set(modifier.apply(stack.get(), lootContext()));
+		});
+		return List.of(stack.get());
 	}
 
 	public List<ItemStack> cost1(VillagerTrade trade) {
 		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
-		var wants = tradeAccessor.getWants();
-		int wantedCount = wants.count().getInt(lootContext());
-		return List.of(wants.item().value().getDefaultInstance().copyWithCount(wantedCount));
+		return getItemFromTradeCost(tradeAccessor.getWants());
 	}
 
 	public List<ItemStack> cost2(VillagerTrade trade) {
 		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
 		if (tradeAccessor.getAdditionalWants().isPresent()) {
-			var wants = tradeAccessor.getAdditionalWants().get();
-			int wantedCount = wants.count().getInt(lootContext());
-			return List.of(wants.item().value().getDefaultInstance().copyWithCount(wantedCount));
+			return getItemFromTradeCost(tradeAccessor.getAdditionalWants().get());
 		} else return List.of();
+	}
+
+	private List<ItemStack> getItemFromTradeCost(TradeCost wants) {
+		return List.of(new ItemStack(wants.item(), wants.count().getInt(lootContext()), wants.components().asPatch()));
 	}
 
 	public ResourceKey<VillagerType> requiredType(VillagerTrade trade) {
