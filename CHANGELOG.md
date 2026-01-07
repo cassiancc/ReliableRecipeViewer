@@ -1,3 +1,11 @@
+## [6.0.2]
+
+### Added
+- Port to 26.1-snapshot-2 and added its new tag.
+
+### Fixed
+- Incorrect tag translations.
+
 ## [6.0.1]
 
 ### Added
