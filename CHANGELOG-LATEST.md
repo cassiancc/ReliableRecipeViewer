@@ -1,7 +1,7 @@
-### Added
-- Port to 26.1-snapshot-2 and added its new tag.
-- Networking is now handled through Fabric and will warn users upon connecting to incompatible servers.
+### Changed
+- Recipe loading prompt is now hidden after an extended period of time.
+- 
 
 ### Fixed
-- Crash with VoxelMap.
-- Incorrect tag translations.
+- Performance issues when rendering a large quantity of items (thanks @pajic for help diagnosing!)
+- Cleaned up typos in logs and clarified when a log is coming from RRV.

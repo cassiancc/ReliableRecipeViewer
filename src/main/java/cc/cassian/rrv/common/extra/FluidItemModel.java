@@ -14,10 +14,10 @@ public class FluidItemModel extends Model<Unit> {
 
     public FluidItemModel(ModelPart modelPart) {
         //? if >1.21.10 {
-        /*super(modelPart, net.minecraft.client.renderer.rendertype.RenderTypes::entityTranslucent);
-        *///?} else {
-        super(modelPart, net.minecraft.client.renderer.rendertype.RenderType::entityTranslucent);
-        //?}
+        super(modelPart, net.minecraft.client.renderer.rendertype.RenderTypes::entityTranslucent);
+        //?} else {
+        /*super(modelPart, net.minecraft.client.renderer.rendertype.RenderType::entityTranslucent);
+        *///?}
     }
 
     public static LayerDefinition createFluidLayer() {

@@ -65,18 +65,21 @@ public class ItemSlot {
             this.currentCheatmodeCount = 1;
 
         Minecraft mc = Minecraft.getInstance();
-        List<Component> tooltip = new ArrayList<>(Screen.getTooltipFromItem(mc, this.stack));
+        List<Component> tooltip = new ArrayList<>();
 
-        if (ReliableRecipeViewerClient.isCheatmodeActive())
-            tooltip.addLast(Component.literal("Taking x").withStyle(ChatFormatting.GRAY).append(Component.literal(String.valueOf(this.currentCheatmodeCount)).withStyle(ChatFormatting.GOLD)));
+        if (this.isHovered()) {
 
-        if (Configs.CLIENT_SETTINGS.isAppendModNamespace())
-            tooltip.addLast(Component.literal(ReliableRecipeViewerClient.resolver().getModNameForItem(this.stack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
+            tooltip.addAll(Screen.getTooltipFromItem(mc, this.stack));
 
-        if (this.isHovered())
+            if (ReliableRecipeViewerClient.isCheatmodeActive())
+                tooltip.addLast(Component.literal("Taking x").withStyle(ChatFormatting.GRAY).append(Component.literal(String.valueOf(this.currentCheatmodeCount)).withStyle(ChatFormatting.GOLD)));
+
+            if (Configs.CLIENT_SETTINGS.isAppendModNamespace())
+                tooltip.addLast(Component.literal(ReliableRecipeViewerClient.resolver().getModNameForItem(this.stack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
+
             guiGraphics.fill(this.x, this.y, this.x + 20, this.y + 20, new Color(255, 255, 255, 32).getRGB());
 
-
+        }
         guiGraphics.renderFakeItem(this.stack, this.x + 2, this.y + 2);
 
 

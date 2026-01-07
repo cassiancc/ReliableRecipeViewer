@@ -25,10 +25,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 //? if >1.21.10 {
-/*import static net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent;
-*///?} else {
-import static net.minecraft.client.renderer.rendertype.RenderType.entityTranslucent;
-//?}
+import static net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent;
+//?} else {
+/*import static net.minecraft.client.renderer.rendertype.RenderType.entityTranslucent;
+*///?}
 
 /**
  * A special renderer used for rendering the fluid-item in the world
@@ -90,10 +90,10 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
     @Override
     public void getExtents(
             //? if >1.21.10 {
-            /*Consumer<Vector3fc>
-            *///?} else {
-            Set<Vector3f>
-            //?}
+            Consumer<Vector3fc>
+            //?} else {
+            /*Set<Vector3f>
+            *///?}
              consumer) {
 
     }

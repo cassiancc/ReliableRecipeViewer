@@ -38,14 +38,14 @@ public class EntityServerRecipe implements ReliableServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.putString("entity", BuiltInRegistries.ENTITY_TYPE.getKey(this.entityType).toString());
+        tag.store("entity", BuiltInRegistries.ENTITY_TYPE.byNameCodec(), entityType);
         tag.put("stacks", TagUtil.writeList(this.drops, (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.entityType = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.parse(tag.getStringOr("entity", "")));
+        this.entityType = tag.read("entity", BuiltInRegistries.ENTITY_TYPE.byNameCodec()).orElse(null);
         this.drops = TagUtil.readList(tag, "stacks", TagUtil::readItemStack);
 
     }

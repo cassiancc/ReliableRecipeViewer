@@ -36,7 +36,7 @@ public abstract class MixinEffectsInInventory {
     private AbstractContainerScreen<?> screen;
 
     //? if >1.21.10 {
-    /*@Inject(method = "renderEffects", at = @At("HEAD"))
+    @Inject(method = "renderEffects", at = @At("HEAD"))
     private void injectBlocking$0(GuiGraphics guiGraphics, final Collection<MobEffectInstance> activeEffects, final int x0, final int yStep, final int mouseX, final int mouseY, final int maxWidth, CallbackInfo ci){
 
         List<Identifier> effectsToRemove = new ArrayList<>();
@@ -68,8 +68,8 @@ public abstract class MixinEffectsInInventory {
 
 
     }
-    *///?} else {
-    @Inject(method = "renderEffects", at = @At("HEAD"))
+    //?} else {
+    /*@Inject(method = "renderEffects", at = @At("HEAD"))
     private void injectBlocking$0(GuiGraphics graphics, int mouseX, int mouseY, CallbackInfo ci){
 
         List<Identifier> effectsToRemove = new ArrayList<>();
@@ -109,7 +109,7 @@ public abstract class MixinEffectsInInventory {
 
 
     }
-    //?}
+    *///?}
 
 
 

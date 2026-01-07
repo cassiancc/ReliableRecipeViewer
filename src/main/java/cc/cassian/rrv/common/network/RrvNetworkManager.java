@@ -116,7 +116,7 @@ public class RrvNetworkManager {
 
         //Stack-Sensitives
         registerClientbound(ClientboundStartStackSensitivesPayload.TYPE, ClientboundStartStackSensitivesPayload.STREAM_CODEC, (context, payload) -> {
-            LowEndRecipeCache.INSTANCE.stackSensitiveStartRecrrved(payload.amount());
+            LowEndRecipeCache.INSTANCE.stackSensitiveStartRecieved(payload.amount());
         });
 
         registerClientbound(ClientboundStackSensitivePayload.TYPE, ClientboundStackSensitivePayload.STREAM_CODEC, (context, payload) -> {

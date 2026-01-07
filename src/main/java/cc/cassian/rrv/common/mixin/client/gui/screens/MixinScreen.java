@@ -22,7 +22,9 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
     private void renderRecipeProgress(GuiGraphics guiGraphics, int i, int j, float f, CallbackInfo ci){
         String statusMsg = ClientRecipeManager.INSTANCE.status().get();
 
-        if(!ClientRecipeManager.INSTANCE.status().isIdle())
-            guiGraphics.drawString(this.font, statusMsg, guiGraphics.guiWidth() - this.font.width(statusMsg) - 2, 2, -1);
+        if(!ClientRecipeManager.INSTANCE.status().isIdle()) {
+            ClientRecipeManager.INSTANCE.status().checkIfShouldBeIdle();
+			guiGraphics.drawString(this.font, statusMsg, guiGraphics.guiWidth() - this.font.width(statusMsg) - 2, 2, -1);
+		}
     }
 }

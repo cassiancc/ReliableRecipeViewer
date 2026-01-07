@@ -19,59 +19,59 @@ public class LowEndRecipeCache {
 
 
     private CacheData cachingData;
-    private final List<CacheData> recrrvedData;
+    private final List<CacheData> recievedData;
     private int expectedTypes;
 
     private int expectedStackSensitives;
-    private int recrrvedStackSensitives;
+    private int recievedStackSensitives;
 
     private LowEndRecipeCache() {
         this.cachingData = CacheData.EMPTY;
-        this.recrrvedData = new ArrayList<>();
+        this.recievedData = new ArrayList<>();
     }
 
     public void clear() {
         this.cachingData = CacheData.EMPTY;
-        this.recrrvedData.clear();
+        this.recievedData.clear();
         this.expectedTypes = 0;
         this.expectedStackSensitives = 0;
-        this.recrrvedStackSensitives = 0;
+        this.recievedStackSensitives = 0;
     }
 
 
-    public void stackSensitiveStartRecrrved(int amount) {
+    public void stackSensitiveStartRecieved(int amount) {
         this.expectedStackSensitives = amount;
         ClientRecipeCache.INSTANCE.clearStackSensitives();
         ClientRecipeManager.INSTANCE.status().setStatusStep("Caching Stack-Sensitives");
     }
 
     public void stackSensitiveRecrrved(ItemView.StackSensitive stackSensitive) {
-        this.recrrvedStackSensitives++;
+        this.recievedStackSensitives++;
         ClientRecipeCache.INSTANCE.addStackSensitive(stackSensitive);
-        ClientRecipeManager.INSTANCE.status().setStatusProgress(this.recrrvedStackSensitives + "/" + this.expectedStackSensitives);
+        ClientRecipeManager.INSTANCE.status().setStatusProgress(this.recievedStackSensitives + "/" + this.expectedStackSensitives);
     }
 
     public void stackSensitiveEndRecrrved() {
-        if(this.recrrvedStackSensitives == this.expectedStackSensitives){
-            LOGGER.info("Successfully updated Stack-Sensitives");
-            this.recrrvedStackSensitives = 0;
+        if(this.recievedStackSensitives == this.expectedStackSensitives){
+            LOGGER.info("RRV: Successfully updated Stack-Sensitives");
+            this.recievedStackSensitives = 0;
             this.expectedStackSensitives = 0;
         }
         else
-            LOGGER.warn("Recrrved {} stack-sensitives, but expected {}; There might be some strange behaviour", this.recrrvedStackSensitives, this.expectedStackSensitives);
+            LOGGER.warn("RRV: Received {} stack-sensitives, but expected {}; There might be some strange behaviour", this.recievedStackSensitives, this.expectedStackSensitives);
     }
 
 
     public boolean processRecipes() {
-        boolean success = this.recrrvedData.size() == this.expectedTypes;
+        boolean success = this.recievedData.size() == this.expectedTypes;
 
-        for (int i = 0; i < this.recrrvedData.size(); i++) {
-            CacheData data = this.recrrvedData.get(i);
+        for (int i = 0; i < this.recievedData.size(); i++) {
+            CacheData data = this.recievedData.get(i);
             ClientRecipeManager.INSTANCE.status().setStatusStep("Processing Recipes (" + data.type().getId() + ")");
             ClientRecipeCache.INSTANCE.sortModType(data.type());
-            ClientRecipeManager.INSTANCE.status().setStatusProgress(Math.round(((i + 1.0F) / this.recrrvedData.size()) * 100.0F) + "%");
+            ClientRecipeManager.INSTANCE.status().setStatusProgress(Math.round(((i + 1.0F) / this.recievedData.size()) * 100.0F) + "%");
         }
-        this.recrrvedData.clear();
+        this.recievedData.clear();
         return success;
     }
 
@@ -82,15 +82,15 @@ public class LowEndRecipeCache {
 
     public void startCaching(ReliableServerRecipeType<?> type, int amount) {
         if (this.cachingData != CacheData.EMPTY) {
-            LOGGER.error("Recrrved new update while caching, skipping request...");
+            LOGGER.error("RRV: Received new update while caching, skipping request...");
             return;
         }
 
         if (ReliableServerRecipeType.idFromType(type) == null) {
-            LOGGER.error("Recrrved unknown recipe type: {}", type);
+            LOGGER.error("RRV: Received unknown recipe type: {}", type);
         }
 
-        LOGGER.info("Recrrved recipe update for type: {}, caching {} Recipes...", type.getId(), amount);
+        LOGGER.info("RRV: Received recipe update for type: {}, caching {} Recipes...", type.getId(), amount);
 
         this.cachingData = new CacheData(type, amount, new ArrayList<>());
 
@@ -100,12 +100,12 @@ public class LowEndRecipeCache {
 
     public void cacheModRecipe(ServerRecipeManager.ServerRecipeEntry entry) {
         if (this.cachingData == CacheData.EMPTY) {
-            LOGGER.error("Recrrved recipe while idling, skipping request...");
+            LOGGER.error("RRV: Received recipe while idling, skipping request...");
             return;
         }
 
         if (this.cachingData.type() != entry.recipe().getRecipeType()) {
-            LOGGER.error("Recrrved recipe for type: {} while caching type: {}", entry.recipe().getRecipeType().getId(), this.cachingData.type().getId());
+            LOGGER.error("RRV: Received recipe for type: {} while caching type: {}", entry.recipe().getRecipeType().getId(), this.cachingData.type().getId());
             return;
         }
 
@@ -115,25 +115,25 @@ public class LowEndRecipeCache {
 
     public void endCaching(ReliableServerRecipeType<?> type) {
         if (this.cachingData == CacheData.EMPTY) {
-            LOGGER.error("Recrrved end-packet while idling => bad request");
+            LOGGER.error("RRV: Received end-packet while idling => bad request");
             return;
         }
 
         if (this.cachingData.type() != type) {
-            LOGGER.error("Recrrved caching-end packet for type: {} while caching type: {} => ???", type, this.cachingData.type().getId());
+            LOGGER.error("RRV: Received caching-end packet for type: {} while caching type: {} => ???", type, this.cachingData.type().getId());
             return;
         }
 
         if (this.cachingData.finishedSuccessfully()) {
             CacheData cachedCache = this.cachingData;
-            this.recrrvedData.add(cachedCache);
+            this.recievedData.add(cachedCache);
 
             this.cachingData = CacheData.EMPTY;
-            LOGGER.info("Successfully updated recipes for type: {}", cachedCache.type().getId());
+            LOGGER.info("RRV: Successfully updated recipes for type: {}", cachedCache.type().getId());
             ClientRecipeCache.INSTANCE.updateType(cachedCache.type(), cachedCache.recrrved());
         } else {
             this.cachingData = CacheData.EMPTY;
-            LOGGER.error("Expected amount of recipes does not match the amount of recipes recrrved => Update failed");
+            LOGGER.error("RRV: Expected amount of recipes does not match the amount of recipes received => Update failed");
         }
 
     }

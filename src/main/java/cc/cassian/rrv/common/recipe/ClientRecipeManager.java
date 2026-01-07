@@ -1,6 +1,5 @@
 package cc.cassian.rrv.common.recipe;
 
-import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
@@ -41,7 +40,7 @@ public class ClientRecipeManager {
         CompletableFuture.runAsync(() -> {
             this.queuedRecipeTasks.forEach(Runnable::run);
             this.queuedRecipeTasks.clear();
-        }).thenRun(() -> LOGGER.info("All recipe updates finished"));
+        }).thenRun(() -> LOGGER.info("RRV: All recipe updates finished"));
 
     }
 
@@ -78,7 +77,7 @@ public class ClientRecipeManager {
 
 
             if (!success)
-                LOGGER.error("Something went wrong while processing recipes, there might be some strange appearances");
+                LOGGER.error("RRV: Something went wrong while processing recipes, there might be some strange appearances");
 
             this.status.setIdle(true);
     }
@@ -89,7 +88,7 @@ public class ClientRecipeManager {
             if (ClientPlayNetworking.canSend(ServerboundRequestRrvUpdate.TYPE)) {
                 RrvClientNetworkManager.sendPacketToServer(new ServerboundRequestRrvUpdate());
             } else {
-                Minecraft.getInstance().player.displayClientMessage(Component.literal("Cannot request recipes from a server without RVV installed! Please install RVV on the server for accurate recipes."), false);
+                Minecraft.getInstance().player.displayClientMessage(Component.literal("RRV cannot request recipes from a server without RVV installed! Please install RVV on the server for accurate recipes."), false);
             }
 
 		}
@@ -128,6 +127,13 @@ public class ClientRecipeManager {
         public void setUpdateStartTimestamp() {
             if (Minecraft.getInstance().level != null)
                 this.updateStartTimestamp = System.currentTimeMillis() / 50;
+        }
+
+        public void checkIfShouldBeIdle() {
+            if (Minecraft.getInstance().level != null && ((this.updateStartTimestamp+60) < System.currentTimeMillis() / 50)) {
+                LOGGER.info("RRV: Stopping rendering as it should be idle by this point.");
+				setIdle(true);
+			}
         }
 
         public boolean networkTimeout() {
