@@ -52,7 +52,12 @@ public class RrvNetworkManager {
      * @param serverHandler The server payload handler
      */
     private <T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, PayloadHandler<ServerContext, T> serverHandler) {
-        PayloadTypeRegistry.playC2S().register(type, codec);
+        //? >26 {
+        /*PayloadTypeRegistry.serverboundPlay()
+        *///?} else {
+        PayloadTypeRegistry.playC2S()
+        //?}
+        .register(type, codec);
         ServerPlayNetworking.registerGlobalReceiver(type, ((payload, context) -> {
             serverHandler.handle(new ServerContext(context.server(), context.player()), payload);
         }));
@@ -80,7 +85,12 @@ public class RrvNetworkManager {
      * @param codec         The codec for the packet
      */
     private static <T extends CustomPacketPayload> void registerClientboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
-        PayloadTypeRegistry.playS2C().register(type, codec);
+        //? >26 {
+        /*PayloadTypeRegistry.clientboundPlay()
+        *///?} else {
+        PayloadTypeRegistry.playS2C()
+         //?}
+        .register(type, codec);
     }
 
     /**
