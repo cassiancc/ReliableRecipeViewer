@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.network;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.recipe.*;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
@@ -17,7 +18,7 @@ import net.minecraft.resources.Identifier;
 public class RrvPayloadConverter {
 
 
-    public static void convertFromCompat(RrvNetworkManager.ClientContext ctx, ClientboundCompatPayload payload) {
+    public static void convertFromCompat(RrvClientNetworkManager.ClientContext ctx, ClientboundCompatPayload payload) {
 
         CompoundTag payloadTag = payload.data();
         if (payloadTag.isEmpty())

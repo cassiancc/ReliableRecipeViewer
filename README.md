@@ -82,13 +82,6 @@ Don't forget to add it as an entrypoint to your mod
 }
 ```
 
-### NeoForge (neoforge.mods.toml)
-```toml
-# ...
-rrv="com.example.mod.rrv.ExampleModRecipeViewerIntegration"
-# ...
-```
-
 ## Adding a new recipe type
 
 Since you want to add a complete new way of crafting, you first need to create your client recipe type.

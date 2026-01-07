@@ -5,10 +5,7 @@
   "minVersion": "0.8",
   "mixins": [
     "advancements.critereon.MixinInventoryChangeTrigger",
-    "network.protocol.common.custom.MixinCustomPacketPayload",
-    "network.protocol.common.custom.MixinPacketProcessor",
     "server.MixinMinecraftServer",
-    "server.network.MixinServerGamePacketListenerImpl",
     "world.entity.npc.DyedArmorForEmeraldsAccessor",
     "world.entity.npc.EmeraldForItemsAccessor",
     "world.entity.npc.EmeraldsForVillagerTypeItemAccessor",
@@ -44,11 +41,9 @@
     "client.gui.screens.inventory.MixinCreativeModeInventoryScreen",
     "client.gui.screens.inventory.MixinEffectsInInventory",
     "client.gui.screens.recipebook.MixinRecipeBookComponent",
-    "client.multiplayer.MixinClientCommonPacketListenerImpl",
     "client.multiplayer.MixinClientPacketListener",
     "client.renderer.entity.state.MixinEntityRenderState",
     "client.renderer.item.MixinSpecialModelWrapper",
-    "client.renderer.special.MixinSpecialModelRenderers",
-    "network.protocol.common.custom.MixinDiscardedPayload"
+    "client.renderer.special.MixinSpecialModelRenderers"
   ]
 }

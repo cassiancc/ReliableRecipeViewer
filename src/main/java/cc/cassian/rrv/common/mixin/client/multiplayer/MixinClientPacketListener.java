@@ -27,11 +27,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientPacketListener.class)
 public abstract class MixinClientPacketListener extends ClientCommonPacketListenerImpl implements ClientGamePacketListener, TickablePacketListener {
 
-
-    @Shadow public CommandDispatcher<SharedSuggestionProvider> commands;
-
-    @Shadow @Final private static Logger LOGGER;
-
     protected MixinClientPacketListener(Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie) {
         super(minecraft, connection, commonListenerCookie);
     }
@@ -40,25 +35,5 @@ public abstract class MixinClientPacketListener extends ClientCommonPacketListen
     private void requestRecipes(ClientboundLoginPacket clientboundLoginPacket, CallbackInfo ci) {
         ClientRecipeManager.INSTANCE.requestServerRrvData();
         ItemView.getClientReloadCallbacks().forEach(ItemView.ReloadCallback::onReload);
-    }
-
-
-    @Inject(method = "handleCustomPayload", at = @At("HEAD"), cancellable = true)
-    private void onRrvPayloadRecrrved(CustomPacketPayload payload, CallbackInfo ci) {
-        Identifier payloadId = payload.type().id();
-
-        RrvNetworkManager.INSTANCE.getClientbound().forEach((Identifier, typeAndCodec) -> {
-
-            if (!payloadId.equals(Identifier))
-                return;
-
-            if (RrvNetworkManager.INSTANCE.clientPayloadHandlers().containsKey(payloadId)) {
-                RrvNetworkManager.INSTANCE.clientPayloadHandlers().get(payloadId).handle(new RrvNetworkManager.ClientContext(this.minecraft), RrvNetworkManager.INSTANCE.castPayload(payload));
-            } else
-                ReliableRecipeViewer.LOGGER.error("Cannot resolve payload handler for id: {}", payloadId);
-
-            ci.cancel();
-        });
-
     }
 }

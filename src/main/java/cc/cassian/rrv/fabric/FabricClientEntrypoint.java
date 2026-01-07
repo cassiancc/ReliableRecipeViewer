@@ -3,6 +3,7 @@ package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.extra.FluidItemModel;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.fabricmc.api.ClientModInitializer;
@@ -28,6 +29,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         instance = this;
 
         ReliableRecipeViewerClient.boostrap();
+
+        RrvClientNetworkManager.registerPayloads();
 
         //? >26 {
         /*ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyMappingHelper::registerKeyMapping);

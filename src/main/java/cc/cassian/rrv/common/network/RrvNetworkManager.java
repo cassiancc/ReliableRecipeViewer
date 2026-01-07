@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
@@ -14,23 +15,20 @@ import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
-import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-
-import java.util.HashMap;
 
 /**
  * Network Manager for all RRV packets
@@ -40,23 +38,24 @@ public class RrvNetworkManager {
     /**
      * The NetworkManager instance of RRV
      */
-    public static final RrvNetworkManager INSTANCE = new RrvNetworkManager().registerPayloads();
+    public static final RrvNetworkManager INSTANCE = new RrvNetworkManager();
 
-    private final HashMap<Identifier, CustomPacketPayload.TypeAndCodec<?, ?>> clientbound;
-    private final HashMap<Identifier, CustomPacketPayload.TypeAndCodec<?, ?>> serverbound;
+
+    private RrvNetworkManager() {}
+
+
 
     /**
-     * Payload handlers are used for packet processing on the client and server side
+     * Registers a new serverbound packet type
+     * @param type The packet type
+     * @param codec The codec for the packet
+     * @param serverHandler The server payload handler
      */
-    private final HashMap<Identifier, PayloadHandler<ClientContext, ? extends CustomPacketPayload>> clientPayloadHandlers;
-    private final HashMap<Identifier, PayloadHandler<ServerContext, ? extends CustomPacketPayload>> serverPayloadHandlers;
-
-    private RrvNetworkManager() {
-        this.clientbound = new HashMap<>();
-        this.serverbound = new HashMap<>();
-
-        this.clientPayloadHandlers = new HashMap<>();
-        this.serverPayloadHandlers = new HashMap<>();
+    private <T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, PayloadHandler<ServerContext, T> serverHandler) {
+        PayloadTypeRegistry.playC2S().register(type, codec);
+        ServerPlayNetworking.registerGlobalReceiver(type, ((payload, context) -> {
+            serverHandler.handle(new ServerContext(context.server(), context.player()), payload);
+        }));
     }
 
     /**
@@ -66,69 +65,22 @@ public class RrvNetworkManager {
      * @param codec         The codec for the packet
      * @param clientHandler The client payload handler
      */
-    private <B extends FriendlyByteBuf, T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<B, T> codec, PayloadHandler<ClientContext, T> clientHandler) {
-        this.clientbound.put(type.id(), new CustomPacketPayload.TypeAndCodec<>(type, codec));
-        this.clientPayloadHandlers.put(type.id(), clientHandler);
-    }
-
-    /**
-     * Registers a new serverbound packet type
-     * @param type The packet type
-     * @param codec The codec for the packet
-     * @param serverHandler The server payload handler
-     */
-    private <B extends FriendlyByteBuf, T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<B, T> codec, PayloadHandler<ServerContext, T> serverHandler) {
-        this.serverbound.put(type.id(), new CustomPacketPayload.TypeAndCodec<>(type, codec));
-        this.serverPayloadHandlers.put(type.id(), serverHandler);
+    private static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
+        registerClientboundPayload(type, codec);
+        if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT)) {
+            RrvClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
+        }
     }
 
 
     /**
-     * @return ALl clientbound packets
-     */
-    public HashMap<Identifier, CustomPacketPayload.TypeAndCodec<?, ?>> getClientbound() {
-        return this.clientbound;
-    }
-
-    /**
-     * @return All serverbound packets
-     */
-    public HashMap<Identifier, CustomPacketPayload.TypeAndCodec<?, ?>> getServerbound() {
-        return this.serverbound;
-    }
-
-    /**
-     * Returns all registered payload handlers for clientbound packets
+     * Registers a new clientbound packet type
      *
-     * @return
+     * @param type          The packet type
+     * @param codec         The codec for the packet
      */
-    public HashMap<Identifier, PayloadHandler<ClientContext, ? extends CustomPacketPayload>> clientPayloadHandlers() {
-        return this.clientPayloadHandlers;
-    }
-
-    /**
-     * Returns all registered payload handlers for serverbound packets
-     *
-     * @return
-     */
-    public HashMap<Identifier, PayloadHandler<ServerContext, ? extends CustomPacketPayload>> serverPayloadHandlers() {
-        return this.serverPayloadHandlers;
-    }
-
-
-    //:D
-    public <T extends CustomPacketPayload> T castPayload(CustomPacketPayload payload) {
-        return (T) payload;
-    }
-
-    /**
-     * Send a payload to the server
-     *
-     * @param payload The payload
-     */
-    public void sendPacketToServer(CustomPacketPayload payload) {
-        if (Minecraft.getInstance().getConnection() != null)
-            Minecraft.getInstance().getConnection().send(new ServerboundCustomPayloadPacket(payload));
+    private static <T extends CustomPacketPayload> void registerClientboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
+        PayloadTypeRegistry.playS2C().register(type, codec);
     }
 
     /**
@@ -138,7 +90,7 @@ public class RrvNetworkManager {
      * @param payload The payload
      */
     public void sendPacket(ServerPlayer player, CustomPacketPayload payload) {
-        player.connection.send(new ClientboundCustomPayloadPacket(payload));
+        ServerPlayNetworking.send(player, payload);
     }
 
 
@@ -148,63 +100,64 @@ public class RrvNetworkManager {
      * @return The instance of the NetworkManager
      */
     public RrvNetworkManager registerPayloads() {
-
-        this.registerServerbound(ServerboundRequestRrvUpdate.TYPE, ServerboundRequestRrvUpdate.STREAM_CODEC, (context, payload) -> {
-            ServerRecipeManager.INSTANCE.updateStackSensitives(context.sender());
-            ServerRecipeManager.INSTANCE.informAboutRecipes(context.sender());
-        });
-
-        this.registerClientbound(ClientboundServerReloadPayload.TYPE, ClientboundServerReloadPayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundServerReloadPayload.TYPE, ClientboundServerReloadPayload.STREAM_CODEC, (context, payload) -> {
             ItemView.getClientReloadCallbacks().forEach(ItemView.ReloadCallback::onReload);
         });
 
         //Stack-Sensitives
-        this.registerClientbound(ClientboundStartStackSensitivesPayload.TYPE, ClientboundStartStackSensitivesPayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundStartStackSensitivesPayload.TYPE, ClientboundStartStackSensitivesPayload.STREAM_CODEC, (context, payload) -> {
             LowEndRecipeCache.INSTANCE.stackSensitiveStartRecrrved(payload.amount());
         });
 
-        this.registerClientbound(ClientboundStackSensitivePayload.TYPE, ClientboundStackSensitivePayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundStackSensitivePayload.TYPE, ClientboundStackSensitivePayload.STREAM_CODEC, (context, payload) -> {
             LowEndRecipeCache.INSTANCE.stackSensitiveRecrrved(payload.stackSensitive());
         });
 
-        this.registerClientbound(ClientboundFinishStackSensitivesPayload.TYPE, ClientboundFinishStackSensitivesPayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundFinishStackSensitivesPayload.TYPE, ClientboundFinishStackSensitivesPayload.STREAM_CODEC, (context, payload) -> {
             LowEndRecipeCache.INSTANCE.stackSensitiveEndRecrrved();
         });
 
         /*
          * Enclosing payloads (for update start and end)
          */
-        this.registerClientbound(ClientboundStartUpdatesPayload.TYPE, ClientboundStartUpdatesPayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundStartUpdatesPayload.TYPE, ClientboundStartUpdatesPayload.STREAM_CODEC, (context, payload) -> {
             ClientRecipeManager.INSTANCE.queueTask(ClientRecipeManager.INSTANCE::startUpdate);
         });
 
-        this.registerClientbound(ClientboundFinishUpdatesPayload.TYPE, ClientboundFinishUpdatesPayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundFinishUpdatesPayload.TYPE, ClientboundFinishUpdatesPayload.STREAM_CODEC, (context, payload) -> {
             ClientRecipeManager.INSTANCE.queueTask(ClientRecipeManager.INSTANCE::processRecipes);
             ClientRecipeManager.INSTANCE.runTasks();
         });
 
         //Recipes
-        this.registerClientbound(ClientboundCacheStartPayload.TYPE, ClientboundCacheStartPayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundCacheStartPayload.TYPE, ClientboundCacheStartPayload.STREAM_CODEC, (context, payload) -> {
             ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheStartRecrrved(payload.types()));
         });
-        this.registerClientbound(ClientboundTypeUpdateStartPayload.TYPE, ClientboundTypeUpdateStartPayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundTypeUpdateStartPayload.TYPE, ClientboundTypeUpdateStartPayload.STREAM_CODEC, (context, payload) -> {
             ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.startCaching(payload.recipeType(), payload.amount()));
         });
-        this.registerClientbound(ClientboundTypeUpdatePayload.TYPE, ClientboundTypeUpdatePayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundTypeUpdatePayload.TYPE, ClientboundTypeUpdatePayload.STREAM_CODEC, (context, payload) -> {
             ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheModRecipe(payload.entry()));
         });
-        this.registerClientbound(ClientboundTypeUpdateEndPayload.TYPE, ClientboundTypeUpdateEndPayload.STREAM_CODEC, (context, payload) -> {
+        registerClientbound(ClientboundTypeUpdateEndPayload.TYPE, ClientboundTypeUpdateEndPayload.STREAM_CODEC, (context, payload) -> {
             ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.endCaching(payload.recipeType()));
         });
+
+
+        registerClientboundPayload(ClientboundUpdateTransferCachePayload.TYPE, ClientboundUpdateTransferCachePayload.STREAM_CODEC);
+
+        registerClientbound(ClientboundCompatPayload.TYPE, ClientboundCompatPayload.STREAM_CODEC, RrvPayloadConverter::convertFromCompat);
+
+        this.registerServerbound(ServerboundRequestRrvUpdate.TYPE, ServerboundRequestRrvUpdate.STREAM_CODEC, (context, payload) -> {
+            ServerRecipeManager.INSTANCE.updateStackSensitives(context.sender());
+            ServerRecipeManager.INSTANCE.informAboutRecipes(context.sender());
+        });
+
 
 
         //Item-Transfer payloads
         this.registerServerbound(ServerboundTransferPayload.TYPE, ServerboundTransferPayload.STREAM_CODEC, (context, payload) -> {
             ServerRecipeManager.INSTANCE.performRecipeTransfer(context.sender(), payload.transferMap(), payload.usedPlayerSlots());
-        });
-        this.registerClientbound(ClientboundUpdateTransferCachePayload.TYPE, ClientboundUpdateTransferCachePayload.STREAM_CODEC, (context, payload) -> {
-            if (context.client.screen instanceof RecipeViewScreen viewScreen)
-                viewScreen.getMenu().updateTransferCache();
         });
 
 
@@ -239,7 +192,6 @@ public class RrvNetworkManager {
 
         });
 
-        this.registerClientbound(ClientboundCompatPayload.TYPE, ClientboundCompatPayload.STREAM_CODEC, RrvPayloadConverter::convertFromCompat);
 
         return this;
     }
@@ -249,14 +201,6 @@ public class RrvNetworkManager {
      * The context where the packet is handled in (either client or server)
      */
     public interface Context {
-    }
-
-    /**
-     * Network context containing relevant information for client packet handling
-     *
-     * @param client The client instance
-     */
-    public record ClientContext(Minecraft client) implements Context {
     }
 
     /**

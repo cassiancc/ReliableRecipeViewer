@@ -3,6 +3,7 @@ package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.command.RrvCommand;
+import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import net.fabricmc.api.ModInitializer;
@@ -31,6 +32,8 @@ public class FabricEntrypoint implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext, commandSelection) -> RrvCommand.register(commandDispatcher));
 
         FabricLoader.getInstance().invokeEntrypoints("rrv", ReliableRecipeViewerPlugin.class, ReliableRecipeViewerPlugin::onIntegrationInitialize);
+
+        RrvNetworkManager.INSTANCE.registerPayloads();
     }
 
 

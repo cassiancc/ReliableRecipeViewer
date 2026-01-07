@@ -1,5 +1,8 @@
 ## [6.0.1]
 
+### Added
+- Networking is now handled through Fabric and will warn users upon connecting to incompatible servers.
+
 ### Fixed
 - Crash with VoxelMap.
 
