@@ -43,10 +43,10 @@ repositories {
 
 dependencies {
     // Fabric 1.21.11 and below
-    modImplementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${property("deps.rrv")}")
+    modImplementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${rrv_version}+${minecraft_version}")
     
     // Fabric 26.1 and above
-    implementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${property("deps.rrv")}")
+    implementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${rrv_version}+${minecraft_version}")
 }
 ```
 
