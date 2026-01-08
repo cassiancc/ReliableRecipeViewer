@@ -157,30 +157,36 @@ public class SlotContent {
     }
 
     public static SlotContent ofItemList(List<Item> items) {
+        if (items == null) return SlotContent.of();
         List<ItemStack> stacks = new ArrayList<>();
         items.forEach(item -> stacks.add(new ItemStack(item)));
         return SlotContent.of(stacks);
     }
 
     public static SlotContent of(FluidStack fluidStack) {
+        if (fluidStack == null) return SlotContent.of();
         return new SlotContent(List.of(fluidStack.createItemStack()));
     }
 
     public static SlotContent ofFluidList(List<FluidStack> fluidStacks) {
+        if (fluidStacks == null) return SlotContent.of();
         List<ItemStack> stacks = new ArrayList<>();
         fluidStacks.forEach(fluidStack -> stacks.add(fluidStack.createItemStack()));
         return new SlotContent(stacks);
     }
 
     public static SlotContent of(ItemStack stack) {
+        if (stack == null) return SlotContent.of();
         return new SlotContent(List.of(stack));
     }
 
     public static SlotContent of(List<ItemStack> stacks) {
+        if (stacks == null) return SlotContent.of();
         return new SlotContent(stacks);
     }
 
     public static SlotContent of(TagKey<Item> itemTag) {
+        if (itemTag == null) return SlotContent.of();
         List<Item> items = new ArrayList<>();
         SlotContent.getItemsFromTag(itemTag).ifPresent(holders -> {
             holders.forEach(holder -> {
@@ -195,8 +201,7 @@ public class SlotContent {
     }
 
     public static SlotContent of(Ingredient ingredient) {
-        if(ingredient == null)
-            return SlotContent.of();
+        if (ingredient == null) return SlotContent.of();
 
         Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) ingredient).getValues().unwrap();
 
