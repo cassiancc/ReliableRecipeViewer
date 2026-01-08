@@ -152,6 +152,7 @@ public class SlotContent {
     }
 
     public static SlotContent of(Item item) {
+        if (item == null) return SlotContent.of();
         return new SlotContent(List.of(new ItemStack(item)));
     }
 

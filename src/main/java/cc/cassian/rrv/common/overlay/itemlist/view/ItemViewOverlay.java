@@ -273,7 +273,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         int y = info.screenHeight() - 22;
 
 
-        if(this.searchbar != null && info.screen().getFocused() instanceof EditBox box && box.getMessage().equals(Component.literal("rrv:searchbar")))
+        if(this.searchbar != null && info.screen().getFocused() instanceof SearchBar)
             this.searchbar.setFocused(false);
 
         if (this.searchbar != null && boxWidth == this.searchbar.getWidth() && x == this.searchbar.getX() && y == this.searchbar.getY())

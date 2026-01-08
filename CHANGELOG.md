@@ -1,3 +1,8 @@
+## [6.0.4]
+
+### Fixed
+- Leftover debug logs.
+
 ## [6.0.3]
 
 ### Fixed

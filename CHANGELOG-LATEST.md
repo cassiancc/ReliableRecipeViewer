@@ -1,2 +1,2 @@
-### Fixed
-- Leftover debug logs.
+## Fixed
+- Improved null safety on `SlotContent`.
