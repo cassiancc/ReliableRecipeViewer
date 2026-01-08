@@ -27,4 +27,6 @@ public interface Platform {
 
     RRVClientResolver.UVInfo getUVInfo(TextureAtlasSprite sprite);
 
+    boolean isClientSide();
+
 }

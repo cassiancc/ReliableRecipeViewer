@@ -3,6 +3,7 @@ package cc.cassian.rrv.fabric;
 //? fabric {
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -43,6 +44,12 @@ public class FabricPlatformImpl implements Platform {
     public RRVClientResolver.UVInfo getUVInfo(TextureAtlasSprite sprite) {
         return new RRVClientResolver.UVInfo(sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
     }
+
+    @Override
+    public boolean isClientSide() {
+        return FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT);
+    }
+
 
 }
 //?}

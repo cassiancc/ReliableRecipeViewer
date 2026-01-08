@@ -3,7 +3,12 @@ package cc.cassian.rrv.common.client;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+//? fabric {
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+//?} else {
+/*import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+*///?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -13,6 +18,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * Network Manager for all clientbound RRV packets
  */
 public class RrvClientNetworkManager {
+
+    //? neoforge
+    //private static RegisterClientPayloadHandlersEvent event;
 
     private RrvClientNetworkManager() {}
 
@@ -35,8 +43,12 @@ public class RrvClientNetworkManager {
      * @param payload The payload
      */
     public static void sendPacketToServer(CustomPacketPayload payload) {
+        //? fabric {
         if (Minecraft.getInstance().getConnection() != null)
             ClientPlayNetworking.send(payload);
+        //?} else {
+        /*ClientPacketDistributor.sendToServer(payload);
+        *///?}
     }
 
 
@@ -45,7 +57,13 @@ public class RrvClientNetworkManager {
      *
      * @return The instance of the NetworkManager
      */
-    public static void registerPayloads() {
+    public static void registerPayloads(
+            //? neoforge
+            //RegisterClientPayloadHandlersEvent event
+    ) {
+
+        //? neoforge
+        //RrvClientNetworkManager.event = event;
 
         registerClientboundReciever(ClientboundUpdateTransferCachePayload.TYPE, ClientboundUpdateTransferCachePayload.STREAM_CODEC, (context, payload) -> {
             if (context.client.screen instanceof RecipeViewScreen viewScreen)

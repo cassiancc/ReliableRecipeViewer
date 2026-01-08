@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.recipe;
 import cc.cassian.rrv.common.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
+//? fabric
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -85,12 +86,15 @@ public class ClientRecipeManager {
     public void requestServerRrvData() {
         //TODO only send when not caching
         if (this.status.isIdle()) {
+            //? fabric {
             if (ClientPlayNetworking.canSend(ServerboundRequestRrvUpdate.TYPE)) {
                 RrvClientNetworkManager.sendPacketToServer(new ServerboundRequestRrvUpdate());
             } else {
                 Minecraft.getInstance().player.displayClientMessage(Component.translatable("recipe_sync.rrv.denied"), false);
             }
-
+            //?} else {
+            /*RrvClientNetworkManager.sendPacketToServer(new ServerboundRequestRrvUpdate());
+            *///?}
 		}
 
     }

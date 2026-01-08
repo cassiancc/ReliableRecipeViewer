@@ -2,12 +2,13 @@ package cc.cassian.rrv.neoforge;
 
 //? neoforge {
 /*import cc.cassian.rrv.common.Platform;
-import cc.cassian.rrv.common.resolver.IRrvClientResolver;
+import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 
 public class NeoforgePlatformImpl implements Platform {
@@ -31,8 +32,13 @@ public class NeoforgePlatformImpl implements Platform {
     }
 
     @Override
-    public IRrvClientResolver.UVInfo getUVInfo(TextureAtlasSprite sprite) {
-        return new IRrvClientResolver.UVInfo(sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
+    public RRVClientResolver.UVInfo getUVInfo(TextureAtlasSprite sprite) {
+        return new RRVClientResolver.UVInfo(sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
+    }
+
+    @Override
+    public boolean isClientSide() {
+        return FMLEnvironment.getDist().isClient();
     }
 
 }

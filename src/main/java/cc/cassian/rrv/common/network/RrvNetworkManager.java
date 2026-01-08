@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
@@ -16,10 +17,14 @@ import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-import net.fabricmc.api.EnvType;
+//? fabric {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.loader.api.FabricLoader;
+//?} else {
+/*import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+*///?}
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -40,6 +45,9 @@ public class RrvNetworkManager {
      */
     public static final RrvNetworkManager INSTANCE = new RrvNetworkManager();
 
+    //? neoforge
+    //private static PayloadRegistrar event;
+
 
     private RrvNetworkManager() {}
 
@@ -52,15 +60,23 @@ public class RrvNetworkManager {
      * @param serverHandler The server payload handler
      */
     private <T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, PayloadHandler<ServerContext, T> serverHandler) {
+        //? fabric {
         //? >26 {
         /*PayloadTypeRegistry.serverboundPlay()
-        *///?} else {
-        PayloadTypeRegistry.playC2S()
-        //?}
-        .register(type, codec);
+                *///?} else {
+                PayloadTypeRegistry.playC2S()
+                 //?}
+                .register(type, codec);
         ServerPlayNetworking.registerGlobalReceiver(type, ((payload, context) -> {
             serverHandler.handle(new ServerContext(context.server(), context.player()), payload);
         }));
+        //?} else {
+        /*event.playToServer(type, codec, (payload, context)-> {
+            serverHandler.handle(new ServerContext(context.player().level().getServer(), (ServerPlayer) context.player()), payload);
+        });
+        *///?}
+
+
     }
 
     /**
@@ -72,7 +88,7 @@ public class RrvNetworkManager {
      */
     private static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
         registerClientboundPayload(type, codec);
-        if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT)) {
+        if (Platform.INSTANCE.isClientSide()) {
             RrvClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
         }
     }
@@ -100,7 +116,11 @@ public class RrvNetworkManager {
      * @param payload The payload
      */
     public void sendPacket(ServerPlayer player, CustomPacketPayload payload) {
+        //? fabric {
         ServerPlayNetworking.send(player, payload);
+        //?} else {
+        /*PacketDistributor.sendToPlayer(player, payload);
+        *///?}
     }
 
 
@@ -109,7 +129,12 @@ public class RrvNetworkManager {
      *
      * @return The instance of the NetworkManager
      */
-    public RrvNetworkManager registerPayloads() {
+    public RrvNetworkManager registerPayloads(
+            //? neoforge
+            //RegisterPayloadHandlersEvent event
+    ) {
+        //? neoforge
+        //RrvNetworkManager.event = event.registrar("1");
         registerClientbound(ClientboundServerReloadPayload.TYPE, ClientboundServerReloadPayload.STREAM_CODEC, (context, payload) -> {
             ItemView.getClientReloadCallbacks().forEach(ItemView.ReloadCallback::onReload);
         });

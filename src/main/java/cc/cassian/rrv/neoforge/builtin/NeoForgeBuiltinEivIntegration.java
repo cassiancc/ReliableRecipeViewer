@@ -1,8 +1,8 @@
-//? neoforge {
+//? neoforge && <26 {
 /*package cc.cassian.rrv.neoforge.builtin;
 
-import cc.cassian.rrv.common.api.recipe.ItemView;
-import cc.cassian.rrv.common.builtin.BuiltInRrvIntegration;
+import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.neoforge.mixin.neoforge.common.BasicItemListingAccessor;
@@ -17,7 +17,7 @@ import net.neoforged.neoforge.common.BasicItemListing;
 import java.util.Arrays;
 import java.util.List;
 
-public class NeoForgeBuiltinRrvIntegration extends BuiltInRrvIntegration {
+public class NeoForgeBuiltinRrvIntegration extends BuiltInReliableRecipeViewerIntegration {
 
 
 
