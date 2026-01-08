@@ -8,6 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class TagClientRecipe implements ReliableClientRecipe {
 		}
 
 		this.items = dropContents;
-		this.tagKeyContent = SlotContent.of(tagKey);
+		this.tagKeyContent = items.getFirst().bindItemTag(tagKey);
 	}
 
 	public TagKey<?> getTagKey() {

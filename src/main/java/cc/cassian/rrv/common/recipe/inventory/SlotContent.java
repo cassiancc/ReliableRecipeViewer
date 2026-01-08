@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,11 @@ public class SlotContent {
         return this.type;
     }
 
-    private SlotContent bindItemTag(TagKey<Item> tag) {
+    /**
+	 * Internal method to bind an item tag to a `SlotContent`.
+     * The preferred option is usually {@link SlotContent#of(TagKey)}.
+	 */
+    public SlotContent bindItemTag(TagKey<Item> tag) {
         this.itemTag = tag;
         this.setDataComponent();
         return this;
