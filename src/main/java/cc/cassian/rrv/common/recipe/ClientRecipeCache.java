@@ -156,8 +156,6 @@ public class ClientRecipeCache {
                     this.byItemIngredient.put(reference.getItem(), byIngredient);
                 });
 
-                System.out.println(wrapped.getResults());
-
                 wrapped.getResults().forEach(result -> {
                     result.getValidContents().forEach(stack -> {
                         List<Identifier> byResult = this.byItemResult.getOrDefault(stack.getItem(), new ArrayList<>());
