@@ -71,6 +71,7 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.FuelValues;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.CompositeEntryBase;
@@ -93,6 +94,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
     private static final TagKey<Item> EXCLUDED_ITEMS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
     private static final TagKey<Block> EXCLUDED_BLOCKS = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
+    private static final TagKey<Fluid> EXCLUDED_FLUIDS = TagKey.create(Registries.FLUID, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
 
     @Override
     public void onIntegrationInitialize() {
@@ -102,6 +104,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
             BuiltInRegistries.BLOCK.get(EXCLUDED_BLOCKS).ifPresent(blocks -> blocks.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(block -> ItemView.excludeItem(block.asItem())));
             BuiltInRegistries.ITEM.get(EXCLUDED_ITEMS).ifPresent(items -> items.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(ItemView::excludeItem));
+            BuiltInRegistries.FLUID.get(EXCLUDED_FLUIDS).ifPresent(fluids -> fluids.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(fluid -> ItemView.excludeItem(fluid.defaultFluidState().createLegacyBlock().getBlock().asItem())));
 
         });
 
