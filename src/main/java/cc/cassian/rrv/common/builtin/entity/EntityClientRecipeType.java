@@ -73,6 +73,11 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
+    public List<ItemStack> getCraftReferences() {
+        return SPAWN_EGGS;
+    }
+
+    @Override
     public ReferenceCondition getCraftReferenceCondition() {
         return REFERENCE_CONDITION;
     }

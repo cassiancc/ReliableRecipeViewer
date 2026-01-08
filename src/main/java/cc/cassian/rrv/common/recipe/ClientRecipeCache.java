@@ -143,7 +143,9 @@ public class ClientRecipeCache {
                     });
                 });
 
-                wrapped.getViewType().getCraftReferences().forEach(reference -> {
+                var craftReferences = wrapped.getViewType().getCraftReferences();
+
+                craftReferences.forEach(reference -> {
 
                     if(!wrapped.getViewType().getCraftReferenceCondition().matches(reference, wrapped))
                         return;
@@ -153,6 +155,8 @@ public class ClientRecipeCache {
                     byIngredient.add(uniqueId);
                     this.byItemIngredient.put(reference.getItem(), byIngredient);
                 });
+
+                System.out.println(wrapped.getResults());
 
                 wrapped.getResults().forEach(result -> {
                     result.getValidContents().forEach(stack -> {

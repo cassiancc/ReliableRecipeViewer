@@ -23,7 +23,6 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
         String statusMsg = ClientRecipeManager.INSTANCE.status().get();
 
         if(!ClientRecipeManager.INSTANCE.status().isIdle()) {
-            ClientRecipeManager.INSTANCE.status().checkIfShouldBeIdle();
 			guiGraphics.drawString(this.font, statusMsg, guiGraphics.guiWidth() - this.font.width(statusMsg) - 2, 2, -1);
 		}
     }

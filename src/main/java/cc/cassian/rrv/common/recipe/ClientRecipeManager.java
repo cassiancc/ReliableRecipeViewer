@@ -129,13 +129,6 @@ public class ClientRecipeManager {
                 this.updateStartTimestamp = System.currentTimeMillis() / 50;
         }
 
-        public void checkIfShouldBeIdle() {
-            if (Minecraft.getInstance().level != null && ((this.updateStartTimestamp+60) < System.currentTimeMillis() / 50)) {
-                LOGGER.info("RRV: Stopping rendering as it should be idle by this point.");
-				setIdle(true);
-			}
-        }
-
         public boolean networkTimeout() {
             if (Minecraft.getInstance().level == null)
                 return true;

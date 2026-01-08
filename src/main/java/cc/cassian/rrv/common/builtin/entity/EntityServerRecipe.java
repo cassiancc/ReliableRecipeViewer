@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.entity;
 
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
@@ -39,6 +40,7 @@ public class EntityServerRecipe implements ReliableServerRecipe {
     public void writeToTag(CompoundTag tag) {
 
         tag.store("entity", BuiltInRegistries.ENTITY_TYPE.byNameCodec(), entityType);
+        System.out.println("stacks: " + this.drops);
         tag.put("stacks", TagUtil.writeList(this.drops, (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
     }
 

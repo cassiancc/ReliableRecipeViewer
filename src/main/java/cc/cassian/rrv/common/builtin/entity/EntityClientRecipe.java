@@ -71,7 +71,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
     @Override
     public List<SlotContent> getIngredients() {
-        return List.of(SlotContent.of(SpawnEggItem.byId(this.entityType)));
+        return List.of();
     }
 
     @Override

@@ -23,7 +23,6 @@ public abstract class MixinGui {
         String statusMsg = ClientRecipeManager.INSTANCE.status().get();
 
         if(!ClientRecipeManager.INSTANCE.status().isIdle()) {
-            ClientRecipeManager.INSTANCE.status().checkIfShouldBeIdle();
 			guiGraphics.drawString(font, statusMsg, guiGraphics.guiWidth() - font.width(statusMsg) - 2, 2, -1);
 		}
     }
