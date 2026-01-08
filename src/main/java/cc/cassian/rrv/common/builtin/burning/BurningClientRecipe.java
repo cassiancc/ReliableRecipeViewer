@@ -65,6 +65,6 @@ public class BurningClientRecipe implements ReliableClientRecipe {
         Font font = Minecraft.getInstance().font;
 
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 19, 2 + (14 - burnProgress), 0, 14 - burnProgress, 14, burnProgress, 128, 128);
-        guiGraphics.drawString(font, Component.literal(this.burnTime + " ticks"), 38, 18 / 2 - font.lineHeight / 2, 0xFF808080, false);
+        guiGraphics.drawString(font, Component.translatable("view.rrv.type.burning.ticks", this.burnTime), 38, 18 / 2 - font.lineHeight / 2, 0xFF808080, false);
     }
 }

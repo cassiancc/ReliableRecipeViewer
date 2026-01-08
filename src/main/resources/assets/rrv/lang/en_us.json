@@ -6,6 +6,7 @@
   "view.rrv.type.smelting": "Smelting",
   "view.rrv.type.blasting": "Blasting",
   "view.rrv.type.burning": "Burning",
+  "view.rrv.type.burning.ticks": "%s ticks",
   "view.rrv.type.smoking": "Smoking",
   "view.rrv.type.stonecutter": "Stonecutting",
   "view.rrv.type.smithing": "Smithing",
@@ -38,9 +39,11 @@
   "key.rrv.go_back": "Go Back",
   "key.rrv.go_forward": "Go Forward",
 
-  "key.category.rrv.rrv_admin": "Reliable Reciper Viewe - Admin",
+  "key.category.rrv.rrv_admin": "Reliable Recipe Viewer - Admin",
   "key.rrv.cheatmode": "Use Cheatmode",
 
+  "recipe_sync.rrv.denied": "RRV cannot request recipes from a server without RVV installed! Please install RVV on the server for accurate recipes.",
+  "cheatmode.rrv.cheated": "Cheated x",
   "cheatmode.rrv.denied": "You do not have permission to use the cheatmode",
   "rrv.client_settings.title": "RRV Client Settings",
   "rrv.client_settings.btn": "RRV Client Settings",

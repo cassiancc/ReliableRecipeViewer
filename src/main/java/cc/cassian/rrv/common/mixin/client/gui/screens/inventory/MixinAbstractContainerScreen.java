@@ -68,7 +68,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
     @Inject(method = "init", at = @At("TAIL"))
     private void injectOverlay$0(CallbackInfo ci) {
 
-        //In recipe book screens we initalize after the recipe button init
+        //In recipe book screens we initialize after the recipe button init
         if ((Object) this instanceof AbstractRecipeBookScreen)
             return;
 

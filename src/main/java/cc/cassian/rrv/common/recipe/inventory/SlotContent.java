@@ -9,6 +9,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -187,15 +188,11 @@ public class SlotContent {
 
     public static SlotContent of(TagKey<Item> itemTag) {
         if (itemTag == null) return SlotContent.of();
-        List<Item> items = new ArrayList<>();
-        SlotContent.getItemsFromTag(itemTag).ifPresent(holders -> {
-            holders.forEach(holder -> {
-                items.add(holder.value());
-            });
-        });
-
+        if (BuiltInRegistries.ITEM.get(itemTag).isEmpty()) return SlotContent.of();
         List<ItemStack> stacks = new ArrayList<>();
-        items.forEach(item -> stacks.add(new ItemStack(item)));
+        BuiltInRegistries.ITEM.getTagOrEmpty(itemTag).forEach(holder -> {
+            stacks.add(holder.value().getDefaultInstance());
+        });
 
         return new SlotContent(stacks).bindItemTag(itemTag);
     }

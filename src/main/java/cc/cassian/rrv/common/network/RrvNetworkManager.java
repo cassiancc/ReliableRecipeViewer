@@ -120,11 +120,11 @@ public class RrvNetworkManager {
         });
 
         registerClientbound(ClientboundStackSensitivePayload.TYPE, ClientboundStackSensitivePayload.STREAM_CODEC, (context, payload) -> {
-            LowEndRecipeCache.INSTANCE.stackSensitiveRecrrved(payload.stackSensitive());
+            LowEndRecipeCache.INSTANCE.stackSensitiveRecieved(payload.stackSensitive());
         });
 
         registerClientbound(ClientboundFinishStackSensitivesPayload.TYPE, ClientboundFinishStackSensitivesPayload.STREAM_CODEC, (context, payload) -> {
-            LowEndRecipeCache.INSTANCE.stackSensitiveEndRecrrved();
+            LowEndRecipeCache.INSTANCE.stackSensitiveEndRecieved();
         });
 
         /*
@@ -141,7 +141,7 @@ public class RrvNetworkManager {
 
         //Recipes
         registerClientbound(ClientboundCacheStartPayload.TYPE, ClientboundCacheStartPayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheStartRecrrved(payload.types()));
+            ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheStartRecieved(payload.types()));
         });
         registerClientbound(ClientboundTypeUpdateStartPayload.TYPE, ClientboundTypeUpdateStartPayload.STREAM_CODEC, (context, payload) -> {
             ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.startCaching(payload.recipeType(), payload.amount()));
@@ -176,7 +176,7 @@ public class RrvNetworkManager {
 
             if (RrvUtil.hasPermission(context.sender())) {
                 context.sender().sendSystemMessage(
-                        Component.literal("Cheated x").withStyle(ChatFormatting.GRAY)
+                        Component.translatable("cheatmode.rrv.cheated").withStyle(ChatFormatting.GRAY)
                                 .append(
                                         Component.literal(String.valueOf(payload.amount())).withStyle(ChatFormatting.GOLD)
                                 )

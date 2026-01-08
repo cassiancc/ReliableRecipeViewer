@@ -88,7 +88,7 @@ public class ClientRecipeManager {
             if (ClientPlayNetworking.canSend(ServerboundRequestRrvUpdate.TYPE)) {
                 RrvClientNetworkManager.sendPacketToServer(new ServerboundRequestRrvUpdate());
             } else {
-                Minecraft.getInstance().player.displayClientMessage(Component.literal("RRV cannot request recipes from a server without RVV installed! Please install RVV on the server for accurate recipes."), false);
+                Minecraft.getInstance().player.displayClientMessage(Component.translatable("recipe_sync.rrv.denied"), false);
             }
 
 		}

@@ -45,13 +45,13 @@ public class LowEndRecipeCache {
         ClientRecipeManager.INSTANCE.status().setStatusStep("Caching Stack-Sensitives");
     }
 
-    public void stackSensitiveRecrrved(ItemView.StackSensitive stackSensitive) {
+    public void stackSensitiveRecieved(ItemView.StackSensitive stackSensitive) {
         this.recievedStackSensitives++;
         ClientRecipeCache.INSTANCE.addStackSensitive(stackSensitive);
         ClientRecipeManager.INSTANCE.status().setStatusProgress(this.recievedStackSensitives + "/" + this.expectedStackSensitives);
     }
 
-    public void stackSensitiveEndRecrrved() {
+    public void stackSensitiveEndRecieved() {
         if(this.recievedStackSensitives == this.expectedStackSensitives){
             LOGGER.info("RRV: Successfully updated Stack-Sensitives");
             this.recievedStackSensitives = 0;
@@ -76,7 +76,7 @@ public class LowEndRecipeCache {
     }
 
 
-    public void cacheStartRecrrved(int expectedTypes) {
+    public void cacheStartRecieved(int expectedTypes) {
         this.expectedTypes = expectedTypes;
     }
 
@@ -109,8 +109,8 @@ public class LowEndRecipeCache {
             return;
         }
 
-        this.cachingData.recrrved().add(entry);
-        ClientRecipeManager.INSTANCE.status().setStatusProgress(this.cachingData.recrrved().size() + "/" + this.cachingData.expectedAmount());
+        this.cachingData.recieved().add(entry);
+        ClientRecipeManager.INSTANCE.status().setStatusProgress(this.cachingData.recieved().size() + "/" + this.cachingData.expectedAmount());
     }
 
     public void endCaching(ReliableServerRecipeType<?> type) {
@@ -130,7 +130,7 @@ public class LowEndRecipeCache {
 
             this.cachingData = CacheData.EMPTY;
             LOGGER.info("RRV: Successfully updated recipes for type: {}", cachedCache.type().getId());
-            ClientRecipeCache.INSTANCE.updateType(cachedCache.type(), cachedCache.recrrved());
+            ClientRecipeCache.INSTANCE.updateType(cachedCache.type(), cachedCache.recieved());
         } else {
             this.cachingData = CacheData.EMPTY;
             LOGGER.error("RRV: Expected amount of recipes does not match the amount of recipes received => Update failed");
@@ -139,12 +139,12 @@ public class LowEndRecipeCache {
     }
 
 
-    record CacheData(ReliableServerRecipeType<?> type, int expectedAmount, List<ServerRecipeManager.ServerRecipeEntry> recrrved) {
+    record CacheData(ReliableServerRecipeType<?> type, int expectedAmount, List<ServerRecipeManager.ServerRecipeEntry> recieved) {
 
         static final CacheData EMPTY = null;
 
         boolean finishedSuccessfully() {
-            return this.recrrved.size() == this.expectedAmount;
+            return this.recieved.size() == this.expectedAmount;
         }
     }
 }
