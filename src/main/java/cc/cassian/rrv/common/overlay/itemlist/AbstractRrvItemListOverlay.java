@@ -83,7 +83,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
             }
         }
 
-        return true;
+        return false;
     }
 
 
