@@ -47,7 +47,7 @@ public class ReliableRecipeViewerClient {
     private static final Platform HELPER = Platform.INSTANCE;
 
 
-    public static void boostrap() {
+    public static void bootstrap() {
         OverlayManager.registerOverlay(ItemViewOverlay.INSTANCE);
         OverlayManager.registerOverlay(ItemBookmarkOverlay.INSTANCE);
     }

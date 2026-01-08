@@ -17,7 +17,16 @@ Currently supported functions are:
 - item highlighting (double-click on searchbar)
 - cheatmode
 
-For more details, see [Extended Item View](https://modrinth.com/mod/eiv) on Modrinth.
+In addition, this fork provides:
+- Support for 1.21.11 and 26.1, including support for data-driven villager trading.
+- Additional configuration options, including switching the side of the item index, centering the search bar.
+- Additional GUI improvemenets, like a scroll bar for the item index, a way to see all recipes by clicking on the recipe type, buttons to change the item index page, and more.
+- Additional recipe types for item tags.
+- Compatibility improvements, showing mod name translations, tag translations, and more.
+- Fixes for multiple bugs seen in the original project.
+
+For more details, see the original Modrinth page for [Extended Item View](https://modrinth.com/mod/eiv), as well as the changelog for a complete list of changes.
+
 
 **NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
 
@@ -47,6 +56,9 @@ dependencies {
     
     // Fabric 26.1 and above
     implementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${rrv_version}+${minecraft_version}")
+    
+    // NeoForge 26.1 and above
+    implementation("cc.cassian.rrv:reliable-recipe-viewer-neoforge:${rrv_version}+${minecraft_version}")
 }
 ```
 
@@ -73,13 +85,18 @@ Don't forget to add it as an entrypoint to your mod.
 {
 ...,
 	"entrypoints": {
-    ...,
+        ...,
 		"rrv": [
 			"com.example.mod.rrv.ExampleModRecipeViewerIntegration"
 		]
 	},
 ...
 }
+```
+
+### NeoForge (neoforge.mods.toml)
+```toml
+"rrv" = "com.example.mod.rrv.ExampleModRecipeViewerIntegration"
 ```
 
 - Users of split sources (and RRV 6.1.0 and above) can also make use of `ReliableRecipeViewerClientPlugin` and the `rrv_client` entrypoint. This is currently functionally identical to the existing `ReliableRecipeViewerPlugin` and `rrv` entrypoint, but may change in the future as the mod is updated to better handle split sources.
@@ -99,13 +116,19 @@ public class ExampleModRecipeViewerClientIntegration implements ReliableRecipeVi
 {
 ...,
 	"entrypoints": {
-    ...,
+        ...,
 		"rrv_client": [
 			"com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
 		]
 	},
 ...
 }
+```
+
+```toml
+...
+"rrv_client" = "com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
+...
 ```
 
 ## Adding a new recipe type
@@ -116,7 +139,7 @@ Simply create a class implementing `ReliableClientRecipeType` and override the r
 ```java
 public class ExampleModClientRecipeType implements ReliableClientRecipeType {
 
-    //Create an instance of your viewtype here
+    //Create an instance of your client recipe type here
     //Relevant for next steps
     protected static final ReliableClientRecipeType INSTANCE = new ReliableClientRecipeType();
     
@@ -137,13 +160,13 @@ public class ExampleModClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath("example-mod", "path/to/your/texture"); //Your type's gui texture.
+    public @Nullable Identifier getGuiTexture() {
+        return Identifier.fromNamespaceAndPath("example-mod", "path/to/your/texture"); // Your type's gui texture.
     }
 
     @Override
     public int getSlotCount() {
-        return 0; //The amount of slots one of your type's recipes requires (all slots including results)
+        return 2; //The amount of slots one of your type's recipes requires (all slots including results)
     }
 
     @Override
@@ -163,7 +186,7 @@ public class ExampleModClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public ItemStack getIcon() {
-        return null; //The icon displayed in the recipe-view
+        return ItemStack.EMPTY; //The icon displayed in the recipe-view
     }
 
     @Override
@@ -232,7 +255,7 @@ public class ExampleModClientRecipe implements ReliableClientRecipe {
 ### The SlotContent
 
 In RRV, everything concerning recipe content is handled via a class called `SlotContent`.
-It is a representation of all item stacks a slot holds. The content is constantly ticked while a the player is looking at a recipe to achieve an overview over the possible in- & outputs.
+It is a representation of all item stacks a slot holds. The content is constantly ticked while a player is looking at a recipe to achieve an overview over the possible in- & outputs.
 To wrap your ingredients and results (items, item stacks, fluid stacks, lists of items, ...) just call `SlotContent.of();`
 
 ### Slot dependencies
@@ -282,7 +305,7 @@ public class ExampleServerRecipe implements ReliableServerRecipe {
     }
 
     @Override
-    public ModRecipeType<? extends IRrvServerModRecipe> getRecipeType() {
+    public ModRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
 }
@@ -293,8 +316,8 @@ public class ExampleServerRecipe implements ReliableServerRecipe {
 
 Registering your recipes requires you to call 2 methods in your `onIntegrationInitialize();` method:
 
-- `ItemView.addRecipeProvider();`
-- `ItemView.registerRecipeWrapper();`
+- `ItemView.addServerRecipeProvider();`
+- `ItemView.addClientRecipeWrapper();`
 
 ```java
 public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
@@ -308,7 +331,7 @@ public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
         });
 
         //For the client
-        ItemView.registerClientRecipeWrapper(YourServerRecipe.TYPE, modRecipe -> {
+        ItemView.addClientRecipeWrapper(YourServerRecipe.TYPE, modRecipe -> {
             
             //Here you tell RRV how to process incoming server recipes
             //Requires you to return a list of client recipes (ReliableClientRecipe)

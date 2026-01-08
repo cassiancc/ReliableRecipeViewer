@@ -1,17 +1,19 @@
 package cc.cassian.rrv.common.client;
 
 import cc.cassian.rrv.common.network.RrvNetworkManager;
+import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 //? fabric {
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 //?} else {
-/*import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+/*import net.minecraft.network.Connection;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 *///?}
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -60,6 +62,32 @@ public class RrvClientNetworkManager {
         //? neoforge
         //RrvClientNetworkManager.event = event;
     }
+
+	public static boolean canSend(CustomPacketPayload.Type<ServerboundRequestRrvUpdate> type) {
+		//? fabric {
+        return ClientPlayNetworking.canSend(type);
+        //?} else {
+        /*var connection = Minecraft.getInstance().getConnection();
+        if (connection != null)
+            return connection.hasChannel(type.id());
+        return false;
+        *///?}
+	}
+
+    //? fabric {
+    /**
+     * Registers a new clientbound packet type
+     *
+     * @param type          The packet type
+     * @param codec         The codec for the packet
+     * @param clientHandler The client payload handler
+     */
+    public static <T extends CustomPacketPayload> void registerClientboundReciever(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
+        ClientPlayNetworking.registerGlobalReceiver(type, ((payload, context) -> {
+            clientHandler.handle(new RrvClientNetworkManager.ClientContext(Optional.of(context.client())), payload);
+        }));
+    }
+    //?}
 
     /**
      * Network context containing relevant information for client packet handling

@@ -21,26 +21,24 @@ import java.util.Optional;
 public class NeoForgeEntrypoint {
 
     public NeoForgeEntrypoint(IEventBus eventBus) {
-        ReliableRecipeViewer.LOGGER.info("Hello Minecraft!");
 
-
-        ReliableRecipeViewer.LOGGER.info("Scanning for integrations...");
+        ReliableRecipeViewer.LOGGER.info("RRV: Scanning for integrations...");
         if (FMLLoader.getCurrentOrNull() != null)
             FMLLoader.getCurrent().getLoadingModList().getMods().forEach(modInfo -> {
                 Optional<String> optional = modInfo.getConfigElement("rrv");
                 if (optional.isPresent()) {
-                    ReliableRecipeViewer.LOGGER.info("Loading integration: {}", optional.get());
+                    ReliableRecipeViewer.LOGGER.info("RRV: Loading integration: {}", optional.get());
                     try {
                         Class<?> clazz = Class.forName(optional.get());
                         ReliableRecipeViewerPlugin integration = ((ReliableRecipeViewerPlugin) clazz.getConstructor().newInstance());
                         integration.onIntegrationInitialize();
-                        ReliableRecipeViewer.LOGGER.info("Integration initialized for mod: {}", modInfo.getModId());
+                        ReliableRecipeViewer.LOGGER.info("RRV: Integration initialized for mod: {}", modInfo.getModId());
                         return;
 
                     } catch (Exception ignored) {
                     }
 
-                    ReliableRecipeViewer.LOGGER.error("Failed to load integration: {}", optional.get());
+                    ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration: {}", optional.get());
                 }
             });
     }
@@ -49,8 +47,6 @@ public class NeoForgeEntrypoint {
     public static void onCommandRegistry(RegisterCommandsEvent event) {
         RrvCommand.register(event.getDispatcher());
     }
-
-
 
     @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {

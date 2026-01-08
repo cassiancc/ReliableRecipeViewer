@@ -9,7 +9,7 @@ tasks.named<ProcessResources>("processResources") {
     fun prop(name: String) = project.property(name) as String
 
     val props = HashMap<String, String>().apply {
-        this["mod_version"] = prop("mod.version")
+        this["mod_version"] = "${prop("mod.version")}+${prop("deps.minecraft")}"
         this["minecraft"] = prop("deps.minecraft")
         this["mod_id"] = prop("mod.id")
         this["mod_name"] = prop("mod.name")
@@ -107,7 +107,7 @@ publishMods {
     additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 
     type = BETA
-    displayName = "${property("mod.name")} ${property("mod.version")} for ${stonecutter.current.version} Neoforge"
+    displayName = "RRV ${property("mod.version")} for ${stonecutter.current.version} NeoForge"
     version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
     changelog = provider { rootProject.file("CHANGELOG.md").readText() }
     modLoaders.add("neoforge")
@@ -115,14 +115,14 @@ publishMods {
     modrinth {
         projectId = property("publish.modrinth") as String
         accessToken = env.MODRINTH_API_KEY.orNull()
-        minecraftVersions.add(stonecutter.current.version)
+        minecraftVersions.add(property("deps.minecraft").toString())
         minecraftVersions.addAll(additionalVersions)
     }
 
     curseforge {
         projectId = property("publish.curseforge") as String
         accessToken = env.CURSEFORGE_API_KEY.orNull()
-        minecraftVersions.add(stonecutter.current.version)
+        minecraftVersions.add(property("publish.curseforge_minecraft_version").toString())
         minecraftVersions.addAll(additionalVersions)
     }
 }
@@ -130,7 +130,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "cc.cassian.rrv"
-            artifactId = "reliable-recipe-viewer-fabric"
+            artifactId = "reliable-recipe-viewer-neoforge"
             version = "${property("mod.version")}+${property("deps.minecraft")}"
 
             from(components["java"])

@@ -147,7 +147,7 @@ public class RrvNetworkManager {
             //RegisterPayloadHandlersEvent event
     ) {
         //? neoforge
-        //RrvNetworkManager.event = event.registrar("1");
+        //RrvNetworkManager.event = event.registrar("1").optional();
         registerClientbound(ClientboundServerReloadPayload.TYPE, ClientboundServerReloadPayload.STREAM_CODEC, (context, payload) -> {
             ItemView.getClientReloadCallbacks().forEach(ItemView.ReloadCallback::onReload);
         });

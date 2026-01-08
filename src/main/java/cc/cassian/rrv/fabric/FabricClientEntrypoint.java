@@ -31,7 +31,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
     public void onInitializeClient() {
         instance = this;
 
-        ReliableRecipeViewerClient.boostrap();
+        ReliableRecipeViewerClient.bootstrap();
 
         RrvClientNetworkManager.registerPayloads();
 
