@@ -13,29 +13,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Optional;
 
 /**
  * Network Manager for all clientbound RRV packets
  */
+@ApiStatus.Internal
 public class RrvClientNetworkManager {
 
     //? neoforge
-    //private static RegisterClientPayloadHandlersEvent event;
+    //public static RegisterClientPayloadHandlersEvent event;
 
     private RrvClientNetworkManager() {}
-
-    /**
-     * Registers a new clientbound packet type
-     *
-     * @param type          The packet type
-     * @param codec         The codec for the packet
-     * @param clientHandler The client payload handler
-     */
-    public static <T extends CustomPacketPayload> void registerClientboundReciever(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
-        ClientPlayNetworking.registerGlobalReceiver(type, ((payload, context) -> {
-            clientHandler.handle(new RrvClientNetworkManager.ClientContext(context.client()), payload);
-        }));
-    }
 
     /**
      * Send a payload to the server
@@ -51,6 +42,10 @@ public class RrvClientNetworkManager {
         *///?}
     }
 
+    public static void handleClientboundUpdateTransferCachePayload(RrvClientNetworkManager.ClientContext context, ClientboundUpdateTransferCachePayload payload) {
+        if (Minecraft.getInstance().screen instanceof RecipeViewScreen viewScreen)
+            viewScreen.getMenu().updateTransferCache();
+    }
 
     /**
      * Registers all RRV payloads
@@ -64,11 +59,6 @@ public class RrvClientNetworkManager {
 
         //? neoforge
         //RrvClientNetworkManager.event = event;
-
-        registerClientboundReciever(ClientboundUpdateTransferCachePayload.TYPE, ClientboundUpdateTransferCachePayload.STREAM_CODEC, (context, payload) -> {
-            if (context.client.screen instanceof RecipeViewScreen viewScreen)
-                viewScreen.getMenu().updateTransferCache();
-        });
     }
 
     /**
@@ -76,7 +66,7 @@ public class RrvClientNetworkManager {
      *
      * @param client The client instance
      */
-    public record ClientContext(Minecraft client) implements RrvNetworkManager.Context {
+    public record ClientContext(Optional<Minecraft> client) implements RrvNetworkManager.Context {
     }
 
     /**

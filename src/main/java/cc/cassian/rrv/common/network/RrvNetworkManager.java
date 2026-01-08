@@ -16,12 +16,14 @@ import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 //?} else {
-/*import net.neoforged.neoforge.network.PacketDistributor;
+/*import net.minecraft.client.Minecraft;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 *///?}
@@ -34,10 +36,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Optional;
 
 /**
  * Network Manager for all RRV packets
  */
+@ApiStatus.Internal
 public class RrvNetworkManager {
 
     /**
@@ -46,11 +52,10 @@ public class RrvNetworkManager {
     public static final RrvNetworkManager INSTANCE = new RrvNetworkManager();
 
     //? neoforge
-    //private static PayloadRegistrar event;
+    //public static PayloadRegistrar event;
 
 
     private RrvNetworkManager() {}
-
 
 
     /**
@@ -87,10 +92,16 @@ public class RrvNetworkManager {
      * @param clientHandler The client payload handler
      */
     private static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
+        //? fabric {
         registerClientboundPayload(type, codec);
         if (Platform.INSTANCE.isClientSide()) {
             RrvClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
         }
+        //?} else {
+        /*event.playToClient(type, codec, (payload, context) -> {
+           clientHandler.handle(new RrvClientNetworkManager.ClientContext(Optional.empty()), payload);
+        });
+        *///?}
     }
 
 
@@ -101,12 +112,14 @@ public class RrvNetworkManager {
      * @param codec         The codec for the packet
      */
     private static <T extends CustomPacketPayload> void registerClientboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
-        //? >26 {
-        /*PayloadTypeRegistry.clientboundPlay()
-        *///?} else {
-        PayloadTypeRegistry.playS2C()
-         //?}
-        .register(type, codec);
+        //? fabric {
+            //? >26 {
+            /*PayloadTypeRegistry.clientboundPlay()
+            *///?} else {
+            PayloadTypeRegistry.playS2C()
+             //?}
+            .register(type, codec);
+        //?}
     }
 
     /**
@@ -179,7 +192,7 @@ public class RrvNetworkManager {
         });
 
 
-        registerClientboundPayload(ClientboundUpdateTransferCachePayload.TYPE, ClientboundUpdateTransferCachePayload.STREAM_CODEC);
+        registerClientbound(ClientboundUpdateTransferCachePayload.TYPE, ClientboundUpdateTransferCachePayload.STREAM_CODEC, RrvClientNetworkManager::handleClientboundUpdateTransferCachePayload);
 
         registerClientbound(ClientboundCompatPayload.TYPE, ClientboundCompatPayload.STREAM_CODEC, RrvPayloadConverter::convertFromCompat);
 
