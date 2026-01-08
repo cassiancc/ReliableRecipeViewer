@@ -5,7 +5,6 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
-import cc.cassian.rrv.common.builtin.tag.TagClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
@@ -160,7 +159,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         else
             this.availableItems = ItemFilters.defaultFilter(newQuery);
 
-        this.availableItems().removeIf(stack -> ItemView.getExcluded().contains(stack.getItem()));
+        this.availableItems().removeIf(stack -> ItemView.getExcludedItems().contains(stack.getItem()));
 
         this.updateSlots();
     }

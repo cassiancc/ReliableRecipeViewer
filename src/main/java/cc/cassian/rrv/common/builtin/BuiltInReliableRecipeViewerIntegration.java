@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin;
 
+import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.builtin.tag.TagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
 import com.mojang.datafixers.util.Either;
@@ -92,9 +93,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
     //Default slot rendering
     public static final Identifier DEFAULT_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/default_slot.png");
 
-    private static final TagKey<Item> EXCLUDED_ITEMS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
-    private static final TagKey<Block> EXCLUDED_BLOCKS = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
-    private static final TagKey<Fluid> EXCLUDED_FLUIDS = TagKey.create(Registries.FLUID, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
 
     @Override
     public void onIntegrationInitialize() {
@@ -102,9 +100,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         ItemView.addClientReloadCallback(() -> {
 
-            BuiltInRegistries.BLOCK.get(EXCLUDED_BLOCKS).ifPresent(blocks -> blocks.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(block -> ItemView.excludeItem(block.asItem())));
-            BuiltInRegistries.ITEM.get(EXCLUDED_ITEMS).ifPresent(items -> items.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(ItemView::excludeItem));
-            BuiltInRegistries.FLUID.get(EXCLUDED_FLUIDS).ifPresent(fluids -> fluids.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(fluid -> ItemView.excludeItem(fluid.defaultFluidState().createLegacyBlock().getBlock().asItem())));
+            BuiltInRegistries.BLOCK.get(CommonTags.EXCLUDED_BLOCKS).ifPresent(blocks -> blocks.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(block -> ItemView.excludeItem(block.asItem())));
+            BuiltInRegistries.ITEM.get(CommonTags.EXCLUDED_ITEMS).ifPresent(items -> items.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(ItemView::excludeItem));
+            BuiltInRegistries.FLUID.get(CommonTags.EXCLUDED_FLUIDS).ifPresent(fluids -> fluids.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(fluid -> ItemView.excludeItem(fluid.defaultFluidState().createLegacyBlock().getBlock().asItem())));
 
         });
 
@@ -113,28 +111,35 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
 
             potionRegistry.forEach(potion -> {
-                ItemView.addStackSensitive(PotionContents.createItemStack(Items.POTION, potionRegistry.wrapAsHolder(potion)));
-                ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionRegistry.wrapAsHolder(potion)));
-                ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionRegistry.wrapAsHolder(potion)));
+                var potionHolder = potionRegistry.wrapAsHolder(potion);
 
-                if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionRegistry.wrapAsHolder(potion))) {
-                    ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
-                    tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionRegistry.wrapAsHolder(potion)));
-                    ItemView.addStackSensitive(tipped);
+                if (!potionHolder.is(CommonTags.EXCLUDED_POTIONS) && !ItemView.getExcludedPotions().contains(potionHolder)) {
+                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.POTION, potionHolder));
+                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
+                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
+
+                    if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder)) {
+                        ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
+                        tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
+                        ItemView.addStackSensitive(tipped);
+                    }
                 }
             });
 
 
             Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-            enchantmentRegistry.forEach(enchantment -> {
+            enchantmentRegistry.entrySet().forEach((entry) -> {
+                var key = entry.getKey();
+                var enchantment = entry.getValue();
                 for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
 
-                    ItemStack enchantedBook = EnchantmentHelper.createBook(new EnchantmentInstance(enchantmentRegistry.wrapAsHolder(enchantment), i));
-                    ItemView.addStackSensitive(enchantedBook);
-
+                    var enchantmentHolder = enchantmentRegistry.wrapAsHolder(enchantment);
+                    if (!enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) && !ItemView.getExcludedEnchantments().contains(key)) {
+                        ItemStack enchantedBook = EnchantmentHelper.createBook(new EnchantmentInstance(enchantmentHolder, i));
+                        ItemView.addStackSensitive(enchantedBook);
+                    }
                 }
             });
-
         });
 
         //providers

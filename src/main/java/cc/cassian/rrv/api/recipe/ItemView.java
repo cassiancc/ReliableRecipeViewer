@@ -3,11 +3,15 @@ package cc.cassian.rrv.api.recipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.TagUtil;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +26,9 @@ public class ItemView {
     /**
      * A list of client-side excluded items that won't show up in the ItemView overlay
      */
-    private static final List<Item> EXCLUDED = new ArrayList<>();
+    private static final List<Item> EXCLUDED_ITEMS = new ArrayList<>();
+    private static final List<ResourceKey<Enchantment>> EXCLUDED_ENCHANTMENTS = new ArrayList<>();
+    private static final List<Holder<Potion>> EXCLUDED_POTIONS = new ArrayList<>();
 
     /**
      * Server-Side map of "item-variants", the client gets informed about on every server reload
@@ -116,7 +122,57 @@ public class ItemView {
      * @param items An array of items to exclude
      */
     public static void excludeItems(Item... items) {
-        Arrays.stream(items).filter(item -> !EXCLUDED.contains(item)).forEach(EXCLUDED::add);
+        Arrays.stream(items).filter(item -> !EXCLUDED_ITEMS.contains(item)).forEach(EXCLUDED_ITEMS::add);
+    }
+
+    /**
+     * A method used to exclude an enchantment from the ItemView index. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
+     * <br>
+     * <br>
+     * NOTE: This does not hide the enchantment from recipes, only the index.
+     * <br>
+     * <br>
+     * <b>Example</b>: minecraft:mending
+     *
+     * @param item The excluded item
+     */
+    public static void excludeEnchantment(ResourceKey<Enchantment> item) {
+        excludeEnchantments(item);
+    }
+
+    /**
+     * Register multiple enchantments to exclude at once. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
+     *
+     * @param items An array of enchantments to exclude
+     */
+    @SafeVarargs
+	public static void excludeEnchantments(ResourceKey<Enchantment>... items) {
+        Arrays.stream(items).filter(item -> !EXCLUDED_ENCHANTMENTS.contains(item)).forEach(EXCLUDED_ENCHANTMENTS::add);
+    }
+
+    /**
+     * A method used to exclude a potion from the ItemView index. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
+     * <br>
+     * <br>
+     * NOTE: This does not hide the enchantment from recipes, only the index.
+     * <br>
+     * <br>
+     * <b>Example</b>: minecraft:mundane
+     *
+     * @param item The excluded item
+     */
+    public static void excludePotion(Holder<Potion> item) {
+        excludePotions(item);
+    }
+
+    /**
+     * Register multiple potions to exclude at once. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
+     *
+     * @param items An array of enchantments to exclude
+     */
+    @SafeVarargs
+    public static void excludePotions(Holder<Potion>... items) {
+        Arrays.stream(items).filter(item -> !EXCLUDED_POTIONS.contains(item)).forEach(EXCLUDED_POTIONS::add);
     }
 
 
@@ -145,9 +201,25 @@ public class ItemView {
     /**
      * @return The list of currently excluded items (client-side)
      */
-    public static List<Item> getExcluded() {
-        return EXCLUDED;
+    public static List<Item> getExcludedItems() {
+        return EXCLUDED_ITEMS;
     }
+
+    /**
+     * @return The list of currently excluded enchantments (client-side)
+     */
+    public static List<ResourceKey<Enchantment>> getExcludedEnchantments() {
+        return EXCLUDED_ENCHANTMENTS;
+    }
+
+
+    /**
+     * @return The list of currently excluded potions (client-side)
+     */
+    public static List<Holder<Potion>> getExcludedPotions() {
+        return EXCLUDED_POTIONS;
+    }
+
 
 
     /**
