@@ -66,7 +66,7 @@ public class ExampleModRecipeViewerIntegration implements ReliableRecipeViewerPl
 }
 ```
 
-Don't forget to add it as an entrypoint to your mod
+Don't forget to add it as an entrypoint to your mod.
 
 ### Fabric (fabric.mod.json)
 ```json
@@ -76,6 +76,32 @@ Don't forget to add it as an entrypoint to your mod
     ...,
 		"rrv": [
 			"com.example.mod.rrv.ExampleModRecipeViewerIntegration"
+		]
+	},
+...
+}
+```
+
+- Users of split sources (and RRV 6.1.0 and above) can also make use of `ReliableRecipeViewerClientPlugin` and the `rrv_client` entrypoint. This is currently functionally identical to the existing `ReliableRecipeViewerPlugin` and `rrv` entrypoint, but may change in the future as the mod is updated to better handle split sources.
+
+```java
+public class ExampleModRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {
+    
+    @Override
+    public void onIntegrationInitialize() {
+        
+    }
+	
+}
+```
+
+```json
+{
+...,
+	"entrypoints": {
+    ...,
+		"rrv_client": [
+			"com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
 		]
 	},
 ...

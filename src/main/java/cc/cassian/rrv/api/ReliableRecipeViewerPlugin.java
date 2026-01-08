@@ -1,14 +1,17 @@
 package cc.cassian.rrv.api;
 
+import cc.cassian.rrv.api.recipe.ItemView;
+
 /**
- * Each mod should have their own RRV integration and register everything RRV related in there
+ * Hook for RRV integration in a main source set.
  */
 @FunctionalInterface
 public interface ReliableRecipeViewerPlugin {
 
 
     /**
-     * Called once on game launch to register callbacks, recipe providers, recipe wrappers, ...
+     * Called once on game launch to register server recipe providers ({@link cc.cassian.rrv.api.recipe.ItemView#addServerRecipeProvider}) and server reload callbacks ({@link cc.cassian.rrv.api.recipe.ItemView#addServerReloadCallback}).
+     * If you are not using split sources, this can also be used to register client recipe wrappers and client reload callbacks.
      */
     void onIntegrationInitialize();
 }

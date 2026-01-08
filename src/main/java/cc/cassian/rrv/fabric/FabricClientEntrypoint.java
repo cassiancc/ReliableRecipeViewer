@@ -1,6 +1,8 @@
 //? fabric {
 package cc.cassian.rrv.fabric;
 
+import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
+import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.client.RrvClientNetworkManager;
@@ -14,6 +16,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 //?}
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,6 +34,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         ReliableRecipeViewerClient.boostrap();
 
         RrvClientNetworkManager.registerPayloads();
+
+        FabricLoader.getInstance().invokeEntrypoints("rrv_client", ReliableRecipeViewerClientPlugin.class, ReliableRecipeViewerClientPlugin::onIntegrationInitialize);
 
         //? >26 {
         /*ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyMappingHelper::registerKeyMapping);

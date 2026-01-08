@@ -1,3 +1,11 @@
+### Added
+- Users of split sources can now make use of `ReliableRecipeViewerClientPlugin` and the `rrv_client` entrypoint. This is currently functionally identical to the existing `ReliableRecipeViewerPlugin` and `rrv` entrypoint, but may change in the future as the mod is updated to better handle split sources.
+- Added deprecated helpers for old EIV style methods to help point people towards the new API.
+
+### Changed
+- `ItemView#registerClientRecipeWrapper` was renamed to `ItemView#addClientRecipeWrapper`. The old method is retained to continue supporting mods designed for 6.0.4 and below.
+
+
 ### Fixed
 - Improved null safety on `SlotContent`.
 - Searchbar not working when the player has a multiword effect.

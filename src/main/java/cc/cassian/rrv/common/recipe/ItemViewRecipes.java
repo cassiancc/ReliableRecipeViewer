@@ -12,6 +12,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.List;
  * <br>
  * Also contains some helper functions
  */
+@ApiStatus.Internal
 public class ItemViewRecipes {
 
     public static final ItemViewRecipes INSTANCE = new ItemViewRecipes();
@@ -59,7 +61,6 @@ public class ItemViewRecipes {
      * @param wrapper
      * @param <T>
      */
-    @Deprecated
     public <T extends ReliableServerRecipe> void registerRecipeWrapper(ReliableServerRecipeType<T> recipeType, ClientRecipeWrapper<T> wrapper) {
         this.recipeWrappers.put(recipeType, wrapper);
     }
@@ -71,7 +72,6 @@ public class ItemViewRecipes {
      * Will be removed soon
      * @param provider
      */
-    @Deprecated
     public void addRecipeProvider(ServerRecipeProvider provider) {
         this.recipeProviders.add(provider);
     }

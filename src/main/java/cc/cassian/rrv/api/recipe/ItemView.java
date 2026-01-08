@@ -57,6 +57,14 @@ public class ItemView {
     }
 
     /**
+     * Deprecated in favor of {@link ItemView#addServerRecipeProvider(ItemViewRecipes.ServerRecipeProvider)}
+     */
+    @Deprecated(since = "6.0.0")
+    public static void addRecipeProvider(ItemViewRecipes.ServerRecipeProvider provider) {
+        addServerRecipeProvider(provider);
+    }
+
+    /**
      * ClientRecipeWrappers convert an incoming server recipe into a displayable client recipe later shown in the recipe view.
      * <br>
      * <br>
@@ -66,8 +74,24 @@ public class ItemView {
      * @param wrapper    The wrapper
      * @param <T>        The class of the server recipe
      */
-    public static <T extends ReliableServerRecipe> void registerClientRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
+    public static <T extends ReliableServerRecipe> void addClientRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
         ItemViewRecipes.INSTANCE.registerRecipeWrapper(recipeType, wrapper);
+    }
+
+    /**
+     * Deprecated in favor of {@link ItemView#addClientRecipeWrapper(ReliableServerRecipeType, ItemViewRecipes.ClientRecipeWrapper)}
+     */
+    @Deprecated(since = "6.1.0")
+    public static <T extends ReliableServerRecipe> void registerClientRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
+        addClientRecipeWrapper(recipeType, wrapper);
+    }
+
+    /**
+     * Deprecated in favor of {@link ItemView#addClientRecipeWrapper(ReliableServerRecipeType, ItemViewRecipes.ClientRecipeWrapper)}
+     */
+    @Deprecated(since = "6.0.0")
+    public static <T extends ReliableServerRecipe> void registerRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
+        addClientRecipeWrapper(recipeType, wrapper);
     }
 
 
@@ -143,14 +167,22 @@ public class ItemView {
     }
 
     /**
-     * Mods can add a ReloadCallback to hook into a server reload
+     * Deprecated in favor of the more specific {@link ItemView#addServerReloadCallback(ReloadCallback)}
+     */
+    @Deprecated(since = "6.1.0")
+    public static void addReloadCallback(ReloadCallback callback) {
+        addServerReloadCallback(callback);
+    }
+
+    /**
+     * Mods can add a ReloadCallback to hook into a server reload.
      * <br>
      * <br>
      * They should register their stack-sensitives here, because the list of stack-sensitives is cleared before every reload
      *
      * @param callback The reload callback
      */
-    public static void addReloadCallback(ReloadCallback callback) {
+    public static void addServerReloadCallback(ReloadCallback callback) {
         RELOAD_CALLBACKS.add(callback);
     }
 

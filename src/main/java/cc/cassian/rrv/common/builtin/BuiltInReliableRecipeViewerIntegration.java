@@ -108,7 +108,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
 
-        ItemView.addReloadCallback(() -> {
+        ItemView.addServerReloadCallback(() -> {
 
             Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
 
@@ -408,17 +408,17 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         *///?}
 
         //Wrapper
-        ItemView.registerClientRecipeWrapper(BurningServerRecipe.TYPE, unwrapped -> List.of(new BurningClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(SmeltingServerRecipe.TYPE, unwrapped -> List.of(new SmeltingClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(BlastingServerRecipe.TYPE, unwrapped -> List.of(new BlastingClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(SmokingServerRecipe.TYPE, unwrapped -> List.of(new SmokingClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(ShapedServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(TransmuteServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(TippedArrowServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(CampfireServerRecipe.TYPE, unwrapped -> List.of(new CampfireClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(StonecutterServerRecipe.TYPE, unwrapped -> List.of(new StonecutterClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(SmithingServerRecipe.TYPE, unwrapped -> {
+        ItemView.addClientRecipeWrapper(BurningServerRecipe.TYPE, unwrapped -> List.of(new BurningClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(SmeltingServerRecipe.TYPE, unwrapped -> List.of(new SmeltingClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(BlastingServerRecipe.TYPE, unwrapped -> List.of(new BlastingClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(SmokingServerRecipe.TYPE, unwrapped -> List.of(new SmokingClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(ShapedServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(TransmuteServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(TippedArrowServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(CampfireServerRecipe.TYPE, unwrapped -> List.of(new CampfireClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(StonecutterServerRecipe.TYPE, unwrapped -> List.of(new StonecutterClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(SmithingServerRecipe.TYPE, unwrapped -> {
             List<SmithingClientRecipe> recipes = new ArrayList<>();
 
             if (unwrapped.getBase() != null && unwrapped.getTemplate() != null) {
@@ -447,12 +447,12 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
             return recipes;
         });
-        ItemView.registerClientRecipeWrapper(BrewingServerRecipe.TYPE, unwrapped -> List.of(new BrewingClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> {
+        ItemView.addClientRecipeWrapper(BrewingServerRecipe.TYPE, unwrapped -> List.of(new BrewingClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> {
             return unwrapped.getOffers().stream().map(VillagerClientRecipe::new).toList();
         });
-        ItemView.registerClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
-        ItemView.registerClientRecipeWrapper(TagServerRecipe.TYPE, unwrapped -> List.of(new TagClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(TagServerRecipe.TYPE, unwrapped -> List.of(new TagClientRecipe(unwrapped)));
     }
 
 
