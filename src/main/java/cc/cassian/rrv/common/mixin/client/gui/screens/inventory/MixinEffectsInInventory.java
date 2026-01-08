@@ -45,7 +45,7 @@ public abstract class MixinEffectsInInventory {
             if(!guiBlock.id().getPath().startsWith("mobeffect_"))
                 continue;
 
-            String descriptionId = guiBlock.id().getPath().split("_")[1];
+            String descriptionId = guiBlock.id().getPath().split("mobeffect_")[1];
 
             if(this.minecraft.player.getActiveEffects().stream().noneMatch(mobEffectInstance -> mobEffectInstance.getDescriptionId().equals(descriptionId)))
                 effectsToRemove.add(guiBlock.id());
@@ -78,7 +78,7 @@ public abstract class MixinEffectsInInventory {
             if(!guiBlock.id().getPath().startsWith("mobeffect_"))
                 continue;
 
-            String descriptionId = guiBlock.id().getPath().split("_")[1];
+            String descriptionId = guiBlock.id().getPath().split("mobeffect_")[1];
 
             if(this.minecraft.player.getActiveEffects().stream().noneMatch(mobEffectInstance -> mobEffectInstance.getDescriptionId().equals(descriptionId)))
                 effectsToRemove.add(guiBlock.id());
