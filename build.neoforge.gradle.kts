@@ -35,7 +35,13 @@ jsonlang {
 }
 
 repositories {
-    maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
+    maven {
+        name = "Parchment Mappings"
+        url = uri("https://maven.parchmentmc.org")
+        content {
+            includeGroup("org.parchmentmc.data")
+        }
+    }
 }
 
 neoForge {

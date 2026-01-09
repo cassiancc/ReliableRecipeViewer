@@ -82,10 +82,12 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
+import net.neoforged.neoforge.common.BasicItemListing;
 
 import java.util.*;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.*;
+import static cc.cassian.rrv.neoforge.builtin.NeoForgeBuiltinRrvIntegration.NEOFORGE_BASIC;
 
 public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
 
@@ -396,6 +398,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                         if (listing instanceof VillagerTrades.TypeSpecificTrade typeSpecificTrade)
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TYPE_SPECIFIC, typeSpecificTrade)));
+
+                        if (listing instanceof BasicItemListing basicItemListing)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(NEOFORGE_BASIC, basicItemListing)));
                     });
                 });
 

@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.neoforge.mixin.neoforge.common.BasicItemListingAccessor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -16,9 +17,7 @@ import net.neoforged.neoforge.common.BasicItemListing;
 import java.util.Arrays;
 import java.util.List;
 
-public class NeoForgeBuiltinRrvIntegration extends BuiltInReliableRecipeViewerIntegration {
-
-
+public class NeoForgeBuiltinRrvIntegration {
 
     public static final VillagerServerRecipe.VillagerOfferType<BasicItemListing> NEOFORGE_BASIC = VillagerServerRecipe.VillagerOfferType.register(
             Identifier.fromNamespaceAndPath("neoforge", "basic"),
@@ -48,26 +47,5 @@ public class NeoForgeBuiltinRrvIntegration extends BuiltInReliableRecipeViewerIn
                 return List.of(new VillagerServerRecipe.VillagerOffer(profession, professionLevel, villagerType, List.of(offerStack), List.of(price), List.of(price2), villagerXp, maxUses));
             }
     );
-
-    @Override
-    public void onIntegrationInitialize() {
-        super.onIntegrationInitialize();
-
-
-        ItemView.addServerRecipeProvider(recipeList -> {
-            VillagerTrades.TRADES.forEach((profession, byProfessionLevel) -> {
-
-                byProfessionLevel.forEach((professionLevel, itemListings) -> {
-                    Arrays.asList(itemListings).forEach(listing -> {
-
-                        if(listing instanceof BasicItemListing basicItemListing)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(NEOFORGE_BASIC, basicItemListing)));
-
-                    });
-                });
-
-            });
-        });
-    }
 }
 *///?}
