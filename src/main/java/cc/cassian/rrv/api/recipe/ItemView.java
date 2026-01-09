@@ -1,9 +1,11 @@
 package cc.cassian.rrv.api.recipe;
 
+import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -11,12 +13,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Main API class used to register RRV compat for other mods
@@ -282,6 +282,31 @@ public class ItemView {
      */
     public static List<ReloadCallback> getClientReloadCallbacks() {
         return CLIENT_RELOAD_CALLBACKS;
+    }
+
+	public static boolean isExcludedItem(Holder<Item> itemHolder) {
+        if (!itemHolder.isBound()) return true;
+		return isExcludedItem(itemHolder.value());
+	}
+
+    public static boolean isExcludedItem(Item item) {
+        return EXCLUDED_ITEMS.contains(item);
+    }
+
+    public static boolean isExcludedItem(ItemStack stack) {
+        if (stack.has(DataComponents.POTION_CONTENTS)) {
+            Optional<Holder<Potion>> potion = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
+            if (potion.isPresent()) {
+                if (isExcludedPotion(potion.get())) {
+                    return true;
+                }
+            }
+        }
+        return isExcludedItem(stack.getItem());
+    }
+
+    public static boolean isExcludedPotion(Holder<Potion> potion) {
+        return potion.is(CommonTags.EXCLUDED_POTIONS) || EXCLUDED_POTIONS.contains(potion);
     }
 
     public interface ReloadCallback {

@@ -45,6 +45,7 @@ import cc.cassian.rrv.common.builtin.smoking.SmokingClientRecipe;
 import cc.cassian.rrv.common.builtin.stonecutting.StonecutterClientRecipe;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -113,7 +114,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             potionRegistry.forEach(potion -> {
                 var potionHolder = potionRegistry.wrapAsHolder(potion);
 
-                if (!potionHolder.is(CommonTags.EXCLUDED_POTIONS) && !ItemView.getExcludedPotions().contains(potionHolder)) {
+                if (!ItemView.isExcludedPotion(potionHolder)) {
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.POTION, potionHolder));
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
@@ -199,7 +200,10 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             });
 
             BuiltInRegistries.ITEM.listTagIds().forEach((tag) -> {
-                recipeList.add(new TagServerRecipe(tag));
+				Optional<HolderSet.Named<Item>> tagContents = BuiltInRegistries.ITEM.get(tag);
+                if (tagContents.isPresent() && !tagContents.get().stream().allMatch(item-> ItemView.getExcludedItems().contains(item.value()))) {
+                    recipeList.add(new TagServerRecipe(tag));
+                }
             });
 
         });
@@ -208,7 +212,10 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ItemView.addServerRecipeProvider(recipeList -> {
             FuelValues fuelValues = ServerRecipeManager.INSTANCE.getServer().fuelValues();
             fuelValues.fuelItems().forEach(item -> {
+                //? fabric
                 recipeList.add(new BurningServerRecipe(item, fuelValues.burnDuration(new ItemStack(item))));
+                //? neoforge
+                //recipeList.add(new BurningServerRecipe(item, item.getDefaultInstance().getBurnTime(null, fuelValues)));
             });
 
         });

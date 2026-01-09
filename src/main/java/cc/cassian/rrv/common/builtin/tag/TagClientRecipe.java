@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.tag;
 
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -25,7 +26,9 @@ public class TagClientRecipe implements ReliableClientRecipe {
 
 		List<ItemStack> drops = new ArrayList<>();
 		BuiltInRegistries.ITEM.getTagOrEmpty(tagKey).forEach(itemHolder -> {
-			drops.add(new ItemStack(itemHolder));
+			if (!ItemView.isExcludedItem(itemHolder)) {
+				drops.add(new ItemStack(itemHolder));
+			}
 		});
 		List<SlotContent> dropContents = new ArrayList<>();
 
