@@ -5,7 +5,6 @@ import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
-import cc.cassian.rrv.neoforge.mixin.neoforge.common.BasicItemListingAccessor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -28,18 +27,18 @@ public class NeoForgeBuiltinRrvIntegration extends BuiltInReliableRecipeViewerIn
 
                 BasicItemListingAccessor accessor = (BasicItemListingAccessor) listing;
 
-                out.put("offerStack", RrvTagUtil.encodeItemStackOnServer(accessor.offer()));
-                out.put("price", RrvTagUtil.encodeItemStackOnServer(accessor.price1()));
-                out.put("price2", RrvTagUtil.encodeItemStackOnServer(accessor.price2()));
+                out.put("offerStack", TagUtil.encodeItemStackOnServer(accessor.offer()));
+                out.put("price", TagUtil.encodeItemStackOnServer(accessor.price1()));
+                out.put("price2", TagUtil.encodeItemStackOnServer(accessor.price2()));
                 out.putInt("villagerXp", accessor.villagerxp());
                 out.putInt("maxUses", accessor.maxUses());
 
             },
             (profession, professionLevel, in) -> {
 
-                ItemStack offerStack = RrvTagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("offerStack"));
-                ItemStack price = RrvTagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("price"));
-                ItemStack price2 = RrvTagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("price2"));
+                ItemStack offerStack = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("offerStack"));
+                ItemStack price = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("price"));
+                ItemStack price2 = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("price2"));
 
                 int villagerXp = in.getIntOr("villagerXp", 0);
                 int maxUses = in.getIntOr("maxUses", 0);
@@ -55,7 +54,7 @@ public class NeoForgeBuiltinRrvIntegration extends BuiltInReliableRecipeViewerIn
         super.onIntegrationInitialize();
 
 
-        ItemView.addRecipeProvider(recipeList -> {
+        ItemView.addServerRecipeProvider(recipeList -> {
             VillagerTrades.TRADES.forEach((profession, byProfessionLevel) -> {
 
                 byProfessionLevel.forEach((professionLevel, itemListings) -> {
