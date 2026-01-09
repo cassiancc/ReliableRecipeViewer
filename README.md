@@ -57,7 +57,7 @@ dependencies {
     // Fabric 26.1 and above
     implementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${rrv_version}+${minecraft_version}")
     
-    // NeoForge 26.1 and above
+    // NeoForge 1.21.11 and above
     implementation("cc.cassian.rrv:reliable-recipe-viewer-neoforge:${rrv_version}+${minecraft_version}")
 }
 ```
@@ -131,7 +131,7 @@ public class ExampleModRecipeViewerClientIntegration implements ReliableRecipeVi
 ...
 ```
 
-## Adding a new recipe type
+## Adding a Client Recipe Type
 
 Since you want to add a complete new way of crafting, you first need to create your client recipe type.
 Simply create a class implementing `ReliableClientRecipeType` and override the required methods:
@@ -196,7 +196,7 @@ public class ExampleModClientRecipeType implements ReliableClientRecipeType {
 }
 ```
 
-## Adding your recipe blueprint
+## Adding a Client Recipe
 
 Now you need to add your recipe's class to tell RRV about things like rendering & items.
 Just create a class implementing `ReliableClientRecipe` and override the required methods.
@@ -258,9 +258,9 @@ In RRV, everything concerning recipe content is handled via a class called `Slot
 It is a representation of all item stacks a slot holds. The content is constantly ticked while a player is looking at a recipe to achieve an overview over the possible in- & outputs.
 To wrap your ingredients and results (items, item stacks, fluid stacks, lists of items, ...) just call `SlotContent.of();`
 
-### Slot dependencies
+#### Slot dependencies
 
-If there is a slot that should not tick independently you can bind it as a dependent slot:
+Slot that should not tick independently can be bound as a dependent slots:
 
 ```java
     @Override
@@ -278,8 +278,8 @@ In this case, we are using the current index of `this.input` as the index for `t
 
 ## Server side recipe representation
 
-Minecraft's recipe system was changed in 1.21.2 so that all recipes only exist on the server, meaning the client is not told which recipes exist.
-Since this mod requires recipes to exist clientside, we have to synchronize the recipes between the server and client ourselves.
+Since recipes only exist on the server since 1.21.2, the client does not know which recipes exist.
+In order for RRV to be able to show recipes, we have to synchronize them between the server and client ourselves.
 For consistency, RRV requires a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
 
 Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `ReliableServerRecipe` and override the methods:
@@ -345,7 +345,7 @@ public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
 ```
 
 Recipe providers registered by `ItemView.addServerRecipeProvider();` are used by the server recipe manager to maintain and update the recipe cache.
-Whenever there is an update, the client is informed about the update and the mod recipe wrappers registered by `ItemView.registeClientrRecipeWrapper();` are used to convert incoming server recipes into displayable client recipes.
+Whenever there is an update, the client is informed about the update and the mod recipe wrappers registered by `ItemView.addClientRecipeWrapper();` are used to convert incoming server recipes into displayable client recipes.
 
 ### Stack-Sensitives
 
@@ -400,21 +400,16 @@ To be able to shift items from the players inventory into it's crafting gui you 
 
 The `ItemView` class is the main API class for RRV, so you can always look in there if you wonder whether something can be realized with RRV or not (yet).<br>
 
-This fork is distributed alongside its source code on Modrinth Maven, so its Javadocs are visible in your IDE as well as here on GitHub.<br>
+This mod is distributed alongside its source code on both Modrinth Maven and my own maven, so its Javadocs are visible in your IDE as well as here on GitHub.<br>
 <br>
 If you still have questions, you can always contact me via [Discord](https://discord.cassian.cc)<br>
 <br>
 Have fun modding!
 
-
 ## FAQ
 
 - Will this mod be ported to other versions/loaders?
   - This port will be kept up to date with the latest version of Minecraft. No backports are planned/necessary, please use the original mod.
-
-## Mod Compatibility
-
-Developers wishing to use the mod can make use of RRV's easy to use API. More info on [RRV's GitHub page](https://github.com/liushmn/ExtendedItemView). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
 
 ## License
 [![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](github.com/cassiancc/bygone-fortress)
