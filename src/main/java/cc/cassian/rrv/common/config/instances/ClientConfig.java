@@ -11,6 +11,7 @@ public class ClientConfig extends AbstractRrvConfig {
     private boolean appendModNamespace = true;
     private boolean rightIndex = true;
     private boolean centerSearch = true;
+    private boolean showBookmarks = true;
 
     public ClientConfig() {
         super("client_settings");
@@ -54,6 +55,14 @@ public class ClientConfig extends AbstractRrvConfig {
 
     public void setCenterSearch(boolean centerSearch) {
         this.centerSearch = centerSearch;
+    }
+
+    public boolean isShowBookmarks() {
+        return showBookmarks;
+    }
+
+    public void setShowBookmarks(boolean showBookmarks) {
+        this.showBookmarks = showBookmarks;
     }
 
     @Override

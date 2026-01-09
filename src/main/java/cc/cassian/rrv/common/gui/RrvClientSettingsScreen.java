@@ -43,6 +43,7 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout, Component.translatable("rrv.client_settings.append_namespace.show"), Component.translatable("rrv.client_settings.append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), Component.translatable("rrv.client_settings.append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.right_index.right"), Component.translatable("rrv.client_settings.right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), Component.translatable("rrv.client_settings.right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.center_search.centered"), Component.translatable("rrv.client_settings.center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), Component.translatable("rrv.client_settings.center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
+        addChild(linearLayout, Component.translatable("rrv.client_settings.bookmarks.show"), Component.translatable("rrv.client_settings.bookmarks.hide"), Configs.CLIENT_SETTINGS.isShowBookmarks(), Component.translatable("rrv.client_settings.bookmarks"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowBookmarks(b));
 
         this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build());
 

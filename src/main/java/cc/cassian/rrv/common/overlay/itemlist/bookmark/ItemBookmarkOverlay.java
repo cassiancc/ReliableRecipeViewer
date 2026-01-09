@@ -42,13 +42,13 @@ public class ItemBookmarkOverlay extends AbstractRrvItemListOverlay {
         this.updateSlots();
     }
 
+    private boolean shouldHide() {
+        return !Configs.CLIENT_SETTINGS.isShowBookmarks() || this.itemSlots().isEmpty() || (this.fittingPerPage() == 0);
+    }
 
     @Override
     protected void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if(this.fittingPerPage() == 0)
-            return;
-
-        if (this.itemSlots().isEmpty())
+        if (shouldHide())
             return;
 
         if (Configs.CLIENT_SETTINGS.isItemWrapMode())
@@ -60,15 +60,12 @@ public class ItemBookmarkOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (this.itemSlots().isEmpty())
+        if (shouldHide())
             return;
 
         Minecraft client = Minecraft.getInstance();
 
         Font font = client.font;
-
-        if (this.fittingPerPage() <= 0)
-            return;
 
         if (Configs.CLIENT_SETTINGS.isItemWrapMode())
             this.drawScaledString(font, guiGraphics, Component.translatable("rrv.bookmarks"), this.x + this.width / 2, 6, -1);
