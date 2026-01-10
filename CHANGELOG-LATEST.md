@@ -7,9 +7,12 @@
 - Bookmarks panel can now be hidden in the config.
 - Items hidden from the index no longer appear in the item tag view.
 - RRV now respects `c:hidden_from_recipe_viewers` for fluids, enchantments, and potions.
+- Resource pack driven info recipes.
+- Reworked documentation, the new docs can be found on the [Modded Minecraft Wiki](https://moddedmc.wiki/en/project/rrv/latest/docs).
 
 ### Changed
 - `ItemView#registerClientRecipeWrapper` was renamed to `ItemView#addClientRecipeWrapper` for consistency with other methods in `ItemView`. The old method is retained to continue supporting mods designed for 6.0.4 and below.
+- Further internal refactors to ensure side safety by moving internal integrations that rely on clientside code to `BuiltInReliableRecipeViewerClientIntegration` and moving item model code to a client package.
 
 ### Fixed
 - Incorrect tag translations.

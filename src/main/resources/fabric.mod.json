@@ -8,10 +8,10 @@
     "${mod_authors}"
   ],
   "contact": {
-    "repo": "https://github.com/cassiancc/ExtendedItemView",
-    "issues": "https://github.com/cassiancc/ExtendedItemView/issues",
-    "homepage": "https://modrinth.com/mod/rrv",
-    "sources": "https://github.com/cassiancc/ExtendedItemView"
+    "repo": "https://github.com/cassiancc/ReliableRecipeViewer",
+    "issues": "https://github.com/cassiancc/ReliableRecipeViewer/issues",
+    "homepage": "https://moddedmc.wiki/en/project/rrv/latest/docs",
+    "sources": "https://github.com/cassiancc/ReliableRecipeViewer"
   },
   "license": "${mod_license}",
   "icon": "assets/rrv/icon.png",
