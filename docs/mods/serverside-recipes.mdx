@@ -1,0 +1,38 @@
+# Adding Server Recipes
+
+Since recipes only exist on the server since 1.21.2, the client does not know which recipes exist.
+In order for RRV to be able to show recipes, we have to synchronize them between the server and client ourselves.
+For consistency, RRV requires a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
+
+Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `ReliableServerRecipe` and override the methods:
+
+### Example
+```java
+public class ExampleServerRecipe implements ReliableServerRecipe {
+
+
+    //Create a server recipe type (the id does not have to match your client side viewtype id)
+    public static final ModRecipeType<YourServerRecipe> TYPE = ModRecipeType.register(
+            Identifier.fromNamespaceAndPath("example-mod", "your_recipe_id"),
+            () -> new YourServerRecipe()
+    );
+
+    @Override
+    public void writeToTag(CompoundTag tag) {
+
+    }
+
+    @Override
+    public void loadFromTag(CompoundTag tag) {
+
+    }
+
+    @Override
+    public ModRecipeType<? extends ReliableServerRecipe> getRecipeType() {
+        return TYPE;
+    }
+}
+```
+**INFO**: The API includes a `TagUtil` class that provides a lot of helper functions for encoding and decoding different objects. Note that `writeToTag` is called on the server, while `loadFromTag` is called on the client.
+
+With all your recipe classes created, you can move on to creating the [plugins](finalizing-your-recipes).

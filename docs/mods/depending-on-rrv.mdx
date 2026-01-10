@@ -1,0 +1,33 @@
+# Depending on RRV
+
+These instructions are for my maven, but Modrinth Maven should also be useable once this mod is available on Modrinth!
+
+## Adding the dependency
+```kts
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+              name = "Cassian's Maven"
+              url = uri("https://maven.cassian.cc")
+            }
+        }
+        filter {
+            includeGroupAndSubgroups("cc.cassian")
+        }
+    }
+}
+
+dependencies {
+    // Fabric 1.21.11 and below
+    modImplementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${rrv_version}+${minecraft_version}")
+
+    // Fabric 26.1 and above
+    implementation("cc.cassian.rrv:reliable-recipe-viewer-fabric:${rrv_version}+${minecraft_version}")
+
+    // NeoForge 1.21.11 and above
+    implementation("cc.cassian.rrv:reliable-recipe-viewer-neoforge:${rrv_version}+${minecraft_version}")
+}
+```
+
+Now that you have RRV installed, you can move on to creating a [Client Recipe Type](client-recipe-type).

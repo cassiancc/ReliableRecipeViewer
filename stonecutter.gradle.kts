@@ -5,6 +5,7 @@ plugins {
     id("net.neoforged.moddev") version "2.0.137" apply false
     id ("dev.kikugie.postprocess.jsonlang") version "2.1-beta.4" apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.+" apply false
+    id("org.moddedmc.wiki.toolkit") version "0.4.1"
 }
 
 stonecutter active "1.21.11-fabric"
@@ -22,4 +23,12 @@ stonecutter tasks {
 for (version in stonecutter.versions.map { it.version }.distinct()) tasks.register("publish$version") {
     group = "publishing"
     dependsOn(stonecutter.tasks.named("publishMods") { metadata.version == version })
+}
+
+wiki {
+    // The name of the object (examplemod) should match the registered wiki project ID (if it exists).
+    docs.create("rrv") {
+        // The path to the folder containing the documentation metadata file (sinytra-wiki.json)
+        root = file("docs")
+    }
 }

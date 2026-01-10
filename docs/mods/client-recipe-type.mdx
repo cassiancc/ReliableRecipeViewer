@@ -1,0 +1,67 @@
+# Adding a Client Recipe Type
+
+Since you want to add a complete new way of crafting, you first need to create your client recipe type.
+Simply create a class implementing `ReliableClientRecipeType` and override the required methods:
+
+### Example
+```java
+public class ExampleModClientRecipeType implements ReliableClientRecipeType {
+
+    //Create an instance of your client recipe type here
+    //Relevant for next steps
+    protected static final ReliableClientRecipeType INSTANCE = new ReliableClientRecipeType();
+
+
+    @Override
+    public Component getDisplayName() {
+        return Component.literal("Example Crafting"); //This is the name of your recipe type, displayed later in the recipe view
+    }
+
+    @Override
+    public int getDisplayWidth() {
+        return 0; //The width of your type's gui texture
+    }
+
+    @Override
+    public int getDisplayHeight() {
+        return 0; //The height of your type's gui texture
+    }
+
+    @Override
+    public @Nullable Identifier getGuiTexture() {
+        return Identifier.fromNamespaceAndPath("example-mod", "path/to/your/texture"); // Your type's gui texture.
+    }
+
+    @Override
+    public int getSlotCount() {
+        return 2; //The amount of slots one of your type's recipes requires (all slots including results)
+    }
+
+    @Override
+    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
+        //Tell RRV where your slots are located by calling slotDefinition.addItemSlot();
+        //NOTE: Slot position is relative to your gui texture
+
+        slotDefinition.addItemSlot(0, 10, 20);
+        slotDefinition.addItemSlot(1, 40, 20);
+
+    }
+
+    @Override
+    public Identifier getId() {
+        return Identifier.fromNamespaceAndPath("example-mod", "your_type_id"); //A unique id for your viewtype
+    }
+
+    @Override
+    public ItemStack getIcon() {
+        return ItemStack.EMPTY; //The icon displayed in the recipe-view
+    }
+
+    @Override
+    public List<ItemStack> getCraftReferences() {
+        return List.of(); //Return a list of blocks/items that can be used to process your recipes (e.g. for Smelting it would be the furnace)
+    }
+}
+```
+
+With your client recipe type created, you can move on to creating the [Client Recipes](client-recipes) themselves.

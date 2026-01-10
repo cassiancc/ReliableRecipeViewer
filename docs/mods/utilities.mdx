@@ -1,0 +1,24 @@
+# Utility Classes
+
+## SlotContent
+
+In RRV, everything concerning recipe content is handled via a class called `SlotContent`.
+It is a representation of all item stacks a slot holds. The content is constantly ticked while a player is looking at a recipe to achieve an overview over the possible inputs & outputs.
+To wrap your ingredients and results (items, item stacks, fluid stacks, lists of items, ...) just call `SlotContent.of();`
+
+## Stack-Sensitives
+
+Stack-Sensitives are variants of items that only differ in their components.
+Vanilla examples include Enchanted Books, Potions, and Tipped Arrows.
+
+If you want to add your own item stacks to the index simply call `ItemView.addStackSensitive()` in a reload callback (`ItemView.addReloadCallback()`).
+
+You can also exclude items from the index by calling `ItemView.excludeItem()` This method does not need to be called in a reload callback, since it's only client-side.
+
+## TagUtil
+
+`TagUtil` provides helper functions for encoding and decoding different objects from and to [NBT](https://minecraft.wiki/w/NBT_format).
+
+## ItemView
+
+- The primary integration class for RRV, `ItemView` provides tools for adding client recipe wrappers, server recipe providers, reload callbacks, excluding items from the index, and more.

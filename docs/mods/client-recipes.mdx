@@ -1,0 +1,121 @@
+# Adding a Client Recipe
+
+Now you need to add your recipe's class to tell RRV about things like rendering & items.
+Just create a class implementing `ReliableClientRecipe` and override the required methods.
+
+Note that [SlotContent](utilities#slotcontent) is used rather than displaying the `ItemStack`s themselves. This abstraction allows for different types of content to be displayed easily.
+
+### Example
+
+```java
+public class ExampleModClientRecipe implements ReliableClientRecipe {
+
+    private final SlotContent input, output;
+
+
+    //You can design your constructor to suit your needs
+    public YourCustomViewRecipe(ItemStack input, ItemStack output) {
+
+        //Define your inputs and outputs here
+
+        this.input = SlotContent.of(input);
+        this.output = SlotContent.of(output);
+
+    }
+
+    @Override
+    public ReliableClientRecipeType getViewType() {
+        return YourCustomClientRecipeType.INSTANCE; //Here you need your type's instance you created before
+    }
+
+    @Override
+    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+
+        //Tell RRV which SlotContent belongs to which of your previously defined slots
+        slotFillContext.bindSlot(0, this.input);
+        slotFillContext.bindSlot(1, this.output);
+
+        // When you want to add custom information to some of your items simply add a stack modifier to the corresponding slots
+        slotFillContext.addAdditionalStackModifier(0, (stack, tooltip) -> {
+            tooltip.add(Component.literal("A cool item"));
+        });
+
+        // You can also bind a slot as "optional" and provide it with a valid SlotRenderer to ensure a slot
+        // is only rendered if there's an item in it
+	    // The default SlotRenderer is used for rendering Minecraft's default slot texture
+        slotFillContext.bindOptionalSlot(0, this.result, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
+
+    }
+
+    @Override
+    public List<SlotContent> getIngredients() {
+        return List.of(this.input); //Return all of your inputs here
+    }
+
+    @Override
+    public List<SlotContent> getResults() {
+        return List.of(this.output); //Return all of your outputs here
+    }
+}
+```
+
+
+### Slot dependencies
+
+Slot that should not tick independently can be bound as a dependent slots in your client recipe.
+
+```java
+    @Override
+    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+
+        //...
+
+        slotFillContext.bindDependentSlot(0, this.input::index, this.input2);
+
+    }
+```
+
+The method requires an integer supplier which tells the `SlotContent` at which position it is currently ticking.
+
+In this case, we are using the current index of `this.input` as the index for `this.input2`, which ensures they are always synchronized.
+
+### Recipe-transfer functionality
+
+<Callout variant='info'>
+You can safely skip this section if you are not interested in this feature.
+</Callout>
+
+To be able to shift items from the players inventory into the workstation's GUI, you have to override a few more methods of your class that implements `ReliableClientRecipe`:
+
+```java
+
+    @Override
+    public boolean supportsItemTransfer() {
+        return true; //Enable item transfer
+    }
+
+    @Override
+    public List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
+        return List.of(CraftingScreen.class); //Tell which screen is the corresponding crafting gui
+    }
+
+    @Override
+    public void mapRecipeItems(RecipeTransferMap map) {
+
+	//Link your recipe slots to the corresponding slots in the destination inventory (the crafting inventory)
+
+        map.linkSlots(0, 1);
+        map.linkSlots(1, 2);
+        map.linkSlots(2, 3);
+        map.linkSlots(3, 4);
+        map.linkSlots(4, 5);
+        map.linkSlots(5, 6);
+        map.linkSlots(6, 7);
+        map.linkSlots(7, 8);
+        map.linkSlots(8, 9);
+
+    }
+```
+
+
+With your client recipes created, you can move on to creating the [Server Recipes](server-recipes) that will supply them with data.
