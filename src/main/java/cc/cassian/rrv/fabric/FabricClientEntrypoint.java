@@ -2,11 +2,10 @@
 package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
-import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.client.RrvClientNetworkManager;
-import cc.cassian.rrv.common.extra.FluidItemModel;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.fabricmc.api.ClientModInitializer;
 //? >26 {

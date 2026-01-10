@@ -1,0 +1,48 @@
+package cc.cassian.rrv.common.builtin.info;
+
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.FormattedText;
+
+import java.util.List;
+
+public class InfoClientRecipe implements ReliableClientRecipe {
+	private final SlotContent key;
+	private final String text;
+
+	public InfoClientRecipe(SlotContent key, String text) {
+		this.key = key;
+		this.text = text;
+	}
+
+	@Override
+	public ReliableClientRecipeType getViewType() {
+		return InfoClientRecipeType.INSTANCE;
+	}
+
+	@Override
+	public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+		slotFillContext.bindSlot(0, this.key);
+	}
+
+	@Override
+	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(I18n.get(text)), 5, 20, 112, -16777216, false);
+	}
+
+	@Override
+	public List<SlotContent> getIngredients() {
+		return List.of(this.key);
+	}
+
+	@Override
+	public List<SlotContent> getResults() {
+		return List.of(this.key);
+	}
+}

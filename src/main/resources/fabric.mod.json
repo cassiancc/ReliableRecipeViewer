@@ -26,6 +26,9 @@
     "rrv": [
       "cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration"
     ],
+    "rrv_client": [
+      "cc.cassian.rrv.client.builtin.BuiltInReliableRecipeViewerClientIntegration"
+    ],
     "modmenu": [
       "cc.cassian.rrv.fabric.integration.ModMenuIntegration"
     ]

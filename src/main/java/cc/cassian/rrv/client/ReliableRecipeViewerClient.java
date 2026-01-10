@@ -1,5 +1,6 @@
-package cc.cassian.rrv.common;
+package cc.cassian.rrv.client;
 
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import cc.cassian.rrv.common.config.Configs;

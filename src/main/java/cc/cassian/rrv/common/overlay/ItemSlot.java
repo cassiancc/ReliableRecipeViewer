@@ -1,9 +1,8 @@
 package cc.cassian.rrv.common.overlay;
 
-import cc.cassian.rrv.common.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.ChatFormatting;

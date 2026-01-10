@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin.client;
 
-import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

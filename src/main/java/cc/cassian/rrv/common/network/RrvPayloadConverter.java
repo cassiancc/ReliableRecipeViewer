@@ -3,7 +3,7 @@ package cc.cassian.rrv.common.network;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
-import cc.cassian.rrv.common.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.recipe.*;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;

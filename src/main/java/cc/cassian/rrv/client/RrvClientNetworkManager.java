@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.client;
+package cc.cassian.rrv.client;
 
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;

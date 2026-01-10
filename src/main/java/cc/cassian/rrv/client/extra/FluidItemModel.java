@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.extra;
+package cc.cassian.rrv.client.extra;
 
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;

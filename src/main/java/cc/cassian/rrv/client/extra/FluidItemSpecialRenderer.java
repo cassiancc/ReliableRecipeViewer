@@ -1,8 +1,9 @@
-package cc.cassian.rrv.common.extra;
+package cc.cassian.rrv.client.extra;
 
+import cc.cassian.rrv.common.extra.FluidStack;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.serialization.MapCodec;
-import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.Minecraft;
@@ -17,17 +18,17 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import java.awt.*;
-import java.util.Set;
 import java.util.function.Consumer;
 
 //? if >1.21.10 {
 import static net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent;
 //?} else {
 /*import static net.minecraft.client.renderer.rendertype.RenderType.entityTranslucent;
+import java.util.Set;
+import org.joml.Vector3f;
 *///?}
 
 /**

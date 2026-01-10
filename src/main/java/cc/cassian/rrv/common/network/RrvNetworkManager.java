@@ -2,7 +2,7 @@ package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.Platform;
-import cc.cassian.rrv.common.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
@@ -16,7 +16,6 @@ import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
-import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;

@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
-import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import net.minecraft.client.Minecraft;

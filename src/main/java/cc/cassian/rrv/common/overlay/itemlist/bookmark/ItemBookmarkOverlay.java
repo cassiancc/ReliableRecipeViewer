@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.bookmark;
 
-import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;

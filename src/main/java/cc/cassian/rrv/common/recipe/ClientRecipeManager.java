@@ -1,10 +1,8 @@
 package cc.cassian.rrv.common.recipe;
 
-import cc.cassian.rrv.common.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
-//? fabric
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;

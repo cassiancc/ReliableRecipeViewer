@@ -3,9 +3,9 @@
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.client.RrvClientNetworkManager;
-import cc.cassian.rrv.common.extra.FluidItemModel;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.gui.screens.Screen;

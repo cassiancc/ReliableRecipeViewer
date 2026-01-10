@@ -2,7 +2,7 @@ package cc.cassian.rrv.common.mixin.client.renderer.special;
 
 import com.mojang.serialization.MapCodec;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.extra.FluidItemSpecialRenderer;
+import cc.cassian.rrv.client.extra.FluidItemSpecialRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderers;
 import net.minecraft.resources.Identifier;

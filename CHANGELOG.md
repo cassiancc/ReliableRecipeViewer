@@ -1,3 +1,11 @@
+## [6.2.0]
+
+### Added
+- Resource pack driven info recipes.
+
+### Changed
+- Further internal refactors to ensure side safety by moving internal integrations that rely on clientside code to `BuiltInReliableRecipeViewerClientIntegration` and moving item model code to a client package..
+
 ## [6.1.1]
 
 ### Fixed

@@ -47,6 +47,7 @@ authors="${mod_authors}" #optional
 description='''${mod_description}'''
 
 rrv="cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration"
+rrv_client="cc.cassian.rrv.common.client.builtin.BuiltInReliableRecipeViewerClientIntegration"
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 [[mixins]]

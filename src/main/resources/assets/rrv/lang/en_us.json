@@ -23,6 +23,7 @@
   "view.rrv.type.entity": "Entity Fighting",
   "view.rrv.type.entity.playerKill": "\u00a78» Player Only",
   "view.rrv.type.item_tag": "Item Tags",
+  "view.rrv.type.info": "Info",
 
   "rrv.fluid.unit": "mb",
   "commands.rrv.reloadedRecipes": "Reload success (Recipes)",

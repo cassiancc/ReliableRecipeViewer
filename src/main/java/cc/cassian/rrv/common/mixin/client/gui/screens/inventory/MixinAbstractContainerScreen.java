@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens.inventory;
 
-import cc.cassian.rrv.common.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
