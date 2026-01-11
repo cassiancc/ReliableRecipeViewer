@@ -1,6 +1,10 @@
 ## [6.2.1]
 
+### Added
 - Lists can now be used in info recipes.
+
+### Changed
+- Merged Shapeless Crafting and Shaped Crafting into one Crafting tab.
 
 ## [6.2.0]
 

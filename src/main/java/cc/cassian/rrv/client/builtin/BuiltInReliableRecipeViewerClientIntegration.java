@@ -17,7 +17,6 @@ import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipe;
 import cc.cassian.rrv.common.builtin.shaped.ShapedServerRecipe;
-import cc.cassian.rrv.common.builtin.shapeless.ShapelessClientRecipe;
 import cc.cassian.rrv.common.builtin.shapeless.ShapelessServerRecipe;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingClientRecipe;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingServerRecipe;
@@ -43,7 +42,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StrictJsonParser;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 
@@ -71,9 +69,9 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemView.addClientRecipeWrapper(SmeltingServerRecipe.TYPE, unwrapped -> List.of(new SmeltingClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(BlastingServerRecipe.TYPE, unwrapped -> List.of(new BlastingClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(SmokingServerRecipe.TYPE, unwrapped -> List.of(new SmokingClientRecipe(unwrapped)));
-        ItemView.addClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(ShapedServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
-        ItemView.addClientRecipeWrapper(TransmuteServerRecipe.TYPE, unwrapped -> List.of(new ShapelessClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(TransmuteServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(TippedArrowServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(CampfireServerRecipe.TYPE, unwrapped -> List.of(new CampfireClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(StonecutterServerRecipe.TYPE, unwrapped -> List.of(new StonecutterClientRecipe(unwrapped)));
