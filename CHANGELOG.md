@@ -5,6 +5,10 @@
 
 ### Changed
 - Merged Shapeless Crafting and Shaped Crafting into one Crafting tab.
+- `ItemView.excludeEnchantments` now works on collections.
+
+### Fixed
+- NeoForge now loads recipes correctly.
 
 ## [6.2.0]
 

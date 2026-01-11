@@ -151,6 +151,15 @@ public class ItemView {
     }
 
     /**
+     * Register multiple enchantments to exclude at once. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
+     *
+     * @param items A collection of enchantments to exclude
+     */
+    public static void excludeEnchantments(Collection<ResourceKey<Enchantment>> items) {
+        items.stream().filter(item -> !EXCLUDED_ENCHANTMENTS.contains(item)).forEach(EXCLUDED_ENCHANTMENTS::add);
+    }
+
+    /**
      * A method used to exclude a potion from the ItemView index. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
      * <br>
      * <br>
