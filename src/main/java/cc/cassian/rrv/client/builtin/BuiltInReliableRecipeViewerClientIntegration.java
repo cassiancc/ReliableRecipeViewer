@@ -43,6 +43,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StrictJsonParser;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 
 import java.io.IOException;
@@ -127,6 +129,19 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                                 var item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemText));
                                 infoRecipes.add(new InfoClientRecipe(SlotContent.of(item), text));
                             }
+                        } else if (parsedRecipe.get("key").isJsonArray() && parsedRecipe.get("key").getAsJsonArray().get(0).isJsonPrimitive()) {
+                            ArrayList<ItemStack> itemStacks = new ArrayList<>();
+                            parsedRecipe.get("key").getAsJsonArray().forEach(jsonElement->{
+                                var itemText = jsonElement.getAsString();
+                                if (itemText.contains("#")) {
+                                    var item = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", ""))));
+                                    item.forEach(holder -> itemStacks.add(holder.value().getDefaultInstance()));
+                                } else {
+                                    var item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemText));
+                                    itemStacks.add(item.getDefaultInstance());
+                                }
+                            });
+                            infoRecipes.add(new InfoClientRecipe(SlotContent.of(itemStacks), text));
                         } else {
                             LOGGER.error("Could not parse info recipe '{}' as it was missing a key!", identifier);
                         }

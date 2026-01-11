@@ -1,3 +1,7 @@
+## [6.2.1]
+
+- Lists can now be used in info recipes.
+
 ## [6.2.0]
 
 ### Added
