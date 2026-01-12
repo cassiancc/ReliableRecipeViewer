@@ -4,7 +4,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -14,7 +14,7 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
 
     public static final SmeltingClientRecipeType INSTANCE = new SmeltingClientRecipeType();
 
-    private static final Identifier SMELTING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smelting.png");
+    private static final ResourceLocation SMELTING_LOCATION = ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smelting.png");
 
     @Override
     public Component getDisplayName() {
@@ -22,8 +22,8 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getId() {
-        return Identifier.withDefaultNamespace("furnace_smelting");
+    public ResourceLocation getId() {
+        return ResourceLocation.withDefaultNamespace("furnace_smelting");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getGuiTexture() {
+    public ResourceLocation getGuiTexture() {
         return SMELTING_LOCATION;
     }
 

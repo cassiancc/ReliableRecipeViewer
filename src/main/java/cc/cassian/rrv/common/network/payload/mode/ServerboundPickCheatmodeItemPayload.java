@@ -6,7 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +21,7 @@ public record ServerboundPickCheatmodeItemPayload(ItemStack stack, int amount) i
             (compoundTag, amount) -> new ServerboundPickCheatmodeItemPayload(TagUtil.decodeItemStackOnServer(compoundTag), amount)
     );
 
-    public static final Type<ServerboundPickCheatmodeItemPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "pick_cheatmode_item"));
+    public static final Type<ServerboundPickCheatmodeItemPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "pick_cheatmode_item"));
 
 
     @Override

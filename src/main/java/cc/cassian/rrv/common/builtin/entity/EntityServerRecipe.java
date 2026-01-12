@@ -6,7 +6,7 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 
@@ -15,7 +15,7 @@ import java.util.List;
 public class EntityServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<EntityServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("entity_loot"),
+            ResourceLocation.withDefaultNamespace("entity_loot"),
             () -> new EntityServerRecipe(null, List.of())
     );
 

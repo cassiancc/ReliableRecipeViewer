@@ -13,7 +13,7 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class RrvPayloadConverter {
 
@@ -24,7 +24,7 @@ public class RrvPayloadConverter {
         if (payloadTag.isEmpty())
             return;
 
-        Identifier payloadType = Identifier.parse(payloadTag.getStringOr("payloadType", ""));
+        ResourceLocation payloadType = ResourceLocation.parse(payloadTag.getStringOr("payloadType", ""));
         CompoundTag data = payloadTag.getCompoundOrEmpty("payloadData");
 
         if (Minecraft.getInstance().getConnection() == null)
@@ -41,7 +41,7 @@ public class RrvPayloadConverter {
         }
 
         if (payloadType.equals(ClientboundTypeUpdateStartPayload.TYPE.id())) {
-            ClientboundTypeUpdateStartPayload p = new ClientboundTypeUpdateStartPayload(ReliableServerRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))), data.getIntOr("amount", 0));
+            ClientboundTypeUpdateStartPayload p = new ClientboundTypeUpdateStartPayload(ReliableServerRecipeType.byId(ResourceLocation.parse(data.getStringOr("recipeType", ""))), data.getIntOr("amount", 0));
             Minecraft.getInstance().getConnection().handleCustomPayload(p);
         }
 
@@ -49,7 +49,7 @@ public class RrvPayloadConverter {
 
             CompoundTag fullTag = data.getCompoundOrEmpty("entry");
 
-            Identifier recipeId = Identifier.parse(fullTag.getStringOr("recipeId", ""));
+            ResourceLocation recipeId = ResourceLocation.parse(fullTag.getStringOr("recipeId", ""));
             ReliableServerRecipe recipe = ServerRecipeManager.ServerRecipeEntry.fromTag(fullTag.getCompoundOrEmpty("recipe"));
 
             ClientboundTypeUpdatePayload p = new ClientboundTypeUpdatePayload(new ServerRecipeManager.ServerRecipeEntry(recipeId, recipe));
@@ -57,7 +57,7 @@ public class RrvPayloadConverter {
         }
 
         if (payloadType.equals(ClientboundTypeUpdateEndPayload.TYPE.id())) {
-            ClientboundTypeUpdateEndPayload p = new ClientboundTypeUpdateEndPayload(ReliableServerRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))));
+            ClientboundTypeUpdateEndPayload p = new ClientboundTypeUpdateEndPayload(ReliableServerRecipeType.byId(ResourceLocation.parse(data.getStringOr("recipeType", ""))));
             Minecraft.getInstance().getConnection().handleCustomPayload(p);
         }
 

@@ -1,6 +1,6 @@
 package cc.cassian.rrv.api.recipe;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 
@@ -10,14 +10,14 @@ import java.util.HashMap;
  */
 public interface ReliableServerRecipeType<T extends ReliableServerRecipe> {
 
-    HashMap<Identifier, ReliableServerRecipeType<?>> RRV_RECIPE_TYPES = new HashMap<>();
+    HashMap<ResourceLocation, ReliableServerRecipeType<?>> RRV_RECIPE_TYPES = new HashMap<>();
 
 
     /**
      *
      * @return A unique id for the recipe type used in network communication
      */
-    Identifier getId();
+    ResourceLocation getId();
 
     /**
      *
@@ -33,11 +33,11 @@ public interface ReliableServerRecipeType<T extends ReliableServerRecipe> {
      * @return The recipe type
      * @param <S> The server recipe class
      */
-    static <S extends ReliableServerRecipe> ReliableServerRecipeType<S> register(Identifier id, EmptyRecipeConstructor<S> emptyRecipeConstructor) {
+    static <S extends ReliableServerRecipe> ReliableServerRecipeType<S> register(ResourceLocation id, EmptyRecipeConstructor<S> emptyRecipeConstructor) {
 
         ReliableServerRecipeType<S> type = new ReliableServerRecipeType<S>() {
             @Override
-            public Identifier getId() {
+            public ResourceLocation getId() {
                 return id;
             }
 
@@ -57,7 +57,7 @@ public interface ReliableServerRecipeType<T extends ReliableServerRecipe> {
      * @param id The id
      * @return The server recipe type by id
      */
-    static ReliableServerRecipeType<?> byId(Identifier id){
+    static ReliableServerRecipeType<?> byId(ResourceLocation id){
         return RRV_RECIPE_TYPES.getOrDefault(id, null);
     }
 
@@ -66,7 +66,7 @@ public interface ReliableServerRecipeType<T extends ReliableServerRecipe> {
      * @param recipeType The recipe type
      * @return The id of the type
      */
-    static Identifier idFromType(ReliableServerRecipeType<?> recipeType) {
+    static ResourceLocation idFromType(ReliableServerRecipeType<?> recipeType) {
         return recipeType.getId();
     }
 

@@ -29,7 +29,7 @@ public interface VillagerTradeAccessor {
 	Optional<LootItemCondition> getMerchantPredicate();
 }
 *///?} else {
-@Mixin(net.minecraft.world.entity.npc.villager.VillagerTrades.class)
+@Mixin(net.minecraft.world.entity.npc.VillagerTrades.class)
 public interface VillagerTradeAccessor {
 }
 //?}

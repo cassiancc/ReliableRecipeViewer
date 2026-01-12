@@ -7,7 +7,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +24,7 @@ public record ServerboundTransferPayload(HashMap<Integer, Integer> transferMap,
 
     );
 
-    public static final Type<ServerboundTransferPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_transfer"));
+    public static final Type<ServerboundTransferPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_transfer"));
 
 
     private CompoundTag encodeMap() {

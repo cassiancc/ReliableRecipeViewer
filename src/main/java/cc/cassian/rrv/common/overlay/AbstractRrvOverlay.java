@@ -7,8 +7,6 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,17 +67,17 @@ public abstract class AbstractRrvOverlay {
         return true;
     }
 
-    protected boolean keyPressed(KeyEvent keyEvent) {
+    protected boolean keyPressed(int keyEvent, int scanCode) {
         //Basic keybinds
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent))
+            if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent, scanCode))
                 ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ItemViewOverlay.ItemViewOpenType.INPUT);
 
-            if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent))
+            if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent, scanCode))
                 ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ItemViewOverlay.ItemViewOpenType.RESULT);
 
             return true;
@@ -92,7 +90,7 @@ public abstract class AbstractRrvOverlay {
         return false;
     }
 
-    protected abstract boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick);
+    protected abstract boolean mouseClicked(double mouseX, double mouseY, int button);
 
     protected abstract boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY);
 

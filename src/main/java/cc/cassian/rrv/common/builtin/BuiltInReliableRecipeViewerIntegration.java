@@ -39,17 +39,17 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 //? if <26 {
-import net.minecraft.world.entity.npc.villager.VillagerTrades;
+import net.minecraft.world.entity.npc.VillagerTrades;
 //?} else {
 /*import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.item.trading.VillagerTrades;
-import net.minecraft.world.entity.npc.villager.VillagerProfession;
-import net.minecraft.world.entity.npc.villager.VillagerType;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.core.HolderLookup;
 *///?}
 import net.minecraft.world.item.*;
@@ -69,9 +69,9 @@ import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
 //? neoforge && <26 {
-/*import net.neoforged.neoforge.common.BasicItemListing;
+import net.neoforged.neoforge.common.BasicItemListing;
 import static cc.cassian.rrv.neoforge.builtin.NeoForgeBuiltinRrvIntegration.NEOFORGE_BASIC;
-*///?}
+//?}
 
 import java.util.*;
 
@@ -79,10 +79,10 @@ import static cc.cassian.rrv.common.ReliableRecipeViewer.*;
 
 public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
 
-    public static final Identifier WIDGETS = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/rrv_widgets.png");
+    public static final ResourceLocation WIDGETS = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/rrv_widgets.png");
 
     //Default slot rendering
-    public static final Identifier DEFAULT_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/default_slot.png");
+    public static final ResourceLocation DEFAULT_SLOT_TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/default_slot.png");
 
 
     @Override
@@ -196,9 +196,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             FuelValues fuelValues = ServerRecipeManager.INSTANCE.getServer().fuelValues();
             fuelValues.fuelItems().forEach(item -> {
                 //? fabric
-                recipeList.add(new BurningServerRecipe(item, fuelValues.burnDuration(new ItemStack(item))));
+                //recipeList.add(new BurningServerRecipe(item, fuelValues.burnDuration(new ItemStack(item))));
                 //? neoforge
-                //recipeList.add(new BurningServerRecipe(item, item.getDefaultInstance().getBurnTime(null, fuelValues)));
+                recipeList.add(new BurningServerRecipe(item, item.getDefaultInstance().getBurnTime(null, fuelValues)));
             });
 
         });
@@ -381,9 +381,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TYPE_SPECIFIC, typeSpecificTrade)));
 
                         //? neoforge {
-                        /*if (listing instanceof BasicItemListing basicItemListing)
+                        if (listing instanceof BasicItemListing basicItemListing)
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(NEOFORGE_BASIC, basicItemListing)));
-                        *///?}
+                        //?}
                     });
                 });
 

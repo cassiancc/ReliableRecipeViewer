@@ -4,7 +4,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -19,9 +19,9 @@ public class ClientRecipeCache {
 
     private final LinkedHashMap<ReliableServerRecipeType<?>, List<ServerRecipeManager.ServerRecipeEntry>> serverEntryMap;
 
-    private final HashMap<Identifier, List<Identifier>> multiRecipeMap;
-    private final HashMap<Identifier, ReliableClientRecipe> recipeMap;
-    private final HashMap<Item, List<Identifier>> byItemIngredient, byItemResult;
+    private final HashMap<ResourceLocation, List<ResourceLocation>> multiRecipeMap;
+    private final HashMap<ResourceLocation, ReliableClientRecipe> recipeMap;
+    private final HashMap<Item, List<ResourceLocation>> byItemIngredient, byItemResult;
 
     private final HashMap<Item, List<ItemView.StackSensitive>> stackSensitives;
 
@@ -52,22 +52,22 @@ public class ClientRecipeCache {
     }
 
 
-    public ReliableClientRecipe getRecipe(final Identifier recipeId) {
+    public ReliableClientRecipe getRecipe(final ResourceLocation recipeId) {
         return recipeMap.getOrDefault(recipeId, null);
     }
 
 
     public void updateType(ReliableServerRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
         this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> {
-            this.multiRecipeMap.getOrDefault(entry.modRecipeId(), new ArrayList<>()).forEach(Identifier -> {
-                this.recipeMap.remove(Identifier);
+            this.multiRecipeMap.getOrDefault(entry.modRecipeId(), new ArrayList<>()).forEach(ResourceLocation -> {
+                this.recipeMap.remove(ResourceLocation);
 
-                this.byItemIngredient.forEach((item, Identifiers) -> {
-                    Identifiers.remove(Identifier);
+                this.byItemIngredient.forEach((item, ResourceLocations) -> {
+                    ResourceLocations.remove(ResourceLocation);
                 });
 
-                this.byItemResult.forEach((item, Identifiers) -> {
-                    Identifiers.remove(Identifier);
+                this.byItemResult.forEach((item, ResourceLocations) -> {
+                    ResourceLocations.remove(ResourceLocation);
                 });
             });
         });
@@ -82,8 +82,8 @@ public class ClientRecipeCache {
 
     public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
         List<ReliableClientRecipe> recipes = new ArrayList<>();
-        this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> {
-            recipes.add(this.recipeMap.get(Identifier));
+        this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(ResourceLocation -> {
+            recipes.add(this.recipeMap.get(ResourceLocation));
         });
 
         recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsIngredient(inputStack) && (viewRecipe.getViewType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == inputStack.getItem()) || !viewRecipe.getViewType().getCraftReferenceCondition().matches(inputStack, viewRecipe)));
@@ -94,8 +94,8 @@ public class ClientRecipeCache {
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
 
         List<ReliableClientRecipe> recipes = new ArrayList<>();
-        this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> {
-            recipes.add(this.recipeMap.get(Identifier));
+        this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(ResourceLocation -> {
+            recipes.add(this.recipeMap.get(ResourceLocation));
         });
 
         recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsResult(outputStack));
@@ -126,8 +126,8 @@ public class ClientRecipeCache {
             for (int id = 0; id < wrappedRecipes.size(); id++) {
                 ReliableClientRecipe wrapped = wrappedRecipes.get(id);
 
-                Identifier uniqueId = this.getUniqueId(modEntry, id);
-                List<Identifier> summarized = this.multiRecipeMap.getOrDefault(modEntry.modRecipeId(), new ArrayList<>());
+                ResourceLocation uniqueId = this.getUniqueId(modEntry, id);
+                List<ResourceLocation> summarized = this.multiRecipeMap.getOrDefault(modEntry.modRecipeId(), new ArrayList<>());
                 summarized.add(uniqueId);
                 this.multiRecipeMap.put(modEntry.modRecipeId(), summarized);
 
@@ -136,7 +136,7 @@ public class ClientRecipeCache {
                 wrapped.getIngredients().forEach(ingredient -> {
                     ingredient.getValidContents().forEach(stack -> {
 
-                        List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(stack.getItem(), new ArrayList<>());
+                        List<ResourceLocation> byIngredient = this.byItemIngredient.getOrDefault(stack.getItem(), new ArrayList<>());
                         byIngredient.remove(uniqueId);
                         byIngredient.add(uniqueId);
                         this.byItemIngredient.put(stack.getItem(), byIngredient);
@@ -150,7 +150,7 @@ public class ClientRecipeCache {
                     if(!wrapped.getViewType().getCraftReferenceCondition().matches(reference, wrapped))
                         return;
 
-                    List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(reference.getItem(), new ArrayList<>());
+                    List<ResourceLocation> byIngredient = this.byItemIngredient.getOrDefault(reference.getItem(), new ArrayList<>());
                     byIngredient.remove(uniqueId);
                     byIngredient.add(uniqueId);
                     this.byItemIngredient.put(reference.getItem(), byIngredient);
@@ -158,7 +158,7 @@ public class ClientRecipeCache {
 
                 wrapped.getResults().forEach(result -> {
                     result.getValidContents().forEach(stack -> {
-                        List<Identifier> byResult = this.byItemResult.getOrDefault(stack.getItem(), new ArrayList<>());
+                        List<ResourceLocation> byResult = this.byItemResult.getOrDefault(stack.getItem(), new ArrayList<>());
                         byResult.remove(uniqueId);
                         byResult.add(uniqueId);
                         this.byItemResult.put(stack.getItem(), byResult);
@@ -169,8 +169,8 @@ public class ClientRecipeCache {
     }
 
 
-    private Identifier getUniqueId(ServerRecipeManager.ServerRecipeEntry modEntry, int index) {
-        return Identifier.fromNamespaceAndPath(modEntry.modRecipeId().getNamespace(), modEntry.modRecipeId().getPath() + "/" + index);
+    private ResourceLocation getUniqueId(ServerRecipeManager.ServerRecipeEntry modEntry, int index) {
+        return ResourceLocation.fromNamespaceAndPath(modEntry.modRecipeId().getNamespace(), modEntry.modRecipeId().getPath() + "/" + index);
     }
 
 

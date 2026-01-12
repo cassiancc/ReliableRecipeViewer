@@ -4,7 +4,7 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -12,7 +12,7 @@ public class BrewingServerRecipe implements ReliableServerRecipe {
 
 
     public static final ReliableServerRecipeType<BrewingServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("brewing"),
+            ResourceLocation.withDefaultNamespace("brewing"),
             () -> new BrewingServerRecipe(ItemStack.EMPTY, null, ItemStack.EMPTY)
     );
 

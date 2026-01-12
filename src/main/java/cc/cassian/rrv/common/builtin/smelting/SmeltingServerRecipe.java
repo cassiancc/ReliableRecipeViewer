@@ -4,14 +4,14 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class SmeltingServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<SmeltingServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("smelting"),
+            ResourceLocation.withDefaultNamespace("smelting"),
             () -> new SmeltingServerRecipe(null, ItemStack.EMPTY)
     );
 

@@ -23,7 +23,7 @@ public class RrvGuiRenderHelper {
         IRrvWrappedRenderState wrappedState = (IRrvWrappedRenderState) entityRenderState;
         wrappedState.rrv$enableMultiRendering();
 
-        entityRenderState.lightCoords = 15728880;
+//        entityRenderState.lightCoords = 15728880;
         guiGraphics.submitEntityRenderState(entityRenderState, scale, translation, rotation, cameraAngleOverride, x0, y0, x1, y1);
     }
 

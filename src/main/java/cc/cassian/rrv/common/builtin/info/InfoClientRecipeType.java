@@ -3,7 +3,7 @@ package cc.cassian.rrv.common.builtin.info;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
@@ -27,8 +27,8 @@ public class InfoClientRecipeType implements ReliableClientRecipeType {
 	}
 
 	@Override
-	public @Nullable Identifier getGuiTexture() {
-		return Identifier.fromNamespaceAndPath("rrv","textures/gui/type/info.png");
+	public @Nullable ResourceLocation getGuiTexture() {
+		return ResourceLocation.fromNamespaceAndPath("rrv","textures/gui/type/info.png");
 	}
 
 	@Override
@@ -42,8 +42,8 @@ public class InfoClientRecipeType implements ReliableClientRecipeType {
 	}
 
 	@Override
-	public Identifier getId() {
-		return Identifier.fromNamespaceAndPath("rrv","info");
+	public ResourceLocation getId() {
+		return ResourceLocation.fromNamespaceAndPath("rrv","info");
 	}
 
 	@Override

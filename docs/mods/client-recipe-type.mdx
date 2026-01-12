@@ -28,8 +28,8 @@ public class ExampleModClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public @Nullable Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath("example-mod", "path/to/your/texture"); // Your type's gui texture.
+    public @Nullable ResourceLocation getGuiTexture() {
+        return ResourceLocation.fromNamespaceAndPath("example-mod", "path/to/your/texture"); // Your type's gui texture.
     }
 
     @Override
@@ -48,8 +48,8 @@ public class ExampleModClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getId() {
-        return Identifier.fromNamespaceAndPath("example-mod", "your_type_id"); //A unique id for your viewtype
+    public ResourceLocation getId() {
+        return ResourceLocation.fromNamespaceAndPath("example-mod", "your_type_id"); //A unique id for your viewtype
     }
 
     @Override

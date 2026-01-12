@@ -18,14 +18,14 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+/*import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-//?} else {
-/*import net.minecraft.client.Minecraft;
+*///?} else {
+import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-*///?}
+//?}
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -51,7 +51,7 @@ public class RrvNetworkManager {
     public static final RrvNetworkManager INSTANCE = new RrvNetworkManager();
 
     //? neoforge
-    //public static PayloadRegistrar event;
+    public static PayloadRegistrar event;
 
 
     private RrvNetworkManager() {}
@@ -65,20 +65,20 @@ public class RrvNetworkManager {
      */
     private <T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, PayloadHandler<ServerContext, T> serverHandler) {
         //? fabric {
-        //? >26 {
-        /*PayloadTypeRegistry.serverboundPlay()
-                *///?} else {
+        /*//? >26 {
+        /^PayloadTypeRegistry.serverboundPlay()
+                ^///?} else {
                 PayloadTypeRegistry.playC2S()
                  //?}
                 .register(type, codec);
         ServerPlayNetworking.registerGlobalReceiver(type, ((payload, context) -> {
             serverHandler.handle(new ServerContext(context.server(), context.player()), payload);
         }));
-        //?} else {
-        /*event.playToServer(type, codec, (payload, context)-> {
+        *///?} else {
+        event.playToServer(type, codec, (payload, context)-> {
             serverHandler.handle(new ServerContext(context.player().level().getServer(), (ServerPlayer) context.player()), payload);
         });
-        *///?}
+        //?}
 
 
     }
@@ -92,15 +92,15 @@ public class RrvNetworkManager {
      */
     private static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
         //? fabric {
-        registerClientboundPayload(type, codec);
+        /*registerClientboundPayload(type, codec);
         if (Platform.INSTANCE.isClientSide()) {
             RrvClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
         }
-        //?} else {
-        /*event.playToClient(type, codec, (payload, context) -> {
+        *///?} else {
+        event.playToClient(type, codec, (payload, context) -> {
            clientHandler.handle(new RrvClientNetworkManager.ClientContext(Optional.empty()), payload);
         });
-        *///?}
+        //?}
     }
 
 
@@ -112,13 +112,13 @@ public class RrvNetworkManager {
      */
     private static <T extends CustomPacketPayload> void registerClientboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
         //? fabric {
-            //? >26 {
-            /*PayloadTypeRegistry.clientboundPlay()
-            *///?} else {
+            /*//? >26 {
+            /^PayloadTypeRegistry.clientboundPlay()
+            ^///?} else {
             PayloadTypeRegistry.playS2C()
              //?}
             .register(type, codec);
-        //?}
+        *///?}
     }
 
     /**
@@ -129,10 +129,10 @@ public class RrvNetworkManager {
      */
     public void sendPacket(ServerPlayer player, CustomPacketPayload payload) {
         //? fabric {
-        ServerPlayNetworking.send(player, payload);
-        //?} else {
-        /*PacketDistributor.sendToPlayer(player, payload);
-        *///?}
+        /*ServerPlayNetworking.send(player, payload);
+        *///?} else {
+        PacketDistributor.sendToPlayer(player, payload);
+        //?}
     }
 
 
@@ -143,10 +143,10 @@ public class RrvNetworkManager {
      */
     public RrvNetworkManager registerPayloads(
             //? neoforge
-            //RegisterPayloadHandlersEvent event
+            RegisterPayloadHandlersEvent event
     ) {
         //? neoforge
-        //RrvNetworkManager.event = event.registrar("1").optional();
+        RrvNetworkManager.event = event.registrar("1").optional();
         registerClientbound(ClientboundServerReloadPayload.TYPE, ClientboundServerReloadPayload.STREAM_CODEC, (context, payload) -> {
             ItemView.getClientReloadCallbacks().forEach(ItemView.ReloadCallback::onReload);
         });

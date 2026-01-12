@@ -6,9 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
 import java.util.*;
@@ -113,10 +111,10 @@ public class OverlayManager {
         return this.oldWidgets;
     }
 
-    public boolean keyPressed(KeyEvent event) {
+    public boolean keyPressed(int event, int scancode) {
         boolean b = false;
 
-        if (ReliableRecipeViewerClient.TOGGLE_OVERLAY_KEYBIND.matches(event)) {
+        if (ReliableRecipeViewerClient.TOGGLE_OVERLAY_KEYBIND.matches(event, scancode)) {
             toggleOverlays();
             return true;
         }
@@ -125,7 +123,7 @@ public class OverlayManager {
             if (!overlay.isEnabled() || !overlay.isEnoughSpaceToRender())
                 continue;
 
-            if (overlay.keyPressed(event))
+            if (overlay.keyPressed(event, scancode))
                 b = true;
         }
 
@@ -156,15 +154,15 @@ public class OverlayManager {
         return b;
     }
 
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(double x, double y, int button) {
         boolean b = false;
 
 
         this.screenContextMap.forEach((abstractRrvOverlay, screenContext) -> {
             screenContext.renderables().forEach(guiEventListener -> {
-                if (guiEventListener.isFocused() && !guiEventListener.isMouseOver(event.x(), event.y()))
+                if (guiEventListener.isFocused() && !guiEventListener.isMouseOver(x, y))
                     guiEventListener.setFocused(false);
-                if (guiEventListener.isMouseOver(event.x(), event.y()) && event.button() == 0)
+                if (guiEventListener.isMouseOver(x, y) && button == 0)
                     guiEventListener.setFocused(true);
             });
         });
@@ -174,10 +172,10 @@ public class OverlayManager {
             if (!overlay.isEnabled() || !overlay.isEnoughSpaceToRender())
                 continue;
 
-            if (!(event.x() >= overlay.getX() && event.x() <= overlay.getX() + overlay.getWidth() && event.y() >= overlay.getY() && event.y() <= overlay.getY() + overlay.getHeight()))
+            if (!(x >= overlay.getX() && x <= overlay.getX() + overlay.getWidth() && y >= overlay.getY() && y <= overlay.getY() + overlay.getHeight()))
                 continue;
 
-            if (overlay.mouseClicked(event, doubleClick))
+            if (overlay.mouseClicked(x, y, button))
                 b = true;
         }
 
@@ -232,7 +230,7 @@ public class OverlayManager {
     }
 
 
-    public void removeGuiBlocking(Identifier id, boolean updateOverlays) {
+    public void removeGuiBlocking(ResourceLocation id, boolean updateOverlays) {
         this.guiBlockings.removeIf(blockingGuiComponent -> blockingGuiComponent.id().equals(id));
 
         if (updateOverlays) {
@@ -241,7 +239,7 @@ public class OverlayManager {
 
     }
 
-    public void removeGuiBlocking(Predicate<Identifier> filter, boolean updateOverlays) {
+    public void removeGuiBlocking(Predicate<ResourceLocation> filter, boolean updateOverlays) {
         this.guiBlockings.removeIf(blockingGuiComponent -> filter.test(blockingGuiComponent.id()));
 
         if (updateOverlays) {
@@ -273,6 +271,4 @@ public class OverlayManager {
     public static void registerOverlay(AbstractRrvOverlay overlay) {
         PRESENT_OVERLAYS.add(overlay);
     }
-
-
 }

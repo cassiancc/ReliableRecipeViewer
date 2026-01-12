@@ -4,14 +4,14 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 
 public class BurningServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<BurningServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("burning"),
+            ResourceLocation.withDefaultNamespace("burning"),
             () -> new BurningServerRecipe(null, 0)
     );
 

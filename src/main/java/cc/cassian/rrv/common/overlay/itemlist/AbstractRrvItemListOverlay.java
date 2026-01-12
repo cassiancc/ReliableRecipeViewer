@@ -6,7 +6,6 @@ import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -75,10 +74,10 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     }
 
     @Override
-    protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    protected boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (ItemSlot itemSlot : this.itemSlots()) {
             if (itemSlot.isHovered()) {
-                itemSlot.onClicked((int) event.x(), (int) event.y(), event.button());
+                itemSlot.onClicked((int) mouseX, (int) mouseY, button);
                 return true;
             }
         }

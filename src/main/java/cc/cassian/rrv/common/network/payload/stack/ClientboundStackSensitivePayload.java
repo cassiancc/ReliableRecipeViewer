@@ -5,7 +5,7 @@ import cc.cassian.rrv.api.recipe.ItemView;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public record ClientboundStackSensitivePayload(ItemView.StackSensitive stackSensitive) implements CustomPacketPayload {
@@ -17,7 +17,7 @@ public record ClientboundStackSensitivePayload(ItemView.StackSensitive stackSens
             ClientboundStackSensitivePayload::new
     );
 
-    public static final Type<ClientboundStackSensitivePayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "stack_sensitive"));
+    public static final Type<ClientboundStackSensitivePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "stack_sensitive"));
 
 
     @Override

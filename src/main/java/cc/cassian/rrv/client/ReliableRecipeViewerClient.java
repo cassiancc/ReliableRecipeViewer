@@ -11,7 +11,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.MenuType;
 import org.lwjgl.glfw.GLFW;
@@ -22,13 +22,13 @@ import static cc.cassian.rrv.common.ReliableRecipeViewer.MOD_ID;
 
 public class ReliableRecipeViewerClient {
 
-    public static final ModelLayerLocation FLUID_ITEM_MODEL_LAYER = new ModelLayerLocation(Identifier.fromNamespaceAndPath(MOD_ID, "fluiditem"), "inventory");
+    public static final ModelLayerLocation FLUID_ITEM_MODEL_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, "fluiditem"), "inventory");
 
     public static final MenuType<RecipeViewMenu> RECIPE_VIEW_MENU = new MenuType<>(RecipeViewMenu::new, FeatureFlagSet.of());
 
 
-    public static final KeyMapping.Category RRV_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "rrv"));
-    public static final KeyMapping.Category RRV_ADMIN_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "rrv_admin"));
+    public static final String RRV_CATEGORY = "key.category.rrv.rrv";
+    public static final String RRV_ADMIN_CATEGORY = "key.category.rrv.rrv_admin";
     
     public static final KeyMapping USAGE_KEYBIND = new KeyMapping("key.rrv.usage", GLFW.GLFW_KEY_U, RRV_CATEGORY);
 
@@ -69,7 +69,7 @@ public class ReliableRecipeViewerClient {
     }
 
     public static boolean isCheatmodeActive() {
-        return Minecraft.getInstance().player != null && RrvUtil.hasPermission(Minecraft.getInstance().player) && InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
+        return Minecraft.getInstance().player != null && RrvUtil.hasPermission(Minecraft.getInstance().player) && InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
     }
 
 }

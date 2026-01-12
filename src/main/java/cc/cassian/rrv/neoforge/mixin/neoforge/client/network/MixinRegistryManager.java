@@ -1,11 +1,11 @@
 //? neoforge {
-/*package cc.cassian.rrv.neoforge.mixin.neoforge.client.network;
+package cc.cassian.rrv.neoforge.mixin.neoforge.client.network;
 
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -26,9 +26,9 @@ public class MixinRegistryManager {
 
 
     @Inject(method = "applySnapshot(Ljava/util/Map;Z)Ljava/util/Set;", at = @At("HEAD"))
-    private static void test(Map<Identifier, RegistrySnapshot> snapshots, boolean isLocalWorld, CallbackInfoReturnable<Set<ResourceKey<?>>> cir) {
+    private static void test(Map<ResourceLocation, RegistrySnapshot> snapshots, boolean isLocalWorld, CallbackInfoReturnable<Set<ResourceKey<?>>> cir) {
         snapshots.forEach((location, snapshot) -> {
-            if (!location.equals(Registries.ITEM.identifier()))
+            if (!location.equals(Registries.ITEM.location()))
                 return;
 
             BuiltInRegistries.FLUID.forEach(fluid -> {
@@ -46,4 +46,4 @@ public class MixinRegistryManager {
         });
     }
 }
-*///?}
+//?}

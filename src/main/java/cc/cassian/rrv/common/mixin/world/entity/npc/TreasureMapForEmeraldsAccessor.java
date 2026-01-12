@@ -7,7 +7,7 @@ import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 //? <26 {
-import net.minecraft.world.entity.npc.villager.VillagerTrades;
+import net.minecraft.world.entity.npc.VillagerTrades;
 
 @Mixin(VillagerTrades.TreasureMapForEmeralds.class)
 public interface TreasureMapForEmeraldsAccessor {

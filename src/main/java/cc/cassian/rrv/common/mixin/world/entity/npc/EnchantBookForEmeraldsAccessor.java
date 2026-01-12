@@ -1,13 +1,13 @@
 package cc.cassian.rrv.common.mixin.world.entity.npc;
 
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.npc.villager.VillagerType;
+import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 //? <26 {
-import net.minecraft.world.entity.npc.villager.VillagerTrades;
+import net.minecraft.world.entity.npc.VillagerTrades;
 
 @Mixin(VillagerTrades.EnchantBookForEmeralds.class)
 public interface EnchantBookForEmeraldsAccessor {

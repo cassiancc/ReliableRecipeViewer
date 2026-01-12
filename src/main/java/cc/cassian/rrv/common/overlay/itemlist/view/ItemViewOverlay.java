@@ -22,10 +22,9 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
@@ -36,7 +35,7 @@ import java.util.List;
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public static final ItemViewOverlay INSTANCE = new ItemViewOverlay();
-    private static final Identifier SETTINGS_WHEEL = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "settings_wheel");
+    private static final ResourceLocation SETTINGS_WHEEL = ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "settings_wheel");
 
     private SearchBar searchbar = null;
 
@@ -104,7 +103,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 )
                 .size(18, 18)
                 .sprite(SETTINGS_WHEEL, 14, 14)
-                .withTootip()
                 .build();
 
         int position = 0;
@@ -166,15 +164,15 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
     @Override
-    protected boolean keyPressed(KeyEvent event) {
-        super.keyPressed(event);
+    protected boolean keyPressed(int event, int scanCode) {
+        super.keyPressed(event, scanCode);
 
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event))
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event, scanCode))
                 ItemBookmarkOverlay.INSTANCE.bookmarkItem(slot.getStack());
         }
 
@@ -296,12 +294,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
             this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
+        }, true).sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
         next = SpriteIconButton.builder(Component.literal(">"), (button)->{
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
             this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
+        }, true).sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
 

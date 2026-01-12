@@ -1,5 +1,5 @@
 //? fabric {
-package cc.cassian.rrv.fabric.mixin.core.registries;
+/*package cc.cassian.rrv.fabric.mixin.core.registries;
 
 import cc.cassian.rrv.fabric.FabricEntrypoint;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,4 +17,4 @@ public class MixinBuiltInRegistries {
         FabricEntrypoint.buildFluidItems();
     }
 }
-//?}
+*///?}

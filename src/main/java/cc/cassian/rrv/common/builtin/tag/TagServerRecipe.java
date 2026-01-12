@@ -7,7 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
@@ -17,7 +17,7 @@ import java.util.List;
 public class TagServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<TagServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("item_tags"),
+            ResourceLocation.withDefaultNamespace("item_tags"),
             () -> new TagServerRecipe(null)
     );
 
@@ -39,7 +39,7 @@ public class TagServerRecipe implements ReliableServerRecipe {
 
     @Override
     public void loadFromTag(CompoundTag tag) {
-        this.tagKey = TagKey.create(Registries.ITEM, Identifier.parse(tag.getStringOr("tag", "")));
+        this.tagKey = TagKey.create(Registries.ITEM, ResourceLocation.parse(tag.getStringOr("tag", "")));
     }
 
     @Override

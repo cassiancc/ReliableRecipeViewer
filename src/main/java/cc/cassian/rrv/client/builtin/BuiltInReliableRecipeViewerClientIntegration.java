@@ -38,7 +38,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StrictJsonParser;
@@ -112,8 +112,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemView.addClientRecipeWrapper(TagServerRecipe.TYPE, unwrapped -> List.of(new TagClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
             ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
-            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_info", (identifier) -> true);
-            identifierResourceMap.forEach((identifier, resource) -> {
+            Map<ResourceLocation, Resource> ResourceLocationResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_info", (ResourceLocation) -> true);
+            ResourceLocationResourceMap.forEach((ResourceLocation, resource) -> {
 				try {
                     JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
                     if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
@@ -121,10 +121,10 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                         if (parsedRecipe.get("key").isJsonPrimitive() && parsedRecipe.get("key").getAsJsonPrimitive().isString()) {
                             var itemText = parsedRecipe.get("key").getAsString();
                             if (itemText.contains("#")) {
-                                var item = TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", "")));
+                                var item = TagKey.create(Registries.ITEM, ResourceLocation.parse(itemText.replace("#", "")));
                                 infoRecipes.add(new InfoClientRecipe(SlotContent.of(item), text));
                             } else {
-                                var item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemText));
+                                var item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(itemText));
                                 infoRecipes.add(new InfoClientRecipe(SlotContent.of(item), text));
                             }
                         } else if (parsedRecipe.get("key").isJsonArray() && parsedRecipe.get("key").getAsJsonArray().get(0).isJsonPrimitive()) {
@@ -132,22 +132,22 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                             parsedRecipe.get("key").getAsJsonArray().forEach(jsonElement->{
                                 var itemText = jsonElement.getAsString();
                                 if (itemText.contains("#")) {
-                                    var item = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", ""))));
+                                    var item = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, ResourceLocation.parse(itemText.replace("#", ""))));
                                     item.forEach(holder -> itemStacks.add(holder.value().getDefaultInstance()));
                                 } else {
-                                    var item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemText));
+                                    var item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(itemText));
                                     itemStacks.add(item.getDefaultInstance());
                                 }
                             });
                             infoRecipes.add(new InfoClientRecipe(SlotContent.of(itemStacks), text));
                         } else {
-                            LOGGER.error("Could not parse info recipe '{}' as it was missing a key!", identifier);
+                            LOGGER.error("Could not parse info recipe '{}' as it was missing a key!", ResourceLocation);
                         }
                     } else {
-                        LOGGER.error("Could not parse info recipe '{}' as it was missing a type!", identifier);
+                        LOGGER.error("Could not parse info recipe '{}' as it was missing a type!", ResourceLocation);
                     }
                 } catch (IOException e) {
-					LOGGER.error("Could not parse info recipe '{}' due to an exception: ", identifier, e);
+					LOGGER.error("Could not parse info recipe '{}' due to an exception: ", ResourceLocation, e);
 				}
 			});
             return infoRecipes;

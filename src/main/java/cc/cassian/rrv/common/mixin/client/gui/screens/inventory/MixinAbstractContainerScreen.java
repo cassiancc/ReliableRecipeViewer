@@ -18,10 +18,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +73,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo((AbstractContainerScreen<? extends AbstractContainerMenu>) (Object) this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
 
         OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                Identifier.withDefaultNamespace("container"),
+                ResourceLocation.withDefaultNamespace("container"),
                 info.leftPos(),
                 info.topPos(),
                 info.imageWidth(),
@@ -102,7 +100,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo((AbstractContainerScreen<? extends AbstractContainerMenu>) (Object) this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
 
         OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                Identifier.withDefaultNamespace("container"),
+                ResourceLocation.withDefaultNamespace("container"),
                 info.leftPos(),
                 info.topPos(),
                 info.imageWidth(),
@@ -129,39 +127,39 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
 
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void injectOverlay$3(KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir) {
+    private void injectOverlay$3(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
 
         if (OverlayManager.INSTANCE.isTextWidgetFocused() && this.getFocused() instanceof EditBox box) {
-            box.keyPressed(keyEvent);
+            box.keyPressed(keyCode, scanCode, modifiers);
 
-            if ((keyEvent.key() != 256 && keyEvent.key() != 258))
+            if ((keyCode != 256 && keyCode != 258))
                 cir.setReturnValue(true);
 
             return;
         }
 
 
-        if (!((AbstractContainerScreen<? extends AbstractContainerMenu>) (Object) this instanceof CreativeModeInventoryScreen) && OverlayManager.INSTANCE.keyPressed(keyEvent))
+        if (!((AbstractContainerScreen<? extends AbstractContainerMenu>) (Object) this instanceof CreativeModeInventoryScreen) && OverlayManager.INSTANCE.keyPressed(keyCode, scanCode))
             cir.setReturnValue(true);
 
         if (this.hoveredSlot == null)
             return;
 
-        if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
+        if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem())
             ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ItemViewOverlay.ItemViewOpenType.INPUT);
 
-        if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
+        if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem())
             ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ItemViewOverlay.ItemViewOpenType.RESULT);
 
-        if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem()) {
+        if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem()) {
             ItemBookmarkOverlay.INSTANCE.bookmarkItem(this.hoveredSlot.getItem());
 
         }
     }
 
-    @Redirect(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z"))
-    private boolean injectOverlay$3(Screen instance, MouseButtonEvent mouseButtonEvent, boolean b){
-        return super.mouseClicked(mouseButtonEvent, b) | OverlayManager.INSTANCE.mouseClicked(mouseButtonEvent, b);
+    @Redirect(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseClicked(DDI)Z"))
+    private boolean injectOverlay$3(Screen instance, double x, double y, int mouseButtonEvent){
+        return super.mouseClicked(x, y, mouseButtonEvent) | OverlayManager.INSTANCE.mouseClicked(x, y, mouseButtonEvent);
 
     }
 

@@ -3,7 +3,7 @@ package cc.cassian.rrv.common.builtin.blasting;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingClientRecipeType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -13,7 +13,7 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
 
     public static final BlastingClientRecipeType INSTANCE = new BlastingClientRecipeType();
 
-    private static final Identifier BLASTING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/blasting.png");
+    private static final ResourceLocation BLASTING_LOCATION = ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/blasting.png");
 
     @Override
     public Component getDisplayName() {
@@ -21,7 +21,7 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
     }
 
     @Override
-    public Identifier getGuiTexture() {
+    public ResourceLocation getGuiTexture() {
         return BLASTING_LOCATION;
     }
 
@@ -31,8 +31,8 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
     }
 
     @Override
-    public Identifier getId() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "furnace_blasting");
+    public ResourceLocation getId() {
+        return ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "furnace_blasting");
     }
 
     @Override

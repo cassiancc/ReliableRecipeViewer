@@ -20,18 +20,18 @@ public class RrvUtil {
 
     public static boolean hasPermission(Player sender) {
         //? if <1.21.11 {
-        /*return sender.hasPermissions(2);
-        *///?} else {
-        return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
-        //?}
+        return sender.hasPermissions(2);
+        //?} else {
+        /*return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
+        *///?}
     }
 
     public static boolean hasPermission(CommandSourceStack sender) {
         //? if <1.21.11 {
-        /*return sender.hasPermission(2);
-        *///?} else {
-        return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
-         //?}
+        return sender.hasPermission(2);
+        //?} else {
+        /*return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
+         *///?}
     }
 
 

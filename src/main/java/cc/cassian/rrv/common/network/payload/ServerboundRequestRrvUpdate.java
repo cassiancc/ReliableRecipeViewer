@@ -5,13 +5,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public record ServerboundRequestRrvUpdate() implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundRequestRrvUpdate> STREAM_CODEC = CustomPacketPayload.codec(ServerboundRequestRrvUpdate::write, ServerboundRequestRrvUpdate::new);
-    public static final CustomPacketPayload.Type<ServerboundRequestRrvUpdate> TYPE = new CustomPacketPayload.Type<ServerboundRequestRrvUpdate>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_request"));
+    public static final CustomPacketPayload.Type<ServerboundRequestRrvUpdate> TYPE = new CustomPacketPayload.Type<ServerboundRequestRrvUpdate>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_request"));
 
     private ServerboundRequestRrvUpdate(FriendlyByteBuf friendlyByteBuf) {
         this();

@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -87,16 +86,15 @@ public class ItemBookmarkOverlay extends AbstractRrvItemListOverlay {
     }
 
 
-
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        super.keyPressed(event);
+    protected boolean keyPressed(int keyEvent, int scanCode) {
+        super.keyPressed(keyEvent, scanCode);
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent, scanCode)) {
                 this.availableItems.remove(slot.getStack());
                 this.updateSlots();
                 if (this.itemSlots().isEmpty() && !this.availableItems.isEmpty()) {

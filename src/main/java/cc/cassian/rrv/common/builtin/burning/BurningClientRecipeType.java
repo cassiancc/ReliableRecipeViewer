@@ -4,7 +4,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -31,8 +31,8 @@ public class BurningClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/burning.png");
+    public ResourceLocation getGuiTexture() {
+        return ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/burning.png");
     }
 
     @Override
@@ -46,8 +46,8 @@ public class BurningClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getId() {
-        return Identifier.withDefaultNamespace("furnace_burning");
+    public ResourceLocation getId() {
+        return ResourceLocation.withDefaultNamespace("furnace_burning");
     }
 
     @Override

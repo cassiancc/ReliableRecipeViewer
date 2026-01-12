@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
         this.input = SlotContent.of(smokingRecipe.getInput());
         this.result = SlotContent.of(smokingRecipe.getResult());
 
-        this.smokingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("smoking_ticker"), 100);
+        this.smokingTicker = AnimationTicker.create(ResourceLocation.withDefaultNamespace("smoking_ticker"), 100);
     }
 
 

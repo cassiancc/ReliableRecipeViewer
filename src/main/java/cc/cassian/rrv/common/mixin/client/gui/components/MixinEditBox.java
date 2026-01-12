@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,11 +23,11 @@ public abstract class MixinEditBox extends AbstractWidget {
         super($$0, $$1, $$2, $$3, $$4);
     }
 
-    @WrapOperation(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"))
+    @WrapOperation(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"))
     @SuppressWarnings("all")
-    private void renderFilterMode(GuiGraphics instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height, Operation<Void> original) {
+    private void renderFilterMode(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height, Operation<Void> original) {
         if (((Object) this) instanceof SearchBar && ItemViewOverlay.INSTANCE.isItemFilterMode()) {
-            instance.blitSprite(pipeline, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "widget/searchbar_filtermode"), x, y, width, height);
+            instance.blitSprite(pipeline, ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "widget/searchbar_filtermode"), x, y, width, height);
         } else
             original.call(instance, pipeline, sprite, x, y, width, height);
     }

@@ -5,7 +5,7 @@ import cc.cassian.rrv.common.extra.FluidStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
@@ -57,8 +57,8 @@ public class FluidItem extends BlockItem {
         }
 
         @Override
-        public @NotNull Identifier effectiveModel() {
-            return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem");
+        public @NotNull ResourceLocation effectiveModel() {
+            return ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem");
         }
 
     }

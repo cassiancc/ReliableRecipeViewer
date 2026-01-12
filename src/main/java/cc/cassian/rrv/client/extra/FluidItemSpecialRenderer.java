@@ -7,7 +7,10 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
@@ -18,18 +21,11 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3fc;
+import org.joml.Matrix4f;
 
 import java.awt.*;
-import java.util.function.Consumer;
-
-//? if >1.21.10 {
-import static net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent;
-//?} else {
-/*import static net.minecraft.client.renderer.rendertype.RenderType.entityTranslucent;
 import java.util.Set;
 import org.joml.Vector3f;
-*///?}
 
 /**
  * A special renderer used for rendering the fluid-item in the world
@@ -44,11 +40,8 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
 
     @Override
-    public void submit(@Nullable ItemStack stack, ItemDisplayContext itemDisplayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k) {
-        if(stack == null)
-            return;
-
-        if (!(stack.getItem() instanceof FluidItem))
+    public void render(ItemStack stack, ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay, boolean bl) {
+        if (!(stack.getItem() instanceof FluidItem fluidItem))
             return;
 
         FluidStack fluidStack = FluidStack.fromItemStack(stack);
@@ -62,7 +55,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         color = new Color(unmodified.getRed(), unmodified.getGreen(), unmodified.getBlue(), 255).getRGB();
 
         TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(fluid.defaultFluidState().createLegacyBlock()).particleIcon();
-        RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
+		RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
 
         float u0 = uvInfo.u0();
         float u1 = uvInfo.u1();
@@ -76,25 +69,22 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
         poseStack.pushPose();
         poseStack.scale(1.0F, 1.0F, 1.0F);
-        float finalHeight = height;
-        int finalColor = color;
-        submitNodeCollector.submitCustomGeometry(poseStack, entityTranslucent(sprite.atlasLocation()), (pose, vertexConsumer) -> {
-            vertexConsumer.addVertex(pose.pose(), 1.0F, 0, 0).setUv(u0 + width, v0).setOverlay(j).setLight(i).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 1.0F, renderHeight, 0).setUv(u0 + width, v0 + finalHeight).setOverlay(j).setLight(i).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 0, renderHeight, 0).setUv(u0, v0 + finalHeight).setOverlay(j).setLight(i).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 0, 0, 0).setUv(u0, v0).setOverlay(j).setLight(i).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-        });
-
+        VertexConsumer vertexConsumer = sprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, RenderType.entityTranslucent(sprite.atlasLocation()), itemDisplayContext == ItemDisplayContext.GUI, bl));
+        Matrix4f matrix4f = poseStack.last().pose();
+        vertexConsumer.addVertex(matrix4f, 0, 0, 0).setUv(u0, v0).setOverlay(overlay).setLight(light).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
+        vertexConsumer.addVertex(matrix4f, 0, renderHeight, 0).setUv(u0, v0 + height).setOverlay(overlay).setLight(light).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
+        vertexConsumer.addVertex(matrix4f, 1.0F, renderHeight, 0).setUv(u0 + width, v0 + height).setOverlay(overlay).setLight(light).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
+        vertexConsumer.addVertex(matrix4f, 1.0F, 0, 0).setUv(u0 + width, v0).setOverlay(overlay).setLight(light).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
         poseStack.popPose();
     }
 
     @Override
     public void getExtents(
             //? if >1.21.10 {
-            Consumer<Vector3fc>
-            //?} else {
-            /*Set<Vector3f>
-            *///?}
+            /*Consumer<Vector3fc>
+            *///?} else {
+            Set<Vector3f>
+            //?}
              consumer) {
 
     }
@@ -109,10 +99,10 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
         public static final MapCodec<Unbaked> MAP_CODEC = MapCodec.unit(Unbaked::new);
 
-        
+
         @Override
-        public @NotNull SpecialModelRenderer<?> bake(BakingContext bakingContext) {
-            return new FluidItemSpecialRenderer(new FluidItemModel(bakingContext.entityModelSet().bakeLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER)));
+        public @Nullable SpecialModelRenderer<?> bake(EntityModelSet modelSet) {
+            return new FluidItemSpecialRenderer(new FluidItemModel(modelSet.bakeLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER)));
         }
 
         @Override

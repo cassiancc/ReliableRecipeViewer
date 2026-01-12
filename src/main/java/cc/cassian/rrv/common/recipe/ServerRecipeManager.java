@@ -14,7 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
@@ -147,22 +147,22 @@ public class ServerRecipeManager {
 
         serverRecipes.forEach(iRrvServerModRecipe -> {
 
-            Identifier typeId = iRrvServerModRecipe.getRecipeType().getId();
+            ResourceLocation typeId = iRrvServerModRecipe.getRecipeType().getId();
             List<ServerRecipeEntry> list = PRESENT_RECIPES.getOrDefault(iRrvServerModRecipe.getRecipeType(), new ArrayList<>());
-            list.add(new ServerRecipeEntry(Identifier.fromNamespaceAndPath(typeId.getNamespace(), typeId.getPath() + "/" + UUID.randomUUID()), iRrvServerModRecipe));
+            list.add(new ServerRecipeEntry(ResourceLocation.fromNamespaceAndPath(typeId.getNamespace(), typeId.getPath() + "/" + UUID.randomUUID()), iRrvServerModRecipe));
             PRESENT_RECIPES.put(iRrvServerModRecipe.getRecipeType(), list);
         });
     }
 
 
-    public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
+    public record ServerRecipeEntry(ResourceLocation modRecipeId, ReliableServerRecipe recipe) {
 
         public static final StreamCodec<FriendlyByteBuf, ServerRecipeEntry> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8,
                 entry -> entry.modRecipeId().toString(),
                 ByteBufCodecs.COMPOUND_TAG,
                 ServerRecipeEntry::createFullTag,
-                (s, compoundTag) -> new ServerRecipeEntry(Identifier.tryParse(s), ServerRecipeEntry.fromTag(compoundTag))
+                (s, compoundTag) -> new ServerRecipeEntry(ResourceLocation.tryParse(s), ServerRecipeEntry.fromTag(compoundTag))
         );
 
         public <T extends ReliableServerRecipe> T asWrapped() {
@@ -187,7 +187,7 @@ public class ServerRecipeManager {
             if (!tag.contains("recipeType"))
                 return null;
 
-            ReliableServerRecipeType<?> recipeType = ReliableServerRecipeType.byId(Identifier.parse(tag.getString("recipeType").orElseThrow()));
+            ReliableServerRecipeType<?> recipeType = ReliableServerRecipeType.byId(ResourceLocation.parse(tag.getString("recipeType").orElseThrow()));
             if (recipeType == null)
                 return null;
 

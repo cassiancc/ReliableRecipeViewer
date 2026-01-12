@@ -4,13 +4,13 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public class TippedArrowServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<TippedArrowServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("tipped_arrow_crafting"),
+            ResourceLocation.withDefaultNamespace("tipped_arrow_crafting"),
             () -> new TippedArrowServerRecipe(ItemStack.EMPTY)
     );
 

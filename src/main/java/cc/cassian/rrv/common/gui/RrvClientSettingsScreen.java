@@ -53,10 +53,10 @@ public class RrvClientSettingsScreen extends Screen {
 
 	private void addChild(LinearLayout linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter) {
         //? >1.21.10 {
-        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
-        //?} else {
-        /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
-        *///?}
+        /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
+        *///?} else {
+        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
+        //?}
 	}
 
 

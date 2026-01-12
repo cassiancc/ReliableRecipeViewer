@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.overlay;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
 
@@ -12,7 +12,7 @@ import java.awt.*;
  * @param width  The current width of the component
  * @param height The current height of the component
  */
-public record BlockingGuiComponent(Identifier id, int x, int y, int width, int height) {
+public record BlockingGuiComponent(ResourceLocation id, int x, int y, int width, int height) {
 
 
     public boolean hasIntersectionWith(int x, int y, int width, int height) {
@@ -25,7 +25,7 @@ public record BlockingGuiComponent(Identifier id, int x, int y, int width, int h
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof BlockingGuiComponent(Identifier id1, int x1, int y1, int width1, int height1) &&
+        return o instanceof BlockingGuiComponent(ResourceLocation id1, int x1, int y1, int width1, int height1) &&
                 id1.equals(this.id)
                 && x1 == this.x
                 && y1 == this.y

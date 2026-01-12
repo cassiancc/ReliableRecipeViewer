@@ -2,8 +2,8 @@ package cc.cassian.rrv.common.mixin.advancements.critereon;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;

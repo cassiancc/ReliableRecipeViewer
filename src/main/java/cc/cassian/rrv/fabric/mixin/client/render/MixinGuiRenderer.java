@@ -1,5 +1,5 @@
 //? fabric {
-package cc.cassian.rrv.fabric.mixin.client.render;
+/*package cc.cassian.rrv.fabric.mixin.client.render;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import cc.cassian.rrv.common.rendering.IRrvWrappedRenderState;
@@ -22,11 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
 
-/**
+/^*
  * Technically, we don't need this mixin for fabric since Fabric implements their own solution by default,
  * but we're prepared for possible changes
  * @param <T>
- */
+ ^/
 @Mixin(GuiRenderer.class)
 public abstract class MixinGuiRenderer<T extends PictureInPictureRenderState> implements AutoCloseable {
 
@@ -84,4 +84,4 @@ public abstract class MixinGuiRenderer<T extends PictureInPictureRenderState> im
         this.rrv$renderersThisFrame.values().forEach(PictureInPictureRenderer::close);
     }
 }
-//?}
+*///?}

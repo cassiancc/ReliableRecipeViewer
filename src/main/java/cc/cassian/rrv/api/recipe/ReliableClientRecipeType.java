@@ -2,7 +2,7 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ public interface ReliableClientRecipeType {
         }
 
         @Override
-        public Identifier getGuiTexture() {
+        public ResourceLocation getGuiTexture() {
             return null;
         }
 
@@ -47,7 +47,7 @@ public interface ReliableClientRecipeType {
         }
 
         @Override
-        public Identifier getId() {
+        public ResourceLocation getId() {
             return null;
         }
 
@@ -78,7 +78,7 @@ public interface ReliableClientRecipeType {
      *
      * @return The path to the recipe type's gui texture
      */
-    @Nullable Identifier getGuiTexture();
+    @Nullable ResourceLocation getGuiTexture();
 
     /**
      *
@@ -97,7 +97,7 @@ public interface ReliableClientRecipeType {
      *
      * @return A unique id of the recipe's type
      */
-    Identifier getId();
+    ResourceLocation getId();
 
 
     /**

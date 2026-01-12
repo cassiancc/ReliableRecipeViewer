@@ -1,5 +1,5 @@
 //? neoforge {
-/*package cc.cassian.rrv.neoforge;
+package cc.cassian.rrv.neoforge;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -10,7 +10,7 @@ import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,33 +35,31 @@ public class NeoForgeClientEntrypoint {
 
     public NeoForgeClientEntrypoint(IEventBus eventBus) {
         ReliableRecipeViewer.LOGGER.info("RRV: Scanning for client integrations...");
-        if (FMLLoader.getCurrentOrNull() != null) {
-			FMLLoader.getCurrent().getLoadingModList().getMods().forEach(modInfo -> {
-				Optional<String> optional = modInfo.getConfigElement("rrv_client");
-				if (optional.isPresent()) {
-					ReliableRecipeViewer.LOGGER.info("RRV: Loading client integration: {}", optional.get());
-					try {
-						Class<?> clazz = Class.forName(optional.get());
-						ReliableRecipeViewerClientPlugin integration = ((ReliableRecipeViewerClientPlugin) clazz.getConstructor().newInstance());
-						integration.onIntegrationInitialize();
-						ReliableRecipeViewer.LOGGER.info("RRV: Client integration initialized for mod: {}", modInfo.getModId());
-						return;
+		FMLLoader.getLoadingModList().getMods().forEach(modInfo -> {
+			Optional<String> optional = modInfo.getConfigElement("rrv_client");
+			if (optional.isPresent()) {
+				ReliableRecipeViewer.LOGGER.info("RRV: Loading client integration: {}", optional.get());
+				try {
+					Class<?> clazz = Class.forName(optional.get());
+					ReliableRecipeViewerClientPlugin integration = ((ReliableRecipeViewerClientPlugin) clazz.getConstructor().newInstance());
+					integration.onIntegrationInitialize();
+					ReliableRecipeViewer.LOGGER.info("RRV: Client integration initialized for mod: {}", modInfo.getModId());
+					return;
 
-					} catch (Exception ignored) {
-					}
-
-					ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration: {}", optional.get());
+				} catch (Exception ignored) {
 				}
-			});
-		}
-        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new RrvClientSettingsScreen(screen));
+
+				ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration: {}", optional.get());
+			}
+		});
+		ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new RrvClientSettingsScreen(screen));
 
     }
 
     @SubscribeEvent
     public static void onMenuRegistry(RegisterEvent event) {
         event.register(Registries.MENU, menuTypeRegisterHelper -> {
-            menuTypeRegisterHelper.register(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewerClient.RECIPE_VIEW_MENU);
+            menuTypeRegisterHelper.register(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewerClient.RECIPE_VIEW_MENU);
         });
     }
 
@@ -92,4 +90,4 @@ public class NeoForgeClientEntrypoint {
     }
 
 }
-*///?}
+//?}

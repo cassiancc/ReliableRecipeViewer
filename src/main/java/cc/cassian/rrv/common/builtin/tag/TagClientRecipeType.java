@@ -5,7 +5,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
@@ -32,8 +32,8 @@ public class TagClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/entity.png");
+    public ResourceLocation getGuiTexture() {
+        return ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/entity.png");
     }
 
     // Tags should not exceed 54 slots
@@ -55,8 +55,8 @@ public class TagClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getId() {
-        return Identifier.withDefaultNamespace("item_tag");
+    public ResourceLocation getId() {
+        return ResourceLocation.withDefaultNamespace("item_tag");
     }
 
     @Override

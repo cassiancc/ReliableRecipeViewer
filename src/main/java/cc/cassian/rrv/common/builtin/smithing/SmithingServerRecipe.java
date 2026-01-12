@@ -6,7 +6,7 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.TransmuteResult;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class SmithingServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<SmithingServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("smithing"),
+            ResourceLocation.withDefaultNamespace("smithing"),
             () -> new SmithingServerRecipe(false, null, null, null, null, null)
     );
 

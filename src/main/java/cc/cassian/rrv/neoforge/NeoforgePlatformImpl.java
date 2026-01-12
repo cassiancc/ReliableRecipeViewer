@@ -1,7 +1,7 @@
 package cc.cassian.rrv.neoforge;
 
 //? neoforge {
-/*import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -50,8 +50,8 @@ public class NeoforgePlatformImpl implements Platform {
 
     @Override
     public boolean isClientSide() {
-        return FMLEnvironment.getDist().isClient();
+        return FMLEnvironment.dist.isClient();
     }
 
 }
-*///?}
+//?}

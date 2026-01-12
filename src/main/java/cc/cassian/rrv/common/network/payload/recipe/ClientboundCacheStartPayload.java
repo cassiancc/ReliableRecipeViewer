@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public record ClientboundCacheStartPayload(int types) implements CustomPacketPayload {
@@ -16,7 +16,7 @@ public record ClientboundCacheStartPayload(int types) implements CustomPacketPay
             ClientboundCacheStartPayload::new
     );
 
-    public static final Type<ClientboundCacheStartPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "cache_start"));
+    public static final Type<ClientboundCacheStartPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "cache_start"));
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

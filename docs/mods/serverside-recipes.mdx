@@ -13,7 +13,7 @@ public class ExampleServerRecipe implements ReliableServerRecipe {
 
     //Create a server recipe type (the id does not have to match your client side viewtype id)
     public static final ModRecipeType<YourServerRecipe> TYPE = ModRecipeType.register(
-            Identifier.fromNamespaceAndPath("example-mod", "your_recipe_id"),
+            ResourceLocation.fromNamespaceAndPath("example-mod", "your_recipe_id"),
             () -> new YourServerRecipe()
     );
 

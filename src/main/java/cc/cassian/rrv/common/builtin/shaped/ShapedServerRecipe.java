@@ -4,7 +4,7 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class ShapedServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<ShapedServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("shaped_crafting"),
+            ResourceLocation.withDefaultNamespace("shaped_crafting"),
             () -> new ShapedServerRecipe(0, 0, new HashMap<>(), ItemStack.EMPTY)
     );
 

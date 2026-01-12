@@ -9,7 +9,7 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
         this.result = SlotContent.of(brewingServerRecipe.getResult());
         this.magicIngredient = SlotContent.of(brewingServerRecipe.getMagicIngredient());
 
-        this.brewProgressTicker = AnimationTicker.create(Identifier.withDefaultNamespace("brew_progress_tick"), 400);
+        this.brewProgressTicker = AnimationTicker.create(ResourceLocation.withDefaultNamespace("brew_progress_tick"), 400);
     }
 
     @Override

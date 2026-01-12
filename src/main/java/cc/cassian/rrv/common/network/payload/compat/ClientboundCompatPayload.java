@@ -7,7 +7,7 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
@@ -32,7 +32,7 @@ public record ClientboundCompatPayload(CompoundTag data) implements CustomPacket
             }
     );
 
-    public static final CustomPacketPayload.Type<ClientboundCompatPayload> TYPE = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "compat"));
+    public static final CustomPacketPayload.Type<ClientboundCompatPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "compat"));
 
 
     @Override

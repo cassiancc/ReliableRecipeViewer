@@ -4,7 +4,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -14,7 +14,7 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     protected static final StonecutterClientRecipeType INSTANCE = new StonecutterClientRecipeType();
 
-    private static final Identifier STONECUTTER_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/stonecutter.png");
+    private static final ResourceLocation STONECUTTER_LOCATION = ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/stonecutter.png");
 
     @Override
     public Component getDisplayName() {
@@ -22,8 +22,8 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getId() {
-        return Identifier.withDefaultNamespace("stonecutting");
+    public ResourceLocation getId() {
+        return ResourceLocation.withDefaultNamespace("stonecutting");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getGuiTexture() {
+    public ResourceLocation getGuiTexture() {
         return STONECUTTER_LOCATION;
     }
 

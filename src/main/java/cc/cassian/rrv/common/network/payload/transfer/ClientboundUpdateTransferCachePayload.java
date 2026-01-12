@@ -5,14 +5,14 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public record ClientboundUpdateTransferCachePayload() implements CustomPacketPayload {
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUpdateTransferCachePayload> STREAM_CODEC = CustomPacketPayload.codec(ClientboundUpdateTransferCachePayload::write, ClientboundUpdateTransferCachePayload::new);
-    public static final Type<ClientboundUpdateTransferCachePayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "update_transfer_cache"));
+    public static final Type<ClientboundUpdateTransferCachePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "update_transfer_cache"));
 
     public ClientboundUpdateTransferCachePayload(FriendlyByteBuf friendlyByteBuf) {
         this();

@@ -1,5 +1,5 @@
 //? neoforge {
-/*package cc.cassian.rrv.neoforge;
+package cc.cassian.rrv.neoforge;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -23,24 +23,23 @@ public class NeoForgeEntrypoint {
     public NeoForgeEntrypoint(IEventBus eventBus) {
 
         ReliableRecipeViewer.LOGGER.info("RRV: Scanning for integrations...");
-        if (FMLLoader.getCurrentOrNull() != null)
-            FMLLoader.getCurrent().getLoadingModList().getMods().forEach(modInfo -> {
-                Optional<String> optional = modInfo.getConfigElement("rrv");
-                if (optional.isPresent()) {
-                    ReliableRecipeViewer.LOGGER.info("RRV: Loading integration: {}", optional.get());
-                    try {
-                        Class<?> clazz = Class.forName(optional.get());
-                        ReliableRecipeViewerPlugin integration = ((ReliableRecipeViewerPlugin) clazz.getConstructor().newInstance());
-                        integration.onIntegrationInitialize();
-                        ReliableRecipeViewer.LOGGER.info("RRV: Integration initialized for mod: {}", modInfo.getModId());
-                        return;
+		FMLLoader.getLoadingModList().getMods().forEach(modInfo -> {
+			Optional<String> optional = modInfo.getConfigElement("rrv");
+			if (optional.isPresent()) {
+				ReliableRecipeViewer.LOGGER.info("RRV: Loading integration: {}", optional.get());
+				try {
+					Class<?> clazz = Class.forName(optional.get());
+					ReliableRecipeViewerPlugin integration = ((ReliableRecipeViewerPlugin) clazz.getConstructor().newInstance());
+					integration.onIntegrationInitialize();
+					ReliableRecipeViewer.LOGGER.info("RRV: Integration initialized for mod: {}", modInfo.getModId());
+					return;
 
-                    } catch (Exception ignored) {
-                    }
+				} catch (Exception ignored) {
+				}
 
-                    ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration: {}", optional.get());
-                }
-            });
+				ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration: {}", optional.get());
+			}
+		});
     }
 
     @SubscribeEvent
@@ -53,4 +52,4 @@ public class NeoForgeEntrypoint {
         RrvNetworkManager.INSTANCE.registerPayloads(event);
     }
 }
-*///?}
+//?}

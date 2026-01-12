@@ -4,10 +4,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 public class SearchBar extends EditBox {
+
+    private long lastSearchbarClick = -1;
 
     private final ItemViewOverlay itemViewOverlay;
 
@@ -17,21 +18,23 @@ public class SearchBar extends EditBox {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             this.setFocused(true);
             OverlayManager.INSTANCE.currentInfo().screen().setFocused(this);
             this.setValue("");
             return true;
         }
 
-        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
-            if (doubleClick) {
+        if (this.isHovered() && button == InputConstants.MOUSE_BUTTON_LEFT) {
+            if (this.lastSearchbarClick != -1 && System.currentTimeMillis() - this.lastSearchbarClick <= 400) {
                 itemViewOverlay.itemFilterMode = !itemViewOverlay.itemFilterMode;
-                this.setFocused(true);
-                return true;
-            }
+                this.lastSearchbarClick = -1;
+            } else
+                this.lastSearchbarClick = System.currentTimeMillis();
+
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 }

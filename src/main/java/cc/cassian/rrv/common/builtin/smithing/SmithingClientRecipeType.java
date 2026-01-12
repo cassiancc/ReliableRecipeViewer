@@ -4,7 +4,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -14,7 +14,7 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
 
     protected static final SmithingClientRecipeType INSTANCE = new SmithingClientRecipeType();
 
-    private static final Identifier SMITHING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smithing.png");
+    private static final ResourceLocation SMITHING_LOCATION = ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smithing.png");
 
     @Override
     public Component getDisplayName() {
@@ -22,8 +22,8 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getId() {
-        return Identifier.withDefaultNamespace("smithing");
+    public ResourceLocation getId() {
+        return ResourceLocation.withDefaultNamespace("smithing");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public Identifier getGuiTexture() {
+    public ResourceLocation getGuiTexture() {
         return SMITHING_LOCATION;
     }
 

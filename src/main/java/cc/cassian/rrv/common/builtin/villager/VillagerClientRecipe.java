@@ -14,13 +14,13 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.entity.npc.villager.VillagerProfession;
-import net.minecraft.world.entity.npc.villager.VillagerType;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerType;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -129,8 +129,8 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         Font font = Minecraft.getInstance().font;
 
         ResourceKey<VillagerProfession> profession = this.villagerOffer.profession();
-        String namespace = profession.identifier().getNamespace();
-        String path = profession.identifier().getPath();
+        String namespace = profession.location().getNamespace();
+        String path = profession.location().getPath();
         float scale = 0.75F;
 
         Component professionComp = Component.translatable("entity." + namespace + ".villager." + path).append(" - ").append(Component.translatable("merchant.level." + this.villagerOffer.professionLevel())).withStyle(ChatFormatting.DARK_GRAY);
@@ -153,7 +153,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
             return;
 
         if (mouseX >= 0 && mouseX <= 24 && mouseY >= 0 && mouseY <= 36) {
-            Identifier typeLocation = this.villagerOffer.requiredType().identifier();
+            ResourceLocation typeLocation = this.villagerOffer.requiredType().location();
             Component typeComponent = Component.translatable("view.rrv.type.trading." + typeLocation.getNamespace() + "." + typeLocation.getPath()).withStyle(ChatFormatting.GOLD);
             guiGraphics.setComponentTooltipForNextFrame(font, List.of(typeComponent), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
         }
