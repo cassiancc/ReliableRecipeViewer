@@ -373,7 +373,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
 	private boolean isHoveringOverTitle(double mouseX, double mouseY) {
-        int xMin = this.width / 2 - 64 - 2 - 12;
+        int xMin = this.width / 2 - 64 - 2 - 3;
         int xMax = this.width / 2 + 64 + 2;
 		return (mouseX > xMin && mouseX < xMax) && (mouseY >= this.topPos && mouseY <= this.topPos + 16);
 	}
