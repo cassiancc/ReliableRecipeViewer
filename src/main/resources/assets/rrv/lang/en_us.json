@@ -69,6 +69,9 @@
   "rrv.client_settings.bookmarks": "Bookmarks Panel",
   "rrv.client_settings.bookmarks.show": "Show",
   "rrv.client_settings.bookmarks.hide": "Hide",
+  "rrv.client_settings.index_source": "Index Source",
+  "rrv.client_settings.index_source.creative": "Creative",
+  "rrv.client_settings.index_source.registry": "Registry",
 
   "tag.item.minecraft.acacia_logs": "Acacia Logs",
   "tag.item.minecraft.anvil": "Anvils",

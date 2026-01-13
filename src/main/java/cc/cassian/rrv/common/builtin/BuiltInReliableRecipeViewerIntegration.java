@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin;
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
@@ -91,39 +92,40 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
     public void onIntegrationInitialize() {
 
         ItemView.addServerReloadCallback(() -> {
+            if (!Configs.CLIENT_SETTINGS.isCreativeIndexSource()) {
+                Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
 
-            Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
+                potionRegistry.forEach(potion -> {
+                    var potionHolder = potionRegistry.wrapAsHolder(potion);
 
-            potionRegistry.forEach(potion -> {
-                var potionHolder = potionRegistry.wrapAsHolder(potion);
+                    if (!ItemView.isExcludedPotion(potionHolder)) {
+                        ItemView.addStackSensitive(PotionContents.createItemStack(Items.POTION, potionHolder));
+                        ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
+                        ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
 
-                if (!ItemView.isExcludedPotion(potionHolder)) {
-                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.POTION, potionHolder));
-                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
-                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
-
-                    if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder)) {
-                        ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
-                        tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
-                        ItemView.addStackSensitive(tipped);
+                        if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder)) {
+                            ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
+                            tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
+                            ItemView.addStackSensitive(tipped);
+                        }
                     }
-                }
-            });
+                });
 
 
-            Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-            enchantmentRegistry.entrySet().forEach((entry) -> {
-                var key = entry.getKey();
-                var enchantment = entry.getValue();
-                for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
+                Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                enchantmentRegistry.entrySet().forEach((entry) -> {
+                    var key = entry.getKey();
+                    var enchantment = entry.getValue();
+                    for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
 
-                    var enchantmentHolder = enchantmentRegistry.wrapAsHolder(enchantment);
-                    if (!enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) && !ItemView.getExcludedEnchantments().contains(key)) {
-                        ItemStack enchantedBook = EnchantmentHelper.createBook(new EnchantmentInstance(enchantmentHolder, i));
-                        ItemView.addStackSensitive(enchantedBook);
+                        var enchantmentHolder = enchantmentRegistry.wrapAsHolder(enchantment);
+                        if (!enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) && !ItemView.getExcludedEnchantments().contains(key)) {
+                            ItemStack enchantedBook = EnchantmentHelper.createBook(new EnchantmentInstance(enchantmentHolder, i));
+                            ItemView.addStackSensitive(enchantedBook);
+                        }
                     }
-                }
-            });
+                });
+            }
         });
 
         //providers

@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 
 public class ClientConfig extends AbstractRrvConfig {
 
@@ -12,6 +13,7 @@ public class ClientConfig extends AbstractRrvConfig {
     private boolean rightIndex = true;
     private boolean centerSearch = true;
     private boolean showBookmarks = true;
+    private boolean creativeIndexSource = false;
 
     public ClientConfig() {
         super("client_settings");
@@ -82,4 +84,13 @@ public class ClientConfig extends AbstractRrvConfig {
         this.data().addProperty("rightIndex", this.rightIndex);
         this.data().addProperty("centerSearch", this.centerSearch);
     }
+
+	public boolean isCreativeIndexSource() {
+		return creativeIndexSource;
+	}
+
+	public void setCreativeIndexSource(boolean creativeIndexSource) {
+		this.creativeIndexSource = creativeIndexSource;
+        ServerRecipeManager.INSTANCE.reload();
+	}
 }

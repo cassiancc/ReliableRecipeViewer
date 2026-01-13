@@ -2,6 +2,9 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.instances.ClientConfig;
+import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,6 +14,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -201,10 +205,21 @@ public class ItemFilters {
     private static List<ItemStack> fullStackList() {
         List<ItemStack> results = new ArrayList<>();
 
-        BuiltInRegistries.ITEM.forEach(item -> {
-            results.add(new ItemStack(item));
-            results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
-        });
+        if (Configs.CLIENT_SETTINGS.isCreativeIndexSource()) {
+			results.addAll(CreativeModeTabs.searchTab().getDisplayItems());
+            BuiltInRegistries.ITEM.forEach(item -> {
+                results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
+            });
+            BuiltInRegistries.FLUID.forEach(fluid -> {
+                results.add(new FluidStack(fluid).createItemStack());
+            });
+		} else {
+            BuiltInRegistries.ITEM.forEach(item -> {
+                results.add(new ItemStack(item));
+                results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
+            });
+        }
+
 
         return results;
     }
