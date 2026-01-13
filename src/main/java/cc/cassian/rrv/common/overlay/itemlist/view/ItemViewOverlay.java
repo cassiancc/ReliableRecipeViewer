@@ -184,7 +184,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 this.availableItems = ItemFilters.defaultFilter(newQuery);
         }
 
-        this.availableItems().removeIf(stack -> ItemView.getExcludedItems().contains(stack.getItem()));
+        this.availableItems().removeIf(stack -> ItemView.isExcludedItem(stack));
 
         this.updateSlots();
     }
