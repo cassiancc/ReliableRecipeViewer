@@ -17,6 +17,7 @@ import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemFilters {
 
@@ -38,7 +39,7 @@ public class ItemFilters {
                 firstPrio.add(stack);
             else if (itemName.contains(query.toLowerCase()))
                 secondPrio.add(stack);
-            else if(stack.is(Items.ENCHANTED_BOOK)) {
+            else if (stack.is(Items.ENCHANTED_BOOK)) {
 
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
                 if (compCheck == 1)
@@ -88,6 +89,25 @@ public class ItemFilters {
     }
 
     /**
+     * Filters by modid
+     * @param query The query
+     * @return A list of matching itemstacks
+     */
+    protected static boolean modId(ItemStack stack, String query) {
+        String modName = ReliableRecipeViewerClient.resolver().getModNameForItem(stack);
+        if (modName == null)
+            return false;
+
+        modName = modName.toLowerCase();
+
+        if (modName.startsWith(query.toLowerCase()))
+            return true;
+        else if (modName.contains(query.toLowerCase()))
+            return true;
+        return false;
+    }
+
+    /**
      * Filters by an items tags
      * @param query The query
      * @return A list of matching itemstacks
@@ -120,6 +140,30 @@ public class ItemFilters {
 
         return results;
     }
+
+    /**
+     * Filters by an items tags
+     * @param query The query
+     * @return A list of matching itemstacks
+     */
+    protected static boolean tag(ItemStack stack, String query) {
+        AtomicBoolean result = new AtomicBoolean(false);
+
+        for (TagKey<Item> tag : BuiltInRegistries.ITEM.getTags().map(HolderSet.Named::key).toList()) {
+            String tagName = tag.location().getPath().toLowerCase();
+
+            if (tagName.contains(query.toLowerCase())) {
+                BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).forEach(stack2 -> {
+                    if (ItemStack.isSameItem(stack2, stack)) {
+                        result.set(true);
+                    }
+                }));
+            }
+
+        }
+        return result.get();
+    }
+
 
 
     /**

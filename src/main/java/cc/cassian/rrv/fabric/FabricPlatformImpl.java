@@ -11,6 +11,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class FabricPlatformImpl implements Platform {
@@ -27,7 +28,7 @@ public class FabricPlatformImpl implements Platform {
 
     @Override
     public String getModNameForItem(ItemStack stack) {
-        String namespace = stack.getCreatorNamespace();
+        String namespace = getModNamespaceForItem(stack);
         String key = "modmenu.nameTranslation."+namespace;
         Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer(namespace);
         if (modContainer.isPresent()) {
@@ -37,6 +38,18 @@ public class FabricPlatformImpl implements Platform {
         } else {
             return WordUtils.capitalize(namespace);
         }
+    }
+
+    @Override
+    public String getModNamespaceForItem(ItemStack stack) {
+        return stack.getCreatorNamespace();
+    }
+
+    @Override
+    public ArrayList<String> getMods() {
+        ArrayList<String> modContainers = new ArrayList<>();
+        FabricLoader.getInstance().getAllMods().forEach((mod)-> modContainers.add(mod.getMetadata().getId()));
+        return modContainers;
     }
 
 

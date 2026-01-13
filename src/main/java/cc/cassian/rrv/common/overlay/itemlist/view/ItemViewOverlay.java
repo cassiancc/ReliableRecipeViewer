@@ -32,6 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
@@ -152,12 +153,36 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         this.currentQuery = newQuery;
 
-        if (newQuery.startsWith("@"))
-            this.availableItems = ItemFilters.modId(newQuery.substring(1));
-        else if (newQuery.startsWith("#"))
-            this.availableItems = ItemFilters.tag(newQuery.substring(1));
-        else
-            this.availableItems = ItemFilters.defaultFilter(newQuery);
+        // advanced filtering
+        if (newQuery.contains(" ")) {
+
+            ArrayList<String> objects = new ArrayList<>();
+
+            for (String query : newQuery.split(" ")) {
+                if (!query.startsWith("@") && !query.startsWith("#")) {
+                    objects.add(query);
+                }
+            }
+
+            this.availableItems = ItemFilters.defaultFilter(String.join(" ", objects));
+
+            for (String query : newQuery.split(" ")) {
+                if (query.startsWith("@")) {
+                    this.availableItems.removeIf(stack-> !ItemFilters.modId(stack, query.substring(1)));
+                }
+                else if (query.startsWith("#")) {
+                    this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
+                }
+            }
+        // standard filtering
+        } else {
+            if (newQuery.startsWith("@"))
+                this.availableItems = ItemFilters.modId(newQuery.substring(1));
+            else if (newQuery.startsWith("#"))
+                this.availableItems = ItemFilters.tag(newQuery.substring(1));
+            else
+                this.availableItems = ItemFilters.defaultFilter(newQuery);
+        }
 
         this.availableItems().removeIf(stack -> ItemView.getExcludedItems().contains(stack.getItem()));
 
@@ -272,8 +297,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         int y = info.screenHeight() - 22;
 
 
-        if(this.searchbar != null && info.screen().getFocused() instanceof SearchBar)
-            this.searchbar.setFocused(false);
+        if(this.searchbar != null && info.screen().getFocused() instanceof SearchBar) {
+			this.searchbar.setFocused(false);
+            this.searchbar.setSuggestion(null);
+		}
 
         if (this.searchbar != null && boxWidth == this.searchbar.getWidth() && x == this.searchbar.getX() && y == this.searchbar.getY())
             return;
