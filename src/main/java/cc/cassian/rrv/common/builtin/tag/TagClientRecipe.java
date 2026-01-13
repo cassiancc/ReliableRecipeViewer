@@ -71,7 +71,7 @@ public class TagClientRecipe implements ReliableClientRecipe {
 
 	@Override
 	public List<SlotContent> getResults() {
-		return this.items;
+		return List.of(tagKeyContent);
 	}
 
 }

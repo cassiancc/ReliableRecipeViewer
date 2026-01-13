@@ -126,7 +126,7 @@ public class ItemViewRecipes {
      * @return Whether any of the listed SlotContents contains an itemStack matching the enchantments of the given stack
      */
     public static boolean makeEnchantedRedirectCheck(ItemStack stack, List<SlotContent> slotContents) {
-        if (!stack.has(DataComponents.ENCHANTMENTS))
+        if (!stack.has(DataComponents.STORED_ENCHANTMENTS))
             return true;
 
         for (SlotContent slotContent : slotContents) {
@@ -161,7 +161,7 @@ public class ItemViewRecipes {
      * @return Whether the enchantments of two itemStacks match
      */
     public static boolean makeEnchantmentCheck(ItemStack stack1, ItemStack stack2) {
-        if (!(stack1.has(DataComponents.ENCHANTMENTS) && stack2.has(DataComponents.ENCHANTMENTS)))
+        if (!(stack1.has(DataComponents.STORED_ENCHANTMENTS) && stack2.has(DataComponents.STORED_ENCHANTMENTS)))
             return true;
 
         ItemEnchantments enchantments = stack1.getOrDefault(stack1.is(Items.ENCHANTED_BOOK) ? DataComponents.STORED_ENCHANTMENTS : DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
