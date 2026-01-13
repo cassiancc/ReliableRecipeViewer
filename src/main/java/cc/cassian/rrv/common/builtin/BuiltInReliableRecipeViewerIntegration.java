@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin;
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
@@ -32,6 +33,7 @@ import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetPotionF
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -206,21 +208,21 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         //Smelting
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMELTING).forEach(recipe -> {
-                recipeList.add(new SmeltingServerRecipe(recipe.input(), recipe.result));
+                recipeList.add(new SmeltingServerRecipe(recipe.input(), RrvUtil.decodeTemplate(recipe.result)));
             });
         });
 
         //Blasting
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.BLASTING).forEach(recipe -> {
-                recipeList.add(new BlastingServerRecipe(recipe.input(), recipe.result));
+                recipeList.add(new BlastingServerRecipe(recipe.input(), RrvUtil.decodeTemplate(recipe.result)));
             });
         });
 
         //Smoking
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMOKING).forEach(recipe -> {
-                recipeList.add(new SmokingServerRecipe(recipe.input(), recipe.result));
+                recipeList.add(new SmokingServerRecipe(recipe.input(), RrvUtil.decodeTemplate(recipe.result)));
             });
         });
 
@@ -228,7 +230,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CRAFTING).forEach(recipe -> {
                 if (recipe instanceof ShapelessRecipe shapelessRecipe)
-                    recipeList.add(new ShapelessServerRecipe(shapelessRecipe.ingredients, shapelessRecipe.result));
+                    recipeList.add(new ShapelessServerRecipe(shapelessRecipe.ingredients, RrvUtil.decodeTemplate(shapelessRecipe.result)));
 
 
                 if (recipe instanceof ShapedRecipe shapedRecipe) {
@@ -250,7 +252,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         }
                     }
 
-                    recipeList.add(new ShapedServerRecipe(shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, shapedRecipe.result));
+                    recipeList.add(new ShapedServerRecipe(shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, RrvUtil.decodeTemplate(shapedRecipe.result)));
                 }
 
                 if (recipe instanceof TransmuteRecipe) {
@@ -272,7 +274,11 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
 
                     ingredients.forEach(ingredient -> {
+                        //? >26 {
+                        /*results.add(RrvUtil.decodeTemplate(accessor.getResult()));
+                        *///?} else {
                         results.add(accessor.getResult().apply(new ItemStack(ingredient)));
+                        //?}
                     });
 
                     if (!ingredients.isEmpty() && !results.isEmpty())
@@ -293,14 +299,14 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         //Campfire
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(campfireCookingRecipe -> {
-                recipeList.add(new CampfireServerRecipe(campfireCookingRecipe.input(), campfireCookingRecipe.result));
+                recipeList.add(new CampfireServerRecipe(campfireCookingRecipe.input(), RrvUtil.decodeTemplate(campfireCookingRecipe.result)));
             });
         });
 
         //Stonecutting
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipe -> {
-                recipeList.add(new StonecutterServerRecipe(stonecutterRecipe.input(), stonecutterRecipe.result));
+                recipeList.add(new StonecutterServerRecipe(stonecutterRecipe.input(), RrvUtil.decodeTemplate(stonecutterRecipe.result)));
             });
         });
 

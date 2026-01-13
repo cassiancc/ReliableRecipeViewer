@@ -5,6 +5,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+//? >26 {
+/*import net.minecraft.world.item.ItemStackTemplate;
+*///?}
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -35,4 +39,13 @@ public class RrvUtil {
     }
 
 
+    //? >26 {
+	/*public static ItemStack decodeTemplate(ItemStackTemplate template) {
+		return new ItemStack(template.item(), template.count(), template.components());
+	}
+    *///?}
+
+    public static ItemStack decodeTemplate(ItemStack template) {
+        return template;
+    }
 }

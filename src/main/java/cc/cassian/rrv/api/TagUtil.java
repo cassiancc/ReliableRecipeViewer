@@ -1,6 +1,7 @@
 package cc.cassian.rrv.api;
 
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
+import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
@@ -45,8 +46,19 @@ public class TagUtil {
      * @return The decoded stack
      */
     public static ItemStack decodeItemStackOnClient(CompoundTag tag) {
-        return ItemStack.CODEC.parse(Minecraft.getInstance().player.level().registryAccess().createSerializationContext(NbtOps.INSTANCE), tag).result().orElse(ItemStack.EMPTY);
+        return ItemStack.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(ItemStack.EMPTY);
     }
+
+    //? >26 {
+    /*/^*
+     * Decodes an ItemStackTemplate on the client side
+     * @param tag The tag to decode
+     * @return The decoded stack
+     ^/
+    public static net.minecraft.world.item.ItemStackTemplate decodeItemStackTemplateOnClient(CompoundTag tag) {
+        return net.minecraft.world.item.ItemStackTemplate.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(null);
+    }
+    *///?}
 
     /**
      * Encodes an ItemStack on the client side
@@ -54,7 +66,7 @@ public class TagUtil {
      * @return The encoded stack as CompoundTag
      */
     public static CompoundTag encodeItemStackOnClient(ItemStack stack) {
-        return ItemStack.CODEC.encode(stack, Minecraft.getInstance().player.level().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
+        return ItemStack.CODEC.encode(stack, ClientRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
     }
 
     /**
@@ -65,6 +77,17 @@ public class TagUtil {
     public static CompoundTag encodeItemStackOnServer(ItemStack stack) {
         return ItemStack.CODEC.encode(stack, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
     }
+
+    //? if >26 {
+    /*/^*
+     * Encodes an ItemStackTemplate on the server side
+     * @param stack The stack to encode
+     * @return The encoded stack as CompoundTag
+     ^/
+    public static CompoundTag encodeItemStackOnServer(net.minecraft.world.item.ItemStackTemplate stack) {
+        return net.minecraft.world.item.ItemStackTemplate.CODEC.encode(stack, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
+    }
+    *///?}
 
     /**
      * Encodes an ItemStack

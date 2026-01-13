@@ -11,10 +11,13 @@ import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensiti
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
@@ -59,6 +62,9 @@ public class ServerRecipeManager {
         return (List<T>) this.recipeManager.getRecipes().stream().filter(holder -> holder.value().getType().equals(recipeType)).map(RecipeHolder::value).toList();
     }
 
+    public RegistryOps<Tag> createSerializationContext() {
+        return server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+    }
 
     public void reload() {
         if (this.server == null || this.recipeManager == null)

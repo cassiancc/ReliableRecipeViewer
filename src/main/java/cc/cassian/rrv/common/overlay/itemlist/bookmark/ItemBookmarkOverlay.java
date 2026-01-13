@@ -127,7 +127,11 @@ public class ItemBookmarkOverlay extends AbstractRrvItemListOverlay {
         this.width -= (this.width - 4) % ITEM_ENTRY_SIZE;
         this.height = screen.height;
 
-        this.itemStartX = 2;
+        if (Configs.CLIENT_SETTINGS.isRightIndex()) {
+            this.itemStartX = 0;
+        } else {
+            this.itemStartX = invInfo.screenWidth() - this.width+2;
+        }
         this.itemStartY = HEADER_HEIGHT;
 
         this.itemEndX = this.x + this.width - 2;
