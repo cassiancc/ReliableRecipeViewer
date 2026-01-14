@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
+import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
@@ -414,6 +415,18 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
         *///?}
+
+        ItemView.addServerRecipeProvider(recipeList -> {
+            BuiltInRegistries.ITEM.forEach(item -> {
+                var stack = item.getDefaultInstance();
+                if (stack.has(DataComponents.REPAIRABLE)) {
+                    Repairable repairable = stack.get(DataComponents.REPAIRABLE);
+					var damagedStack = stack.copy();
+					damagedStack.setDamageValue(stack.getMaxDamage() / 2);
+					recipeList.add(new RepairingServerRecipe(damagedStack, Ingredient.of(repairable.items()), stack));
+                }
+            });
+        });
     }
 
 

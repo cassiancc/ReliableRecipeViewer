@@ -24,6 +24,7 @@
   "view.rrv.type.entity.playerKill": "\u00a78» Player Only",
   "view.rrv.type.item_tag": "Item Tags",
   "view.rrv.type.info": "Info",
+  "view.rrv.type.repairing": "Repairing",
 
   "rrv.fluid.unit": "mb",
   "commands.rrv.reloadedRecipes": "Reload success (Recipes)",
@@ -220,6 +221,7 @@
   "tag.item.minecraft.repairs_iron_armor": "Iron Armor Repair Materials",
   "tag.item.minecraft.repairs_leather_armor": "Leather Armor Repair Materials",
   "tag.item.minecraft.repairs_netherite_armor": "Netherite Armor Repair Materials",
+  "tag.item.minecraft.repairs_wolf_armor": "Wolf Armor Repair Materials",
   "tag.item.minecraft.repairs_turtle_helmet": "Turtle Helmet Repair Materials",
   "tag.item.minecraft.sand": "Sand",
   "tag.item.minecraft.saplings": "Saplings",

@@ -15,6 +15,8 @@ import cc.cassian.rrv.common.builtin.entity.EntityClientRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityServerRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
+import cc.cassian.rrv.common.builtin.repairing.RepairingClientRecipe;
+import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
 import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipe;
 import cc.cassian.rrv.common.builtin.shaped.ShapedServerRecipe;
 import cc.cassian.rrv.common.builtin.shapeless.ShapelessServerRecipe;
@@ -152,6 +154,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 			});
             return infoRecipes;
         });
+        ItemView.addClientRecipeWrapper(RepairingServerRecipe.TYPE, unwrapped -> List.of(new RepairingClientRecipe(unwrapped.getBase(), unwrapped.getTemplate(), unwrapped.getResult())));
     }
 
 
