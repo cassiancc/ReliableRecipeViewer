@@ -1,0 +1,29 @@
+# World Interaction Recipes
+
+RRV provides a format for world interaction recipes, allowing modpacks (or mods!) to show information interactions in the world through resource packs. These JSON files should be added to a `assets/namespace/rrv_world_interaction` folder in your resource pack.
+
+## Examples
+
+### Chest Boats (Item Tags)
+
+Recipe file - `assets/rrv/rrv_world_interaction/chest_boats.json`
+```json
+{
+  "type": "rrv:world_interaction",
+  "left": "#c:chests",
+  "right": "#minecraft:boats",
+  "result": "minecraft:oak_chest_boat"
+}
+```
+
+### Cobblestone (Items)
+
+Recipe file - `assets/rrv/rrv_world_interaction/cobblestone.json`
+```json
+{
+  "type": "rrv:world_interaction",
+  "left": "minecraft:water",
+  "right": "minecraft:lava",
+  "result": "minecraft:cobblestone"
+}
+```
