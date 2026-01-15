@@ -112,10 +112,10 @@ publishMods {
     file = tasks.jar.map { it.archiveFile.get() }
     additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 
-    type = BETA
+    type = STABLE
     displayName = "RRV ${property("mod.version")} for ${stonecutter.current.version} NeoForge"
     version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
-    changelog = provider { rootProject.file("CHANGELOG.md").readText() }
+    changelog = provider { rootProject.file("CHANGELOG-LATEST.md").readText() }
     modLoaders.add("neoforge")
 
     modrinth {
