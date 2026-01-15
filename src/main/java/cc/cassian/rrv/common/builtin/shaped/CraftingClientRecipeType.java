@@ -23,7 +23,7 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getId() {
-        return Identifier.withDefaultNamespace("crafting_shaped");
+        return Identifier.withDefaultNamespace("crafting");
     }
 
     @Override

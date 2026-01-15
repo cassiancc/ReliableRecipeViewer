@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.tag;
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -17,7 +18,7 @@ import java.util.List;
 public class TagServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<TagServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("item_tags"),
+            ReliableRecipeViewer.of("item_tags"),
             () -> new TagServerRecipe(null)
     );
 

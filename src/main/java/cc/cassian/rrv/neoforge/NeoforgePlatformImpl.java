@@ -28,9 +28,8 @@ public class NeoforgePlatformImpl implements Platform {
         return "neoforge";
     }
 
-	@Override
-    public String getModNameForItem(ItemStack stack) {
-        String namespace = getModNamespaceForItem(stack);
+    @Override
+    public String getModNameForNamespace(String namespace) {
         String key = "modmenu.nameTranslation."+namespace;
         Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(namespace);
         if (modContainer.isPresent()) {

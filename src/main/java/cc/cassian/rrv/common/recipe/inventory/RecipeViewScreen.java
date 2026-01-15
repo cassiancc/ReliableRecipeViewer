@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -33,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -528,7 +530,12 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             if (!(mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height))
                 return;
 
-            guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, List.of(this.viewType.getDisplayName()), mouseX, mouseY);
+			ArrayList<Component> tooltip = new ArrayList<>(Collections.singleton(this.viewType.getDisplayName()));
+            if (Minecraft.getInstance().options.advancedItemTooltips) {
+                tooltip.add(Component.literal(this.viewType.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
+            }
+            tooltip.add(Component.literal(Platform.INSTANCE.getModNameForNamespace(this.viewType.getId().getNamespace())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
+            guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
         }
 
         private void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {

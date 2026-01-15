@@ -27,8 +27,7 @@ public class FabricPlatformImpl implements Platform {
     }
 
     @Override
-    public String getModNameForItem(ItemStack stack) {
-        String namespace = getModNamespaceForItem(stack);
+    public String getModNameForNamespace(String namespace) {
         String key = "modmenu.nameTranslation."+namespace;
         Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer(namespace);
         if (modContainer.isPresent()) {

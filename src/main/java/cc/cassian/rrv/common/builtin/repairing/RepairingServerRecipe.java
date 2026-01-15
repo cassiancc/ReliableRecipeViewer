@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.repairing;
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -11,7 +12,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 public class RepairingServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<RepairingServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.withDefaultNamespace("repairing"),
+            ReliableRecipeViewer.of("repairing"),
             () -> new RepairingServerRecipe( null, null, null)
     );
 

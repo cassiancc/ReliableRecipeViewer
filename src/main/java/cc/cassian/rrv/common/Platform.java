@@ -25,7 +25,11 @@ public interface Platform {
     boolean isModLoaded(String modid);
     String loader();
 
-    String getModNameForItem(ItemStack stack);
+    String getModNameForNamespace(String namespace);
+
+    default String getModNameForItem(ItemStack stack) {
+        return getModNameForNamespace(getModNamespaceForItem(stack));
+    }
 
     String getModNamespaceForItem(ItemStack stack);
 

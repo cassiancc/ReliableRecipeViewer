@@ -14,7 +14,7 @@ public class RepairingClientRecipeType implements ReliableClientRecipeType {
 
 	protected static final RepairingClientRecipeType INSTANCE = new RepairingClientRecipeType();
 
-	private static final Identifier ANVIL_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/anvil.png");
+	private static final Identifier ANVIL_LOCATION = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
 
 	@Override
 	public Component getDisplayName() {
@@ -23,7 +23,7 @@ public class RepairingClientRecipeType implements ReliableClientRecipeType {
 
 	@Override
 	public Identifier getId() {
-		return Identifier.withDefaultNamespace("repairing");
+		return ReliableRecipeViewer.of("repairing");
 	}
 
 	@Override

@@ -13,7 +13,7 @@ public class SmokingClientRecipeRecipeType extends SmeltingClientRecipeType {
 
     public static final SmokingClientRecipeRecipeType INSTANCE = new SmokingClientRecipeRecipeType();
 
-    private static final Identifier BLASTING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smoking.png");
+    private static final Identifier BLASTING_LOCATION = ReliableRecipeViewer.of("textures/gui/type/smoking.png");
 
     @Override
     public Component getDisplayName() {
@@ -32,7 +32,7 @@ public class SmokingClientRecipeRecipeType extends SmeltingClientRecipeType {
 
     @Override
     public Identifier getId() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "furnace_smoking");
+        return Identifier.withDefaultNamespace("furnace_smoking");
     }
 
     @Override
