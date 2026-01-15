@@ -60,7 +60,7 @@ import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.block.*;
 //? neoforge
-//import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 import java.io.IOException;
 import java.util.*;
@@ -130,18 +130,18 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         // info
         ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
             ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
-            Map<ResourceLocation, Resource> ResourceLocationResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_info", (ResourceLocation) -> true);
-            ResourceLocationResourceMap.forEach((ResourceLocation, resource) -> {
+            Map<ResourceLocation, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_info", (ResourceLocation) -> true);
+            identifierResourceMap.forEach((identifier, resource) -> {
 				try {
                     JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
                     if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
                         var text = parsedRecipe.get("text").getAsString();
                         infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
                     } else {
-                        LOGGER.error("Could not parse info recipe '{}' as it was missing a type!", ResourceLocation);
+                        LOGGER.error("Could not parse info recipe '{}' as it was missing a type!", identifier);
                     }
                 } catch (IOException e) {
-					LOGGER.error("Could not parse info recipe '{}' due to an exception: ", ResourceLocation, e);
+					LOGGER.error("Could not parse info recipe '{}' due to an exception: ", identifier, e);
 				}
 			});
             return infoRecipes;
@@ -149,7 +149,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         // world interaction
         ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
             ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
-            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_world_interaction", (identifier) -> true);
+            Map<ResourceLocation, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_world_interaction", (identifier) -> true);
             identifierResourceMap.forEach((identifier, resource) -> {
                 try {
                     JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
@@ -181,19 +181,19 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
                 }
                 //? neoforge {
-                /*if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES) != null) {
+                if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES) != null) {
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES).waxed()), axes, SlotContent.of(block)));
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES).waxed())));
                 }
                 if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES) != null) {
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
                 }
-                *///?}
+                //?}
             }));
 
             // honeycomb
             //? fabric {
-            HoneycombItem.WAXABLES.get().forEach(((block, block2) -> {
+            /*HoneycombItem.WAXABLES.get().forEach(((block, block2) -> {
 				worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())));
             }));
             HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> {
@@ -202,7 +202,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             AxeItem.STRIPPABLES.forEach(((block, state) -> {
                 worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(state)));
             }));
-            //?}
+            *///?}
 
             // flattenables
             ShovelItem.FLATTENABLES.forEach(((block, state) -> {

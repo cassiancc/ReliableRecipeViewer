@@ -4,7 +4,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -14,7 +14,7 @@ public class RepairingClientRecipeType implements ReliableClientRecipeType {
 
 	protected static final RepairingClientRecipeType INSTANCE = new RepairingClientRecipeType();
 
-	private static final Identifier ANVIL_LOCATION = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
+	private static final ResourceLocation ANVIL_LOCATION = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
 
 	@Override
 	public Component getDisplayName() {
@@ -22,7 +22,7 @@ public class RepairingClientRecipeType implements ReliableClientRecipeType {
 	}
 
 	@Override
-	public Identifier getId() {
+	public ResourceLocation getId() {
 		return ReliableRecipeViewer.of("repairing");
 	}
 
@@ -42,7 +42,7 @@ public class RepairingClientRecipeType implements ReliableClientRecipeType {
 	}
 
 	@Override
-	public Identifier getGuiTexture() {
+	public ResourceLocation getGuiTexture() {
 		return ANVIL_LOCATION;
 	}
 

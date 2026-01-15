@@ -10,7 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
@@ -62,15 +62,15 @@ public class RrvUtil {
         return template;
     }
 
-    public static SlotContent readSlotContent(String key, String type, Identifier identifier, JsonObject parsedRecipe) {
+    public static SlotContent readSlotContent(String key, String type, ResourceLocation identifier, JsonObject parsedRecipe) {
         JsonElement keyElement = parsedRecipe.get(key);
         if (keyElement.isJsonPrimitive() && keyElement.getAsJsonPrimitive().isString()) {
             var itemText = keyElement.getAsString();
             if (itemText.contains("#")) {
-                var item = TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", "")));
+                var item = TagKey.create(Registries.ITEM, ResourceLocation.parse(itemText.replace("#", "")));
                 return SlotContent.of(item);
             } else {
-                var item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemText));
+                var item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(itemText));
                 return SlotContent.of(item);
             }
         } else if (keyElement.isJsonArray() && keyElement.getAsJsonArray().get(0).isJsonPrimitive()) {
@@ -78,10 +78,10 @@ public class RrvUtil {
             keyElement.getAsJsonArray().forEach(jsonElement->{
                 var itemText = jsonElement.getAsString();
                 if (itemText.contains("#")) {
-                    var item = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", ""))));
+                    var item = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, ResourceLocation.parse(itemText.replace("#", ""))));
                     item.forEach(holder -> itemStacks.add(holder.value().getDefaultInstance()));
                 } else {
-                    var item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemText));
+                    var item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(itemText));
                     itemStacks.add(item.getDefaultInstance());
                 }
             });

@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common;
 
 import cc.cassian.rrv.common.network.RrvNetworkManager;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +17,8 @@ public class ReliableRecipeViewer {
         return RrvNetworkManager.INSTANCE;
     }
 
-    public static Identifier of(String path) {
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    public static ResourceLocation of(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
 }
