@@ -15,6 +15,8 @@ import cc.cassian.rrv.common.builtin.entity.EntityClientRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityServerRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
+import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
+import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
 import cc.cassian.rrv.common.builtin.repairing.RepairingClientRecipe;
 import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
 import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipe;
@@ -35,6 +37,7 @@ import cc.cassian.rrv.common.builtin.transmute.TransmuteServerRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
@@ -112,6 +115,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(TagServerRecipe.TYPE, unwrapped -> List.of(new TagClientRecipe(unwrapped)));
+        // info
         ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
             ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
             Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_info", (identifier) -> true);
@@ -120,31 +124,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
                     if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
                         var text = parsedRecipe.get("text").getAsString();
-                        if (parsedRecipe.get("key").isJsonPrimitive() && parsedRecipe.get("key").getAsJsonPrimitive().isString()) {
-                            var itemText = parsedRecipe.get("key").getAsString();
-                            if (itemText.contains("#")) {
-                                var item = TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", "")));
-                                infoRecipes.add(new InfoClientRecipe(SlotContent.of(item), text));
-                            } else {
-                                var item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemText));
-                                infoRecipes.add(new InfoClientRecipe(SlotContent.of(item), text));
-                            }
-                        } else if (parsedRecipe.get("key").isJsonArray() && parsedRecipe.get("key").getAsJsonArray().get(0).isJsonPrimitive()) {
-                            ArrayList<ItemStack> itemStacks = new ArrayList<>();
-                            parsedRecipe.get("key").getAsJsonArray().forEach(jsonElement->{
-                                var itemText = jsonElement.getAsString();
-                                if (itemText.contains("#")) {
-                                    var item = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", ""))));
-                                    item.forEach(holder -> itemStacks.add(holder.value().getDefaultInstance()));
-                                } else {
-                                    var item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemText));
-                                    itemStacks.add(item.getDefaultInstance());
-                                }
-                            });
-                            infoRecipes.add(new InfoClientRecipe(SlotContent.of(itemStacks), text));
-                        } else {
-                            LOGGER.error("Could not parse info recipe '{}' as it was missing a key!", identifier);
-                        }
+                        infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
                     } else {
                         LOGGER.error("Could not parse info recipe '{}' as it was missing a type!", identifier);
                     }
@@ -154,6 +134,29 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 			});
             return infoRecipes;
         });
+        // world interaction
+        ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
+            ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
+            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_world_interaction", (identifier) -> true);
+            identifierResourceMap.forEach((identifier, resource) -> {
+                try {
+                    JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
+                    if (parsedRecipe.get("type").getAsString().equals("rrv:world_interaction")) {
+                        worldInteractionRecipes.add(new WorldInteractionClientRecipe(
+                                RrvUtil.readSlotContent("left", "world interaction", identifier, parsedRecipe),
+                                RrvUtil.readSlotContent("right", "world interaction", identifier, parsedRecipe),
+                                RrvUtil.readSlotContent("result", "world interaction", identifier, parsedRecipe)
+                        ));
+                    } else {
+                        LOGGER.error("Could not parse world interaction recipe '{}' as it was missing a type!", identifier);
+                    }
+                } catch (IOException e) {
+                    LOGGER.error("Could not parse world interaction recipe '{}' due to an exception: ", identifier, e);
+                }
+            });
+            return worldInteractionRecipes;
+        });
+        // repairing
         ItemView.addClientRecipeWrapper(RepairingServerRecipe.TYPE, unwrapped -> List.of(new RepairingClientRecipe(unwrapped.getBase(), unwrapped.getTemplate(), unwrapped.getResult())));
     }
 

@@ -3,6 +3,7 @@
 - Advanced filtering options, allowing for the item view to be filtered by name, mod, and tag at the same time.
 - The item view index is now based on the creative inventory, rather than all registered items. This can be reverted in the config.
 - A recipe type for repairing items.
+- A resource-pack driven recipe type for world interaction recipes.
 - API additions:
   - `ServerRecipeManager` and `ClientRecipeManager` now have helper methods to create a serialization context.
   - `ItemStackTemplate` can now be used directly in `SlotContent`, or easily converted to a normal `ItemStack` via `RrvTagUtil`.

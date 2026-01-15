@@ -1,0 +1,6 @@
+{
+  "type": "rrv:world_interaction",
+  "left": "minecraft:water",
+  "right": "minecraft:lava",
+  "result": "minecraft:cobblestone"
+}

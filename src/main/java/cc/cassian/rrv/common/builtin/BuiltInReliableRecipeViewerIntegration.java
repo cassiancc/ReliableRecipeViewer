@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
+import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
 import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
@@ -134,6 +135,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         ItemView.addServerRecipeProvider(recipeList -> {
             recipeList.add(new InfoServerRecipe());
+            recipeList.add(new WorldInteractionServerRecipe());
 
             BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
                 if (entityType.getDefaultLootTable().isEmpty())

@@ -272,5 +272,6 @@
   "tag.item.minecraft.wooden_trapdoors": "Wooden Trapdoors",
   "tag.item.minecraft.wool": "Wool",
   "tag.item.minecraft.wool_carpets": "Wool Carpets",
-  "tag.item.minecraft.zombie_horse_food": "Zombie Horse Food"
+  "tag.item.minecraft.zombie_horse_food": "Zombie Horse Food",
+  "view.rrv.type.world_interaction": "World Interaction"
 }
