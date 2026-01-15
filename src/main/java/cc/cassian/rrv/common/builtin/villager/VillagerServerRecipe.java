@@ -4,9 +4,12 @@ import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.common.mixin.world.entity.npc.*;
+import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -48,6 +51,8 @@ import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.component.predicates.DataComponentPredicates;
 import net.minecraft.core.component.predicates.VillagerTypePredicate;
+import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
+import net.minecraft.world.level.storage.loot.functions.FilteredFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.ListTag;
@@ -83,10 +88,10 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 	@Override
 	public void writeToTag(CompoundTag tag) {
-		tag.putString("profession", this.profession.location().toString());
+		tag.store("profession", ResourceKey.codec(Registries.VILLAGER_PROFESSION), this.profession);
 		tag.putInt("professionLevel", this.professionLevel);
 		ListTag trades = new ListTag();
-		trades.add(VillagerTrade.CODEC.encodeStart(ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), serverTrade.value()).result().orElseThrow());
+		trades.add(VillagerTrade.CODEC.encodeStart(ServerRecipeManager.INSTANCE.createSerializationContext(), serverTrade.value()).result().orElseThrow());
 		tag.put("trades", trades);
 		tag.put("offerStacks", TagUtil.writeList(offerStacks(serverTrade.value()), (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
 		tag.put("cost1", TagUtil.writeList(cost1(serverTrade.value()), (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
@@ -96,12 +101,12 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	@Override
 	public void loadFromTag(CompoundTag tag) {
 		if (tag.contains("profession"))
-			this.profession = BuiltInRegistries.VILLAGER_PROFESSION.get(ResourceLocation.parse(tag.getString("profession").orElseThrow())).orElseThrow().key();
+			this.profession = tag.read("profession", ResourceKey.codec(Registries.VILLAGER_PROFESSION)).orElseThrow();
 
 		this.professionLevel = tag.getIntOr("professionLevel", 0);
 
 		ArrayList<VillagerTrade> trades = new ArrayList<>();
-		tag.getListOrEmpty("trades").forEach(trade -> VillagerTrade.CODEC.decode(Minecraft.getInstance().player.level().registryAccess().createSerializationContext(NbtOps.INSTANCE), trade).result().ifPresent(decodedTrade -> trades.add(decodedTrade.getFirst())));
+		tag.getListOrEmpty("trades").forEach(trade -> VillagerTrade.CODEC.decode(ClientRecipeManager.INSTANCE.createSerializationContext(), trade).result().ifPresent(decodedTrade -> trades.add(decodedTrade.getFirst())));
 		this.clientTrade = trades;
 
 		this.cost1 = TagUtil.readList(tag, "cost1", TagUtil::decodeItemStackOnClient);
@@ -130,8 +135,9 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 	public List<ItemStack> offerStacks(VillagerTrade trade) {
 		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
-		AtomicReference<ItemStack> stack = new AtomicReference<>(tradeAccessor.getGives().copy());
+		AtomicReference<ItemStack> stack = new AtomicReference<>(RrvUtil.decodeTemplate(tradeAccessor.getGives()));
 		tradeAccessor.getGivenItemModifiers().forEach(modifier -> {
+			if (modifier instanceof ExplorationMapFunction || modifier instanceof FilteredFunction) return; // utter bodge - fixes the map item getting entirely voided
 			stack.set(modifier.apply(stack.get(), lootContext()));
 		});
 		return List.of(stack.get());

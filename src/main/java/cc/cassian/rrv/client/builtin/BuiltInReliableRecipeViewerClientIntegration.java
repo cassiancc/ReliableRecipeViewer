@@ -15,6 +15,10 @@ import cc.cassian.rrv.common.builtin.entity.EntityClientRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityServerRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
+import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
+import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
+import cc.cassian.rrv.common.builtin.repairing.RepairingClientRecipe;
+import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
 import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipe;
 import cc.cassian.rrv.common.builtin.shaped.ShapedServerRecipe;
 import cc.cassian.rrv.common.builtin.shapeless.ShapelessServerRecipe;
@@ -33,17 +37,30 @@ import cc.cassian.rrv.common.builtin.transmute.TransmuteServerRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StrictJsonParser;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.block.*;
+//? neoforge
+//import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 import java.io.IOException;
 import java.util.*;
@@ -110,6 +127,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(TagServerRecipe.TYPE, unwrapped -> List.of(new TagClientRecipe(unwrapped)));
+        // info
         ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
             ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
             Map<ResourceLocation, Resource> ResourceLocationResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_info", (ResourceLocation) -> true);
@@ -118,31 +136,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
                     if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
                         var text = parsedRecipe.get("text").getAsString();
-                        if (parsedRecipe.get("key").isJsonPrimitive() && parsedRecipe.get("key").getAsJsonPrimitive().isString()) {
-                            var itemText = parsedRecipe.get("key").getAsString();
-                            if (itemText.contains("#")) {
-                                var item = TagKey.create(Registries.ITEM, ResourceLocation.parse(itemText.replace("#", "")));
-                                infoRecipes.add(new InfoClientRecipe(SlotContent.of(item), text));
-                            } else {
-                                var item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(itemText));
-                                infoRecipes.add(new InfoClientRecipe(SlotContent.of(item), text));
-                            }
-                        } else if (parsedRecipe.get("key").isJsonArray() && parsedRecipe.get("key").getAsJsonArray().get(0).isJsonPrimitive()) {
-                            ArrayList<ItemStack> itemStacks = new ArrayList<>();
-                            parsedRecipe.get("key").getAsJsonArray().forEach(jsonElement->{
-                                var itemText = jsonElement.getAsString();
-                                if (itemText.contains("#")) {
-                                    var item = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, ResourceLocation.parse(itemText.replace("#", ""))));
-                                    item.forEach(holder -> itemStacks.add(holder.value().getDefaultInstance()));
-                                } else {
-                                    var item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(itemText));
-                                    itemStacks.add(item.getDefaultInstance());
-                                }
-                            });
-                            infoRecipes.add(new InfoClientRecipe(SlotContent.of(itemStacks), text));
-                        } else {
-                            LOGGER.error("Could not parse info recipe '{}' as it was missing a key!", ResourceLocation);
-                        }
+                        infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
                     } else {
                         LOGGER.error("Could not parse info recipe '{}' as it was missing a type!", ResourceLocation);
                     }
@@ -152,6 +146,84 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 			});
             return infoRecipes;
         });
+        // world interaction
+        ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
+            ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
+            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_world_interaction", (identifier) -> true);
+            identifierResourceMap.forEach((identifier, resource) -> {
+                try {
+                    JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
+                    if (parsedRecipe.get("type").getAsString().equals("rrv:world_interaction")) {
+                        worldInteractionRecipes.add(new WorldInteractionClientRecipe(
+                                RrvUtil.readSlotContent("left", "world interaction", identifier, parsedRecipe),
+                                RrvUtil.readSlotContent("right", "world interaction", identifier, parsedRecipe),
+                                RrvUtil.readSlotContent("result", "world interaction", identifier, parsedRecipe)
+                        ));
+                    } else {
+                        LOGGER.error("Could not parse world interaction recipe '{}' as it was missing a type!", identifier);
+                    }
+                } catch (IOException e) {
+                    LOGGER.error("Could not parse world interaction recipe '{}' due to an exception: ", identifier, e);
+                }
+            });
+
+            var axes = SlotContent.of(ItemTags.AXES);
+            var shovels = SlotContent.of(ItemTags.SHOVELS);
+            BuiltInRegistries.BLOCK.stream().forEach((block -> {
+                if (block instanceof WeatheringCopper weatheringCopper) {
+                    Optional<Block> next = WeatheringCopper.getNext(block);
+                    next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(new ItemStack(Items.CLOCK.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.ITEM_NAME, Component.translatable("view.rrv.type.world_interaction.time")).set(DataComponents.LORE, new ItemLore(List.of(Component.translatable("view.rrv.type.world_interaction.time_passes")))).build())), SlotContent.of(value.asItem()))));
+
+                    Optional<Block> previous = WeatheringCopper.getPrevious(block);
+                    previous.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(value.asItem()))));
+                }
+                if (block instanceof TallFlowerBlock || block instanceof FlowerBedBlock) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
+                }
+                //? neoforge {
+                /*if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES) != null) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES).waxed()), axes, SlotContent.of(block)));
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES).waxed())));
+                }
+                if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES) != null) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
+                }
+                *///?}
+            }));
+
+            // honeycomb
+            //? fabric {
+            HoneycombItem.WAXABLES.get().forEach(((block, block2) -> {
+				worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())));
+            }));
+            HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> {
+				worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block2.asItem())));
+            }));
+            AxeItem.STRIPPABLES.forEach(((block, state) -> {
+                worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(state)));
+            }));
+            //?}
+
+            // flattenables
+            ShovelItem.FLATTENABLES.forEach(((block, state) -> {
+                worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), shovels, SlotContent.of(state.getBlock())));
+            }));
+
+            // hoes
+            var hoes = SlotContent.of(ItemTags.HOES);
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH)), hoes, SlotContent.of(Items.FARMLAND)));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.DIRT)));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.HANGING_ROOTS)));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
+
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Blocks.WATER), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
+
+
+            return worldInteractionRecipes;
+        });
+        // repairing
+        ItemView.addClientRecipeWrapper(RepairingServerRecipe.TYPE, unwrapped -> List.of(new RepairingClientRecipe(unwrapped.getBase(), unwrapped.getTemplate(), unwrapped.getResult())));
     }
 
 

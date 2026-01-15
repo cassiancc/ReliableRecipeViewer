@@ -1,5 +1,7 @@
 package cc.cassian.rrv.common.builtin.smithing;
 
+import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.datafixers.util.Pair;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
@@ -8,7 +10,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+//? if >26 {
+/*import net.minecraft.world.item.ItemStackTemplate;
+*///?} else {
 import net.minecraft.world.item.crafting.TransmuteResult;
+//?}
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,9 +29,20 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
     private Ingredient base, template, addition;
     private TrimPattern pattern;
 
+    //? if >26 {
+    /*private ItemStackTemplate upgradeResult;
+    *///?} else {
     private TransmuteResult upgradeResult;
+    //?}
 
-    public SmithingServerRecipe(boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable TransmuteResult upgradeResult) {
+
+    public SmithingServerRecipe(boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable
+    //? if >26 {
+    /*ItemStackTemplate
+    *///?} else {
+    TransmuteResult
+    //?}
+                                upgradeResult) {
         this.isTrim = isTrim;
         this.base = base;
         this.template = template;
@@ -56,7 +73,13 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
     }
 
     @Nullable
-    public TransmuteResult getUpgradeResult() {
+    public
+    //? if >26 {
+    /*ItemStackTemplate
+    *///?} else {
+    TransmuteResult
+     //?}
+    getUpgradeResult() {
         return this.upgradeResult;
     }
 
@@ -71,8 +94,13 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
         if(this.pattern != null)
             tag.put("pattern", TrimPattern.DIRECT_CODEC.encode(this.pattern, NbtOps.INSTANCE, new CompoundTag()).getOrThrow());
 
-        if(this.upgradeResult != null)
+        if(this.upgradeResult != null) {
+            //? if >26 {
+            /*tag.put("upgradeResult", ItemStackTemplate.CODEC.encode(this.upgradeResult, ServerRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).getOrThrow());
+            *///?} else {
             tag.put("upgradeResult", TransmuteResult.CODEC.encode(this.upgradeResult, NbtOps.INSTANCE, new CompoundTag()).getOrThrow());
+             //?}
+		}
     }
 
     @Override
@@ -84,7 +112,12 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
         this.addition = TagUtil.readIngredient(tag.getCompound("addition").orElseGet(CompoundTag::new));
 
         this.pattern = TrimPattern.DIRECT_CODEC.decode(NbtOps.INSTANCE, tag.getCompound("pattern").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
+
+        //? if >26 {
+        /*this.upgradeResult = ItemStackTemplate.CODEC.decode(ClientRecipeManager.INSTANCE.createSerializationContext(), tag.getCompound("upgradeResult").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
+        *///?} else {
         this.upgradeResult = TransmuteResult.CODEC.decode(NbtOps.INSTANCE, tag.getCompound("upgradeResult").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
+         //?}
     }
 
     @Override

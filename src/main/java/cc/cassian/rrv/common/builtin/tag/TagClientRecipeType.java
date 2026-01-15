@@ -33,7 +33,7 @@ public class TagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public ResourceLocation getGuiTexture() {
-        return ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/entity.png");
+        return ReliableRecipeViewer.of("textures/gui/type/entity.png");
     }
 
     // Tags should not exceed 54 slots
@@ -56,7 +56,7 @@ public class TagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public ResourceLocation getId() {
-        return ResourceLocation.withDefaultNamespace("item_tag");
+        return ReliableRecipeViewer.of("item_tag");
     }
 
     @Override

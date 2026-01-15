@@ -2,6 +2,9 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.instances.ClientConfig;
+import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,12 +14,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemFilters {
 
@@ -38,7 +43,7 @@ public class ItemFilters {
                 firstPrio.add(stack);
             else if (itemName.contains(query.toLowerCase()))
                 secondPrio.add(stack);
-            else if(stack.is(Items.ENCHANTED_BOOK)) {
+            else if (stack.is(Items.ENCHANTED_BOOK)) {
 
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
                 if (compCheck == 1)
@@ -88,6 +93,25 @@ public class ItemFilters {
     }
 
     /**
+     * Filters by modid
+     * @param query The query
+     * @return A list of matching itemstacks
+     */
+    protected static boolean modId(ItemStack stack, String query) {
+        String modName = ReliableRecipeViewerClient.resolver().getModNameForItem(stack);
+        if (modName == null)
+            return false;
+
+        modName = modName.toLowerCase();
+
+        if (modName.startsWith(query.toLowerCase()))
+            return true;
+        else if (modName.contains(query.toLowerCase()))
+            return true;
+        return false;
+    }
+
+    /**
      * Filters by an items tags
      * @param query The query
      * @return A list of matching itemstacks
@@ -120,6 +144,30 @@ public class ItemFilters {
 
         return results;
     }
+
+    /**
+     * Filters by an items tags
+     * @param query The query
+     * @return A list of matching itemstacks
+     */
+    protected static boolean tag(ItemStack stack, String query) {
+        AtomicBoolean result = new AtomicBoolean(false);
+
+        for (TagKey<Item> tag : BuiltInRegistries.ITEM.getTags().map(HolderSet.Named::key).toList()) {
+            String tagName = tag.location().getPath().toLowerCase();
+
+            if (tagName.contains(query.toLowerCase())) {
+                BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).forEach(stack2 -> {
+                    if (ItemStack.isSameItem(stack2, stack)) {
+                        result.set(true);
+                    }
+                }));
+            }
+
+        }
+        return result.get();
+    }
+
 
 
     /**
@@ -157,10 +205,21 @@ public class ItemFilters {
     private static List<ItemStack> fullStackList() {
         List<ItemStack> results = new ArrayList<>();
 
-        BuiltInRegistries.ITEM.forEach(item -> {
-            results.add(new ItemStack(item));
-            results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
-        });
+        if (Configs.CLIENT_SETTINGS.isCreativeIndexSource()) {
+			results.addAll(CreativeModeTabs.searchTab().getDisplayItems());
+            BuiltInRegistries.ITEM.forEach(item -> {
+                results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
+            });
+            BuiltInRegistries.FLUID.forEach(fluid -> {
+                results.add(new FluidStack(fluid).createItemStack());
+            });
+		} else {
+            BuiltInRegistries.ITEM.forEach(item -> {
+                results.add(new ItemStack(item));
+                results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
+            });
+        }
+
 
         return results;
     }

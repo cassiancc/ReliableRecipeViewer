@@ -10,8 +10,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class NeoforgePlatformImpl implements Platform {
@@ -26,12 +28,8 @@ public class NeoforgePlatformImpl implements Platform {
         return "neoforge";
     }
 
-	@Override
-    public String getModNameForItem(ItemStack stack) {
-        String namespace = "minecraft";
-        if (Minecraft.getInstance().level != null) {
-            namespace = stack.getItem().getCreatorModId(Minecraft.getInstance().level.registryAccess(), stack);
-        }
+    @Override
+    public String getModNameForNamespace(String namespace) {
         String key = "modmenu.nameTranslation."+namespace;
         Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(namespace);
         if (modContainer.isPresent()) {
@@ -41,6 +39,22 @@ public class NeoforgePlatformImpl implements Platform {
         } else {
             return WordUtils.capitalize(namespace);
         }
+    }
+
+    @Override
+    public String getModNamespaceForItem(ItemStack stack) {
+        String namespace = "minecraft";
+        if (Minecraft.getInstance().level != null) {
+            namespace = stack.getItem().getCreatorModId(Minecraft.getInstance().level.registryAccess(), stack);
+        }
+        return namespace;
+    }
+
+    @Override
+    public ArrayList<String> getMods() {
+        ArrayList<String> ids = new ArrayList<>();
+        ModList.get().getMods().forEach(mod -> ids.add(mod.getModId()));
+        return ids;
     }
 
     @Override

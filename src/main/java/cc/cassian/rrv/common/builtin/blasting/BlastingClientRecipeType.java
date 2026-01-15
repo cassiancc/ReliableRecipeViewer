@@ -13,7 +13,7 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
 
     public static final BlastingClientRecipeType INSTANCE = new BlastingClientRecipeType();
 
-    private static final ResourceLocation BLASTING_LOCATION = ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/blasting.png");
+    private static final ResourceLocation BLASTING_LOCATION = ReliableRecipeViewer.of("textures/gui/type/blasting.png");
 
     @Override
     public Component getDisplayName() {
@@ -32,7 +32,7 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
 
     @Override
     public ResourceLocation getId() {
-        return ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "furnace_blasting");
+        return ResourceLocation.withDefaultNamespace( "furnace_blasting");
     }
 
     @Override

@@ -24,6 +24,10 @@
   "view.rrv.type.entity.playerKill": "\u00a78» Player Only",
   "view.rrv.type.item_tag": "Item Tags",
   "view.rrv.type.info": "Info",
+  "view.rrv.type.repairing": "Repairing",
+  "view.rrv.type.world_interaction": "World Interaction",
+  "view.rrv.type.world_interaction.time": "Time",
+  "view.rrv.type.world_interaction.time_passes": "Copper will oxidize over time.",
 
   "rrv.fluid.unit": "mb",
   "commands.rrv.reloadedRecipes": "Reload success (Recipes)",
@@ -69,6 +73,9 @@
   "rrv.client_settings.bookmarks": "Bookmarks Panel",
   "rrv.client_settings.bookmarks.show": "Show",
   "rrv.client_settings.bookmarks.hide": "Hide",
+  "rrv.client_settings.index_source": "Index Source",
+  "rrv.client_settings.index_source.creative": "Creative",
+  "rrv.client_settings.index_source.registry": "Registry",
 
   "tag.item.minecraft.acacia_logs": "Acacia Logs",
   "tag.item.minecraft.anvil": "Anvils",
@@ -217,6 +224,7 @@
   "tag.item.minecraft.repairs_iron_armor": "Iron Armor Repair Materials",
   "tag.item.minecraft.repairs_leather_armor": "Leather Armor Repair Materials",
   "tag.item.minecraft.repairs_netherite_armor": "Netherite Armor Repair Materials",
+  "tag.item.minecraft.repairs_wolf_armor": "Wolf Armor Repair Materials",
   "tag.item.minecraft.repairs_turtle_helmet": "Turtle Helmet Repair Materials",
   "tag.item.minecraft.sand": "Sand",
   "tag.item.minecraft.saplings": "Saplings",
@@ -267,5 +275,5 @@
   "tag.item.minecraft.wooden_trapdoors": "Wooden Trapdoors",
   "tag.item.minecraft.wool": "Wool",
   "tag.item.minecraft.wool_carpets": "Wool Carpets",
-  "tag.item.minecraft.zombie_horse_food": "Zombie Horse Food"
+  "tag.item.minecraft.zombie_horse_food": "Zombie Horse Food",
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 //? if >26 {
 /*import net.minecraft.world.item.trading.TradeCost;
 import net.minecraft.world.item.trading.VillagerTrade;
+import net.minecraft.world.item.ItemStackTemplate;
 @Mixin(VillagerTrade.class)
 public interface VillagerTradeAccessor {
 	@Accessor
@@ -23,7 +24,7 @@ public interface VillagerTradeAccessor {
 	Optional<TradeCost> getAdditionalWants();
 
 	@Accessor("gives")
-	ItemStack getGives();
+	ItemStackTemplate getGives();
 
 	@Accessor("merchantPredicate")
 	Optional<LootItemCondition> getMerchantPredicate();

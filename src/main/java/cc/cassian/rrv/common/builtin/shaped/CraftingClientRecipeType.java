@@ -23,7 +23,7 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public ResourceLocation getId() {
-        return ResourceLocation.withDefaultNamespace("crafting_shaped");
+        return ResourceLocation.withDefaultNamespace("crafting");
     }
 
     @Override

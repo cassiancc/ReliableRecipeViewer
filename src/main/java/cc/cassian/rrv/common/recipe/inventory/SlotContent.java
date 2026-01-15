@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -162,6 +164,11 @@ public class SlotContent {
         return new SlotContent(List.of(new ItemStack(item)));
     }
 
+    public static SlotContent of(Block item) {
+        if (item == null) return SlotContent.of();
+        return new SlotContent(List.of(new ItemStack(item)));
+    }
+
     public static SlotContent ofItemList(List<Item> items) {
         if (items == null) return SlotContent.of();
         List<ItemStack> stacks = new ArrayList<>();
@@ -185,6 +192,13 @@ public class SlotContent {
         if (stack == null) return SlotContent.of();
         return new SlotContent(List.of(stack));
     }
+
+    //? >26 {
+    /*public static SlotContent of(net.minecraft.world.item.ItemStackTemplate stack) {
+        if (stack == null) return SlotContent.of();
+        return new SlotContent(List.of(RrvUtil.decodeTemplate(stack)));
+    }
+    *///?}
 
     public static SlotContent of(List<ItemStack> stacks) {
         if (stacks == null) return SlotContent.of();

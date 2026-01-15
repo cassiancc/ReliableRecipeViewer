@@ -17,6 +17,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Main API class used to register RRV compat for other mods
@@ -311,11 +312,28 @@ public class ItemView {
                 }
             }
         }
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
+            var enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+			assert enchantments != null;
+			enchantments.keySet().forEach(enchantment -> {
+                if (isExcludedEnchantment(enchantment)) {
+                    atomicBoolean.set(true);
+                }
+            });
+        }
+        if (atomicBoolean.get()) {
+            return true;
+        }
         return isExcludedItem(stack.getItem());
     }
 
     public static boolean isExcludedPotion(Holder<Potion> potion) {
         return potion.is(CommonTags.EXCLUDED_POTIONS) || EXCLUDED_POTIONS.contains(potion);
+    }
+
+    public static boolean isExcludedEnchantment(Holder<Enchantment> enchantmentHolder) {
+        return enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) || EXCLUDED_ENCHANTMENTS.contains(enchantmentHolder.unwrapKey().orElseThrow());
     }
 
     public interface ReloadCallback {

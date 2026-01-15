@@ -10,6 +10,8 @@ import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+import java.util.ArrayList;
+
 public interface Platform {
 
     //? fabric {
@@ -23,7 +25,15 @@ public interface Platform {
     boolean isModLoaded(String modid);
     String loader();
 
-    String getModNameForItem(ItemStack stack);
+    String getModNameForNamespace(String namespace);
+
+    default String getModNameForItem(ItemStack stack) {
+        return getModNameForNamespace(getModNamespaceForItem(stack));
+    }
+
+    String getModNamespaceForItem(ItemStack stack);
+
+    ArrayList<String> getMods();
 
     RRVClientResolver.UVInfo getUVInfo(TextureAtlasSprite sprite);
 

@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common;
 
 import cc.cassian.rrv.common.network.RrvNetworkManager;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,10 @@ public class ReliableRecipeViewer {
 
     public static RrvNetworkManager networkManager(){
         return RrvNetworkManager.INSTANCE;
+    }
+
+    public static Identifier of(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
 }

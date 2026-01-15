@@ -10,10 +10,13 @@ import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
+//? >26
+//import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +29,20 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     private final SlotContent result;
 
     private final boolean isTrimType;
+    //? if >26 {
+    /*private final ItemStackTemplate upgradeResult;
+    *///?} else {
     private final TransmuteResult upgradeResult;
+    //?}
 
-    public SmithingClientRecipe(boolean isTrimType, Ingredient additionIngredient, Ingredient base, Ingredient template, TrimPattern trimPattern, @Nullable TransmuteResult upgradeResult) {
+
+    public SmithingClientRecipe(boolean isTrimType, Ingredient additionIngredient, Ingredient base, Ingredient template, TrimPattern trimPattern, @Nullable
+                                //? if >26 {
+                                /*ItemStackTemplate
+                                *///?} else {
+                                TransmuteResult
+                                 //?}
+                                upgradeResult) {
         this.isTrimType = isTrimType;
 
         this.template = template != null ? SlotContent.of(template) : SlotContent.of(Items.AIR);
@@ -47,7 +61,11 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
             List<ItemStack> possibleResults = new ArrayList<>();
 
             this.additionIngredient.getValidContents().forEach(addition -> {
+                //? >26 {
+                /*possibleResults.add(SmithingTrimRecipe.applyTrim(this.base.next(), addition, Holder.direct(trimPattern)));
+                *///?} else {
                 possibleResults.add(SmithingTrimRecipe.applyTrim(provider, this.base.next(), addition, Holder.direct(trimPattern)));
+                //?}
             });
 
             this.result = SlotContent.of(possibleResults);
@@ -55,7 +73,12 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
             return;
         }
 
+        //? if >26 {
+        /*this.result = SlotContent.of(this.upgradeResult == null ? ItemStack.EMPTY : this.upgradeResult.create());
+        *///?} else {
         this.result = SlotContent.of(this.upgradeResult == null ? ItemStack.EMPTY : this.upgradeResult.apply(this.base.next()));
+        //?}
+
     }
 
     @Override

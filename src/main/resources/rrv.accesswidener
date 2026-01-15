@@ -32,3 +32,7 @@ accessible field net/minecraft/client/KeyMapping MAP Ljava/util/Map;
 
 accessible method net/minecraft/world/inventory/MenuType <init> (Lnet/minecraft/world/inventory/MenuType$MenuSupplier;Lnet/minecraft/world/flag/FeatureFlagSet;)V
 accessible class net/minecraft/world/inventory/MenuType$MenuSupplier
+
+# World Interaction
+accessible field net/minecraft/world/item/ShovelItem FLATTENABLES Ljava/util/Map;
+accessible field net/minecraft/world/item/AxeItem STRIPPABLES Ljava/util/Map;
