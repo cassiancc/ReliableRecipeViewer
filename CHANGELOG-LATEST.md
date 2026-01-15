@@ -15,3 +15,4 @@
 - "Show all recipes" hitbox extending into the previous recipe button.
 - Bookmark panel not correctly switching to the right in wrap mode.
 - Locator map recipes not displaying correctly.
+- Infinite loop caused by item tag view.
