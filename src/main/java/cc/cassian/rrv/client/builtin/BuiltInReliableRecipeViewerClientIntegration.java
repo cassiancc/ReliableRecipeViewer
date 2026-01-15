@@ -41,14 +41,24 @@ import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StrictJsonParser;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.block.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -154,6 +164,53 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     LOGGER.error("Could not parse world interaction recipe '{}' due to an exception: ", identifier, e);
                 }
             });
+
+            var axes = SlotContent.of(ItemTags.AXES);
+            var shovels = SlotContent.of(ItemTags.SHOVELS);
+            BuiltInRegistries.BLOCK.stream().forEach((block -> {
+                if (block instanceof WeatheringCopper weatheringCopper) {
+                    Optional<Block> next = WeatheringCopper.getNext(block);
+                    next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(new ItemStack(Items.CLOCK.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.ITEM_NAME, Component.translatable("view.rrv.type.world_interaction.time")).set(DataComponents.LORE, new ItemLore(List.of(Component.translatable("view.rrv.type.world_interaction.time_passes")))).build())), SlotContent.of(value.asItem()))));
+
+                    Optional<Block> previous = WeatheringCopper.getPrevious(block);
+                    previous.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(value.asItem()))));
+                }
+                if (block instanceof TallFlowerBlock || block instanceof FlowerBedBlock) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
+                }
+            }));
+
+            // honeycomb
+            HoneycombItem.WAXABLES.get().forEach(((block, block2) -> {
+                if (block != null && block2 != null)
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())));
+            }));
+            HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> {
+                if (block != null && block2 != null)
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block2.asItem())));
+            }));
+
+            // flattenables
+            ShovelItem.FLATTENABLES.forEach(((block, state) -> {
+                worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), shovels, SlotContent.of(state.getBlock())));
+            }));
+
+            // strippables
+            AxeItem.STRIPPABLES.forEach(((block, state) -> {
+                worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(state)));
+            }));
+
+            // hoes
+            var hoes = SlotContent.of(ItemTags.HOES);
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH)), hoes, SlotContent.of(Items.FARMLAND)));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.DIRT)));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.HANGING_ROOTS)));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
+
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Blocks.WATER), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
+
+
             return worldInteractionRecipes;
         });
         // repairing

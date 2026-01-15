@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -159,6 +160,11 @@ public class SlotContent {
     }
 
     public static SlotContent of(Item item) {
+        if (item == null) return SlotContent.of();
+        return new SlotContent(List.of(new ItemStack(item)));
+    }
+
+    public static SlotContent of(Block item) {
         if (item == null) return SlotContent.of();
         return new SlotContent(List.of(new ItemStack(item)));
     }

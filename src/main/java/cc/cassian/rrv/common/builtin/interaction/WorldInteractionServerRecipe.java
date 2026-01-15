@@ -12,7 +12,7 @@ public class WorldInteractionServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<WorldInteractionServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.fromNamespaceAndPath("rrv", "world_interaction"),
-            () -> new WorldInteractionServerRecipe( null, null, null)
+            () -> new WorldInteractionServerRecipe(null, null, null)
     );
 
 
@@ -64,5 +64,4 @@ public class WorldInteractionServerRecipe implements ReliableServerRecipe {
     public ReliableServerRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
-
 }
