@@ -59,6 +59,8 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.block.*;
+//? neoforge
+//import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 import java.io.IOException;
 import java.util.*;
@@ -178,26 +180,33 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 if (block instanceof TallFlowerBlock || block instanceof FlowerBedBlock) {
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
                 }
+                //? neoforge {
+                /*if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES) != null) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES).waxed()), axes, SlotContent.of(block)));
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES).waxed())));
+                }
+                if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES) != null) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
+                }
+                *///?}
             }));
 
             // honeycomb
+            //? fabric {
             HoneycombItem.WAXABLES.get().forEach(((block, block2) -> {
-                if (block != null && block2 != null)
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())));
+				worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())));
             }));
             HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> {
-                if (block != null && block2 != null)
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block2.asItem())));
+				worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block2.asItem())));
             }));
+            AxeItem.STRIPPABLES.forEach(((block, state) -> {
+                worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(state)));
+            }));
+            //?}
 
             // flattenables
             ShovelItem.FLATTENABLES.forEach(((block, state) -> {
                 worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), shovels, SlotContent.of(state.getBlock())));
-            }));
-
-            // strippables
-            AxeItem.STRIPPABLES.forEach(((block, state) -> {
-                worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(state)));
             }));
 
             // hoes
