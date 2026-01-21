@@ -13,7 +13,7 @@ public class ClientConfig extends AbstractRrvConfig {
     private boolean rightIndex = true;
     private boolean centerSearch = true;
     private boolean showBookmarks = true;
-    private boolean creativeIndexSource = true;
+    private boolean creativeIndexSource = false;
 
     public ClientConfig() {
         super("client_settings");
@@ -74,6 +74,7 @@ public class ClientConfig extends AbstractRrvConfig {
         this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
         this.rightIndex = this.data().get("rightIndex").getAsBoolean();
         this.centerSearch = this.data().get("centerSearch").getAsBoolean();
+        this.creativeIndexSource = this.data().get("indexSource").getAsBoolean();
     }
 
     @Override
@@ -83,6 +84,7 @@ public class ClientConfig extends AbstractRrvConfig {
         this.data().addProperty("appendModNamespace", this.appendModNamespace);
         this.data().addProperty("rightIndex", this.rightIndex);
         this.data().addProperty("centerSearch", this.centerSearch);
+        this.data().addProperty("indexSource", this.creativeIndexSource);
     }
 
 	public boolean isCreativeIndexSource() {
