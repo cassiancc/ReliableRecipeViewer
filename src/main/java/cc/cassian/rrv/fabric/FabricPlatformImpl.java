@@ -1,7 +1,7 @@
 package cc.cassian.rrv.fabric;
 
 //? fabric {
-/*import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -69,4 +69,4 @@ public class FabricPlatformImpl implements Platform {
 
 
 }
-*///?}
+//?}

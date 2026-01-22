@@ -74,9 +74,9 @@ import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
 //? neoforge && <26 {
-import net.neoforged.neoforge.common.BasicItemListing;
+/*import net.neoforged.neoforge.common.BasicItemListing;
 import static cc.cassian.rrv.neoforge.builtin.NeoForgeBuiltinRrvIntegration.NEOFORGE_BASIC;
-//?}
+*///?}
 
 import java.util.*;
 
@@ -203,9 +203,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             FuelValues fuelValues = ServerRecipeManager.INSTANCE.getServer().fuelValues();
             fuelValues.fuelItems().forEach(item -> {
                 //? fabric
-                //recipeList.add(new BurningServerRecipe(item, fuelValues.burnDuration(new ItemStack(item))));
+                recipeList.add(new BurningServerRecipe(item, fuelValues.burnDuration(new ItemStack(item))));
                 //? neoforge
-                recipeList.add(new BurningServerRecipe(item, item.getDefaultInstance().getBurnTime(null, fuelValues)));
+                //recipeList.add(new BurningServerRecipe(item, item.getDefaultInstance().getBurnTime(null, fuelValues)));
             });
 
         });
@@ -392,9 +392,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TYPE_SPECIFIC, typeSpecificTrade)));
 
                         //? neoforge {
-                        if (listing instanceof BasicItemListing basicItemListing)
+                        /*if (listing instanceof BasicItemListing basicItemListing)
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(NEOFORGE_BASIC, basicItemListing)));
-                        //?}
+                        *///?}
                     });
                 });
 

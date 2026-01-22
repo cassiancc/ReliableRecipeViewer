@@ -58,24 +58,24 @@ public record FluidStack(Fluid fluid, int amount) {
 
 
     //? neoforge {
-    /**
+    /*/^*
      * Creates a FluidStack from a NeoForge FluidStack
      * @param stack: A NeoForge Fluid Stack
      * @return An RRV Fluid Stack
-     */
+     ^/
     public static FluidStack fromLoaderFluidStack(net.neoforged.neoforge.fluids.FluidStack stack) {
         return new FluidStack(stack.getFluid(), stack.getAmount());
     }
 
-    /**
+    /^*
      * Creates a FluidStack from an ItemStack
      * @param stack: A NeoForge Fluid Stack
      * @return An RRV Fluid Stack
-     */
+     ^/
     public static net.neoforged.neoforge.fluids.FluidStack toLoaderFluidStack(FluidStack stack) {
         return new net.neoforged.neoforge.fluids.FluidStack(stack.fluid, stack.amount);
     }
-    //?}
+    *///?}
 
     /**
      * Creates an ItemStack from this FluidStack

@@ -1,5 +1,5 @@
 //? neoforge {
-package cc.cassian.rrv.neoforge;
+/*package cc.cassian.rrv.neoforge;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -52,4 +52,4 @@ public class NeoForgeEntrypoint {
         RrvNetworkManager.INSTANCE.registerPayloads(event);
     }
 }
-//?}
+*///?}

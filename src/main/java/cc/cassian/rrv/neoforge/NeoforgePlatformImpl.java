@@ -1,7 +1,7 @@
 package cc.cassian.rrv.neoforge;
 
 //? neoforge {
-import cc.cassian.rrv.common.Platform;
+/*import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -71,12 +71,12 @@ public class NeoforgePlatformImpl implements Platform {
     @Override
     public boolean isLoadingLoaded(String mod) {
         //? if >1.21.9 {
-        return FMLLoader.getCurrent().getLoadingModList()
-        //?} else {
-        /^return LoadingModList.get()
-        ^///?}
+        /^return FMLLoader.getCurrent().getLoadingModList()
+        ^///?} else {
+        return LoadingModList.get()
+        //?}
         .getModFileById(mod) != null;
     }
 
 }
-//?}
+*///?}

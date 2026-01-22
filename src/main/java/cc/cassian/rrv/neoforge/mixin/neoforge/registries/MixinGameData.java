@@ -1,5 +1,5 @@
 //? neoforge {
-package cc.cassian.rrv.neoforge.mixin.neoforge.registries;
+/*package cc.cassian.rrv.neoforge.mixin.neoforge.registries;
 
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
@@ -66,4 +66,4 @@ public class MixinGameData {
     }
 
 }
-//?}
+*///?}

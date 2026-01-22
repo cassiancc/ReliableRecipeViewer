@@ -1,5 +1,5 @@
 //? neoforge {
-package cc.cassian.rrv.neoforge;
+/*package cc.cassian.rrv.neoforge;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -90,4 +90,4 @@ public class NeoForgeClientEntrypoint {
     }
 
 }
-//?}
+*///?}

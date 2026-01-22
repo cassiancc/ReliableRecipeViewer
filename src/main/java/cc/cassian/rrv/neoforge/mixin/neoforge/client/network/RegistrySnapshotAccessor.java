@@ -1,5 +1,5 @@
 //? neoforge {
-package cc.cassian.rrv.neoforge.mixin.neoforge.client.network;
+/*package cc.cassian.rrv.neoforge.mixin.neoforge.client.network;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
 import net.minecraft.resources.ResourceLocation;
@@ -14,4 +14,4 @@ public interface RegistrySnapshotAccessor {
     Int2ObjectSortedMap<ResourceLocation> accessIds();
 
 }
-//?}
+*///?}

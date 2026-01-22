@@ -1,5 +1,5 @@
 //? neoforge {
-package cc.cassian.rrv.neoforge.mixin.neoforge.client.network;
+/*package cc.cassian.rrv.neoforge.mixin.neoforge.client.network;
 
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,4 +46,4 @@ public class MixinRegistryManager {
         });
     }
 }
-//?}
+*///?}

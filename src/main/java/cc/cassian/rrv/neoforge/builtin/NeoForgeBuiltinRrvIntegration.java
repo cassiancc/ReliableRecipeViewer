@@ -1,5 +1,5 @@
 //? neoforge && <26 {
-package cc.cassian.rrv.neoforge.builtin;
+/*package cc.cassian.rrv.neoforge.builtin;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
@@ -48,4 +48,4 @@ public class NeoForgeBuiltinRrvIntegration {
             }
     );
 }
-//?}
+*///?}

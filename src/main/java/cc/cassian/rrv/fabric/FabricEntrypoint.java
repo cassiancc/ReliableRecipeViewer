@@ -1,5 +1,5 @@
 //? fabric {
-/*package cc.cassian.rrv.fabric;
+package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.command.RrvCommand;
@@ -72,4 +72,4 @@ public class FabricEntrypoint implements ModInitializer {
     }
 
 }
-*///?}
+//?}
