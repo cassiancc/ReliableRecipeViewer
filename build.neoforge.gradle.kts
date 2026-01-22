@@ -42,6 +42,29 @@ repositories {
             includeGroup("org.parchmentmc.data")
         }
     }
+    maven {
+        name = "Xander Maven"
+        url = uri("https://maven.isxander.dev/releases")
+        content {
+            includeGroupAndSubgroups("dev.isxander")
+            includeGroupAndSubgroups("org.quiltmc.parsers")
+        }
+    }
+    maven {
+        name = "Quilt Maven"
+        url = uri("https://maven.quiltmc.org/repository/release/")
+        content {
+            includeGroupAndSubgroups("org.quiltmc.parsers")
+        }
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
+        exclude(group = "maven.modrinth")
+    }
+    compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 }
 
 neoForge {
@@ -112,10 +135,10 @@ publishMods {
     file = tasks.jar.map { it.archiveFile.get() }
     additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 
-    type = BETA
+    type = STABLE
     displayName = "RRV ${property("mod.version")} for ${stonecutter.current.version} NeoForge"
     version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
-    changelog = provider { rootProject.file("CHANGELOG.md").readText() }
+    changelog = provider { rootProject.file("CHANGELOG-LATEST.md").readText() }
     modLoaders.add("neoforge")
 
     modrinth {

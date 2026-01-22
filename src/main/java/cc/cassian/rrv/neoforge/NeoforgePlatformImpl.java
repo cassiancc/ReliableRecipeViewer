@@ -11,6 +11,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.LoadingModList;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
@@ -65,6 +66,16 @@ public class NeoforgePlatformImpl implements Platform {
     @Override
     public boolean isClientSide() {
         return FMLEnvironment.dist.isClient();
+    }
+
+    @Override
+    public boolean isLoadingLoaded(String mod) {
+        //? if >1.21.9 {
+        return FMLLoader.getCurrent().getLoadingModList()
+        //?} else {
+        /^return LoadingModList.get()
+        ^///?}
+        .getModFileById(mod) != null;
     }
 
 }

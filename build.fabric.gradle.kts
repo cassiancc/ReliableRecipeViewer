@@ -61,6 +61,22 @@ repositories {
             includeGroupAndSubgroups("dev.lambdaurora")
         }
     }
+    maven {
+        name = "Xander Maven"
+        url = uri("https://maven.isxander.dev/releases")
+        content {
+            includeGroupAndSubgroups("dev.isxander")
+            includeGroupAndSubgroups("org.quiltmc.parsers")
+        }
+    }
+    maven {
+        name = "Quilt Maven"
+        url = uri("https://maven.quiltmc.org/repository/release/")
+        content {
+            includeGroupAndSubgroups("org.quiltmc.parsers")
+        }
+    }
+    mavenCentral()
 }
 
 dependencies {
@@ -71,11 +87,16 @@ dependencies {
             parchment("org.parchmentmc.data:parchment-${property("deps.parchment")}@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
+    modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     modCompileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
     modLocalRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
-    val modules = listOf("transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
+    modCompileOnly("dev.isxander:controlify:${property("deps.controlify")}"){
+        exclude(group = "maven.modrinth")
+    }
+    modCompileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+
+    val modules = listOf("command-api-v2", "key-binding-api-v1", "item-api-v1", "rendering-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
     for (it in modules) modImplementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
 }
 
