@@ -89,16 +89,16 @@ dependencies {
             mappings("dev.lambdaurora:yalmm-mojbackward:${property("deps.minecraft")}+build.${property("deps.mojbackward")}")
     })
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
+    modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     modCompileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
     modLocalRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
-    modImplementation("dev.isxander:controlify:${property("deps.controlify")}"){
+    modCompileOnly("dev.isxander:controlify:${property("deps.controlify")}"){
         exclude(group = "maven.modrinth")
     }
-    modImplementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+    modCompileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 
-    val modules = listOf("transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
+    val modules = listOf("command-api-v2", "key-binding-api-v1", "item-api-v1", "rendering-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
     for (it in modules) modImplementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
 }
 

@@ -76,7 +76,7 @@ dependencies {
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         exclude(group = "maven.modrinth")
     }
-    implementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+    compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 
 
 
