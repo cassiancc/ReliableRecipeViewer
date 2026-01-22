@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "cc.cassian.rrv.common.mixin",
+  "plugin": "cc.cassian.rrv.common.mixin.RRVMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "mixins": [
@@ -32,6 +33,7 @@
     "defaultRequire": 1
   },
   "client": [
+    "integration.ControlifyRecipeViewScreenMixin",
     "client.MixinMinecraft",
     "client.gui.MixinGui",
     "client.gui.components.MixinEditBox",

@@ -51,7 +51,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     private final List<AnimationTicker> animationTickers;
     private final HashMap<Identifier, Integer> animationTickCache;
 
-    private final List<Button> transferButtons;
+    public final List<Button> transferButtons;
 
     //View Type
     private final List<ViewTypeButton> viewTypeButtons;
@@ -125,17 +125,11 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 .size(12, 12)
                 .build();
 
-        this.prevTypePage = Button.builder(Component.literal("<"), button -> {
-                    this.viewTypePage = Math.max(this.viewTypePage - 1, 0);
-                    this.checkGui();
-                })
+        this.prevTypePage = Button.builder(Component.literal("<"), button -> prevPage())
                 .size(12, 12)
                 .build();
 
-        this.nextTypePage = Button.builder(Component.literal(">"), button -> {
-                    this.viewTypePage = Math.min(this.viewTypePage + 1, this.getMenu().getViewTypeOrder().size() / 5);
-                    this.checkGui();
-                })
+        this.nextTypePage = Button.builder(Component.literal(">"), button -> nextPage())
                 .size(12, 12)
                 .build();
 
@@ -159,6 +153,16 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             this.viewTypeButtons.add(new ViewTypeButton(this, xPos, yPos, width, height, this.getMenu().getViewTypeOrder().get(i), i));
         }
     }
+
+	public void prevPage() {
+        this.viewTypePage = Math.max(this.viewTypePage - 1, 0);
+        this.checkGui();
+    }
+
+    public void nextPage() {
+        this.viewTypePage = Math.min(this.viewTypePage + 1, this.getMenu().getViewTypeOrder().size() / 5);
+        this.checkGui();
+	}
 
 
     protected void checkGui() {

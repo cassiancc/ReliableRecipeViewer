@@ -42,6 +42,29 @@ repositories {
             includeGroup("org.parchmentmc.data")
         }
     }
+    maven {
+        name = "Xander Maven"
+        url = uri("https://maven.isxander.dev/releases")
+        content {
+            includeGroupAndSubgroups("dev.isxander")
+            includeGroupAndSubgroups("org.quiltmc.parsers")
+        }
+    }
+    maven {
+        name = "Quilt Maven"
+        url = uri("https://maven.quiltmc.org/repository/release/")
+        content {
+            includeGroupAndSubgroups("org.quiltmc.parsers")
+        }
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
+        exclude(group = "maven.modrinth")
+    }
+    compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 }
 
 neoForge {

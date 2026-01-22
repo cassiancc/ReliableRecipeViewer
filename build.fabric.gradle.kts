@@ -61,6 +61,22 @@ repositories {
             includeGroupAndSubgroups("dev.lambdaurora")
         }
     }
+    maven {
+        name = "Xander Maven"
+        url = uri("https://maven.isxander.dev/releases")
+        content {
+            includeGroupAndSubgroups("dev.isxander")
+            includeGroupAndSubgroups("org.quiltmc.parsers")
+        }
+    }
+    maven {
+        name = "Quilt Maven"
+        url = uri("https://maven.quiltmc.org/repository/release/")
+        content {
+            includeGroupAndSubgroups("org.quiltmc.parsers")
+        }
+    }
+    mavenCentral()
 }
 
 dependencies {
@@ -76,6 +92,11 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     modCompileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
     modLocalRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
+
+    modImplementation("dev.isxander:controlify:${property("deps.controlify")}"){
+        exclude(group = "maven.modrinth")
+    }
+    modImplementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 
     val modules = listOf("transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
     for (it in modules) modImplementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))

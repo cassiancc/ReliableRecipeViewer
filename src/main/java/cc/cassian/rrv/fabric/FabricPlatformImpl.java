@@ -62,6 +62,11 @@ public class FabricPlatformImpl implements Platform {
         return FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT);
     }
 
+    @Override
+    public boolean isLoadingLoaded(String mod) {
+        return isModLoaded(mod);
+    }
+
 
 }
 //?}
