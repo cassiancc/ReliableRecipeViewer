@@ -1,12 +1,15 @@
 package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
+import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
 
 
+    private OverlayManager.OverlayDisplay showOverlays = OverlayManager.OverlayDisplay.ENABLED;
     private boolean background = true;
     private boolean itemWrapMode = true;
     private boolean appendModNamespace = true;
@@ -69,6 +72,7 @@ public class ClientConfig extends AbstractRrvConfig {
 
     @Override
     protected void loadData() {
+        this.showOverlays = OverlayManager.OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).getOrThrow().getFirst();
         this.background = this.data().get("background").getAsBoolean();
         this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
         this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
@@ -79,6 +83,7 @@ public class ClientConfig extends AbstractRrvConfig {
 
     @Override
     protected void saveData() {
+        this.data().add("enabled", OverlayManager.OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showOverlays).getOrThrow());
         this.data().addProperty("background", this.background);
         this.data().addProperty("itemWrapMode", this.itemWrapMode);
         this.data().addProperty("appendModNamespace", this.appendModNamespace);
@@ -94,5 +99,13 @@ public class ClientConfig extends AbstractRrvConfig {
 	public void setCreativeIndexSource(boolean creativeIndexSource) {
 		this.creativeIndexSource = creativeIndexSource;
         ServerRecipeManager.INSTANCE.reload();
+	}
+
+	public OverlayManager.OverlayDisplay isShowOverlays() {
+		return showOverlays;
+	}
+
+	public void setShowOverlays(OverlayManager.OverlayDisplay showOverlays) {
+		this.showOverlays = showOverlays;
 	}
 }

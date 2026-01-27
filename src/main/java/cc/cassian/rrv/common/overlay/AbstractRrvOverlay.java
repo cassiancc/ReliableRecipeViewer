@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.overlay;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -60,7 +61,7 @@ public abstract class AbstractRrvOverlay {
     }
 
     public boolean isEnabled() {
-        return this.enabled;
+        return this.enabled && OverlayManager.shouldShowOverlays();
     }
 
     public boolean isEnoughSpaceToRender() {

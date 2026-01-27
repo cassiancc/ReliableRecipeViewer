@@ -1,9 +1,7 @@
 ### Added
-- Support for 26.1-snapshot-4.
-- When using Controlify, the bumpers can now be used to switch tabs.
-
-### Changed
-- Temporarily set the default index source back to registry due to issues on survival servers.
+- A new option in the settings to only display RRV when actively searching.
+- Ported to 26.1-snapshot-5.
 
 ### Fixed
-- Index source config not saving.
+- Overlay hidden state now persists between game reloads.
+- Modded menus with high width values no longer cause the searchbar to be larger than half the screen.

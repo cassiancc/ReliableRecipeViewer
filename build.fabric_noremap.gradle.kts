@@ -70,7 +70,7 @@ dependencies {
     minecraft("com.mojang:minecraft:${property("deps.minecraft")}")
 
     implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
-    runtimeOnly("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     compileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
@@ -80,8 +80,8 @@ dependencies {
 
 
 
-    val modules = listOf("command-api-v2", "key-mapping-api-v1", "item-api-v1", "rendering-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
-    for (it in modules) implementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
+//    val modules = listOf("command-api-v2", "key-mapping-api-v1", "item-api-v1", "rendering-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
+//    for (it in modules) implementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
 
 }
 
