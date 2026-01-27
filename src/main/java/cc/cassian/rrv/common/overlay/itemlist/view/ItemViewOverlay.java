@@ -287,7 +287,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         int boxWidth;
         int x;
         if (Configs.CLIENT_SETTINGS.isCenterSearch()) {
-           boxWidth = info.imageWidth();
+           boxWidth = Math.min(info.imageWidth(), Minecraft.getInstance().getWindow().getGuiScaledWidth()/2);
            x = (info.screenWidth()/2)-(boxWidth/2);
         } else {
            boxWidth = Math.min(100, (wrapMode ? this.width : this.effectiveWidth) - 4);
