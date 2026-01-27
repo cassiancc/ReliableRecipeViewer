@@ -133,7 +133,13 @@ public class OverlayManager {
     }
 
     public static void toggleOverlays() {
+        Configs.CLIENT_SETTINGS.setShowOverlays(!Configs.CLIENT_SETTINGS.isShowOverlays());
         PRESENT_OVERLAYS.forEach(abstractRrvOverlay -> abstractRrvOverlay.setEnabled(!abstractRrvOverlay.isEnabled()));
+    }
+
+    public static void setOverlays(boolean enabled) {
+        Configs.CLIENT_SETTINGS.setShowOverlays(enabled);
+        PRESENT_OVERLAYS.forEach(abstractRrvOverlay -> abstractRrvOverlay.setEnabled(enabled));
     }
 
     public static boolean checkOverlays() {

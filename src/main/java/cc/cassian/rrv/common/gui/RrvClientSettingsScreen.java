@@ -35,7 +35,7 @@ public class RrvClientSettingsScreen extends Screen {
 
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
 
-        addChild(linearLayout, Component.translatable("rrv.client_settings.itemview.enabled"), Component.translatable("rrv.client_settings.itemview.disabled"), OverlayManager.checkOverlays(), Component.translatable("rrv.client_settings.itemview"), (cycleButton, b )-> OverlayManager.toggleOverlays());
+        addChild(linearLayout, Component.translatable("rrv.client_settings.itemview.enabled"), Component.translatable("rrv.client_settings.itemview.disabled"), Configs.CLIENT_SETTINGS.isShowOverlays(), Component.translatable("rrv.client_settings.itemview"), (cycleButton, b )-> OverlayManager.setOverlays(b));
 
 
         addChild(linearLayout, Component.translatable("rrv.client_settings.background.enabled"), Component.translatable("rrv.client_settings.background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), Component.translatable("rrv.client_settings.background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
