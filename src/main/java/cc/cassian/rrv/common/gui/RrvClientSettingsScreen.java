@@ -36,7 +36,7 @@ public class RrvClientSettingsScreen extends Screen {
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
 
         linearLayout.addChild(
-                CycleButton.builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName()), Configs.CLIENT_SETTINGS.isShowOverlays()).withValues(OverlayManager.OverlayDisplay.ENABLED, OverlayManager.OverlayDisplay.DISABLED, OverlayManager.OverlayDisplay.WHEN_SEARCHING)
+                CycleButton.<OverlayManager.OverlayDisplay>builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName())).withInitialValue(Configs.CLIENT_SETTINGS.isShowOverlays()).withValues(OverlayManager.OverlayDisplay.ENABLED, OverlayManager.OverlayDisplay.DISABLED, OverlayManager.OverlayDisplay.WHEN_SEARCHING)
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.itemview"),
                                 (cycleButton, b) -> OverlayManager.setOverlays(b))
         );
