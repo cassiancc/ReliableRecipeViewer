@@ -405,6 +405,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         return this.currentQuery;
     }
 
+	public boolean isSearching() {
+		return searchbar != null && searchbar.isVisible() && !searchbar.getValue().isEmpty();
+	}
+
 
     public enum ItemViewOpenType {
         INPUT(ClientRecipeCache.INSTANCE::getRecipesForCraftingInput),

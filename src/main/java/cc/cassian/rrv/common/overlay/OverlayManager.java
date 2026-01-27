@@ -2,6 +2,8 @@ package cc.cassian.rrv.common.overlay;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -9,6 +11,8 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.damagesource.DamageEffects;
 
 import java.awt.*;
 import java.util.*;
@@ -19,6 +23,23 @@ import java.util.function.Predicate;
 public class OverlayManager {
 
     public static final OverlayManager INSTANCE = new OverlayManager();
+
+	public static boolean shouldShowOverlays() {
+		return Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching());
+	}
+
+    public enum OverlayDisplay implements StringRepresentable {
+        ENABLED,
+        DISABLED,
+        WHEN_SEARCHING;
+
+        @Override
+        public String getSerializedName() {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
+
+        public static final Codec<OverlayDisplay> CODEC = StringRepresentable.fromEnum(OverlayDisplay::values);
+    }
 
 
     private AbstractRrvOverlay.InventoryPositionInfo currentInvInfo = null;
@@ -133,19 +154,23 @@ public class OverlayManager {
     }
 
     public static void toggleOverlays() {
-        Configs.CLIENT_SETTINGS.setShowOverlays(!Configs.CLIENT_SETTINGS.isShowOverlays());
         PRESENT_OVERLAYS.forEach(abstractRrvOverlay -> abstractRrvOverlay.setEnabled(!abstractRrvOverlay.isEnabled()));
+        Configs.CLIENT_SETTINGS.setShowOverlays(checkOverlays());
     }
 
-    public static void setOverlays(boolean enabled) {
+    public static void setOverlays(OverlayDisplay enabled) {
         Configs.CLIENT_SETTINGS.setShowOverlays(enabled);
-        PRESENT_OVERLAYS.forEach(abstractRrvOverlay -> abstractRrvOverlay.setEnabled(enabled));
+		ItemViewOverlay.INSTANCE.getSearchbar().visible = !enabled.equals(OverlayDisplay.DISABLED);
     }
 
-    public static boolean checkOverlays() {
+    public static OverlayDisplay checkOverlays() {
         AtomicBoolean b = new AtomicBoolean(false);
         PRESENT_OVERLAYS.forEach(abstractRrvOverlay -> b.set(abstractRrvOverlay.isEnabled()));
-        return b.get();
+        if (b.get()) {
+            return OverlayDisplay.ENABLED;
+        } else {
+            return OverlayDisplay.DISABLED;
+        }
     }
 
     public boolean charTyped(char c, int i) {

@@ -70,6 +70,7 @@
   "rrv.client_settings.itemview": "Item View",
   "rrv.client_settings.itemview.enabled": "Enabled",
   "rrv.client_settings.itemview.disabled": "Disabled",
+  "rrv.client_settings.itemview.when_searching": "When Searching",
   "rrv.client_settings.bookmarks": "Bookmarks Panel",
   "rrv.client_settings.bookmarks.show": "Show",
   "rrv.client_settings.bookmarks.hide": "Hide",

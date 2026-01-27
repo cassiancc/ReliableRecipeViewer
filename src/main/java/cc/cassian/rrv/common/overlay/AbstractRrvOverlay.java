@@ -63,7 +63,7 @@ public abstract class AbstractRrvOverlay {
     }
 
     public boolean isEnabled() {
-        return this.enabled && Configs.CLIENT_SETTINGS.isShowOverlays();
+        return this.enabled && OverlayManager.shouldShowOverlays();
     }
 
     public boolean isEnoughSpaceToRender() {
