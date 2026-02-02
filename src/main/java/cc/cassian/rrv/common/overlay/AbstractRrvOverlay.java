@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.overlay;
 
+import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -78,10 +78,10 @@ public abstract class AbstractRrvOverlay {
                 continue;
 
             if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent))
-                ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ItemViewOverlay.ItemViewOpenType.INPUT);
+                ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ActionType.INPUT);
 
             if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent))
-                ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ItemViewOverlay.ItemViewOpenType.RESULT);
+                ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ActionType.RESULT);
 
             return true;
         }

@@ -1,10 +1,13 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
-import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
+import cc.cassian.rrv.common.integration.polymer.recipe.PolydexRecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -48,7 +51,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     private int menuWidth, menuHeight;
     private final ItemStack origin;
-    private final SlotContent.Type originType;
+    private final ActionType originType;
     private final HashMap<Integer, AdditionalStackModifier> additionalStackModifiers;
     private final HashMap<Integer, OptionalSlotRenderer> optionalSlotRenderers;
 
@@ -59,12 +62,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     private int currentCraftReference;
     private final List<RecipeTransferData> transferData;
 
-    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, SlotContent.Type originType, ArrayList<RecipeViewScreen> viewHistory) {
+    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewScreen> viewHistory) {
         this(parentScreen,containerId, inventory,recipes, origin, originType, viewHistory, ReliableClientRecipeType.NONE);
     }
 
-    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, SlotContent.Type originType, ArrayList<RecipeViewScreen> viewHistory, ReliableClientRecipeType clientRecipeType) {
-        super(ReliableRecipeViewerClient.RECIPE_VIEW_MENU, containerId);
+    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewScreen> viewHistory, ReliableClientRecipeType clientRecipeType) {
+        super(ReliableRecipeViewer.RECIPE_VIEW_MENU, containerId);
 
         this.viewHistory = viewHistory;
 
@@ -99,8 +102,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.viewTypeOrder = new ArrayList<>();
         List<ReliableClientRecipeType> unsortedTypes = this.sortedByType.keySet().stream().toList();
         HashMap<String, ReliableClientRecipeType> byId = new HashMap<>();
-        unsortedTypes.forEach(viewType -> {
-            byId.put(viewType.getId().toString(), viewType);
+        unsortedTypes.forEach(recipeType -> {
+            byId.put(recipeType.getId().toString(), recipeType);
         });
 
         List<String> ids = new ArrayList<>(byId.keySet());
@@ -122,6 +125,10 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.currentPage = 0;
         this.currentDisplay = new ArrayList<>();
 
+        if (ModCompat.POLYDEX) {
+            this.sortedByType.put(PolydexRecipeType.INSTANCE, List.of(new PolydexClientRecipe(originType, origin)));
+            this.viewTypeOrder.add(PolydexRecipeType.INSTANCE);
+        }
 
         if (recipes.isEmpty())
             ReliableRecipeViewer.LOGGER.error("Attempting to open Menu with 0 recipes");
@@ -138,7 +145,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     }
 
     public RecipeViewMenu(int containerId, Inventory inventory) {
-        this(null, containerId, inventory, ReliableClientRecipe.PLACEHOLDER, ItemStack.EMPTY, SlotContent.Type.ANY, new ArrayList<>());
+        this(null, containerId, inventory, ReliableClientRecipe.PLACEHOLDER, ItemStack.EMPTY, ActionType.ANY, new ArrayList<>());
     }
 
 
@@ -302,8 +309,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             recipe.getIngredients().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
             recipe.getResults().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
 
-            recipe.getIngredients().forEach(slotContent -> slotContent.setType(SlotContent.Type.INGREDIENT));
-            recipe.getResults().forEach(slotContent -> slotContent.setType(SlotContent.Type.RESULT));
+            recipe.getIngredients().forEach(slotContent -> slotContent.setType(ActionType.INPUT));
+            recipe.getResults().forEach(slotContent -> slotContent.setType(ActionType.RESULT));
 
             SlotDefinition slotDefinition = new SlotDefinition();
             this.clientRecipeType.placeSlots(slotDefinition);
@@ -387,7 +394,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
 
         RecipeTransferData.Builder dataBuilder = new RecipeTransferData.Builder();
-        context.getContents().keySet().stream().filter(slot -> context.getContents().get(slot).getType() != SlotContent.Type.RESULT).forEach(dataBuilder::noticeSlot);
+        context.getContents().keySet().stream().filter(slot -> context.getContents().get(slot).getType() != ActionType.RESULT).forEach(dataBuilder::noticeSlot);
 
         HashMap<Integer, List<ItemStack>> validAndAvailableContent = new HashMap<>();
 
@@ -396,7 +403,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
             SlotContent content = context.getContents().get(slot);
 
-            if (content.getType() == SlotContent.Type.RESULT)
+            if (content.getType() == ActionType.RESULT)
                 continue;
 
             if (content.isEmpty()) {
@@ -417,7 +424,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
         List<Integer> slots = new ArrayList<>();
         context.getContents().forEach((slot, slotContent) -> {
-            if (slotContent.getType() != SlotContent.Type.RESULT)
+            if (slotContent.getType() != ActionType.RESULT)
                 slots.add(slot);
         });
 
@@ -642,11 +649,13 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             this.clientRecipeType = optional.get().getViewType();
             this.maxPossiblePerPage = this.calculateRecipesPerPage();
 
-            int i = this.getRecipes().size() / this.maxPossiblePerPage;
-            if (this.getRecipes().size() % this.maxPossiblePerPage != 0)
-                i++;
+            if (maxPossiblePerPage != 0) {
+                int i = this.getRecipes().size() / this.maxPossiblePerPage;
+                if (this.getRecipes().size() % this.maxPossiblePerPage != 0)
+                    i++;
 
-            this.maxPageIndex = i - 1;
+                this.maxPageIndex = i - 1;
+            }
 
 
             this.setMenuSizes();

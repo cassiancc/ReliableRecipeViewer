@@ -47,3 +47,5 @@ RRV is available under the open source MIT License, matching the original mod.
 
 ## Credits
 This started as a port of [Extended Item View](https://modrinth.com/mod/rrv) to Fabric 1.21.11 that I made for personal use. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. I have opted to redesign some elements of the mod with the goal to make it a more reliable recipe viewer to use.
+
+Code from the now archived [Polydex2EIV](https://github.com/SAGUMEDREAM/Polydex2EIV/) is used under its [MIT License](https://github.com/SAGUMEDREAM/Polydex2EIV/blob/b75fc66d3a835db8f2f18bd42d8895038d74fdb5/src/main/resources/fabric.mod.json#L12).

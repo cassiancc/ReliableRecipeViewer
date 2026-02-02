@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens.inventory;
 
+import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
@@ -148,10 +149,10 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
             return;
 
         if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
-            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ItemViewOverlay.ItemViewOpenType.INPUT);
+            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.INPUT);
 
         if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
-            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ItemViewOverlay.ItemViewOpenType.RESULT);
+            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.RESULT);
 
         if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem()) {
             ItemBookmarkOverlay.INSTANCE.bookmarkItem(this.hoveredSlot.getItem());

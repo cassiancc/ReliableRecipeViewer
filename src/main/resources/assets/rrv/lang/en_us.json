@@ -35,6 +35,7 @@
   "key.rrv.toggle_overlay": "Toggle Overlay",
   "rrv.bookmarks": "Bookmarks",
   "rrv.search_hint": "Search Item View...",
+  "rrv.all_recipes": "All Recipes",
   "rrv.all_recipes_hint": "Click to show all recipes",
 
   "key.category.rrv.rrv": "Reliable Recipe Viewer",
@@ -276,5 +277,5 @@
   "tag.item.minecraft.wooden_trapdoors": "Wooden Trapdoors",
   "tag.item.minecraft.wool": "Wool",
   "tag.item.minecraft.wool_carpets": "Wool Carpets",
-  "tag.item.minecraft.zombie_horse_food": "Zombie Horse Food",
+  "tag.item.minecraft.zombie_horse_food": "Zombie Horse Food"
 }

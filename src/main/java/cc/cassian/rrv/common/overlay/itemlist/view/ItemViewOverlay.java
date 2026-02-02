@@ -1,20 +1,30 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
+import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
+import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
+import cc.cassian.rrv.common.integration.polymer.recipe.PolydexRecipeType;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+//? fabric && <26.1
+import eu.pb4.polydex.api.v1.recipe.PolydexPage;
+import eu.pb4.polydex.api.v1.recipe.PolydexPageUtils;
+import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,15 +34,16 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
@@ -337,17 +348,35 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         back.visible = ItemViewOverlay.INSTANCE.isEnabled();
     }
 
-    public void openRecipeView(ItemStack stack, ItemViewOpenType openType) {
+    public void openRecipeView(ItemStack stack, ActionType openType) {
         if (stack.isEmpty())
             return;
+
+        //? fabric {
+        if (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack)) {
+            MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
+            if (server != null) {
+                RegistryAccess.Frozen registryManager = server.registryAccess();
+                stack = PolymerHelpers.getRealItemStack(stack, registryManager);
+            }
+        }
+        //?}
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null)
             return;
 
-        List<ReliableClientRecipe> foundRecipes = openType.recipeProvider().retrieveRecipes(stack);
+        List<ReliableClientRecipe> foundRecipes = switch (openType) {
+			case INPUT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
+			case RESULT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingOutput(stack);
+			case ANY -> {
+                var b = ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
+                b.addAll(ClientRecipeCache.INSTANCE.getRecipesForCraftingOutput(stack));
+                yield b;
+            }
+		};
 
-        if (!foundRecipes.isEmpty()) {
+        if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack))) {
             Screen parent = Minecraft.getInstance().screen;
 
             ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
@@ -359,10 +388,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
 
-            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType == ItemViewOpenType.RESULT ? SlotContent.Type.RESULT : SlotContent.Type.INGREDIENT, viewHistory), clientPlayer.getInventory(), Component.empty()));
+            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType, viewHistory), clientPlayer.getInventory(), Component.empty()));
         }
-
-
     }
 
     public void openRecipeView(ReliableClientRecipeType clientRecipeType) {
@@ -370,6 +397,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null)
             return;
+
+        //? fabric && <26.1 {
+        if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexRecipeType) {
+            RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
+        }
+        //?}
 
         List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();;
 
@@ -385,7 +418,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
 
-            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, SlotContent.Type.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
+            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, ActionType.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
         }
 
 
@@ -408,27 +441,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 	public boolean isSearching() {
 		return searchbar != null && searchbar.isVisible() && !searchbar.getValue().isEmpty();
 	}
-
-
-    public enum ItemViewOpenType {
-        INPUT(ClientRecipeCache.INSTANCE::getRecipesForCraftingInput),
-        RESULT(ClientRecipeCache.INSTANCE::getRecipesForCraftingOutput);
-
-        final RecipeProvider recipeProvider;
-
-        ItemViewOpenType(RecipeProvider recipeProvider) {
-            this.recipeProvider = recipeProvider;
-        }
-
-        RecipeProvider recipeProvider() {
-            return this.recipeProvider;
-        }
-
-        interface RecipeProvider {
-
-            List<ReliableClientRecipe> retrieveRecipes(ItemStack stack);
-        }
-    }
 
 
 }

@@ -63,6 +63,21 @@ repositories {
             includeGroupAndSubgroups("org.quiltmc.parsers")
         }
     }
+    maven {
+        name = "Nucleoid Maven (Polymer)"
+        url = uri("https://maven.nucleoid.xyz/releases")
+        content {
+            includeGroupAndSubgroups("eu.pb4")
+            includeGroupAndSubgroups("xyz.nucleoid")
+        }
+    }
+    maven {
+        name = "Modrinth"
+        url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroupAndSubgroups("maven.modrinth")
+        }
+    }
     mavenCentral()
 }
 
@@ -77,8 +92,6 @@ dependencies {
         exclude(group = "maven.modrinth")
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
-
-
 
 //    val modules = listOf("command-api-v2", "key-mapping-api-v1", "item-api-v1", "rendering-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
 //    for (it in modules) implementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))

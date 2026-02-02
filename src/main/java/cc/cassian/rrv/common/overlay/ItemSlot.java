@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay;
 
+import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.config.Configs;
@@ -107,10 +108,10 @@ public class ItemSlot {
         }
 
         if (mouseButton == 0)
-            ItemViewOverlay.INSTANCE.openRecipeView(this.stack, ItemViewOverlay.ItemViewOpenType.RESULT);
+            ItemViewOverlay.INSTANCE.openRecipeView(this.stack, ActionType.RESULT);
 
         if (mouseButton == 1)
-            ItemViewOverlay.INSTANCE.openRecipeView(this.stack, ItemViewOverlay.ItemViewOpenType.INPUT);
+            ItemViewOverlay.INSTANCE.openRecipeView(this.stack, ActionType.INPUT);
     }
 
     boolean isMouseOver(int mouseX, int mouseY) {
