@@ -67,4 +67,8 @@ public class TagClientRecipe implements ReliableClientRecipe {
 		return List.of(SlotContent.of(this.tagKey));
 	}
 
+	@Override
+	public boolean isVisualOnly() {
+		return true;
+	}
 }

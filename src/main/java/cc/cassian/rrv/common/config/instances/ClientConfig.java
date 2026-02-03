@@ -2,12 +2,12 @@ package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.overlay.OverlayManager;
-import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
+
 
 
     private OverlayManager.OverlayDisplay showOverlays = OverlayManager.OverlayDisplay.ENABLED;
@@ -16,7 +16,7 @@ public class ClientConfig extends AbstractRrvConfig {
     private boolean appendModNamespace = true;
     private boolean rightIndex = true;
     private boolean centerSearch = true;
-    private boolean showBookmarks = true;
+    private OverlayManager.SidePanel sidePanel = OverlayManager.SidePanel.BOOKMARKS;
     private boolean creativeIndexSource = false;
 
     public ClientConfig() {
@@ -64,12 +64,12 @@ public class ClientConfig extends AbstractRrvConfig {
     }
 
     public boolean isShowBookmarks() {
-        return showBookmarks;
+        return sidePanel.equals(OverlayManager.SidePanel.BOOKMARKS);
     }
 
-    public void setShowBookmarks(boolean showBookmarks) {
-        this.showBookmarks = showBookmarks;
-    }
+	public boolean isShowCraftables() {
+		return sidePanel.equals(OverlayManager.SidePanel.CRAFTABLES);
+	}
 
     @Override
     protected void loadData() {
@@ -80,6 +80,7 @@ public class ClientConfig extends AbstractRrvConfig {
         this.rightIndex = this.data().get("rightIndex").getAsBoolean();
         this.centerSearch = this.data().get("centerSearch").getAsBoolean();
         this.creativeIndexSource = this.data().get("indexSource").getAsBoolean();
+        this.sidePanel = OverlayManager.SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)->OverlayManager.SidePanel.BOOKMARKS);
     }
 
     @Override
@@ -91,6 +92,8 @@ public class ClientConfig extends AbstractRrvConfig {
         this.data().addProperty("rightIndex", this.rightIndex);
         this.data().addProperty("centerSearch", this.centerSearch);
         this.data().addProperty("indexSource", this.creativeIndexSource);
+        this.data().add("sidePanel", OverlayManager.SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
+
     }
 
 	public boolean isCreativeIndexSource() {
@@ -108,5 +111,13 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public void setShowOverlays(OverlayManager.OverlayDisplay showOverlays) {
 		this.showOverlays = showOverlays;
+	}
+
+	public OverlayManager.SidePanel getSidePanel() {
+		return sidePanel;
+	}
+
+	public void setSidePanel(OverlayManager.SidePanel showCraftables) {
+		this.sidePanel = showCraftables;
 	}
 }

@@ -57,4 +57,9 @@ public class PolydexClientRecipe implements ReliableClientRecipe {
 	public List<SlotContent> getResults() {
 		return List.of();
 	}
+
+	@Override
+	public boolean isVisualOnly() {
+		return true;
+	}
 }

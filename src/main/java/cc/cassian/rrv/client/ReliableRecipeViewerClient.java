@@ -1,6 +1,7 @@
 package cc.cassian.rrv.client;
 
 import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.overlay.itemlist.craftables.ItemCraftablesOverlay;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import cc.cassian.rrv.common.config.Configs;
@@ -45,6 +46,7 @@ public class ReliableRecipeViewerClient {
     public static void bootstrap() {
         OverlayManager.registerOverlay(ItemViewOverlay.INSTANCE);
         OverlayManager.registerOverlay(ItemBookmarkOverlay.INSTANCE);
+        OverlayManager.registerOverlay(ItemCraftablesOverlay.INSTANCE);
     }
 
     public static Platform resolver() {

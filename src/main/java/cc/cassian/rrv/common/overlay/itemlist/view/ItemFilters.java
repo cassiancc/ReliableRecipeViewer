@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.builtin.tag.TagClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -16,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

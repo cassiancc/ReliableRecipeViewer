@@ -45,4 +45,9 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	public List<SlotContent> getResults() {
 		return List.of(this.key);
 	}
+
+	@Override
+	public boolean isVisualOnly() {
+		return true;
+	}
 }

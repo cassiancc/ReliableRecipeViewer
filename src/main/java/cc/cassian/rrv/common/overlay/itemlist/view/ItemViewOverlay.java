@@ -22,9 +22,6 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 //? fabric && <26.1 {
-import eu.pb4.polydex.api.v1.recipe.PolydexPage;
-import eu.pb4.polydex.api.v1.recipe.PolydexPageUtils;
-import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 //?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -266,12 +263,18 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
             guiGraphics.fill(this.x, this.y + 24, this.x + this.width, this.y + 28, new Color(255, 255, 255, 32).getRGB());
-            guiGraphics.fill(this.x, this.y + 24, (int) (this.x + (((double) this.width / getMaxPageIndex()) * (scrollPage))), this.y + 28, new Color(255, 255, 255, 255).getRGB());
+            guiGraphics.fill(this.x, this.y + 24, getWidth(this.x, this.width, scrollPage), this.y + 28, new Color(255, 255, 255, 255).getRGB());
         } else {
             guiGraphics.fill(this.effectiveX, this.effectiveY + 24, this.effectiveX + this.effectiveWidth, this.y + 28, new Color(255, 255, 255, 32).getRGB());
-            guiGraphics.fill(this.effectiveX, this.effectiveY + 24, (int) (this.effectiveX + (((double) this.effectiveWidth / getMaxPageIndex()) * (scrollPage))), this.y + 28, new Color(255, 255, 255, 255).getRGB());
+            guiGraphics.fill(this.effectiveX, this.effectiveY + 24, getWidth(this.effectiveX, this.effectiveWidth, scrollPage), this.y + 28, new Color(255, 255, 255, 255).getRGB());
         }
 
+    }
+
+    private int getWidth(double x, int width, double scrollPage) {
+        int i = (int) (x + (((double) width / getMaxPageIndex()) * scrollPage));
+        if (i > width && !Configs.CLIENT_SETTINGS.isRightIndex()) return width;
+        return i;
     }
 
 

@@ -64,6 +64,14 @@ public interface ReliableClientRecipe {
     List<SlotContent> getResults();
 
     /**
+     * Whether this recipe should be considered for tools like a craftable filter.
+     * This is used to prevent informational recipes like tags or info recipes from affecting the craftable index.
+     */
+    default boolean isVisualOnly() {
+        return false;
+    }
+
+    /**
      * @param stack The ItemStack that is checked
      * @return Whether this specific ItemStack can redirect as an ingredient (mainly used for component checks)
      */

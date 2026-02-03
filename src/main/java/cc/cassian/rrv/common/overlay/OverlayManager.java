@@ -12,7 +12,6 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.damagesource.DamageEffects;
 
 import java.awt.*;
 import java.util.*;
@@ -39,6 +38,19 @@ public class OverlayManager {
         }
 
         public static final Codec<OverlayDisplay> CODEC = StringRepresentable.fromEnum(OverlayDisplay::values);
+    }
+
+    public enum SidePanel implements StringRepresentable {
+        BOOKMARKS,
+        CRAFTABLES,
+        DISABLED;
+
+        @Override
+        public String getSerializedName() {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
+
+        public static final Codec<SidePanel> CODEC = StringRepresentable.fromEnum(SidePanel::values);
     }
 
 
