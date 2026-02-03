@@ -158,7 +158,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             ArrayList<String> objects = new ArrayList<>();
 
             for (String query : newQuery.split(" ")) {
-                if (!query.startsWith("@") && !query.startsWith("#") && !query.startsWith(":")) {
+                if (!query.startsWith("@") && !query.startsWith(":") && !query.startsWith("#")) {
                     objects.add(query);
                 }
             }

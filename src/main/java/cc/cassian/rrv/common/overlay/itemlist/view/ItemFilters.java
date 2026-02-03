@@ -107,7 +107,7 @@ public class ItemFilters {
     }
 
     /**
-     * Filters by an Identifier (item id)
+     * Filters by Identifier (item id)
      * @param query The query
      * @return A list of matching item stacks
      */
@@ -132,7 +132,7 @@ public class ItemFilters {
     }
 
     /**
-     * Filters by an Identifier (item id)
+     * Filters by Identifier (item id)
      * @param query The query
      * @return Whether the item matches the item id
      */
