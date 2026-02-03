@@ -1,3 +1,6 @@
 {
-  "parent": "minecraft:item/generated"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "particle": "block/water_still"
+  }
 }

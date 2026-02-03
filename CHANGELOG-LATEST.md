@@ -5,3 +5,8 @@
 
 ### Changed
 - Internal changes to unify interactions with the item view and slot contents.
+- Internal changes to fluid rendering.
+
+### Fixed
+- Log message about missing model.
+- Remaining missing tag translations.

@@ -57,7 +57,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         float renderHeight = Math.max(Math.min((float) fluidStack.amount() / (float) FluidStack.AMOUNT_FULL, 1.0F), 0.1F);
 
 
-        int color = fluid == Fluids.WATER ? Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor() : -1;
+        int color = getColor(fluid);
         Color unmodified = new Color(color);
         color = new Color(unmodified.getRed(), unmodified.getGreen(), unmodified.getBlue(), 255).getRGB();
 
@@ -86,6 +86,10 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         });
 
         poseStack.popPose();
+    }
+
+    private static int getColor(Fluid fluid) {
+        return fluid == Fluids.WATER ? Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor() : -1;
     }
 
     @Override
