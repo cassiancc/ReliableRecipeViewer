@@ -21,10 +21,11 @@ import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-//? fabric && <26.1
+//? fabric && <26.1 {
 import eu.pb4.polydex.api.v1.recipe.PolydexPage;
 import eu.pb4.polydex.api.v1.recipe.PolydexPageUtils;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
+//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

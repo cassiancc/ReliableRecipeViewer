@@ -40,7 +40,6 @@ jsonlang {
 
 repositories {
     mavenLocal()
-    maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
     maven {
         name = "Terraformers (Mod Menu)"
         url = uri("https://maven.terraformersmc.com/releases/")
