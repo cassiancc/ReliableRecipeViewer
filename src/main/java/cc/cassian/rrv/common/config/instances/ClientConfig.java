@@ -4,6 +4,7 @@ import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
@@ -72,7 +73,7 @@ public class ClientConfig extends AbstractRrvConfig {
 
     @Override
     protected void loadData() {
-        this.showOverlays = OverlayManager.OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).getOrThrow().getFirst();
+        this.showOverlays = OverlayManager.OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)->OverlayManager.OverlayDisplay.ENABLED);
         this.background = this.data().get("background").getAsBoolean();
         this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
         this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
