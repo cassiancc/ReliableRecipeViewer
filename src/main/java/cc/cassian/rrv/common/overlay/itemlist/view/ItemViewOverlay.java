@@ -171,7 +171,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             ArrayList<String> objects = new ArrayList<>();
 
             for (String query : newQuery.split(" ")) {
-                if (!query.startsWith("@") && !query.startsWith("#")) {
+                if (!query.startsWith("@") && !query.startsWith(":") && !query.startsWith("#")) {
                     objects.add(query);
                 }
             }
@@ -180,7 +180,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             for (String query : newQuery.split(" ")) {
                 if (query.startsWith("@")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.modId(stack, query.substring(1)));
+                    this.availableItems.removeIf(stack-> !ItemFilters.modName(stack, query.substring(1)));
+                }
+                else if (query.startsWith(":")) {
+                    this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
                 }
                 else if (query.startsWith("#")) {
                     this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
@@ -189,7 +192,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         // standard filtering
         } else {
             if (newQuery.startsWith("@"))
-                this.availableItems = ItemFilters.modId(newQuery.substring(1));
+                this.availableItems = ItemFilters.modName(newQuery.substring(1));
+            else if (newQuery.startsWith(":"))
+                this.availableItems = ItemFilters.id(newQuery.substring(1));
             else if (newQuery.startsWith("#"))
                 this.availableItems = ItemFilters.tag(newQuery.substring(1));
             else
