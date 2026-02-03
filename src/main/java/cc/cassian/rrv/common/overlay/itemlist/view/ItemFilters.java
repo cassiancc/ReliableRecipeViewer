@@ -94,7 +94,7 @@ public class ItemFilters {
     /**
      * Filters by mod name
      * @param query The query
-     * @return Whether the item matches the mod id
+     * @return Whether the item matches the mod name
      */
     protected static boolean modName(ItemStack stack, String query) {
         String modName = ReliableRecipeViewerClient.resolver().getModNameForItem(stack);
