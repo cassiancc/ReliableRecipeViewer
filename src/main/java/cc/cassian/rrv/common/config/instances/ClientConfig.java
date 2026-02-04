@@ -10,83 +10,83 @@ public class ClientConfig extends AbstractRrvConfig {
 
 
 
-    private OverlayManager.OverlayDisplay showOverlays = OverlayManager.OverlayDisplay.ENABLED;
-    private boolean background = true;
-    private boolean itemWrapMode = true;
-    private boolean appendModNamespace = true;
-    private boolean rightIndex = true;
-    private boolean centerSearch = true;
-    private OverlayManager.SidePanel sidePanel = OverlayManager.SidePanel.BOOKMARKS;
-    private boolean creativeIndexSource = false;
+	private OverlayManager.OverlayDisplay showOverlays = OverlayManager.OverlayDisplay.ENABLED;
+	private OverlayManager.SidePanel sidePanel = OverlayManager.SidePanel.BOOKMARKS;
+	private boolean background = true;
+	private boolean itemWrapMode = true;
+	private boolean appendModNamespace = true;
+	private boolean rightIndex = true;
+	private boolean centerSearch = true;
+	private boolean creativeIndexSource = false;
+	
+	public ClientConfig() {
+		super("client_settings");
+	}
 
-    public ClientConfig() {
-        super("client_settings");
-    }
+	public boolean drawBackground() {
+		return this.background;
+	}
 
-    public boolean drawBackground() {
-        return this.background;
-    }
+	public void setDrawBackground(boolean background) {
+		this.background = background;
+	}
 
-    public void setDrawBackground(boolean background) {
-        this.background = background;
-    }
+	public boolean isItemWrapMode() {
+		return this.itemWrapMode;
+	}
 
-    public boolean isItemWrapMode() {
-        return this.itemWrapMode;
-    }
+	public void setItemWrapMode(boolean itemWrapMode) {
+		this.itemWrapMode = itemWrapMode;
+	}
 
-    public void setItemWrapMode(boolean itemWrapMode) {
-        this.itemWrapMode = itemWrapMode;
-    }
+	public boolean isAppendModNamespace() {
+		return appendModNamespace;
+	}
+	
+	public void setAppendModNamespace(boolean appendModNamespace) {
+		this.appendModNamespace = appendModNamespace;
+	}
 
-    public boolean isAppendModNamespace() {
-        return appendModNamespace;
-    }
+	public boolean isRightIndex() {
+		return rightIndex;
+	}
 
-    public void setAppendModNamespace(boolean appendModNamespace) {
-        this.appendModNamespace = appendModNamespace;
-    }
+	public void setRightIndex(boolean rightIndex) {
+		this.rightIndex = rightIndex;
+	}
 
-    public boolean isRightIndex() {
-        return rightIndex;
-    }
+	public boolean isCenterSearch() {
+		return centerSearch;
+	}
 
-    public void setRightIndex(boolean rightIndex) {
-        this.rightIndex = rightIndex;
-    }
+	public void setCenterSearch(boolean centerSearch) {
+		this.centerSearch = centerSearch;
+	}
 
-    public boolean isCenterSearch() {
-        return centerSearch;
-    }
+	@Override
+	protected void loadData() {
+		this.showOverlays = OverlayManager.OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)->OverlayManager.OverlayDisplay.ENABLED);
+		this.background = this.data().get("background").getAsBoolean();
+		this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
+		this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
+		this.rightIndex = this.data().get("rightIndex").getAsBoolean();
+		this.centerSearch = this.data().get("centerSearch").getAsBoolean();
+		this.creativeIndexSource = this.data().get("indexSource").getAsBoolean();
+		this.sidePanel = OverlayManager.SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)->OverlayManager.SidePanel.BOOKMARKS);
+	}
 
-    public void setCenterSearch(boolean centerSearch) {
-        this.centerSearch = centerSearch;
-    }
+	@Override
+	protected void saveData() {
+		this.data().add("enabled", OverlayManager.OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showOverlays).getOrThrow());
+		this.data().addProperty("background", this.background);
+		this.data().addProperty("itemWrapMode", this.itemWrapMode);
+		this.data().addProperty("appendModNamespace", this.appendModNamespace);
+		this.data().addProperty("rightIndex", this.rightIndex);
+		this.data().addProperty("centerSearch", this.centerSearch);
+		this.data().addProperty("indexSource", this.creativeIndexSource);
+		this.data().add("sidePanel", OverlayManager.SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
 
-    @Override
-    protected void loadData() {
-        this.showOverlays = OverlayManager.OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)->OverlayManager.OverlayDisplay.ENABLED);
-        this.background = this.data().get("background").getAsBoolean();
-        this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
-        this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
-        this.rightIndex = this.data().get("rightIndex").getAsBoolean();
-        this.centerSearch = this.data().get("centerSearch").getAsBoolean();
-        this.creativeIndexSource = this.data().get("indexSource").getAsBoolean();
-        this.sidePanel = OverlayManager.SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)->OverlayManager.SidePanel.BOOKMARKS);
-    }
-
-    @Override
-    protected void saveData() {
-        this.data().add("enabled", OverlayManager.OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showOverlays).getOrThrow());
-        this.data().addProperty("background", this.background);
-        this.data().addProperty("itemWrapMode", this.itemWrapMode);
-        this.data().addProperty("appendModNamespace", this.appendModNamespace);
-        this.data().addProperty("rightIndex", this.rightIndex);
-        this.data().addProperty("centerSearch", this.centerSearch);
-        this.data().addProperty("indexSource", this.creativeIndexSource);
-        this.data().add("sidePanel", OverlayManager.SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
-
-    }
+	}
 
 	public boolean isCreativeIndexSource() {
 		return creativeIndexSource;
@@ -94,7 +94,7 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public void setCreativeIndexSource(boolean creativeIndexSource) {
 		this.creativeIndexSource = creativeIndexSource;
-        ServerRecipeManager.INSTANCE.reload();
+		ServerRecipeManager.INSTANCE.reload();
 	}
 
 	public OverlayManager.OverlayDisplay isShowOverlays() {

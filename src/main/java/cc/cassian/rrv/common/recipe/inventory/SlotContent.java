@@ -241,9 +241,12 @@ public class SlotContent {
     }
 
     /**
-	 * Moved to standardized system - see {@link ActionType}
+	 * Moved to standardized system - see {@link ActionType}.
+     * <p>{@link Type#INGREDIENT} moved to {@link ActionType#INPUT}</p>
+     * <p>{@link Type#RESULT} moved to {@link ActionType#RESULT}</p>
+     * <p>{@link Type#ANY} moved to {@link ActionType#ANY}</p>
 	 */
-    @Deprecated(since = "6.4.0")
+    @Deprecated(since = "6.4.0", forRemoval = true)
     public enum Type {
         INGREDIENT,
         RESULT,
