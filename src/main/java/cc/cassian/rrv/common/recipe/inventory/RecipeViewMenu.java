@@ -7,7 +7,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
-import cc.cassian.rrv.common.integration.polymer.recipe.PolydexRecipeType;
+import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -126,8 +126,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.currentDisplay = new ArrayList<>();
 
         if (ModCompat.POLYDEX) {
-            this.sortedByType.put(PolydexRecipeType.INSTANCE, List.of(new PolydexClientRecipe(originType, origin)));
-            this.viewTypeOrder.add(PolydexRecipeType.INSTANCE);
+            this.sortedByType.put(PolydexClientRecipeType.INSTANCE, List.of(new PolydexClientRecipe(originType, origin)));
+            this.viewTypeOrder.add(PolydexClientRecipeType.INSTANCE);
         }
 
         if (recipes.isEmpty())

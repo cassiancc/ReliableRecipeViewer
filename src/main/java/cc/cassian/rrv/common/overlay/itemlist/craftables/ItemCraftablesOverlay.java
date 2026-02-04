@@ -1,13 +1,17 @@
 package cc.cassian.rrv.common.overlay.itemlist.craftables;
 
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,6 +21,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import java.awt.*;
@@ -31,6 +36,7 @@ public class ItemCraftablesOverlay extends AbstractRrvItemListOverlay {
 
     private static final int HEADER_HEIGHT = 30;
     private static int FOOTER_HEIGHT = 20;
+    private Inventory inventory;
 
     public ItemCraftablesOverlay() {
         super(-1, -1, -1, -1);
@@ -98,30 +104,41 @@ public class ItemCraftablesOverlay extends AbstractRrvItemListOverlay {
      */
     private void updateQuery() {
         this.availableItems.clear();
-        var inventory = Minecraft.getInstance().player.getInventory();
-        inventory.forEach(inventoryItem -> {
-            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> {
-                if (recipe.isVisualOnly()) return;
-                AtomicInteger foundIngredientCount = new AtomicInteger();
-                int requiredIngredientCount = recipe.getIngredients().size();
-                recipe.getIngredients().forEach(ingredient -> {
-                    if (inventory.hasAnyMatching(inv->ingredient.hasItem(inv.getItem()))) {
-                        foundIngredientCount.getAndIncrement();
-                    }
-                });
-                if (foundIngredientCount.get() == requiredIngredientCount) {
-                    recipe.getResults().forEach(result -> {
-                        result.getValidContents().forEach(ingredient -> {
-                            if (!this.availableItems.contains(ingredient)) {
-                                this.availableItems.add(ingredient);
-                            }
-                        });
-                    });
-                }
-            });
+		if (Minecraft.getInstance().player == null || (ModCompat.POLYDEX && PolymerHelpers.isPolymerScreenOpen(Minecraft.getInstance().player))) {
+			return;
+		}
+        this.inventory = Minecraft.getInstance().player.getInventory();
+		inventory.forEach(inventoryItem -> {
+            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
         });
+        if (this.availableItems.isEmpty()) {
+            inventory.forEach(inventoryItem -> {
+                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
+            });
+        }
 
         this.updateSlots();
+    }
+
+    void updateRecipes(ReliableClientRecipe recipe, Inventory inventory, boolean b) {
+        if (recipe.isVisualOnly()) return;
+        if (b && !RrvUtil.matchesAnyTransferClass(recipe, Minecraft.getInstance().screen)) return;
+        AtomicInteger foundIngredientCount = new AtomicInteger();
+        int requiredIngredientCount = recipe.getIngredients().size();
+        recipe.getIngredients().forEach(ingredient -> {
+            if (inventory.hasAnyMatching(inv->ingredient.hasItem(inv.getItem()))) {
+                foundIngredientCount.getAndIncrement();
+            }
+        });
+        if (foundIngredientCount.get() == requiredIngredientCount) {
+            recipe.getResults().forEach(result -> {
+                result.getValidContents().forEach(ingredient -> {
+                    if (!this.availableItems.contains(ingredient)) {
+                        this.availableItems.add(ingredient);
+                    }
+                });
+            });
+        }
     }
 
 
@@ -166,7 +183,7 @@ public class ItemCraftablesOverlay extends AbstractRrvItemListOverlay {
         Font font = client.font;
 
 
-        var page = Component.literal((this.getPage() + 1) + "/" + (this.getMaxPageIndex() + 1));
+        var page = Component.translatable("rrv.craftables");
 
 
         if (this.fittingPerPage() > 0) {
@@ -217,8 +234,8 @@ public class ItemCraftablesOverlay extends AbstractRrvItemListOverlay {
         next.setPosition(ItemCraftablesOverlay.INSTANCE.itemEndX-16, 3);
 
 
-        next.visible = ItemCraftablesOverlay.INSTANCE.isEnabled();
-        back.visible = ItemCraftablesOverlay.INSTANCE.isEnabled();
+        next.visible = ItemCraftablesOverlay.INSTANCE.isEnabled() && getMaxPageIndex() > 1;
+        back.visible = ItemCraftablesOverlay.INSTANCE.isEnabled() && getMaxPageIndex() > 1;
     }
 
     @Override

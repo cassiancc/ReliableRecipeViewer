@@ -8,8 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
-public class PolydexRecipeType implements ReliableClientRecipeType {
-	public static final PolydexRecipeType INSTANCE = new PolydexRecipeType();
+public class PolydexClientRecipeType implements ReliableClientRecipeType {
+	public static final PolydexClientRecipeType INSTANCE = new PolydexClientRecipeType();
 
 
 	@Override

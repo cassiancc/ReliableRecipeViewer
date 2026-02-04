@@ -12,7 +12,7 @@ import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
-import cc.cassian.rrv.common.integration.polymer.recipe.PolydexRecipeType;
+import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
@@ -408,7 +408,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
 
         //? fabric && <26.1 {
-        if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexRecipeType) {
+        if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
             RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
         }
         //?}

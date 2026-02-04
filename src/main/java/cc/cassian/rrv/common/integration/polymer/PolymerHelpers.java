@@ -1,7 +1,13 @@
 package cc.cassian.rrv.common.integration.polymer;
 
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import eu.pb4.sgui.virtual.FakeScreenHandler;
+import eu.pb4.sgui.virtual.VirtualScreenHandlerInterface;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -71,5 +77,9 @@ public class PolymerHelpers {
 		 //?} else {
 		/*return ItemStack.EMPTY;
 		*///?}
+	}
+
+	public static boolean isPolymerScreenOpen(LocalPlayer player) {
+		return (Minecraft.getInstance().screen instanceof RecipeViewScreen recipeViewScreen && recipeViewScreen.getMenu().getClientRecipeType() instanceof PolydexClientRecipeType) || (player.containerMenu instanceof FakeScreenHandler);
 	}
 }
