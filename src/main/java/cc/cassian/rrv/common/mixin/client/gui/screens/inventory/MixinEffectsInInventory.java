@@ -59,10 +59,8 @@ public abstract class MixinEffectsInInventory {
     private void injectBlocking$1(final GuiGraphics graphics, final Font font, final Component effectName, final Component duration, final int x0, final int y0, final boolean isAmbient, final int maxTextureWidth, CallbackInfoReturnable<Integer> cir){
 
         if (effectName.getContents() instanceof TranslatableContents translatableContents) {
-            int k = OverlayManager.INSTANCE.currentInfo().topPos();
-
             OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                    Identifier.withDefaultNamespace("mobeffect_" +  translatableContents.getKey()), x0, k, cir.getReturnValue(), 32
+                    Identifier.withDefaultNamespace("mobeffect_" +  translatableContents.getKey()), x0, y0, cir.getReturnValue(), 32
             ));
         }
 

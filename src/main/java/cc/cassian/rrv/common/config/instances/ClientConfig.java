@@ -63,14 +63,6 @@ public class ClientConfig extends AbstractRrvConfig {
         this.centerSearch = centerSearch;
     }
 
-    public boolean isShowBookmarks() {
-        return sidePanel.equals(OverlayManager.SidePanel.BOOKMARKS);
-    }
-
-	public boolean isShowCraftables() {
-		return sidePanel.equals(OverlayManager.SidePanel.CRAFTABLES);
-	}
-
     @Override
     protected void loadData() {
         this.showOverlays = OverlayManager.OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)->OverlayManager.OverlayDisplay.ENABLED);

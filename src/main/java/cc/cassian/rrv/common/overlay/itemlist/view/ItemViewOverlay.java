@@ -14,7 +14,7 @@ import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
-import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
@@ -214,7 +214,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 continue;
 
             if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event))
-                ItemBookmarkOverlay.INSTANCE.bookmarkItem(slot.getStack());
+                BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
         }
 
         return false;
@@ -225,10 +225,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (this.fittingPerPage() == 0)
             return;
 
-        if (Configs.CLIENT_SETTINGS.isItemWrapMode())
-            guiGraphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, new Color(0, 0, 0, 64).getRGB());
-        else
-            guiGraphics.fill(this.effectiveX, this.effectiveY, this.effectiveX + this.effectiveWidth, this.effectiveY + this.effectiveHeight, new Color(0, 0, 0, 64).getRGB());
+        guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
     }
 
     @Override
@@ -242,10 +239,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         if (this.fittingPerPage() > 0) {
-            if (Configs.CLIENT_SETTINGS.isItemWrapMode())
-                this.drawScaledString(font, guiGraphics, page, this.x + this.width / 2, this.y + 10, -1);
-            else
-                this.drawScaledString(font, guiGraphics, page, this.effectiveX + this.effectiveWidth / 2, this.effectiveY + 10, -1);
+            this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, checkedY() + 10, -1);
         }
 
 
@@ -261,13 +255,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             scrollPage = .5;
         }
 
-        if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
-            guiGraphics.fill(this.x, this.y + 24, this.x + this.width, this.y + 28, new Color(255, 255, 255, 32).getRGB());
-            guiGraphics.fill(this.x, this.y + 24, getWidth(this.x, this.width, scrollPage), this.y + 28, new Color(255, 255, 255, 255).getRGB());
-        } else {
-            guiGraphics.fill(this.effectiveX, this.effectiveY + 24, this.effectiveX + this.effectiveWidth, this.y + 28, new Color(255, 255, 255, 32).getRGB());
-            guiGraphics.fill(this.effectiveX, this.effectiveY + 24, getWidth(this.effectiveX, this.effectiveWidth, scrollPage), this.y + 28, new Color(255, 255, 255, 255).getRGB());
-        }
+        guiGraphics.fill(checkedX(), checkedY() + 24, checkedX() + checkedWidth(), checkedY() + 28, new Color(255, 255, 255, 32).getRGB());
+        guiGraphics.fill(checkedX(), checkedY() + 24, getWidth(checkedX(), checkedWidth(), scrollPage), checkedY() + 28, new Color(255, 255, 255, 255).getRGB());
 
     }
 
@@ -339,16 +328,16 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = SpriteIconButton.builder(Component.literal("<"), (button)-> {
+        back = SpriteIconButton.builder(Component.translatable("rrv.previous_page"), (button)-> {
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
             this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
-        next = SpriteIconButton.builder(Component.literal(">"), (button)->{
+        }, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
+        next = SpriteIconButton.builder(Component.translatable("rrv.next_page"), (button)->{
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
             this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
+        }, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
 

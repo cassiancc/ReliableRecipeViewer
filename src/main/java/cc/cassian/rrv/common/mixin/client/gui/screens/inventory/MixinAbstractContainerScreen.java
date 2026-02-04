@@ -4,8 +4,9 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
-import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
 import cc.cassian.rrv.common.overlay.OverlayManager;
+import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.Minecraft;
@@ -155,7 +156,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
             ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.RESULT);
 
         if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem()) {
-            ItemBookmarkOverlay.INSTANCE.bookmarkItem(this.hoveredSlot.getItem());
+            BookmarkManager.INSTANCE.bookmarkItem(this.hoveredSlot.getItem());
 
         }
     }

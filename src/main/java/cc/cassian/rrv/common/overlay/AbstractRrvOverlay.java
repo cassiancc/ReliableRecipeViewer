@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -40,6 +41,30 @@ public abstract class AbstractRrvOverlay {
 
         this.enabled = true;
         this.enoughSpaceToRender = true;
+    }
+
+    public int checkedX() {
+        if (Configs.CLIENT_SETTINGS.isItemWrapMode())
+            return x;
+        else return effectiveX;
+    }
+
+    public int checkedY() {
+        if (Configs.CLIENT_SETTINGS.isItemWrapMode())
+            return y;
+        else return effectiveY;
+    }
+
+    public int checkedWidth() {
+        if (Configs.CLIENT_SETTINGS.isItemWrapMode())
+            return width;
+        else return effectiveWidth;
+    }
+
+    public int checkedHeight() {
+        if (Configs.CLIENT_SETTINGS.isItemWrapMode())
+            return height;
+        else return effectiveHeight;
     }
 
     public int getX() {

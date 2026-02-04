@@ -1,11 +1,10 @@
 package cc.cassian.rrv.client;
 
 import cc.cassian.rrv.common.Platform;
-import cc.cassian.rrv.common.overlay.itemlist.craftables.ItemCraftablesOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.KeyMapping;
@@ -45,8 +44,7 @@ public class ReliableRecipeViewerClient {
 
     public static void bootstrap() {
         OverlayManager.registerOverlay(ItemViewOverlay.INSTANCE);
-        OverlayManager.registerOverlay(ItemBookmarkOverlay.INSTANCE);
-        OverlayManager.registerOverlay(ItemCraftablesOverlay.INSTANCE);
+        OverlayManager.registerOverlay(SidePanelOverlay.INSTANCE);
     }
 
     public static Platform resolver() {
