@@ -71,10 +71,9 @@ public class RrvClientSettingsScreen extends Screen {
 
 
     @Override
-    public void render(GuiGraphics guiGraphics, int i, int j, float f) {
-        super.render(guiGraphics, i, j, f);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
-
 
     @Override
     public void onClose() {

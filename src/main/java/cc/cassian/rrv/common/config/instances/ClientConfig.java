@@ -18,7 +18,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
 	private boolean creativeIndexSource = false;
-	
+
 	public ClientConfig() {
 		super("client_settings");
 	}

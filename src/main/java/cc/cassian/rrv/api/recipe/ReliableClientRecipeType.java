@@ -1,6 +1,8 @@
 package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -102,9 +104,25 @@ public interface ReliableClientRecipeType {
 
     /**
      *
-     * @return An icon for the recipe's type, displayed in the type selection above the recipe view
+     * @return An icon for the recipe's type, displayed in the type selection above the recipe view.
+     * If {@link #renderIcon} is overridden, this will be ignored.
      */
     ItemStack getIcon();
+
+
+    /**
+     * Replaces the rendering of {@link #getIcon()} with custom rendering.
+     * @param screen       The current viewScreen
+     * @param x            The x-position to render at.
+     * @param y            The y-position to render at.
+     * @param guiGraphics  The guiGraphics supplied by Minecraft
+     * @param mouseX       The current x-position of the mouse
+     * @param mouseY       The current y-position of the mouse
+     * @param partialTicks partialTicks
+     */
+    default void renderIcon(RecipeViewScreen screen, int x, int y, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        guiGraphics.renderFakeItem(this.getIcon(), x, y);
+    }
 
     /**
      * Craft-References are used to redirect the player to a list of this type's recipes that are associated with the reference-item

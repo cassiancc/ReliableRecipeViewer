@@ -545,7 +545,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         private void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.viewType() == this.viewScreen.getMenu().getClientRecipeType() ? 24 : 0, 24, 24, 256, 256);
-            guiGraphics.renderFakeItem(this.viewType().getIcon(), this.x() + 4, this.y() + 4);
+            this.viewType().renderIcon(this.viewScreen(), this.x()+4, this.y+4, guiGraphics, mouseX, mouseY, partialTicks);
 
             this.onHover(guiGraphics, mouseX, mouseY);
         }
