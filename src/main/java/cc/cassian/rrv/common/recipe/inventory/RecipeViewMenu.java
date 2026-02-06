@@ -680,7 +680,9 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.menuWidth;
     }
 
-    //Returns how far the viewtype-specific texture is away from the border
+    /**
+	 * Returns how far the viewtype-specific texture is away from the border
+	 */
     protected int guiOffsetLeft() {
         return (this.menuWidth - this.getClientRecipeType().getDisplayWidth()) / 2;
     }
@@ -807,13 +809,21 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             this.contents.put(slotId, slotContent);
         }
 
-        public void bindDepedantSlot(int slotId, Supplier<Integer> dependantIndex, SlotContent slotContent) {
+        /**
+		 * Typo'd, use {@link #bindDependentSlot(int, Supplier, SlotContent)}
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
+        public void bindDepedantSlot(int slotId, Supplier<Integer> dependentIndex, SlotContent slotContent) {
+            bindDependentSlot(slotId, dependentIndex, slotContent);
+        }
+
+        public void bindDependentSlot(int slotId, Supplier<Integer> dependentIndex, SlotContent slotContent) {
             this.contents.put(slotId, slotContent);
-            this.contentDependencies.put(slotId, dependantIndex);
+            this.contentDependencies.put(slotId, dependentIndex);
         }
 
         /**
-         * Optional slots are only rendered if an itemstack is in there
+         * Optional slots are only rendered if they contain an ItemStack.
          *
          * @param slotId               The slot id
          * @param slotContent          The slot content

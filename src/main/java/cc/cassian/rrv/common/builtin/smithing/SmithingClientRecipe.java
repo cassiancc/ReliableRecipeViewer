@@ -93,7 +93,7 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
         slotFillContext.bindSlot(1, this.base);
         slotFillContext.bindSlot(2, this.additionIngredient);
 
-        slotFillContext.bindDepedantSlot(3, this.additionIngredient::index, this.result);
+        slotFillContext.bindDependentSlot(3, this.additionIngredient::index, this.result);
     }
 
     @Override
