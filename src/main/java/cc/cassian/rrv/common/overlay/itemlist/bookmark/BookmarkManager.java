@@ -17,7 +17,7 @@ public class BookmarkManager {
         if (!this.availableItems().contains(stack)) {
             this.availableItems().add(stack);
             if (SidePanelOverlay.showBookmarks()) {
-                Minecraft.getInstance().execute(SidePanelOverlay.INSTANCE::updateSlots);
+                Minecraft.getInstance().execute(SidePanelOverlay.INSTANCE::updateQuery);
 			}
         }
     }
@@ -30,7 +30,7 @@ public class BookmarkManager {
         if (this.availableItems().contains(stack)) {
             this.availableItems().remove(stack);
             if (SidePanelOverlay.showBookmarks())
-                Minecraft.getInstance().execute(SidePanelOverlay.INSTANCE::updateSlots);
+                Minecraft.getInstance().execute(SidePanelOverlay.INSTANCE::updateQuery);
         }
 	}
 }

@@ -107,7 +107,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     /**
      * Updates the list of item slots
      */
-    private void updateQuery() {
+	public void updateQuery() {
         this.availableItems.clear();
         if (showCraftables()) {
             if (Minecraft.getInstance().player == null || (ModCompat.POLYDEX && PolymerHelpers.isPolymerScreenOpen(Minecraft.getInstance().player))) {
@@ -166,7 +166,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             }
 
         }
-        updateQuery();
 
         return false;
     }
@@ -180,8 +179,8 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.CRAFTABLES);
             else
                 Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.BOOKMARKS);
+            updateQuery();
         }
-        updateQuery();
         return false;
     }
 
@@ -190,19 +189,18 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
             left = OverlayManager.INSTANCE.currentInfo().screenWidth() - this.width;
         }
-        int xMin = left + (this.width / 2 - 64 - 2 - 3);
-        int xMax = left +(this.width / 2 + 64 + 2);
-        return (mouseX > xMin && mouseX < xMax) && (mouseY >= 0 && mouseY <= 16);
+        int xMin = left + this.width / 2 - 59;
+        int xMax = left + this.width / 2 + 60;
+        return (mouseX > xMin && mouseX < xMax) && (mouseY >= 1 && mouseY <= 20);
     }
 
     public static boolean showBookmarks() {
         return Configs.CLIENT_SETTINGS.getSidePanel().equals(OverlayManager.SidePanel.BOOKMARKS);
     }
 
-    public boolean showCraftables() {
+    public static boolean showCraftables() {
         return Configs.CLIENT_SETTINGS.getSidePanel().equals(OverlayManager.SidePanel.CRAFTABLES);
     }
-
 
     @Override
     protected void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
