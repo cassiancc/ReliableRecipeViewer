@@ -7,8 +7,8 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.FormattedText;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -33,7 +33,10 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 
 	@Override
 	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(I18n.get(text)), 5, 20, 112, -16777216, false);
+		MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, Component.translatableWithFallback(text, text).withoutShadow().withColor(-16777216), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
+		widget.setX(recipePosition.left()+ 5);
+		widget.setY(recipePosition.top()+20);
+		screen.addRenderableWidget(widget);
 	}
 
 	@Override

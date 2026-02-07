@@ -15,3 +15,4 @@
 - Remaining missing tag translations.
 - Item View scrollbar no longer overflows when set to the left panel.
 - Multiple effects clipping with the Item View.
+- Info recipes can no longer overflow.

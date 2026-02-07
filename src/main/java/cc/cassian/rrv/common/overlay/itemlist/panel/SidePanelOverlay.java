@@ -174,7 +174,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         boolean b = super.mouseClicked(event, doubleClick);
-        if (b) return b;
+        if (b) return true;
         if (isHoveringOverTitle(event.x(), event.y())) {
             if (showBookmarks())
                 Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.CRAFTABLES);
@@ -186,8 +186,12 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     private boolean isHoveringOverTitle(double mouseX, double mouseY) {
-        int xMin = this.width / 2 - 64 - 2 - 3;
-        int xMax = this.width / 2 + 64 + 2;
+        int left = 0;
+        if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
+            left = OverlayManager.INSTANCE.currentInfo().screenWidth() - this.width;
+        }
+        int xMin = left + (this.width / 2 - 64 - 2 - 3);
+        int xMax = left +(this.width / 2 + 64 + 2);
         return (mouseX > xMin && mouseX < xMax) && (mouseY >= 0 && mouseY <= 16);
     }
 
