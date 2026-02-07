@@ -173,6 +173,8 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        boolean b = super.mouseClicked(event, doubleClick);
+        if (b) return b;
         if (isHoveringOverTitle(event.x(), event.y())) {
             if (showBookmarks())
                 Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.CRAFTABLES);
@@ -180,7 +182,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.BOOKMARKS);
         }
         updateQuery();
-        return super.mouseClicked(event, doubleClick);
+        return false;
     }
 
     private boolean isHoveringOverTitle(double mouseX, double mouseY) {
