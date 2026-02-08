@@ -321,7 +321,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         newSearchbar.setResponder(this::updateQuery);
         newSearchbar.setHint(Component.translatable("rrv.search_hint"));
 
-        newSearchbar.visible = this.isEnabled();
+        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayManager.OverlayDisplay.DISABLED);
 
         this.searchbar = newSearchbar;
     }

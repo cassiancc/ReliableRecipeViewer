@@ -19,14 +19,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(EditBox.class)
 public abstract class MixinEditBox extends AbstractWidget {
 
-    public MixinEditBox(int $$0, int $$1, int $$2, int $$3, Component $$4) {
-        super($$0, $$1, $$2, $$3, $$4);
+    public MixinEditBox(int x, int y, int width, int height, Component message) {
+        super(x, y, width, height, message);
     }
 
     @WrapOperation(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"))
-    @SuppressWarnings("all")
     private void renderFilterMode(GuiGraphics instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height, Operation<Void> original) {
-        if (((Object) this) instanceof SearchBar && ItemViewOverlay.INSTANCE.isItemFilterMode()) {
+        if (((EditBox) (Object) this) instanceof SearchBar && ItemViewOverlay.INSTANCE.isItemFilterMode()) {
             instance.blitSprite(pipeline, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "widget/searchbar_filtermode"), x, y, width, height);
         } else
             original.call(instance, pipeline, sprite, x, y, width, height);

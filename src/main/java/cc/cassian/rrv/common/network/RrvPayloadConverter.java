@@ -12,6 +12,7 @@ import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitiv
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 
@@ -27,22 +28,23 @@ public class RrvPayloadConverter {
         Identifier payloadType = Identifier.parse(payloadTag.getStringOr("payloadType", ""));
         CompoundTag data = payloadTag.getCompoundOrEmpty("payloadData");
 
-        if (Minecraft.getInstance().getConnection() == null)
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        if (connection == null)
             return;
 
         if (payloadType.equals(ClientboundCacheStartPayload.TYPE.id())) {
             ClientboundCacheStartPayload p = new ClientboundCacheStartPayload(data.getIntOr("types", 0));
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundStartUpdatesPayload.TYPE.id())) {
             ClientboundStartUpdatesPayload p = new ClientboundStartUpdatesPayload();
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundTypeUpdateStartPayload.TYPE.id())) {
             ClientboundTypeUpdateStartPayload p = new ClientboundTypeUpdateStartPayload(ReliableServerRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))), data.getIntOr("amount", 0));
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundTypeUpdatePayload.TYPE.id())) {
@@ -53,32 +55,32 @@ public class RrvPayloadConverter {
             ReliableServerRecipe recipe = ServerRecipeManager.ServerRecipeEntry.fromTag(fullTag.getCompoundOrEmpty("recipe"));
 
             ClientboundTypeUpdatePayload p = new ClientboundTypeUpdatePayload(new ServerRecipeManager.ServerRecipeEntry(recipeId, recipe));
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundTypeUpdateEndPayload.TYPE.id())) {
             ClientboundTypeUpdateEndPayload p = new ClientboundTypeUpdateEndPayload(ReliableServerRecipeType.byId(Identifier.parse(data.getStringOr("recipeType", ""))));
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundFinishUpdatesPayload.TYPE.id())) {
             ClientboundFinishUpdatesPayload p = new ClientboundFinishUpdatesPayload();
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundStartStackSensitivesPayload.TYPE.id())) {
             ClientboundStartStackSensitivesPayload p = new ClientboundStartStackSensitivesPayload(data.getIntOr("amount", 0));
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundStackSensitivePayload.TYPE.id())) {
             ClientboundStackSensitivePayload p = new ClientboundStackSensitivePayload(new ItemView.StackSensitive(TagUtil.decodeItemStackOnClient(data.getCompoundOrEmpty("sensitive"))));
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
         if (payloadType.equals(ClientboundFinishStackSensitivesPayload.TYPE.id())) {
             ClientboundFinishStackSensitivesPayload p = new ClientboundFinishStackSensitivesPayload();
-            Minecraft.getInstance().getConnection().handleCustomPayload(p);
+            connection.handleCustomPayload(p);
         }
 
 

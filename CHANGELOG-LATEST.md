@@ -16,3 +16,4 @@
 - Item View scrollbar no longer overflows when set to the left panel.
 - Multiple effects clipping with the Item View.
 - Info recipes can no longer overflow.
+- Search bar no longer is hidden upon first launch with "Display when searching" is enabled.
