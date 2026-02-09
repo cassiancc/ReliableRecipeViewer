@@ -241,15 +241,25 @@ public class SlotContent {
     }
 
     /**
-	 * Moved to standardized system - see {@link ActionType}.
-     * <p>{@link Type#INGREDIENT} moved to {@link ActionType#INPUT}</p>
-     * <p>{@link Type#RESULT} moved to {@link ActionType#RESULT}</p>
-     * <p>{@link Type#ANY} moved to {@link ActionType#ANY}</p>
+	 * Standardized across codebase as {@link ActionType}.
 	 */
+    @SuppressWarnings("all")
     @Deprecated(since = "6.4.0", forRemoval = true)
     public enum Type {
+        /**
+		 * Moved to {@link ActionType#INPUT}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         INGREDIENT,
+        /**
+		 * Moved to {@link ActionType#RESULT}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         RESULT,
+        /**
+		 * Moved to {@link ActionType#ANY}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         ANY
     }
 
