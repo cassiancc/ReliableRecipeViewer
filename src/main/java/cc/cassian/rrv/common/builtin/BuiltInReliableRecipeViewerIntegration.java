@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
 import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.mixin.world.item.crafting.DyeRecipeAccessor;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
@@ -45,12 +46,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 //? if <26 {
 import net.minecraft.world.entity.npc.villager.VillagerTrades;
 //?} else {
-/*import net.minecraft.world.item.trading.TradeSet;
+/*import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.item.trading.VillagerTrades;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
@@ -61,6 +64,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.*;
@@ -290,7 +294,50 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         recipeList.add(new TransmuteServerRecipe(accessor.getInput(), accessor.getMaterial(), results));
 
                 }
+                //? if >26 {
+                /*if (recipe instanceof DyeRecipe) {
+                    DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
+                    List<ItemStack> results = new ArrayList<>();
 
+                    Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) accessor.getTarget()).getValues().unwrap();
+
+                    List<Item> ingredients = new ArrayList<>();
+                    if (ingredientContent.left().isPresent()) {
+                        SlotContent.getItemsFromTag(ingredientContent.left().get()).ifPresent(holders -> {
+                            holders.forEach(holder -> ingredients.add(holder.value()));
+                        });
+                    }
+
+
+                    if (ingredientContent.right().isPresent())
+                        ingredients.addAll(ingredientContent.right().get().stream().map(Holder::value).toList());
+					for (Item ingredient : ingredients) {
+						for (Holder<Item> value : accessor.getDye().values) {
+							DyeColor o = value.value().getDefaultInstance().get(DataComponents.DYE);
+							results.add(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(o)));
+						}
+					}
+                    recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results));
+                }
+                *///?} else {
+                if (recipe instanceof ArmorDyeRecipe) {
+                    var dyeable = SlotContent.getItemsFromTag(ItemTags.DYEABLE);
+					dyeable.ifPresent(holders -> holders.forEach(dyeableItemHolder -> {
+                        if (dyeableItemHolder.isBound()) {
+                            ArrayList<Item> inputs = new ArrayList<>();
+                            ArrayList<ItemStack> results = new ArrayList<>();
+                            BuiltInRegistries.ITEM.stream().forEach(potentialDye -> {
+                                if (potentialDye instanceof DyeItem dyeItem) {
+                                    inputs.add(potentialDye);
+                                    ItemStack result = DyedItemColor.applyDyes(dyeableItemHolder.value().getDefaultInstance(), List.of(dyeItem));
+                                    results.add(result);
+                                }
+                            });
+                            recipeList.add(new TransmuteServerRecipe(Ingredient.of(dyeableItemHolder.value()), Ingredient.of(inputs.stream()), results));
+                        }
+					}));
+                }
+                //?}
             });
 
             //Tipped arrows

@@ -46,32 +46,32 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
 
         this.shapeless = true;
         var size = recipe.getIngredients().size();
-        switch (size) {
-            case 1:
-                this.width = 1;
-                this.height = 1;
-                break;
-            case 2:
-                this.width = 2;
-                this.height = 1;
-                break;
-            case 3:
-                this.width = 3;
-                this.height = 1;
-                break;
-            case 4:
-                this.width = 2;
-                this.height = 2;
-                break;
-            case 5, 6:
-                this.width = 3;
-                this.height = 2;
-                break;
-            default:
-                this.width = 3;
-                this.height = 3;
-                break;
-        }
+		switch (size) {
+			case 1 -> {
+				this.width = 1;
+				this.height = 1;
+			}
+			case 2 -> {
+				this.width = 2;
+				this.height = 1;
+			}
+			case 3 -> {
+				this.width = 3;
+				this.height = 1;
+			}
+			case 4 -> {
+				this.width = 2;
+				this.height = 2;
+			}
+			case 5, 6 -> {
+				this.width = 3;
+				this.height = 2;
+			}
+			default -> {
+				this.width = 3;
+				this.height = 3;
+			}
+		}
 
 
         AtomicInteger i = new AtomicInteger();

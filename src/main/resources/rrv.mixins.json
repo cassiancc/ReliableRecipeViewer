@@ -19,6 +19,7 @@
     "world.entity.npc.TreasureMapForEmeraldsAccessor",
     "world.entity.npc.VillagerTradeAccessor",
     "world.item.alchemy.PotionBrewingAccessor",
+    "world.item.crafting.DyeRecipeAccessor",
     "world.item.crafting.IngredientAccessor",
     "world.item.crafting.MixinRecipeManager",
     "world.item.crafting.TransmuteRecipeAccessor",
@@ -33,7 +34,6 @@
     "defaultRequire": 1
   },
   "client": [
-    "integration.ControlifyRecipeViewScreenMixin",
     "client.MixinMinecraft",
     "client.gui.MixinGui",
     "client.gui.components.MixinEditBox",
@@ -46,6 +46,7 @@
     "client.multiplayer.MixinClientPacketListener",
     "client.renderer.entity.state.MixinEntityRenderState",
     "client.renderer.item.MixinSpecialModelWrapper",
-    "client.renderer.special.MixinSpecialModelRenderers"
+    "client.renderer.special.MixinSpecialModelRenderers",
+    "integration.ControlifyRecipeViewScreenMixin"
   ]
 }

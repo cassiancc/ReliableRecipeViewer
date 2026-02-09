@@ -1,6 +1,7 @@
 ### Added
 - Craftables can now be seen in the left panel. To quickly switch to the craftable panel, just click on the title bar.
 - Direct integration with Polydex, based on the now archived Polydex2EIV.
+- Dyeable item recipes are now present in RRV.
 - Support for 26.1-snapshot-6 and its new item tags.
 - The Item View can now be filtered by item ID using the `:` prefix (thanks @fireboy637)
 - The client recipe type icon can now be rendering dynamically using `renderIcon`. If this is not overridden, it will render an `ItemStack` as usual.
