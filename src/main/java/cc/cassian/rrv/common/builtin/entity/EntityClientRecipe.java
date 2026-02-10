@@ -143,4 +143,9 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         RrvGuiRenderHelper.renderEntityOnScreen(guiGraphics, this.previewEntity, recipePosition.left() + 67, recipePosition.top() + 2, recipePosition.left() + 67 + 28, recipePosition.top() + 2 + 28, scale, new Vector3f(0.0F, (28.0F / scale / 2.0F), 0.0F), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + partialTicks) / 180.0F * Mth.PI, 0.0F), null);
 
     }
+
+    @Override
+    public boolean isVisualOnly() {
+        return true;
+    }
 }
