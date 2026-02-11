@@ -61,13 +61,13 @@ public class NeoForgeClientEntrypoint {
     @SubscribeEvent
     public static void onMenuRegistry(RegisterEvent event) {
         event.register(Registries.MENU, menuTypeRegisterHelper -> {
-            menuTypeRegisterHelper.register(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewerClient.RECIPE_VIEW_MENU);
+            menuTypeRegisterHelper.register(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewer.RECIPE_VIEW_MENU);
         });
     }
 
     @SubscribeEvent
     public static void onMenuScreenRegistry(RegisterMenuScreensEvent event) {
-        event.register(ReliableRecipeViewerClient.RECIPE_VIEW_MENU, RecipeViewScreen::new);
+        event.register(ReliableRecipeViewer.RECIPE_VIEW_MENU, RecipeViewScreen::new);
     }
 
     @SubscribeEvent

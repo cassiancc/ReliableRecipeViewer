@@ -80,9 +80,9 @@ public class PolymerHelpers {
 	}
 
 	public static boolean isPolymerScreenOpen(LocalPlayer player) {
-		//? if fabric && <26
+		//? if fabric && <26 {
 		return (Minecraft.getInstance().screen instanceof RecipeViewScreen recipeViewScreen && recipeViewScreen.getMenu().getClientRecipeType() instanceof PolydexClientRecipeType) || (player.containerMenu instanceof FakeScreenHandler);
-		//? if >26
+		//?} else
 		//return false;
 	}
 }
