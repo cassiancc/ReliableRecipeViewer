@@ -222,7 +222,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         int colour = -1;
         if (isHoveringOverTitle(mouseX, mouseY)) {
             colour = -256;
-            guiGraphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable(pageKey + ".hint"), Component.translatable("rrv.switch_tabs.hint")), mouseX, mouseY+10);
+            guiGraphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable(pageKey + ".hint1"), Component.translatable(pageKey + ".hint2"), Component.translatable("rrv.switch_tabs.hint")), mouseX, mouseY+10);
         }
 
         if (this.fittingPerPage() > 0) {
