@@ -90,7 +90,11 @@ public class ClientRecipeManager {
 			if (RrvClientNetworkManager.canSend(ServerboundRequestRrvUpdate.TYPE)) {
 				RrvClientNetworkManager.sendPacketToServer(new ServerboundRequestRrvUpdate());
 			} else {
+				//? if fabric && >26 {
+				/*Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
+				*///?} else {
 				Minecraft.getInstance().player.displayClientMessage(Component.translatable("recipe_sync.rrv.denied"), false);
+				//?}
 			}
 		}
 
