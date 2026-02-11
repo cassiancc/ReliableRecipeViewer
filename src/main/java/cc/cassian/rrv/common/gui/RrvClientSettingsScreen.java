@@ -36,12 +36,12 @@ public class RrvClientSettingsScreen extends Screen {
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
 
         linearLayout.addChild(
-                CycleButton.<OverlayManager.OverlayDisplay>builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName())).withInitialValue(Configs.CLIENT_SETTINGS.isShowOverlays()).withValues(OverlayManager.OverlayDisplay.ENABLED, OverlayManager.OverlayDisplay.DISABLED, OverlayManager.OverlayDisplay.WHEN_SEARCHING)
+                CycleButton.<OverlayManager.OverlayDisplay>builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName())).withInitialValue(Configs.CLIENT_SETTINGS.isShowOverlays()).withValues(OverlayManager.OverlayDisplay.values())
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.itemview"),
                                 (cycleButton, b) -> OverlayManager.setOverlays(b))
         );
         linearLayout.addChild(
-                CycleButton.builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName()), Configs.CLIENT_SETTINGS.getSidePanel()).withValues(OverlayManager.SidePanel.values())
+                CycleButton.<OverlayManager.SidePanel>builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName())).withInitialValue(Configs.CLIENT_SETTINGS.getSidePanel()).withValues(OverlayManager.SidePanel.values())
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.sidepanel"),
                                 (cycleButton, b) -> Configs.CLIENT_SETTINGS.setSidePanel(b))
         );

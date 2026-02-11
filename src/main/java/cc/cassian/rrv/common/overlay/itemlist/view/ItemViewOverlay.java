@@ -211,7 +211,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event))
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event, scanCode))
                 BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
         }
 
@@ -330,12 +330,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
             this.updateSlots();
-        }, true).withTootip().sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
+        }, true).sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
         next = SpriteIconButton.builder(Component.translatable("rrv.next_page"), (button)->{
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
             this.updateSlots();
-        }, true).withTootip().sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
+        }, true).sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
 

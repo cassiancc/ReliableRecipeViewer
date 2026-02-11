@@ -18,10 +18,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
 import net.minecraft.world.entity.player.Inventory;
@@ -150,16 +148,15 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
     }
 
-
     @Override
-    protected boolean keyPressed(KeyEvent event) {
-        super.keyPressed(event);
+    protected boolean keyPressed(int keyEvent, int scanCode) {
+        super.keyPressed(keyEvent, scanCode);
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event) && showCraftables()) {
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent, scanCode) && showCraftables()) {
                 BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
             } else {
                 BookmarkManager.INSTANCE.removeItem(slot.getStack());
@@ -171,10 +168,10 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     @Override
-    protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        boolean b = super.mouseClicked(event, doubleClick);
+    protected boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean b = super.mouseClicked(mouseX, mouseY, button);
         if (b) return true;
-        if (isHoveringOverTitle(event.x(), event.y())) {
+        if (isHoveringOverTitle(mouseX, mouseY)) {
             if (showBookmarks())
                 Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.CRAFTABLES);
             else
@@ -263,12 +260,12 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
             this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
+        }, true).sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
         next = SpriteIconButton.builder(Component.literal(">"), (button)->{
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
             this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
+        }, true).sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
         back.setPosition(SidePanelOverlay.INSTANCE.itemStartX+2, 3);
         next.setPosition(SidePanelOverlay.INSTANCE.itemEndX-16, 3);
 

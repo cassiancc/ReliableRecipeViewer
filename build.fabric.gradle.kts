@@ -114,6 +114,7 @@ dependencies {
         modLocalRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
     modCompileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         modLocalRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
+        modLocalRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
     modCompileOnly("maven.modrinth:polydex:${property("deps.polydex")}")
         modLocalRuntime("maven.modrinth:polydex:${property("deps.polydex")}")
     modCompileOnly("eu.pb4:sgui:${property("deps.sgui")}")
@@ -139,6 +140,14 @@ tasks {
         from(remapJar.map { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
         dependsOn("build")
+    }
+}
+
+
+stonecutter {
+    replacements.string {
+        direction = eval(current.version, ">1.21.10")
+        replace("ResourceLocation", "Identifier")
     }
 }
 

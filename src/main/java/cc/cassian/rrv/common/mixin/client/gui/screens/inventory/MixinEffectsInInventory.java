@@ -60,7 +60,7 @@ public abstract class MixinEffectsInInventory {
 
         if (effectName.getContents() instanceof TranslatableContents translatableContents) {
             OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                    Identifier.withDefaultNamespace("mobeffect_" +  translatableContents.getKey()), x0, y0, cir.getReturnValue(), 32
+                    ResourceLocation.withDefaultNamespace("mobeffect_" +  translatableContents.getKey()), x0, y0, cir.getReturnValue(), 32
             ));
         }
 

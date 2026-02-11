@@ -24,7 +24,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -102,7 +102,7 @@ public class PolydexIntegration {
 		ServerPlayer player = context.player();
 		ActionType type = payload.openType();
 		String stringId = payload.id();
-		Identifier id = Identifier.parse(stringId);
+		ResourceLocation id = ResourceLocation.parse(stringId);
 		Optional<Item> item = BuiltInRegistries.ITEM.getOptional(id);
 		if (item.isEmpty()) return;
 		ItemStack itemStack = item.get().getDefaultInstance();

@@ -147,13 +147,13 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         if (this.hoveredSlot == null)
             return;
 
-        if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
+        if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem())
             ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.INPUT);
 
-        if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
+        if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem())
             ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.RESULT);
 
-        if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem()) {
+        if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem()) {
             BookmarkManager.INSTANCE.bookmarkItem(this.hoveredSlot.getItem());
 
         }

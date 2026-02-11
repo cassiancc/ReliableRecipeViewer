@@ -3,7 +3,7 @@ package cc.cassian.rrv.common.integration.polymer.recipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +28,7 @@ public class PolydexClientRecipeType implements ReliableClientRecipeType {
 	}
 
 	@Override
-	public @Nullable Identifier getGuiTexture() {
+	public @Nullable ResourceLocation getGuiTexture() {
 		return null;
 	}
 
@@ -43,8 +43,8 @@ public class PolydexClientRecipeType implements ReliableClientRecipeType {
 	}
 
 	@Override
-	public Identifier getId() {
-		return Identifier.fromNamespaceAndPath("polydex", "bridge");
+	public ResourceLocation getId() {
+		return ResourceLocation.fromNamespaceAndPath("polydex", "bridge");
 	}
 
 	@Override

@@ -15,7 +15,6 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -112,7 +111,7 @@ public class ItemFilters {
     }
 
     /**
-     * Filters by Identifier (item id)
+     * Filters by ResourceLocation (item id)
      * @param query The query
      * @return A list of matching item stacks
      */
@@ -137,7 +136,7 @@ public class ItemFilters {
     }
 
     /**
-     * Filters by Identifier (item id)
+     * Filters by ResourceLocation (item id)
      * @param stack The item stack
      * @param query The query
      * @return Whether the item stack matches the item id

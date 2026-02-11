@@ -100,10 +100,10 @@ public abstract class AbstractRrvOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent))
+            if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent, scanCode))
                 ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ActionType.INPUT);
 
-            if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent))
+            if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent, scanCode))
                 ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ActionType.RESULT);
 
             return true;

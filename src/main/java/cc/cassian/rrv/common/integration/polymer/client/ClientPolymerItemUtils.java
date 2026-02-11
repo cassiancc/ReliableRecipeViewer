@@ -6,7 +6,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.component.CustomData;
 public class ClientPolymerItemUtils {
     public static final String POLYMER_ID = "$polymer:stack";
     public static final String RRV_ITEM_ID = "rrv_item_id";
-    public static final String DEFAULT_ITEM_ID = Identifier.withDefaultNamespace("stone").toString();
+    public static final String DEFAULT_ITEM_ID = ResourceLocation.withDefaultNamespace("stone").toString();
 
     public static ItemStack parseToRrv(ItemStack itemStack) {
         ItemStack result = new ItemStack(Items.TRIAL_KEY);
@@ -93,7 +93,7 @@ public class ClientPolymerItemUtils {
     }
 
 	public static ItemStack getServerItem(ItemStack inputStack) {
-		return BuiltInRegistries.ITEM.getOptional(Identifier.parse(getRealItemId(inputStack))).map(ItemStack::new).orElse(inputStack);
+		return BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(getRealItemId(inputStack))).map(ItemStack::new).orElse(inputStack);
 	}
 
 	public static CustomData getCustomData(ItemStack itemStack) {

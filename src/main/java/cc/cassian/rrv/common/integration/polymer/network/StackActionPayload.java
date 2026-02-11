@@ -5,10 +5,10 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public record StackActionPayload(ActionType openType, String id) implements CustomPacketPayload {
-    public static final Identifier ID = ReliableRecipeViewer.of("stack_action");
+    public static final ResourceLocation ID = ReliableRecipeViewer.of("stack_action");
     public static final Type<StackActionPayload> PACKET_ID = new Type<>(ID);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, StackActionPayload> CODEC = StreamCodec.ofMember(

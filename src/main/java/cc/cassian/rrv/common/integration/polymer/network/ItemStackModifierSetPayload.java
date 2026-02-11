@@ -7,7 +7,7 @@ import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import xyz.nucleoid.packettweaker.PacketContext;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record ItemStackModifierSetPayload(List<ItemStack> itemStacks) implements CustomPacketPayload {
-	public static final Identifier ID = ReliableRecipeViewer.of("itemstack_modifier_set");
+	public static final ResourceLocation ID = ReliableRecipeViewer.of("itemstack_modifier_set");
 	public static final Type<ItemStackModifierSetPayload> PACKET_ID = new Type<>(ID);
 	public static final StreamCodec<RegistryFriendlyByteBuf, ItemStackModifierSetPayload> CODEC = StreamCodec.ofMember(
 			ItemStackModifierSetPayload::write,

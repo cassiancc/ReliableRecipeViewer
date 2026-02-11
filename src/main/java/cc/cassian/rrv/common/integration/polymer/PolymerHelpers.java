@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 //? fabric && <26.1 {
 import cc.cassian.rrv.common.integration.polymer.api.ItemViewModifier;
@@ -40,7 +40,7 @@ public class PolymerHelpers {
 			if (polymerStackId.isEmpty()) {
 				continue;
 			}
-			if (BuiltInRegistries.ITEM.getOptional(Identifier.parse(polymerStackId.get())).isPresent()) {
+			if (BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(polymerStackId.get())).isPresent()) {
 				continue;
 			}
 			registry.put(itemStack, next);

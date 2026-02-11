@@ -4,10 +4,10 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class JoinPayload implements CustomPacketPayload {
-	public static final Identifier ID = ReliableRecipeViewer.of("join_payload");
+	public static final ResourceLocation ID = ReliableRecipeViewer.of("join_payload");
 	public static final Type<JoinPayload> TYPE = new Type<>(ID);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, JoinPayload> CODEC = StreamCodec.ofMember(
