@@ -204,7 +204,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (this.fittingPerPage() == 0)
+        if (this.fittingPerPage() == 0 || Configs.CLIENT_SETTINGS.getSidePanel().equals(OverlayManager.SidePanel.DISABLED))
             return;
 
         guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
@@ -212,6 +212,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        if (Configs.CLIENT_SETTINGS.getSidePanel().equals(OverlayManager.SidePanel.DISABLED)) {
+            return;
+        }
 
         Minecraft client = Minecraft.getInstance();
         Font font = client.font;
