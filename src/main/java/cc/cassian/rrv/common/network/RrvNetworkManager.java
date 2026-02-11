@@ -18,6 +18,7 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 //?} else {
@@ -57,13 +58,24 @@ public class RrvNetworkManager {
     private RrvNetworkManager() {}
 
 
+    public static boolean canSend(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        //? fabric {
+        return ServerPlayNetworking.canSend(player, type);
+        //?} else {
+        /*var connection = player.connection;
+        if (connection != null)
+            return connection.hasChannel(type.id());
+        return false;
+        *///?}
+    }
+
     /**
      * Registers a new serverbound packet type
      * @param type The packet type
      * @param codec The codec for the packet
      * @param serverHandler The server payload handler
      */
-    private <T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, PayloadHandler<ServerContext, T> serverHandler) {
+    public <T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, PayloadHandler<ServerContext, T> serverHandler) {
         //? fabric {
         //? >26 {
         /*PayloadTypeRegistry.serverboundPlay()
@@ -90,7 +102,7 @@ public class RrvNetworkManager {
      * @param codec         The codec for the packet
      * @param clientHandler The client payload handler
      */
-    private static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
+    public static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
         //? fabric {
         registerClientboundPayload(type, codec);
         if (Platform.INSTANCE.isClientSide()) {
@@ -110,7 +122,7 @@ public class RrvNetworkManager {
      * @param type          The packet type
      * @param codec         The codec for the packet
      */
-    private static <T extends CustomPacketPayload> void registerClientboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
+    public static <T extends CustomPacketPayload> void registerClientboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
         //? fabric {
             //? >26 {
             /*PayloadTypeRegistry.clientboundPlay()

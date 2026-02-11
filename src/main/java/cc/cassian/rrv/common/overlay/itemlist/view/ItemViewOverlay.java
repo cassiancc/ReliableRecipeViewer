@@ -1,20 +1,28 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
+import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
+import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
+import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
-import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+//? fabric && <26.1 {
+//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,15 +31,16 @@ import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
@@ -157,7 +166,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             ArrayList<String> objects = new ArrayList<>();
 
             for (String query : newQuery.split(" ")) {
-                if (!query.startsWith("@") && !query.startsWith("#")) {
+                if (!query.startsWith("@") && !query.startsWith(":") && !query.startsWith("#")) {
                     objects.add(query);
                 }
             }
@@ -166,7 +175,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             for (String query : newQuery.split(" ")) {
                 if (query.startsWith("@")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.modId(stack, query.substring(1)));
+                    this.availableItems.removeIf(stack-> !ItemFilters.modName(stack, query.substring(1)));
+                }
+                else if (query.startsWith(":")) {
+                    this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
                 }
                 else if (query.startsWith("#")) {
                     this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
@@ -175,7 +187,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         // standard filtering
         } else {
             if (newQuery.startsWith("@"))
-                this.availableItems = ItemFilters.modId(newQuery.substring(1));
+                this.availableItems = ItemFilters.modName(newQuery.substring(1));
+            else if (newQuery.startsWith(":"))
+                this.availableItems = ItemFilters.id(newQuery.substring(1));
             else if (newQuery.startsWith("#"))
                 this.availableItems = ItemFilters.tag(newQuery.substring(1));
             else
@@ -197,8 +211,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event, scanCode))
-                ItemBookmarkOverlay.INSTANCE.bookmarkItem(slot.getStack());
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event))
+                BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
         }
 
         return false;
@@ -209,10 +223,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (this.fittingPerPage() == 0)
             return;
 
-        if (Configs.CLIENT_SETTINGS.isItemWrapMode())
-            guiGraphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, new Color(0, 0, 0, 64).getRGB());
-        else
-            guiGraphics.fill(this.effectiveX, this.effectiveY, this.effectiveX + this.effectiveWidth, this.effectiveY + this.effectiveHeight, new Color(0, 0, 0, 64).getRGB());
+        guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
     }
 
     @Override
@@ -226,10 +237,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         if (this.fittingPerPage() > 0) {
-            if (Configs.CLIENT_SETTINGS.isItemWrapMode())
-                this.drawScaledString(font, guiGraphics, page, this.x + this.width / 2, this.y + 10, -1);
-            else
-                this.drawScaledString(font, guiGraphics, page, this.effectiveX + this.effectiveWidth / 2, this.effectiveY + 10, -1);
+            this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, checkedY() + 10, -1);
         }
 
 
@@ -245,14 +253,15 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             scrollPage = .5;
         }
 
-        if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
-            guiGraphics.fill(this.x, this.y + 24, this.x + this.width, this.y + 28, new Color(255, 255, 255, 32).getRGB());
-            guiGraphics.fill(this.x, this.y + 24, (int) (this.x + (((double) this.width / getMaxPageIndex()) * (scrollPage))), this.y + 28, new Color(255, 255, 255, 255).getRGB());
-        } else {
-            guiGraphics.fill(this.effectiveX, this.effectiveY + 24, this.effectiveX + this.effectiveWidth, this.y + 28, new Color(255, 255, 255, 32).getRGB());
-            guiGraphics.fill(this.effectiveX, this.effectiveY + 24, (int) (this.effectiveX + (((double) this.effectiveWidth / getMaxPageIndex()) * (scrollPage))), this.y + 28, new Color(255, 255, 255, 255).getRGB());
-        }
+        guiGraphics.fill(checkedX(), checkedY() + 24, checkedX() + checkedWidth(), checkedY() + 28, new Color(255, 255, 255, 32).getRGB());
+        guiGraphics.fill(checkedX(), checkedY() + 24, getWidth(checkedX(), checkedWidth(), scrollPage), checkedY() + 28, new Color(255, 255, 255, 255).getRGB());
 
+    }
+
+    private int getWidth(double x, int width, double scrollPage) {
+        int i = (int) (x + (((double) width / getMaxPageIndex()) * scrollPage));
+        if (i > width && !Configs.CLIENT_SETTINGS.isRightIndex()) return width;
+        return i;
     }
 
 
@@ -310,23 +319,23 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         newSearchbar.setResponder(this::updateQuery);
         newSearchbar.setHint(Component.translatable("rrv.search_hint"));
 
-        newSearchbar.visible = this.isEnabled();
+        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayManager.OverlayDisplay.DISABLED);
 
         this.searchbar = newSearchbar;
     }
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = SpriteIconButton.builder(Component.literal("<"), (button)-> {
+        back = SpriteIconButton.builder(Component.translatable("rrv.previous_page"), (button)-> {
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
             this.updateSlots();
-        }, true).sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
-        next = SpriteIconButton.builder(Component.literal(">"), (button)->{
+        }, true).withTootip().sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
+        next = SpriteIconButton.builder(Component.translatable("rrv.next_page"), (button)->{
             int fittingPerPage = this.fittingPerPage();
             this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
             this.updateSlots();
-        }, true).sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
+        }, true).withTootip().sprite(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
 
@@ -335,17 +344,35 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         back.visible = ItemViewOverlay.INSTANCE.isEnabled();
     }
 
-    public void openRecipeView(ItemStack stack, ItemViewOpenType openType) {
+    public void openRecipeView(ItemStack stack, ActionType openType) {
         if (stack.isEmpty())
             return;
+
+        //? fabric {
+        if (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack)) {
+            MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
+            if (server != null) {
+                RegistryAccess.Frozen registryManager = server.registryAccess();
+                stack = PolymerHelpers.getRealItemStack(stack, registryManager);
+            }
+        }
+        //?}
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null)
             return;
 
-        List<ReliableClientRecipe> foundRecipes = openType.recipeProvider().retrieveRecipes(stack);
+        List<ReliableClientRecipe> foundRecipes = switch (openType) {
+			case INPUT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
+			case RESULT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingOutput(stack);
+			case ANY -> {
+                var b = ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
+                b.addAll(ClientRecipeCache.INSTANCE.getRecipesForCraftingOutput(stack));
+                yield b;
+            }
+		};
 
-        if (!foundRecipes.isEmpty()) {
+        if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack))) {
             Screen parent = Minecraft.getInstance().screen;
 
             ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
@@ -357,10 +384,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
 
-            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType == ItemViewOpenType.RESULT ? SlotContent.Type.RESULT : SlotContent.Type.INGREDIENT, viewHistory), clientPlayer.getInventory(), Component.empty()));
+            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType, viewHistory), clientPlayer.getInventory(), Component.empty()));
         }
-
-
     }
 
     public void openRecipeView(ReliableClientRecipeType clientRecipeType) {
@@ -368,6 +393,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null)
             return;
+
+        //? fabric && <26.1 {
+        if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
+            RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
+        }
+        //?}
 
         List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();;
 
@@ -383,7 +414,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
 
-            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, SlotContent.Type.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
+            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, ActionType.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
         }
 
 
@@ -406,27 +437,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 	public boolean isSearching() {
 		return searchbar != null && searchbar.isVisible() && !searchbar.getValue().isEmpty();
 	}
-
-
-    public enum ItemViewOpenType {
-        INPUT(ClientRecipeCache.INSTANCE::getRecipesForCraftingInput),
-        RESULT(ClientRecipeCache.INSTANCE::getRecipesForCraftingOutput);
-
-        final RecipeProvider recipeProvider;
-
-        ItemViewOpenType(RecipeProvider recipeProvider) {
-            this.recipeProvider = recipeProvider;
-        }
-
-        RecipeProvider recipeProvider() {
-            return this.recipeProvider;
-        }
-
-        interface RecipeProvider {
-
-            List<ReliableClientRecipe> retrieveRecipes(ItemStack stack);
-        }
-    }
 
 
 }

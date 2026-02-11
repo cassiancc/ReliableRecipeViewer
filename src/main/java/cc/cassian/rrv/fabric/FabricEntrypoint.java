@@ -3,6 +3,7 @@ package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.command.RrvCommand;
+import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
@@ -34,6 +35,11 @@ public class FabricEntrypoint implements ModInitializer {
         FabricLoader.getInstance().invokeEntrypoints("rrv", ReliableRecipeViewerPlugin.class, ReliableRecipeViewerPlugin::onIntegrationInitialize);
 
         RrvNetworkManager.INSTANCE.registerPayloads();
+
+        //? <26.1 {
+        if (ModCompat.POLYDEX)
+            cc.cassian.rrv.common.integration.polymer.PolydexIntegration.onInitialize();
+        //?}
     }
 
 

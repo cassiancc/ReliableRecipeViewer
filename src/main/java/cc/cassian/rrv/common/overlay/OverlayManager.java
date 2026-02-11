@@ -38,6 +38,19 @@ public class OverlayManager {
         public static final Codec<OverlayDisplay> CODEC = StringRepresentable.fromEnum(OverlayDisplay::values);
     }
 
+    public enum SidePanel implements StringRepresentable {
+        BOOKMARKS,
+        CRAFTABLES,
+        DISABLED;
+
+        @Override
+        public String getSerializedName() {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
+
+        public static final Codec<SidePanel> CODEC = StringRepresentable.fromEnum(SidePanel::values);
+    }
+
 
     private AbstractRrvOverlay.InventoryPositionInfo currentInvInfo = null;
 

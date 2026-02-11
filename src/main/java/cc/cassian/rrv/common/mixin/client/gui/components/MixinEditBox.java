@@ -19,8 +19,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(EditBox.class)
 public abstract class MixinEditBox extends AbstractWidget {
 
-    public MixinEditBox(int $$0, int $$1, int $$2, int $$3, Component $$4) {
-        super($$0, $$1, $$2, $$3, $$4);
+    public MixinEditBox(int x, int y, int width, int height, Component message) {
+        super(x, y, width, height, message);
     }
 
     @WrapOperation(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"))

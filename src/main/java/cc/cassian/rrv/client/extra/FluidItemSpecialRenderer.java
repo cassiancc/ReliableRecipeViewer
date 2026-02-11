@@ -50,12 +50,12 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         float renderHeight = Math.max(Math.min((float) fluidStack.amount() / (float) FluidStack.AMOUNT_FULL, 1.0F), 0.1F);
 
 
-        int color = fluid == Fluids.WATER ? Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor() : -1;
+        int color = getColor(fluid);
         Color unmodified = new Color(color);
         color = new Color(unmodified.getRed(), unmodified.getGreen(), unmodified.getBlue(), 255).getRGB();
 
         TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(fluid.defaultFluidState().createLegacyBlock()).particleIcon();
-		RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
+        RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
 
         float u0 = uvInfo.u0();
         float u1 = uvInfo.u1();
@@ -76,6 +76,10 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         vertexConsumer.addVertex(matrix4f, 1.0F, renderHeight, 0).setUv(u0 + width, v0 + height).setOverlay(overlay).setLight(light).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
         vertexConsumer.addVertex(matrix4f, 1.0F, 0, 0).setUv(u0 + width, v0).setOverlay(overlay).setLight(light).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
         poseStack.popPose();
+    }
+
+    private static int getColor(Fluid fluid) {
+        return fluid == Fluids.WATER ? Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor() : -1;
     }
 
     @Override

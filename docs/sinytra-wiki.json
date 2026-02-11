@@ -2,6 +2,7 @@
   "modid": "rrv",
   "id": "rrv",
   "platforms": {
-    "curseforge": "reliable-recipe-viewer-rrv"
+    "modrinth": "rrv",
+    "curseforge": "rrv"
   }
 }

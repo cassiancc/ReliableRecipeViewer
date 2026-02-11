@@ -1,6 +1,9 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import cc.cassian.rrv.api.ActionType;
+//? if >26 {
+/*import cc.cassian.rrv.common.recipe.util.RrvUtil;
+*///?}
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -10,7 +13,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -19,7 +21,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +34,9 @@ public class SlotContent {
     private TagKey<Item> itemTag;
 
     private ItemStack itemOrigin;
-    private SlotContent.Type originType;
+    private ActionType originType;
 
-    private Type type;
+    private ActionType type;
 
     private SlotContent(List<ItemStack> content) {
 
@@ -46,16 +47,20 @@ public class SlotContent {
         this.current = 0;
 
         this.itemOrigin = ItemStack.EMPTY;
-        this.originType = SlotContent.Type.ANY;
+        this.originType = ActionType.ANY;
 
-        this.type = Type.INGREDIENT;
+        this.type = ActionType.INPUT;
     }
 
-    public void setType(Type type) {
+    public void setType(ActionType type) {
         this.type = type;
     }
 
-    public Type getType() {
+    public void setType(Type type) {
+        this.type = ActionType.of(type);
+    }
+
+    public ActionType getType() {
         return this.type;
     }
 
@@ -70,7 +75,7 @@ public class SlotContent {
     }
 
 
-    public void bindOrigin(ItemStack stack, SlotContent.Type originType) {
+    public void bindOrigin(ItemStack stack, ActionType originType) {
         this.itemOrigin = stack.copy();
         this.originType = originType;
     }
@@ -106,7 +111,7 @@ public class SlotContent {
     public void resetPointer() {
         this.current = 0;
         this.itemOrigin = ItemStack.EMPTY;
-        this.originType = SlotContent.Type.ANY;
+        this.originType = ActionType.ANY;
     }
 
 
@@ -235,10 +240,26 @@ public class SlotContent {
         return BuiltInRegistries.ITEM.get(tag);
     }
 
-
+    /**
+	 * Standardized across codebase as {@link ActionType}.
+	 */
+    @SuppressWarnings("all")
+    @Deprecated(since = "6.4.0", forRemoval = true)
     public enum Type {
+        /**
+		 * Moved to {@link ActionType#INPUT}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         INGREDIENT,
+        /**
+		 * Moved to {@link ActionType#RESULT}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         RESULT,
+        /**
+		 * Moved to {@link ActionType#ANY}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         ANY
     }
 

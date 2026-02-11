@@ -4,7 +4,9 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
-import net.minecraft.resources.ResourceLocation;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -81,24 +83,33 @@ public class ClientRecipeCache {
 
 
     public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
+        if (ModCompat.POLYDEX && ClientPolymerItemUtils.isPolyItem(inputStack)) {
+            inputStack = ClientPolymerItemUtils.getServerItem(inputStack);
+        }
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(ResourceLocation -> {
             recipes.add(this.recipeMap.get(ResourceLocation));
         });
 
-        recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsIngredient(inputStack) && (viewRecipe.getViewType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == inputStack.getItem()) || !viewRecipe.getViewType().getCraftReferenceCondition().matches(inputStack, viewRecipe)));
+        ItemStack finalInputStack = inputStack;
+        recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsIngredient(finalInputStack) && (viewRecipe.getViewType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == finalInputStack.getItem()) || !viewRecipe.getViewType().getCraftReferenceCondition().matches(finalInputStack, viewRecipe)));
 
         return recipes;
     }
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
+        if (ClientPolymerItemUtils.isPolyItem(outputStack)) {
+            outputStack = ClientPolymerItemUtils.getServerItem(outputStack);
+        }
+
 
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(ResourceLocation -> {
             recipes.add(this.recipeMap.get(ResourceLocation));
         });
 
-        recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsResult(outputStack));
+        ItemStack finalOutputStack = outputStack;
+        recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsResult(finalOutputStack));
 
         return recipes;
     }

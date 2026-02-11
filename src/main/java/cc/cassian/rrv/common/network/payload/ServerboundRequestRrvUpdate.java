@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public record ServerboundRequestRrvUpdate() implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundRequestRrvUpdate> STREAM_CODEC = CustomPacketPayload.codec(ServerboundRequestRrvUpdate::write, ServerboundRequestRrvUpdate::new);
-    public static final CustomPacketPayload.Type<ServerboundRequestRrvUpdate> TYPE = new CustomPacketPayload.Type<ServerboundRequestRrvUpdate>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_request"));
+    public static final CustomPacketPayload.Type<ServerboundRequestRrvUpdate> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_request"));
 
     private ServerboundRequestRrvUpdate(FriendlyByteBuf friendlyByteBuf) {
         this();

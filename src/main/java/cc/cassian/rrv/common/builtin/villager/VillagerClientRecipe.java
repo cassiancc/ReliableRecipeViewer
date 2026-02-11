@@ -62,7 +62,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 
-        slotFillContext.bindDepedantSlot(0, this.offer::index, this.cost1);
+        slotFillContext.bindDependentSlot(0, this.offer::index, this.cost1);
         slotFillContext.bindSlot(1, this.cost2);
 
         slotFillContext.bindSlot(2, this.offer);

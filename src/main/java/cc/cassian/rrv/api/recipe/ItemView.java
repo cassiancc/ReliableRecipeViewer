@@ -1,6 +1,7 @@
 package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.CommonTags;
+import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.TagUtil;
@@ -237,7 +238,7 @@ public class ItemView {
      * @param stack The ingredient stack
      */
     public static void openForStackIngredient(ItemStack stack) {
-        ItemViewOverlay.INSTANCE.openRecipeView(stack, ItemViewOverlay.ItemViewOpenType.INPUT);
+        ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.INPUT);
     }
 
     /**
@@ -245,7 +246,7 @@ public class ItemView {
      * @param stack The result stack
      */
     public static void openForStackResult(ItemStack stack) {
-        ItemViewOverlay.INSTANCE.openRecipeView(stack, ItemViewOverlay.ItemViewOpenType.RESULT);
+        ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.RESULT);
     }
 
     /**

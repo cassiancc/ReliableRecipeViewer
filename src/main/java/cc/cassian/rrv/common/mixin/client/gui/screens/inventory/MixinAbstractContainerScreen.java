@@ -1,10 +1,12 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens.inventory;
 
+import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
-import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
 import cc.cassian.rrv.common.overlay.OverlayManager;
+import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.Minecraft;
@@ -145,14 +147,14 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         if (this.hoveredSlot == null)
             return;
 
-        if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem())
-            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ItemViewOverlay.ItemViewOpenType.INPUT);
+        if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
+            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.INPUT);
 
-        if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem())
-            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ItemViewOverlay.ItemViewOpenType.RESULT);
+        if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem())
+            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.RESULT);
 
-        if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyCode, scanCode) && this.hoveredSlot.hasItem()) {
-            ItemBookmarkOverlay.INSTANCE.bookmarkItem(this.hoveredSlot.getItem());
+        if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(keyEvent) && this.hoveredSlot.hasItem()) {
+            BookmarkManager.INSTANCE.bookmarkItem(this.hoveredSlot.getItem());
 
         }
     }

@@ -76,6 +76,21 @@ repositories {
             includeGroupAndSubgroups("org.quiltmc.parsers")
         }
     }
+    maven {
+        name = "Nucleoid Maven (Polymer)"
+        url = uri("https://maven.nucleoid.xyz/releases")
+        content {
+            includeGroupAndSubgroups("eu.pb4")
+            includeGroupAndSubgroups("xyz.nucleoid")
+        }
+    }
+    maven {
+        name = "Modrinth"
+        url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroupAndSubgroups("maven.modrinth")
+        }
+    }
     mavenCentral()
 }
 
@@ -89,12 +104,26 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     modCompileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
-    modLocalRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
+        modLocalRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
     modCompileOnly("dev.isxander:controlify:${property("deps.controlify")}"){
         exclude(group = "maven.modrinth")
     }
     modCompileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+    modCompileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
+        modLocalRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
+    modCompileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
+        modLocalRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
+    modCompileOnly("maven.modrinth:polydex:${property("deps.polydex")}")
+        modLocalRuntime("maven.modrinth:polydex:${property("deps.polydex")}")
+    modCompileOnly("eu.pb4:sgui:${property("deps.sgui")}")
+        modLocalRuntime("eu.pb4:sgui:${property("deps.sgui")}")
+        modLocalRuntime("eu.pb4:placeholder-api:${property("deps.placeholder")}")
+        modLocalRuntime("eu.pb4:predicate-api:${property("deps.predicate")}")
+        modLocalRuntime("eu.pb4:sidebar-api:${property("deps.sidebar")}")
+        modLocalRuntime("eu.pb4:player-data-api:${property("deps.player_data")}")
+        modLocalRuntime("me.lucko:fabric-permissions-api:${property("deps.permissions_api")}")
+        modLocalRuntime("xyz.nucleoid:server-translations-api:${property("deps.server_translations")}")
 
     val modules = listOf("command-api-v2", "key-binding-api-v1", "item-api-v1", "rendering-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
     for (it in modules) modImplementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))

@@ -3,6 +3,7 @@ package cc.cassian.rrv.client;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 //? fabric {
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -47,6 +48,8 @@ public class RrvClientNetworkManager {
     public static void handleClientboundUpdateTransferCachePayload(RrvClientNetworkManager.ClientContext context, ClientboundUpdateTransferCachePayload payload) {
         if (Minecraft.getInstance().screen instanceof RecipeViewScreen viewScreen)
             viewScreen.getMenu().updateTransferCache();
+        if (SidePanelOverlay.showCraftables())
+            SidePanelOverlay.INSTANCE.updateQuery();
     }
 
     /**

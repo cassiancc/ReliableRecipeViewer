@@ -1,19 +1,16 @@
 package cc.cassian.rrv.client;
 
 import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.overlay.itemlist.bookmark.ItemBookmarkOverlay;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
-import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.inventory.MenuType;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -23,9 +20,6 @@ import static cc.cassian.rrv.common.ReliableRecipeViewer.MOD_ID;
 public class ReliableRecipeViewerClient {
 
     public static final ModelLayerLocation FLUID_ITEM_MODEL_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, "fluiditem"), "inventory");
-
-    public static final MenuType<RecipeViewMenu> RECIPE_VIEW_MENU = new MenuType<>(RecipeViewMenu::new, FeatureFlagSet.of());
-
 
     public static final String RRV_CATEGORY = "key.category.rrv.rrv";
     public static final String RRV_ADMIN_CATEGORY = "key.category.rrv.rrv_admin";
@@ -50,7 +44,7 @@ public class ReliableRecipeViewerClient {
 
     public static void bootstrap() {
         OverlayManager.registerOverlay(ItemViewOverlay.INSTANCE);
-        OverlayManager.registerOverlay(ItemBookmarkOverlay.INSTANCE);
+        OverlayManager.registerOverlay(SidePanelOverlay.INSTANCE);
     }
 
     public static Platform resolver() {

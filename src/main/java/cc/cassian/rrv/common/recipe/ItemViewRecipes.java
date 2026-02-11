@@ -42,7 +42,8 @@ public class ItemViewRecipes {
     /**
      * A map of items by fluid
      */
-    private final HashMap<Fluid, Item> fluidItemMap;
+    @ApiStatus.Internal
+    public final HashMap<Fluid, Item> fluidItemMap;
 
     private ItemViewRecipes() {
         this.recipeWrappers = new HashMap<>();

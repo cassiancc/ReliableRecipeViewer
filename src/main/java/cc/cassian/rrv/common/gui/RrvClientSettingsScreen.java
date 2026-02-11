@@ -40,6 +40,11 @@ public class RrvClientSettingsScreen extends Screen {
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.itemview"),
                                 (cycleButton, b) -> OverlayManager.setOverlays(b))
         );
+        linearLayout.addChild(
+                CycleButton.builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName()), Configs.CLIENT_SETTINGS.getSidePanel()).withValues(OverlayManager.SidePanel.values())
+                        .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.sidepanel"),
+                                (cycleButton, b) -> Configs.CLIENT_SETTINGS.setSidePanel(b))
+        );
 
 
 
@@ -48,7 +53,6 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout, Component.translatable("rrv.client_settings.append_namespace.show"), Component.translatable("rrv.client_settings.append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), Component.translatable("rrv.client_settings.append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.right_index.right"), Component.translatable("rrv.client_settings.right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), Component.translatable("rrv.client_settings.right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.center_search.centered"), Component.translatable("rrv.client_settings.center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), Component.translatable("rrv.client_settings.center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
-        addChild(linearLayout, Component.translatable("rrv.client_settings.bookmarks.show"), Component.translatable("rrv.client_settings.bookmarks.hide"), Configs.CLIENT_SETTINGS.isShowBookmarks(), Component.translatable("rrv.client_settings.bookmarks"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowBookmarks(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.index_source.creative"), Component.translatable("rrv.client_settings.index_source.registry"), Configs.CLIENT_SETTINGS.isCreativeIndexSource(), Component.translatable("rrv.client_settings.index_source"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCreativeIndexSource(b));
 
         this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build());
@@ -67,10 +71,9 @@ public class RrvClientSettingsScreen extends Screen {
 
 
     @Override
-    public void render(GuiGraphics guiGraphics, int i, int j, float f) {
-        super.render(guiGraphics, i, j, f);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
-
 
     @Override
     public void onClose() {
