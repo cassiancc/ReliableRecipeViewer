@@ -78,5 +78,10 @@ public class NeoforgePlatformImpl implements Platform {
         .getModFileById(mod) != null;
     }
 
+    @Override
+    public boolean isDevelopment() {
+        return !FMLLoader.getCurrent().isProduction();
+    }
+
 }
 *///?}

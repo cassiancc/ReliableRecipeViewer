@@ -40,4 +40,6 @@ public interface Platform {
     boolean isClientSide();
 
 	boolean isLoadingLoaded(String mod);
+
+	boolean isDevelopment();
 }
