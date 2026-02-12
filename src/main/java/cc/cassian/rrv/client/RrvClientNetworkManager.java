@@ -46,10 +46,12 @@ public class RrvClientNetworkManager {
     }
 
     public static void handleClientboundUpdateTransferCachePayload(RrvClientNetworkManager.ClientContext context, ClientboundUpdateTransferCachePayload payload) {
-        if (Minecraft.getInstance().screen instanceof RecipeViewScreen viewScreen)
-            viewScreen.getMenu().updateTransferCache();
-        if (SidePanelOverlay.showCraftables())
-            SidePanelOverlay.INSTANCE.updateQuery();
+        if (Minecraft.getInstance().screen instanceof RecipeViewScreen viewScreen) {
+			viewScreen.getMenu().updateTransferCache();
+            if (SidePanelOverlay.showCraftables()) {
+				SidePanelOverlay.INSTANCE.updateSidePanelIndex("an update to the inventory!");
+			}
+		}
     }
 
     /**

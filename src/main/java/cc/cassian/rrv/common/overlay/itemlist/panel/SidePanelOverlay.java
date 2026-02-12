@@ -4,7 +4,6 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.overlay.ItemSlot;
@@ -22,11 +21,8 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
-import net.minecraft.util.CommonColors;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 import java.util.List;
@@ -69,7 +65,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     public void onScreenChanged(InventoryPositionInfo info) {
         this.initForScreen(info.screen(), info);
         super.onScreenChanged(info);
-        this.updateQuery();
+        this.updateSidePanelIndex("a screen change!" + info.screen());
         this.createButtons(OverlayManager.INSTANCE.currentInfo());
     }
 
@@ -107,7 +103,8 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     /**
      * Updates the list of item slots
      */
-	public void updateQuery() {
+	public void updateSidePanelIndex(String reason) {
+        ReliableRecipeViewer.LOGGER.info("Updating side panel index due to %s".formatted(reason));
         this.availableItems.clear();
         if (showCraftables()) {
             if (Minecraft.getInstance().player == null || (ModCompat.POLYDEX && PolymerHelpers.isPolymerScreenOpen(Minecraft.getInstance().player))) {
@@ -179,7 +176,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.CRAFTABLES);
             else
                 Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.BOOKMARKS);
-            updateQuery();
+            updateSidePanelIndex("a mouse click on the title!");
         }
         return false;
     }
