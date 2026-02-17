@@ -80,7 +80,7 @@ public class NeoforgePlatformImpl implements Platform {
 
     @Override
     public boolean isDevelopment() {
-        return !FMLLoader.getCurrent().isProduction();
+        return !FMLLoader.isProduction();
     }
 
 }
