@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.overlay;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import com.mojang.serialization.Codec;
@@ -250,7 +251,7 @@ public class OverlayManager {
     public void renderAll(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.render(guiGraphics, mouseX, mouseY, partialTicks));
 
-        if (Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
+        if (Platform.INSTANCE.isDevelopment() && Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
             this.renderDebug(guiGraphics, mouseX, mouseY, partialTicks);
     }
 

@@ -67,6 +67,11 @@ public class FabricPlatformImpl implements Platform {
         return isModLoaded(mod);
     }
 
+    @Override
+    public boolean isDevelopment() {
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
+    }
+
 
 }
 //?}
