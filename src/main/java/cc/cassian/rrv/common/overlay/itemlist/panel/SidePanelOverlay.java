@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.panel;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -104,7 +105,8 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(String reason) {
-        ReliableRecipeViewer.LOGGER.info("Updating side panel index due to %s".formatted(reason));
+        if (Platform.INSTANCE.isDevelopment())
+            ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
         this.availableItems.clear();
         if (showCraftables()) {
             if (Minecraft.getInstance().player == null || (ModCompat.POLYDEX && PolymerHelpers.isPolymerScreenOpen(Minecraft.getInstance().player))) {
