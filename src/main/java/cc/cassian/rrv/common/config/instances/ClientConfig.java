@@ -1,19 +1,20 @@
 package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
-import cc.cassian.rrv.common.overlay.OverlayManager;
+import cc.cassian.rrv.common.config.options.OverlayDisplay;
+import cc.cassian.rrv.common.config.options.SidePanel;
+import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
 
-
-
-	private OverlayManager.OverlayDisplay showOverlays = OverlayManager.OverlayDisplay.ENABLED;
-	private OverlayManager.SidePanel sidePanel = OverlayManager.SidePanel.BOOKMARKS;
+	private OverlayDisplay showOverlays = OverlayDisplay.ENABLED;
+	private SidePanel sidePanel = SidePanel.BOOKMARKS;
 	private boolean background = true;
 	private boolean itemWrapMode = true;
+	private WrapScrolling wrapScrolling = WrapScrolling.ON_BUTTONS;
 	private boolean appendModNamespace = true;
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
@@ -65,26 +66,28 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	@Override
 	protected void loadData() {
-		this.showOverlays = OverlayManager.OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)->OverlayManager.OverlayDisplay.ENABLED);
+		this.showOverlays = OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)-> OverlayDisplay.ENABLED);
 		this.background = this.data().get("background").getAsBoolean();
 		this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
 		this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
 		this.rightIndex = this.data().get("rightIndex").getAsBoolean();
 		this.centerSearch = this.data().get("centerSearch").getAsBoolean();
 		this.creativeIndexSource = this.data().get("indexSource").getAsBoolean();
-		this.sidePanel = OverlayManager.SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)->OverlayManager.SidePanel.BOOKMARKS);
+		this.wrapScrolling = WrapScrolling.CODEC.decode(JsonOps.INSTANCE, this.data().get("wrapScrolling")).mapOrElse(Pair::getFirst, (e)->WrapScrolling.ON_BUTTONS);
+		this.sidePanel = SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)-> SidePanel.BOOKMARKS);
 	}
 
 	@Override
 	protected void saveData() {
-		this.data().add("enabled", OverlayManager.OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showOverlays).getOrThrow());
+		this.data().add("enabled", OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showOverlays).getOrThrow());
 		this.data().addProperty("background", this.background);
 		this.data().addProperty("itemWrapMode", this.itemWrapMode);
 		this.data().addProperty("appendModNamespace", this.appendModNamespace);
 		this.data().addProperty("rightIndex", this.rightIndex);
 		this.data().addProperty("centerSearch", this.centerSearch);
 		this.data().addProperty("indexSource", this.creativeIndexSource);
-		this.data().add("sidePanel", OverlayManager.SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
+		this.data().add("wrapScrolling", WrapScrolling.CODEC.encodeStart(JsonOps.INSTANCE, this.wrapScrolling).getOrThrow());
+		this.data().add("sidePanel", SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
 
 	}
 
@@ -97,19 +100,27 @@ public class ClientConfig extends AbstractRrvConfig {
 		ServerRecipeManager.INSTANCE.reload();
 	}
 
-	public OverlayManager.OverlayDisplay isShowOverlays() {
+	public OverlayDisplay isShowOverlays() {
 		return showOverlays;
 	}
 
-	public void setShowOverlays(OverlayManager.OverlayDisplay showOverlays) {
+	public void setShowOverlays(OverlayDisplay showOverlays) {
 		this.showOverlays = showOverlays;
 	}
 
-	public OverlayManager.SidePanel getSidePanel() {
+	public SidePanel getSidePanel() {
 		return sidePanel;
 	}
 
-	public void setSidePanel(OverlayManager.SidePanel showCraftables) {
+	public void setSidePanel(SidePanel showCraftables) {
 		this.sidePanel = showCraftables;
+	}
+
+	public WrapScrolling isWrapScrolling() {
+		return wrapScrolling;
+	}
+
+	public void setWrapScrolling(WrapScrolling wrapScrolling) {
+		this.wrapScrolling = wrapScrolling;
 	}
 }

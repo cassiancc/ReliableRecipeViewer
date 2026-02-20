@@ -8,6 +8,7 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
@@ -291,8 +292,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void createSearchbarElement(InventoryPositionInfo info) {
         boolean wrapMode = Configs.CLIENT_SETTINGS.isItemWrapMode();
 
-
-
         int boxWidth;
         int x;
         if (Configs.CLIENT_SETTINGS.isCenterSearch()) {
@@ -321,23 +320,15 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         newSearchbar.setResponder(this::updateQuery);
         newSearchbar.setHint(Component.translatable("rrv.search_hint"));
 
-        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayManager.OverlayDisplay.DISABLED);
+        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.DISABLED);
 
         this.searchbar = newSearchbar;
     }
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = SpriteIconButton.builder(Component.translatable("rrv.previous_page"), (button)-> {
-            int fittingPerPage = this.fittingPerPage();
-            this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
-            this.updateSlots();
-        }, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
-        next = SpriteIconButton.builder(Component.translatable("rrv.next_page"), (button)->{
-            int fittingPerPage = this.fittingPerPage();
-            this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
-            this.updateSlots();
-        }, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
+        back = SpriteIconButton.builder(Component.translatable("rrv.previous_page"), this::prevPage, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
+        next = SpriteIconButton.builder(Component.translatable("rrv.next_page"), this::nextPage, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
 
@@ -439,6 +430,4 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 	public boolean isSearching() {
 		return searchbar != null && searchbar.isVisible() && !searchbar.getValue().isEmpty();
 	}
-
-
 }

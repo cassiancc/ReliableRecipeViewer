@@ -1,6 +1,9 @@
 package cc.cassian.rrv.common.gui;
 
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.OverlayDisplay;
+import cc.cassian.rrv.common.config.options.SidePanel;
+import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -36,12 +39,12 @@ public class RrvClientSettingsScreen extends Screen {
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
 
         linearLayout.addChild(
-                CycleButton.builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName()), Configs.CLIENT_SETTINGS.isShowOverlays()).withValues(OverlayManager.OverlayDisplay.values())
+                CycleButton.builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName()), Configs.CLIENT_SETTINGS.isShowOverlays()).withValues(OverlayDisplay.values())
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.itemview"),
                                 (cycleButton, b) -> OverlayManager.setOverlays(b))
         );
         linearLayout.addChild(
-                CycleButton.builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName()), Configs.CLIENT_SETTINGS.getSidePanel()).withValues(OverlayManager.SidePanel.values())
+                CycleButton.builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName()), Configs.CLIENT_SETTINGS.getSidePanel()).withValues(SidePanel.values())
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.sidepanel"),
                                 (cycleButton, b) -> Configs.CLIENT_SETTINGS.setSidePanel(b))
         );
@@ -50,6 +53,12 @@ public class RrvClientSettingsScreen extends Screen {
 
         addChild(linearLayout, Component.translatable("rrv.client_settings.background.enabled"), Component.translatable("rrv.client_settings.background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), Component.translatable("rrv.client_settings.background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.resize_mode.wrap"), Component.translatable("rrv.client_settings.resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), Component.translatable("rrv.client_settings.resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
+        linearLayout.addChild(
+                CycleButton.builder((sidePanel)-> Component.translatable("rrv.client_settings.wrap_scrolling."+sidePanel.getSerializedName()), Configs.CLIENT_SETTINGS.isWrapScrolling()).withValues(WrapScrolling.values())
+                        .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.wrap_scrolling"),
+                                (cycleButton, b) -> Configs.CLIENT_SETTINGS.setWrapScrolling(b))
+        );
+
         addChild(linearLayout, Component.translatable("rrv.client_settings.append_namespace.show"), Component.translatable("rrv.client_settings.append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), Component.translatable("rrv.client_settings.append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.right_index.right"), Component.translatable("rrv.client_settings.right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), Component.translatable("rrv.client_settings.right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.center_search.centered"), Component.translatable("rrv.client_settings.center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), Component.translatable("rrv.client_settings.center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));

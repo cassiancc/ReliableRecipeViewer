@@ -91,6 +91,10 @@
   "rrv.client_settings.index_source": "Index Source",
   "rrv.client_settings.index_source.creative": "Creative",
   "rrv.client_settings.index_source.registry": "Registry",
+  "rrv.client_settings.wrap_scrolling": "Wrap Scrolling",
+  "rrv.client_settings.wrap_scrolling.enabled": "Enabled",
+  "rrv.client_settings.wrap_scrolling.disabled": "Disabled",
+  "rrv.client_settings.wrap_scrolling.on_buttons": "On Buttons",
 
   "tag.item.minecraft.acacia_logs": "Acacia Logs",
   "tag.item.minecraft.anvil": "Anvils",

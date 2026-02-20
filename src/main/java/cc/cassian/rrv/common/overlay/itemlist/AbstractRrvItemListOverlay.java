@@ -2,16 +2,20 @@ package cc.cassian.rrv.common.overlay.itemlist;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
 
 public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
@@ -61,17 +65,40 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         if (fittingPerPage == 0)
             return true;
 
-        if (scrolledY < 0 && this.startIndex + fittingPerPage < this.availableItems().size())
-            this.startIndex = this.startIndex + fittingPerPage;
+        if (scrolledY < 0)
+            nextPage(null);
 
         if (scrolledY > 0)
-            this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
+            prevPage(null);
 
         if (scrolledY != 0)
             this.updateSlots();
 
 
         return true;
+    }
+
+    protected void prevPage(Button button) {
+        int fittingPerPage = this.fittingPerPage();
+        if (this.startIndex == 0 && shouldWrapScroll(button)) {
+            int size = this.availableItems.size();
+            this.startIndex = size - (size - (size / fittingPerPage) * fittingPerPage);
+        } else {
+            this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
+        }
+
+        this.updateSlots();
+    }
+
+    protected void nextPage(Button button) {
+        var currentIndex = this.startIndex;
+        int fittingPerPage = this.fittingPerPage();
+        int size = this.availableItems.size();
+        this.startIndex = Math.min(this.startIndex + fittingPerPage, size - (size - (size / fittingPerPage) * fittingPerPage));
+        if (currentIndex == this.startIndex && shouldWrapScroll(button)) {
+            this.startIndex = 0;
+        }
+        this.updateSlots();
     }
 
     @Override

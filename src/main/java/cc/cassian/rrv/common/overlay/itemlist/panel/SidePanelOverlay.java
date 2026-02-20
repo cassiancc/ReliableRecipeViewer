@@ -5,6 +5,7 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.overlay.ItemSlot;
@@ -175,9 +176,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (b) return true;
         if (isHoveringOverTitle(event.x(), event.y())) {
             if (showBookmarks())
-                Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.CRAFTABLES);
+                Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.CRAFTABLES);
             else
-                Configs.CLIENT_SETTINGS.setSidePanel(OverlayManager.SidePanel.BOOKMARKS);
+                Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
             updateSidePanelIndex("a mouse click on the title!");
         }
         return false;
@@ -194,16 +195,16 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     public static boolean showBookmarks() {
-        return Configs.CLIENT_SETTINGS.getSidePanel().equals(OverlayManager.SidePanel.BOOKMARKS);
+        return Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.BOOKMARKS);
     }
 
     public static boolean showCraftables() {
-        return Configs.CLIENT_SETTINGS.getSidePanel().equals(OverlayManager.SidePanel.CRAFTABLES);
+        return Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.CRAFTABLES);
     }
 
     @Override
     protected void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (this.fittingPerPage() == 0 || Configs.CLIENT_SETTINGS.getSidePanel().equals(OverlayManager.SidePanel.DISABLED))
+        if (this.fittingPerPage() == 0 || Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED))
             return;
 
         guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
@@ -211,7 +212,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (Configs.CLIENT_SETTINGS.getSidePanel().equals(OverlayManager.SidePanel.DISABLED)) {
+        if (Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED)) {
             return;
         }
 
