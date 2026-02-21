@@ -1,3 +1,8 @@
+## [6.4.2]
+
+### Fixed
+- Log spam from side panel.
+
 ## [6.4.1]
 
 ### Added
