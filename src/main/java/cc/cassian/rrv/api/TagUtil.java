@@ -156,6 +156,9 @@ public class TagUtil {
         if (ingredient instanceof FabricIngredient fabricIngredient) {
             CustomIngredient customIngredient = fabricIngredient.getCustomIngredient();
             if (customIngredient != null) {
+                //? >26 {
+                /*Stream<Holder<Item>> matchingItems = customIngredient.items();
+                *///?} else
                 Stream<Holder<Item>> matchingItems = customIngredient.getMatchingItems();
                 tag.put("items", TagUtil.createItemList(matchingItems.filter(Holder::isBound).map(Holder::value).toList()));
             }
