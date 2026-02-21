@@ -4,7 +4,11 @@ import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.datafixers.util.Either;
-import net.minecraft.client.Minecraft;
+//? fabric {
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
+import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
+//?}
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -22,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Helper class for network encoding based on CompoundTags
@@ -147,7 +152,20 @@ public class TagUtil {
         if(ingredientContent.right().isEmpty())
             return new CompoundTag();
 
-        tag.put("items", TagUtil.createItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList()));
+        //? fabric {
+        if (ingredient instanceof FabricIngredient fabricIngredient) {
+            CustomIngredient customIngredient = fabricIngredient.getCustomIngredient();
+            if (customIngredient != null) {
+                Stream<Holder<Item>> matchingItems = customIngredient.getMatchingItems();
+                tag.put("items", TagUtil.createItemList(matchingItems.filter(Holder::isBound).map(Holder::value).toList()));
+            }
+        }
+        //?}
+
+        if (!tag.contains("items")) {
+            tag.put("items", TagUtil.createItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList()));
+        }
+
         return tag;
     }
 
