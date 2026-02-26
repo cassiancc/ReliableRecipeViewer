@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
@@ -420,16 +421,18 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
         //?}
 
-        ItemView.addServerRecipeProvider(recipeList -> {
-            BuiltInRegistries.ITEM.forEach(item -> {
-                var stack = item.getDefaultInstance();
-                if (stack.has(DataComponents.REPAIRABLE)) {
-                    Repairable repairable = stack.get(DataComponents.REPAIRABLE);
-					var damagedStack = stack.copy();
-					damagedStack.setDamageValue(stack.getMaxDamage() / 2);
-					recipeList.add(new RepairingServerRecipe(damagedStack, Ingredient.of(repairable.items()), stack));
-                }
-            });
+        ItemView.addServerRecipeProvider(BuiltInReliableRecipeViewerIntegration::addRepairRecipes);
+    }
+
+    private static void addRepairRecipes(List<ReliableServerRecipe> recipeList) {
+        BuiltInRegistries.ITEM.forEach(item -> {
+            var stack = item.getDefaultInstance();
+            if (stack.has(DataComponents.REPAIRABLE)) {
+                Repairable repairable = stack.get(DataComponents.REPAIRABLE);
+                var damagedStack = stack.copy();
+                damagedStack.setDamageValue(stack.getMaxDamage() / 2);
+                recipeList.add(new RepairingServerRecipe(damagedStack, Ingredient.of(repairable.items()), stack));
+            }
         });
     }
 
