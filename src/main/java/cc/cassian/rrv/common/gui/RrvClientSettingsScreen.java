@@ -58,25 +58,25 @@ public class RrvClientSettingsScreen extends Screen {
 
     private <T extends StringRepresentable> void addChild(LinearLayout linearLayout, String key, T initialValue, T[] values, CycleButton.OnValueChange<T> newValueSetter) {
         //? if >1.21.10 {
-                linearLayout.addChild(
+                /*linearLayout.addChild(
                 CycleButton.builder((value)-> Component.translatable(key+"."+value.getSerializedName()), initialValue).withValues(values)
                         .create(0, 0, 250, 20, Component.translatable(key), newValueSetter)
         );
-        //?} else {
-        /*linearLayout.addChild(
+        *///?} else {
+        linearLayout.addChild(
                 CycleButton.<T>builder((overlayDisplay)-> Component.translatable(key+"."+overlayDisplay.getSerializedName())).withInitialValue(initialValue).withValues(values)
                         .create(0, 0, 250, 20, Component.translatable(key), newValueSetter)
         );
-        *///?}
+        //?}
 
 	}
 
     private void addChild(LinearLayout linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter) {
         //? >1.21.10 {
-        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
-        //?} else {
-        /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
-         *///?}
+        /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
+        *///?} else {
+        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
+         //?}
     }
 
 

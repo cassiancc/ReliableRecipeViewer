@@ -327,8 +327,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), this::prevPage);
-        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), this::nextPage);
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), this::prevPage);
+        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), this::nextPage);
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 5);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 5);
 
