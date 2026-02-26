@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.Map;
 
 //? <26 {
-/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
+import net.minecraft.world.entity.npc.VillagerTrades;
 
 @Mixin(VillagerTrades.EmeraldsForVillagerTypeItem.class)
 public interface EmeraldsForVillagerTypeItemAccessor {
@@ -29,8 +29,8 @@ public interface EmeraldsForVillagerTypeItemAccessor {
     int getCost();
 
 }
-*///?} else {
-@Mixin(VillagerType.class)
+//?} else {
+/*@Mixin(VillagerType.class)
 public interface EmeraldsForVillagerTypeItemAccessor {
 }
-//?}
+*///?}

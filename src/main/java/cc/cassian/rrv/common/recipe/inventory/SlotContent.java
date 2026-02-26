@@ -2,8 +2,8 @@ package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
 //? if >26 {
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
-//?}
+/*import cc.cassian.rrv.common.recipe.util.RrvUtil;
+*///?}
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -199,11 +199,11 @@ public class SlotContent {
     }
 
     //? >26 {
-    public static SlotContent of(net.minecraft.world.item.ItemStackTemplate stack) {
+    /*public static SlotContent of(net.minecraft.world.item.ItemStackTemplate stack) {
         if (stack == null) return SlotContent.of();
         return new SlotContent(List.of(RrvUtil.decodeTemplate(stack)));
     }
-    //?}
+    *///?}
 
     public static SlotContent of(List<ItemStack> stacks) {
         if (stacks == null) return SlotContent.of();

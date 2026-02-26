@@ -37,9 +37,9 @@ public class FabricEntrypoint implements ModInitializer {
         RrvNetworkManager.INSTANCE.registerPayloads();
 
         //? <26.1 {
-        /*if (ModCompat.POLYDEX)
+        if (ModCompat.POLYDEX)
             cc.cassian.rrv.common.integration.polymer.PolydexIntegration.onInitialize();
-        *///?}
+        //?}
     }
 
 

@@ -130,7 +130,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
 
 
     @Inject(method = "keyPressed", at = @At("TAIL"), cancellable = true)
-    private void injectOverlay$3(KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir) {
+    private void injectOverlay$3(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
 
         if (OverlayManager.INSTANCE.isTextWidgetFocused() && this.getFocused() instanceof EditBox box) {
             box.keyPressed(keyCode, scanCode, modifiers);
@@ -160,9 +160,9 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         }
     }
 
-    @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z"))
-    private boolean injectOverlay$3(AbstractContainerScreen<?> instance, MouseButtonEvent mouseButtonEvent, boolean b, Operation<Boolean> original){
-        return super.mouseClicked(mouseButtonEvent, b) | OverlayManager.INSTANCE.mouseClicked(mouseButtonEvent, b);
+    @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseClicked(DDI)Z"))
+    private boolean injectOverlay$3(AbstractContainerScreen instance, double k, double v, int i, Operation<Boolean> original){
+        return super.mouseClicked(k, v, i) | OverlayManager.INSTANCE.mouseClicked(k, v, i);
     }
 
 

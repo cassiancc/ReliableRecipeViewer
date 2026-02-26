@@ -1,5 +1,5 @@
 //? fabric && <26.1 {
-/*package cc.cassian.rrv.common.integration.polymer;
+package cc.cassian.rrv.common.integration.polymer;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.common.Platform;
@@ -119,4 +119,4 @@ public class PolydexIntegration {
 
 
 }
-*///?}
+//?}

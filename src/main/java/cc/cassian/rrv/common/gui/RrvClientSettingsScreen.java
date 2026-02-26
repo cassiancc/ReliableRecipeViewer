@@ -39,12 +39,12 @@ public class RrvClientSettingsScreen extends Screen {
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
 
         linearLayout.addChild(
-                CycleButton.builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName()), Configs.CLIENT_SETTINGS.isShowOverlays()).withValues(OverlayDisplay.values())
+                CycleButton.<OverlayDisplay>builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName())).withValues(OverlayDisplay.values()).withInitialValue(Configs.CLIENT_SETTINGS.isShowOverlays())
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.itemview"),
                                 (cycleButton, b) -> OverlayManager.setOverlays(b))
         );
         linearLayout.addChild(
-                CycleButton.builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName()), Configs.CLIENT_SETTINGS.getSidePanel()).withValues(SidePanel.values())
+                CycleButton.<SidePanel>builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName())).withValues(SidePanel.values()).withInitialValue(Configs.CLIENT_SETTINGS.getSidePanel())
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.sidepanel"),
                                 (cycleButton, b) -> Configs.CLIENT_SETTINGS.setSidePanel(b))
         );
@@ -54,7 +54,7 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout, Component.translatable("rrv.client_settings.background.enabled"), Component.translatable("rrv.client_settings.background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), Component.translatable("rrv.client_settings.background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.resize_mode.wrap"), Component.translatable("rrv.client_settings.resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), Component.translatable("rrv.client_settings.resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
         linearLayout.addChild(
-                CycleButton.builder((sidePanel)-> Component.translatable("rrv.client_settings.wrap_scrolling."+sidePanel.getSerializedName()), Configs.CLIENT_SETTINGS.isWrapScrolling()).withValues(WrapScrolling.values())
+                CycleButton.<WrapScrolling>builder((sidePanel)-> Component.translatable("rrv.client_settings.wrap_scrolling."+sidePanel.getSerializedName())).withValues(WrapScrolling.values()).withInitialValue(Configs.CLIENT_SETTINGS.isWrapScrolling())
                         .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.wrap_scrolling"),
                                 (cycleButton, b) -> Configs.CLIENT_SETTINGS.setWrapScrolling(b))
         );

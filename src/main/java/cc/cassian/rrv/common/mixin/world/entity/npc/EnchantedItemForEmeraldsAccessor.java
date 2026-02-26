@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 //? <26 {
-/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
+import net.minecraft.world.entity.npc.VillagerTrades;
 
 @Mixin(VillagerTrades.EnchantedItemForEmeralds.class)
 public interface EnchantedItemForEmeraldsAccessor {
@@ -27,8 +27,8 @@ public interface EnchantedItemForEmeraldsAccessor {
     float priceMultiplier();
 
 }
-*///?} else {
-@Mixin(VillagerType.class)
+//?} else {
+/*@Mixin(VillagerType.class)
 public interface EnchantedItemForEmeraldsAccessor {
 }
-//?}
+*///?}

@@ -113,7 +113,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                         18,
                         Component.translatable("rrv.client_settings.btn"),
                         14,
-                        new WidgetSprites(SETTINGS_WHEEL),
+                        SETTINGS_WHEEL,
                         button -> Minecraft.getInstance().setScreen(new RrvClientSettingsScreen(info.screen()))
         );
 
@@ -213,7 +213,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event, scanCode)) {
 				BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
 			}
         }
@@ -327,8 +327,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back")), this::prevPage);
-        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next")), this::nextPage);
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), this::prevPage);
+        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), this::nextPage);
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 5);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 5);
 
@@ -388,10 +388,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
 
         //? fabric && <26.1 {
-        /*if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
+        if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
             RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
         }
-        *///?}
+        //?}
 
         List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();;
 

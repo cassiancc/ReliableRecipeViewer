@@ -22,8 +22,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 //? >26 {
-import net.minecraft.world.item.ItemStackTemplate;
-//?}
+/*import net.minecraft.world.item.ItemStackTemplate;
+*///?}
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -58,10 +58,10 @@ public class RrvUtil {
     }
 
     //? >26 {
-	public static ItemStack decodeTemplate(ItemStackTemplate template) {
+	/*public static ItemStack decodeTemplate(ItemStackTemplate template) {
 		return new ItemStack(template.item(), template.count(), template.components());
 	}
-    //?}
+    *///?}
 
     public static ItemStack decodeTemplate(ItemStack template) {
         return template;
@@ -72,7 +72,7 @@ public class RrvUtil {
         if (keyElement.isJsonPrimitive() && keyElement.getAsJsonPrimitive().isString()) {
             var itemText = keyElement.getAsString();
             if (itemText.contains("#")) {
-				TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", "")));
+				TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(itemText.replace("#", "")));
                 return SlotContent.of(tag);
             } else {
                 var item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(itemText));
@@ -83,7 +83,7 @@ public class RrvUtil {
             keyElement.getAsJsonArray().forEach(jsonElement->{
                 var itemText = jsonElement.getAsString();
                 if (itemText.contains("#")) {
-                    TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse(itemText.replace("#", "")));
+                    TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(itemText.replace("#", "")));
                     var items = BuiltInRegistries.ITEM.getTagOrEmpty(tag);
                     items.forEach(holder -> itemStacks.add(holder.value().getDefaultInstance()));
                 } else {
@@ -94,9 +94,9 @@ public class RrvUtil {
            return SlotContent.of(itemStacks);
         } else if (keyElement.isJsonObject()) {
             //? if >26
-            return SlotContent.of(ItemStackTemplate.CODEC.decode(JsonOps.INSTANCE, keyElement).getOrThrow().getFirst());
+            //return SlotContent.of(ItemStackTemplate.CODEC.decode(JsonOps.INSTANCE, keyElement).getOrThrow().getFirst());
             //? if <26
-            //return SlotContent.of(ItemStack.CODEC.decode(JsonOps.INSTANCE, keyElement).getOrThrow().getFirst());
+            return SlotContent.of(ItemStack.CODEC.decode(JsonOps.INSTANCE, keyElement).getOrThrow().getFirst());
         } else {
             LOGGER.error("Could not parse {} recipe '{}' as it was missing a key!", type, identifier);
         }

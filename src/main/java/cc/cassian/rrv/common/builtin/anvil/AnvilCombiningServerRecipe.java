@@ -4,14 +4,14 @@ import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class AnvilCombiningServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<AnvilCombiningServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.fromNamespaceAndPath("rrv", "anvil_combining"),
+            ResourceLocation.fromNamespaceAndPath("rrv", "anvil_combining"),
             () -> new AnvilCombiningServerRecipe(null,null,null)
     );
 

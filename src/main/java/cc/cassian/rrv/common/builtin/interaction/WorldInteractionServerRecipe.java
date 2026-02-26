@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 public class WorldInteractionServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<WorldInteractionServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.fromNamespaceAndPath("rrv", "world_interaction"),
+            ResourceLocation.fromNamespaceAndPath("rrv", "world_interaction"),
             () -> new WorldInteractionServerRecipe()
     );
 

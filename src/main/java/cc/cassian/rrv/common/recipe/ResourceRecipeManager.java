@@ -7,10 +7,9 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.StrictJsonParser;
-import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,15 +18,15 @@ import java.util.Map;
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
 public class ResourceRecipeManager {
-	private static @NonNull Map<Identifier, Resource> getIdentifierResourceMap(String path) {
+	private static Map<ResourceLocation, Resource> getResourceLocationResourceMap(String path) {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
 	}
 
 	public static void addInfoRecipes(String path, ArrayList<InfoClientRecipe> infoRecipes, boolean b) {
-		addInfoRecipes(getIdentifierResourceMap(path), infoRecipes, b);
+		addInfoRecipes(getResourceLocationResourceMap(path), infoRecipes, b);
 	}
 
-	private static void addInfoRecipes(Map<Identifier, Resource> identifierResourceMap, ArrayList<InfoClientRecipe> infoRecipes, boolean b) {
+	private static void addInfoRecipes(Map<ResourceLocation, Resource> identifierResourceMap, ArrayList<InfoClientRecipe> infoRecipes, boolean b) {
 		identifierResourceMap.forEach((identifier, resource) -> {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
@@ -48,11 +47,11 @@ public class ResourceRecipeManager {
 	}
 
 	public static void addWorldInteractionRecipes(String path, ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes, boolean b) {
-		addWorldInteractionRecipes(getIdentifierResourceMap(path), worldInteractionRecipes, b);
+		addWorldInteractionRecipes(getResourceLocationResourceMap(path), worldInteractionRecipes, b);
 	}
 
-	private static void addWorldInteractionRecipes(Map<Identifier, Resource> identifierResourceMap, ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes, boolean b) {
-		for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
+	private static void addWorldInteractionRecipes(Map<ResourceLocation, Resource> identifierResourceMap, ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes, boolean b) {
+		for (Map.Entry<ResourceLocation, Resource> entry : identifierResourceMap.entrySet()) {
 			var slots = readCombinationRecipe("world_interaction", entry);
 			if (slots != null) {
 				worldInteractionRecipes.add(new WorldInteractionClientRecipe(slots.left, slots.right, slots.result, slots.priority));
@@ -65,12 +64,12 @@ public class ResourceRecipeManager {
 	}
 
 	public static ArrayList<AnvilCombiningClientRecipe> addAnvilCombiningRecipes(String path) {
-		return addAnvilCombiningRecipes(getIdentifierResourceMap(path));
+		return addAnvilCombiningRecipes(getResourceLocationResourceMap(path));
 	}
 
-	private static ArrayList<AnvilCombiningClientRecipe> addAnvilCombiningRecipes(Map<Identifier, Resource> identifierResourceMap) {
+	private static ArrayList<AnvilCombiningClientRecipe> addAnvilCombiningRecipes(Map<ResourceLocation, Resource> identifierResourceMap) {
 		ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
-		for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
+		for (Map.Entry<ResourceLocation, Resource> entry : identifierResourceMap.entrySet()) {
 			var slots = readCombinationRecipe("anvil_combining", entry);
 			if (slots != null)
 				anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(slots.left, slots.right, slots.result, slots.priority));
@@ -78,9 +77,9 @@ public class ResourceRecipeManager {
 		return anvilCombiningRecipes;
 	}
 
-	private static CombinationRecipeResult readCombinationRecipe(String type, Map.Entry<Identifier, Resource> entry) {
+	private static CombinationRecipeResult readCombinationRecipe(String type, Map.Entry<ResourceLocation, Resource> entry) {
 		String typeSpaced = type.replace("_", " ");
-		Identifier identifier = entry.getKey();
+		ResourceLocation identifier = entry.getKey();
 		Resource resource = entry.getValue();
 		try {
 			JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();

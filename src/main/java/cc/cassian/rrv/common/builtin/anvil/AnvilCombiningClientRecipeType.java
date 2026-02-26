@@ -14,7 +14,7 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 
 	protected static final AnvilCombiningClientRecipeType INSTANCE = new AnvilCombiningClientRecipeType();
 
-	private static final Identifier ANVIL_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/anvil.png");
+	private static final ResourceLocation ANVIL_LOCATION = ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/anvil.png");
 
 	@Override
 	public Component getDisplayName() {
@@ -22,8 +22,8 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 	}
 
 	@Override
-	public Identifier getId() {
-		return Identifier.fromNamespaceAndPath("rrv", "anvil_combining");
+	public ResourceLocation getId() {
+		return ResourceLocation.fromNamespaceAndPath("rrv", "anvil_combining");
 	}
 
 	@Override
