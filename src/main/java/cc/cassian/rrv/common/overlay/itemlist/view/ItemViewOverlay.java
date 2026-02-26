@@ -114,7 +114,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                         18,
                         Component.translatable("rrv.client_settings.btn"),
                         14,
-                        new WidgetSprites(SETTINGS_WHEEL),
+                        SETTINGS_WHEEL,
                         button -> Minecraft.getInstance().setScreen(new RrvClientSettingsScreen(info.screen()))
         );
 
@@ -328,8 +328,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back")), this::prevPage);
-        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next")), this::nextPage);
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), this::prevPage);
+        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), this::nextPage);
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 5);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 5);
 
@@ -394,7 +394,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
         *///?}
 
-        List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();;
+        List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();
 
         if (!foundRecipes.isEmpty()) {
             Screen parent = Minecraft.getInstance().screen;

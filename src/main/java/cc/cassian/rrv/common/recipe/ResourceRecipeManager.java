@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.StrictJsonParser;
-import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.Map;
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
 public class ResourceRecipeManager {
-	private static @NonNull Map<Identifier, Resource> getIdentifierResourceMap(String path) {
+	private static Map<Identifier, Resource> getIdentifierResourceMap(String path) {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
 	}
 
