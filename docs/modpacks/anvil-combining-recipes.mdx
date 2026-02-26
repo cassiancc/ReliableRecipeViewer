@@ -1,6 +1,6 @@
-# World Interaction Recipes
+# Anvil Combining Recipes
 
-RRV provides a format for anvil combining recipes, allowing modpacks (or mods!) to show information about interactions in the world through resource packs. These JSON files should be added to a `assets/<namespace>/rrv_anvil_combining` folder in your resource pack.
+RRV provides a format for anvil combining recipes, allowing modpacks (or mods!) to show information about interactions in the world through resource packs. These JSON files should be added to a `assets/<namespace>/rrv/recipe` folder in your resource pack.
 
 ## Examples
 
@@ -8,7 +8,7 @@ The `left`, `right`, and `result` entries can be supplied with either an item ta
 
 ### Chest Boats (Item Tags)
 
-Recipe file - `assets/rrv/rrv_anvil_combining/chest_boats.json`
+Recipe file - `assets/rrv/rrv/recipe/chest_boats.json`
 ```json
 {
   "type": "rrv:anvil_combining",
@@ -20,7 +20,7 @@ Recipe file - `assets/rrv/rrv_anvil_combining/chest_boats.json`
 
 ### Cobblestone (Items)
 
-Recipe file - `assets/rrv/rrv_anvil_combining/cobblestone.json`
+Recipe file - `assets/rrv/rrv/recipe/cobblestone.json`
 ```json
 {
   "type": "rrv:anvil_combining",
@@ -32,7 +32,7 @@ Recipe file - `assets/rrv/rrv_anvil_combining/cobblestone.json`
 
 ### Iron Pickaxes (Item Stacks)
 
-Recipe file - `assets/rrv/rrv_anvil_combining/iron_pickaxe.json`
+Recipe file - `assets/rrv/rrv/recipe/iron_pickaxe.json`
 ```json
 {
   "type": "rrv:anvil_combining",
@@ -44,5 +44,25 @@ Recipe file - `assets/rrv/rrv_anvil_combining/iron_pickaxe.json`
       "minecraft:damage": 30
     }
   }
+}
+```
+
+### Priority
+
+Recipes can also set a priority. Higher priority recipes will show up before recipes with lower priority - negative numbers are allowed.
+
+Recipe file - `assets/rrv/rrv/recipe/cobblestone.json`
+
+```json
+{
+  "type": "rrv:anvil_combining",
+  "left": "minecraft:stick",
+  "right": "minecraft:iron_ingot",
+  "result": {
+    "id": "minecraft:iron_pickaxe",
+    "components": {
+      "minecraft:damage": 30
+  },
+  "priority": 10
 }
 ```

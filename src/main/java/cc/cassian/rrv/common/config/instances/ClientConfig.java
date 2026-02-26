@@ -11,7 +11,7 @@ import com.mojang.serialization.JsonOps;
 public class ClientConfig extends AbstractRrvConfig {
 
 	private OverlayDisplay showOverlays = OverlayDisplay.ENABLED;
-	private SidePanel sidePanel = SidePanel.BOOKMARKS;
+	private SidePanel sidePanel = SidePanel.DISABLED;
 	private boolean background = true;
 	private boolean itemWrapMode = true;
 	private WrapScrolling wrapScrolling = WrapScrolling.ON_BUTTONS;

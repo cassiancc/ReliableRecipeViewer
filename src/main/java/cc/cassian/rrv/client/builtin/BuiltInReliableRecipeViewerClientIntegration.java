@@ -48,6 +48,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.StrictJsonParser;
 import net.minecraft.world.item.*;
@@ -63,6 +64,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
+import static cc.cassian.rrv.common.recipe.ResourceRecipeManager.*;
 
 public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {
 
@@ -127,32 +129,15 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         // info
         ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
             ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
-            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_info", (identifier) -> true);
-            identifierResourceMap.forEach((identifier, resource) -> {
-				try {
-                    JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
-                    if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
-                        var text = parsedRecipe.get("text").getAsString();
-                        infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
-                    } else {
-                        LOGGER.error("Could not parse info recipe '{}' as it was missing a type!", identifier);
-                    }
-                } catch (IOException e) {
-					LOGGER.error("Could not parse info recipe '{}' due to an exception: ", identifier, e);
-				}
-			});
+            addInfoRecipes("rrv_info", infoRecipes, true);
+            addInfoRecipes("rrv/recipe", infoRecipes, false);
             return infoRecipes;
         });
         // world interaction
         ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
             ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
-
-            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_world_interaction", (identifier) -> true);
-            for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
-                var slots = getSlotContents("world_interaction", entry);
-                if (slots != null)
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(slots.left, slots.right, slots.result, slots.priority));
-            }
+            addWorldInteractionRecipes("rrv_world_interaction", worldInteractionRecipes, true);
+            addWorldInteractionRecipes("rrv/recipe", worldInteractionRecipes, false);
 
             var axes = SlotContent.of(ItemTags.AXES);
             var shovels = SlotContent.of(ItemTags.SHOVELS);
@@ -211,48 +196,12 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
         // repairing
         ItemView.addClientRecipeWrapper(AnvilCombiningServerRecipe.TYPE, modRecipe -> {
-            ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
-            anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(modRecipe.getLeft(), modRecipe.getRight(), modRecipe.getResult()));
-            return anvilCombiningRecipes;
-
+            return List.of(new AnvilCombiningClientRecipe(modRecipe.getLeft(), modRecipe.getRight(), modRecipe.getResult()));
         });
         ItemView.addClientRecipeWrapper(ResourceDrivenAnvilCombiningServerRecipe.TYPE, modRecipe -> {
-            ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
-            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_anvil_combining", (identifier) -> true);
-            for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
-                var slots = getSlotContents("anvil_combining", entry);
-                if (slots != null)
-                    anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(slots.left, slots.right, slots.result, slots.priority));
-            }
-            return anvilCombiningRecipes;
+            return addAnvilCombiningRecipes("rrv/recipe");
         });
     }
-
-    private static ResourceDrivenRecipeResult getSlotContents(String type, Map.Entry<Identifier, Resource> entry) {
-        String typeSpaced = type.replace("_", " ");
-        Identifier identifier = entry.getKey();
-        Resource resource = entry.getValue();
-        try {
-            JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
-            if (parsedRecipe.get("type").getAsString().equals("rrv:" + type)) {
-
-                SlotContent left = RrvUtil.readSlotContent("left", typeSpaced, identifier, parsedRecipe);
-                SlotContent right = RrvUtil.readSlotContent("right", typeSpaced, identifier, parsedRecipe);
-                SlotContent result = RrvUtil.readSlotContent("result", typeSpaced, identifier, parsedRecipe);
-                int priority = 0;
-                if (parsedRecipe.has("priority") && parsedRecipe.get("priority").isJsonPrimitive() && parsedRecipe.getAsJsonPrimitive("priority").isNumber())
-                    priority = parsedRecipe.getAsJsonPrimitive("priority").getAsInt();
-                return new ResourceDrivenRecipeResult(left, right, result, priority);
-            } else {
-                LOGGER.error("Could not parse {} recipe '{}' as it was missing a type!", typeSpaced, identifier);
-            }
-        } catch (IOException e) {
-            LOGGER.error("Could not parse {} recipe '{}' due to an exception: ", typeSpaced, identifier, e);
-        }
-        return null;
-    }
-    
-    public record ResourceDrivenRecipeResult(SlotContent left, SlotContent right, SlotContent result, int priority) {}
 
 
 }
