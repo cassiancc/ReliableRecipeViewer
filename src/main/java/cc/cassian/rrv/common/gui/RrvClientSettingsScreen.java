@@ -4,7 +4,6 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
-import cc.cassian.rrv.common.overlay.OverlayManager;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
@@ -15,6 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.StringRepresentable;
 
 public class RrvClientSettingsScreen extends Screen {
 
@@ -38,26 +38,12 @@ public class RrvClientSettingsScreen extends Screen {
 
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
 
-        linearLayout.addChild(
-                CycleButton.<OverlayDisplay>builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName())).withValues(OverlayDisplay.values()).withInitialValue(Configs.CLIENT_SETTINGS.isShowOverlays())
-                        .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.itemview"),
-                                (cycleButton, b) -> OverlayManager.setOverlays(b))
-        );
-        linearLayout.addChild(
-                CycleButton.<SidePanel>builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName())).withValues(SidePanel.values()).withInitialValue(Configs.CLIENT_SETTINGS.getSidePanel())
-                        .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.sidepanel"),
-                                (cycleButton, b) -> Configs.CLIENT_SETTINGS.setSidePanel(b))
-        );
-
-
+        addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowOverlays(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowOverlays(sidePanel));
+        addChild(linearLayout,"rrv.client_settings.sidepanel", Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel));
 
         addChild(linearLayout, Component.translatable("rrv.client_settings.background.enabled"), Component.translatable("rrv.client_settings.background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), Component.translatable("rrv.client_settings.background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.resize_mode.wrap"), Component.translatable("rrv.client_settings.resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), Component.translatable("rrv.client_settings.resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
-        linearLayout.addChild(
-                CycleButton.<WrapScrolling>builder((sidePanel)-> Component.translatable("rrv.client_settings.wrap_scrolling."+sidePanel.getSerializedName())).withValues(WrapScrolling.values()).withInitialValue(Configs.CLIENT_SETTINGS.isWrapScrolling())
-                        .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.wrap_scrolling"),
-                                (cycleButton, b) -> Configs.CLIENT_SETTINGS.setWrapScrolling(b))
-        );
+        addChild(linearLayout,"rrv.client_settings.wrap_scrolling", Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel));
 
         addChild(linearLayout, Component.translatable("rrv.client_settings.append_namespace.show"), Component.translatable("rrv.client_settings.append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), Component.translatable("rrv.client_settings.append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.right_index.right"), Component.translatable("rrv.client_settings.right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), Component.translatable("rrv.client_settings.right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
@@ -70,13 +56,28 @@ public class RrvClientSettingsScreen extends Screen {
         this.layout.arrangeElements();
     }
 
-	private void addChild(LinearLayout linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter) {
-        //? >1.21.10 {
-        /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
-        *///?} else {
-        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
-        //?}
+    private <T extends StringRepresentable> void addChild(LinearLayout linearLayout, String key, T initialValue, T[] values, CycleButton.OnValueChange<T> newValueSetter) {
+        //? if >1.21.10 {
+                linearLayout.addChild(
+                CycleButton.builder((value)-> Component.translatable(key+"."+value.getSerializedName()), initialValue).withValues(values)
+                        .create(0, 0, 250, 20, Component.translatable(key), newValueSetter)
+        );
+        //?} else {
+        /*linearLayout.addChild(
+                CycleButton.<T>builder((overlayDisplay)-> Component.translatable(key+"."+overlayDisplay.getSerializedName())).withInitialValue(initialValue).withValues(values)
+                        .create(0, 0, 250, 20, Component.translatable(key), newValueSetter)
+        );
+        *///?}
+
 	}
+
+    private void addChild(LinearLayout linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter) {
+        //? >1.21.10 {
+        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
+        //?} else {
+        /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
+         *///?}
+    }
 
 
     @Override
