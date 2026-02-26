@@ -25,6 +25,7 @@
   "view.rrv.type.item_tag": "Item Tags",
   "view.rrv.type.info": "Info",
   "view.rrv.type.repairing": "Repairing",
+  "view.rrv.type.anvil_combining": "Anvil Combining",
   "view.rrv.type.world_interaction": "World Interaction",
   "view.rrv.type.world_interaction.time": "Time",
   "view.rrv.type.world_interaction.time_passes": "Copper will oxidize over time.",

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.List;
 import java.util.Optional;
 //? if >26 {
-/*import net.minecraft.world.item.trading.TradeCost;
+import net.minecraft.world.item.trading.TradeCost;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.item.ItemStackTemplate;
 @Mixin(VillagerTrade.class)
@@ -29,11 +29,11 @@ public interface VillagerTradeAccessor {
 	@Accessor("merchantPredicate")
 	Optional<LootItemCondition> getMerchantPredicate();
 }
-*///?} else {
-@Mixin(net.minecraft.world.entity.npc.villager.VillagerTrades.class)
+//?} else {
+/*@Mixin(net.minecraft.world.entity.npc.villager.VillagerTrades.class)
 public interface VillagerTradeAccessor {
 }
-//?}
+*///?}
 
 
 

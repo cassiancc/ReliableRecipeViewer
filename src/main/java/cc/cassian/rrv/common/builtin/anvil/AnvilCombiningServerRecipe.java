@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.builtin.interaction;
+package cc.cassian.rrv.common.builtin.anvil;
 
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
@@ -6,13 +6,12 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
-public class WorldInteractionServerRecipe implements ReliableServerRecipe {
+public class AnvilCombiningServerRecipe implements ReliableServerRecipe {
 
-    public static final ReliableServerRecipeType<WorldInteractionServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.fromNamespaceAndPath("rrv", "world_interaction"),
-            () -> new WorldInteractionServerRecipe()
+    public static final ReliableServerRecipeType<AnvilCombiningServerRecipe> TYPE = ReliableServerRecipeType.register(
+            Identifier.fromNamespaceAndPath("rrv", "anvil_combining"),
+            () -> new AnvilCombiningServerRecipe()
     );
 
 
@@ -20,14 +19,14 @@ public class WorldInteractionServerRecipe implements ReliableServerRecipe {
     private ItemStack right;
     private ItemStack result;
 
-    public WorldInteractionServerRecipe(ItemStack left, ItemStack right, ItemStack result
+    public AnvilCombiningServerRecipe(ItemStack left, ItemStack right, ItemStack result
     ) {
         this.left = left;
         this.right = right;
         this.result = result;
     }
 
-    public WorldInteractionServerRecipe() {
+    public AnvilCombiningServerRecipe() {
         this.left = null;
         this.right = null;
         this.result = null;

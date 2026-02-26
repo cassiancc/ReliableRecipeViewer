@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.builtin.interaction;
+package cc.cassian.rrv.common.builtin.anvil;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
@@ -7,21 +7,17 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 
 import java.util.List;
 
-public class WorldInteractionClientRecipe implements ReliableClientRecipe {
+public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent left, right, result;
     private final int priority;
 
 
-    public WorldInteractionClientRecipe(SlotContent left, SlotContent right, SlotContent result, int priority) {
+    public AnvilCombiningClientRecipe(SlotContent left, SlotContent right, SlotContent result, int priority) {
         this.left = left;
         this.right = right;
         this.result = result;
         this.priority = priority;
-    }
-
-    public WorldInteractionClientRecipe(SlotContent left, SlotContent right, SlotContent result) {
-        this(left, right, result, 0);
     }
 
     @Override
@@ -31,7 +27,7 @@ public class WorldInteractionClientRecipe implements ReliableClientRecipe {
 
     @Override
     public ReliableClientRecipeType getViewType() {
-        return WorldInteractionClientRecipeType.INSTANCE;
+        return AnvilCombiningClientRecipeType.INSTANCE;
     }
 
     @Override

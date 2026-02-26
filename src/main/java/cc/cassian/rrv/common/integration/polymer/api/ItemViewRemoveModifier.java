@@ -1,5 +1,5 @@
 //? fabric && <26 {
-package cc.cassian.rrv.common.integration.polymer.api;
+/*package cc.cassian.rrv.common.integration.polymer.api;
 
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import net.fabricmc.fabric.api.event.Event;
@@ -31,4 +31,4 @@ public interface ItemViewRemoveModifier {
         List<ItemStack> get();
     }
 }
-//?}
+*///?}

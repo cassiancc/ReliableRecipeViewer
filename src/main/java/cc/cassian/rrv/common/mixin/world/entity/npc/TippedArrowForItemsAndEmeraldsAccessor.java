@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 //? <26 {
-import net.minecraft.world.entity.npc.villager.VillagerTrades;
+/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
 
 @Mixin(VillagerTrades.TippedArrowForItemsAndEmeralds.class)
 public interface TippedArrowForItemsAndEmeraldsAccessor {
@@ -33,8 +33,8 @@ public interface TippedArrowForItemsAndEmeraldsAccessor {
     int fromCount();
 
 }
-//?} else {
-/*@Mixin(ItemStack.class)
+*///?} else {
+@Mixin(ItemStack.class)
 public interface TippedArrowForItemsAndEmeraldsAccessor {
 }
-*///?}
+//?}

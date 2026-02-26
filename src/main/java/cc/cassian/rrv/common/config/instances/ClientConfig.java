@@ -112,8 +112,8 @@ public class ClientConfig extends AbstractRrvConfig {
 		return sidePanel;
 	}
 
-	public void setSidePanel(SidePanel showCraftables) {
-		this.sidePanel = showCraftables;
+	public void setSidePanel(SidePanel sidePanel) {
+		this.sidePanel = sidePanel;
 	}
 
 	public WrapScrolling isWrapScrolling() {

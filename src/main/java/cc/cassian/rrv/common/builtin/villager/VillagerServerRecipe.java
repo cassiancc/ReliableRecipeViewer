@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 //? <26 {
-import net.minecraft.world.entity.npc.villager.VillagerTrades;
+/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.DyedItemColor;
@@ -40,8 +40,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
- //?} else {
-/*import net.minecraft.world.entity.npc.villager.VillagerType;
+ *///?} else {
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.trading.TradeCost;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -56,7 +56,7 @@ import net.minecraft.world.level.storage.loot.functions.FilteredFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.ListTag;
-*///?}
+//?}
 import net.minecraft.world.item.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -71,7 +71,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	);
 
 	//? >26 {
-	/*private ResourceKey<VillagerProfession> profession;
+	private ResourceKey<VillagerProfession> profession;
 	private int professionLevel;
 	private List<VillagerTrade> clientTrade;
 	private Holder<VillagerTrade> serverTrade;
@@ -183,9 +183,9 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	public record VillagerOffer(VillagerTrade trade, ResourceKey<VillagerProfession> profession, int professionLevel, List<ItemStack> offerStacks, List<ItemStack> cost1, List<ItemStack> cost2, ResourceKey<VillagerType> requiredType) {
 	}
 
-	*///?} else {
+	//?} else {
 
-    private ResourceKey<VillagerProfession> profession;
+    /*private ResourceKey<VillagerProfession> profession;
     private int professionLevel;
     private final VillagerDataObject<?> dataObject;
 
@@ -861,5 +861,5 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
         return offerStacks;
     }
-    //?}
+    *///?}
 }

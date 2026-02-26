@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
 import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
@@ -48,15 +49,15 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 //? if <26 {
-import net.minecraft.world.entity.npc.villager.VillagerTrades;
-//?} else {
-/*import net.minecraft.world.item.trading.TradeSet;
+/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
+*///?} else {
+import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.item.trading.VillagerTrades;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.core.HolderLookup;
-*///?}
+//?}
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -136,6 +137,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ItemView.addServerRecipeProvider(recipeList -> {
             recipeList.add(new InfoServerRecipe());
             recipeList.add(new WorldInteractionServerRecipe());
+            recipeList.add(new AnvilCombiningServerRecipe());
 
             BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
                 if (entityType.getDefaultLootTable().isEmpty())
@@ -280,10 +282,10 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                     ingredients.forEach(ingredient -> {
                         //? >26 {
-                        /*results.add(RrvUtil.decodeTemplate(accessor.getResult()));
-                        *///?} else {
-                        results.add(accessor.getResult().apply(new ItemStack(ingredient)));
-                        //?}
+                        results.add(RrvUtil.decodeTemplate(accessor.getResult()));
+                        //?} else {
+                        /*results.add(accessor.getResult().apply(new ItemStack(ingredient)));
+                        *///?}
                     });
 
                     if (!ingredients.isEmpty() && !results.isEmpty())
@@ -351,7 +353,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         //Trading
         //? <26 {
-        ItemView.addServerRecipeProvider(recipeList -> {
+        /*ItemView.addServerRecipeProvider(recipeList -> {
 
             VillagerTrades.TRADES.forEach((profession, byProfessionLevel) -> {
 
@@ -392,17 +394,17 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TYPE_SPECIFIC, typeSpecificTrade)));
 
                         //? neoforge {
-                        /*if (listing instanceof BasicItemListing basicItemListing)
+                        /^if (listing instanceof BasicItemListing basicItemListing)
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(NEOFORGE_BASIC, basicItemListing)));
-                        *///?}
+                        ^///?}
                     });
                 });
 
             });
 
         });
-        //?} else {
-        /*ItemView.addServerRecipeProvider(recipeList -> {
+        *///?} else {
+        ItemView.addServerRecipeProvider(recipeList -> {
             HolderLookup.RegistryLookup<VillagerProfession> villagerProfessionRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_PROFESSION);
             HolderLookup.RegistryLookup<TradeSet> tradeSetRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.TRADE_SET);
 
@@ -416,7 +418,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             });
 
         });
-        *///?}
+        //?}
 
         ItemView.addServerRecipeProvider(recipeList -> {
             BuiltInRegistries.ITEM.forEach(item -> {

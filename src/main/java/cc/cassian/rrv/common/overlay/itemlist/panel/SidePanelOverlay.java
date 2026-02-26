@@ -19,12 +19,16 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 import java.util.List;
@@ -39,7 +43,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     private static final int HEADER_HEIGHT = 30;
     private static int FOOTER_HEIGHT = 20;
-    private Inventory inventory;
+    private NonNullList<ItemStack> inventory;
 
     public SidePanelOverlay() {
         super(-1, -1, -1, -1);
@@ -110,11 +114,15 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
         this.availableItems.clear();
         if (showCraftables()) {
-            if (Minecraft.getInstance().player == null || (ModCompat.POLYDEX && PolymerHelpers.isPolymerScreenOpen(Minecraft.getInstance().player))) {
+            Minecraft client = Minecraft.getInstance();
+            LocalPlayer player = client.player;
+            if (player == null || (ModCompat.POLYDEX && PolymerHelpers.isPolymerScreenOpen(player))) {
                 return;
             }
-            this.inventory = Minecraft.getInstance().player.getInventory();
-            inventory.forEach(inventoryItem -> {
+			this.inventory = player.getInventory().getNonEquipmentItems();
+            var screen = client.screen;
+            if (!(screen instanceof CreativeModeInventoryScreen))
+                inventory.forEach(inventoryItem -> {
                 ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
             });
             if (this.availableItems.isEmpty()) {
@@ -129,13 +137,14 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         this.updateSlots();
     }
 
-    void updateRecipes(ReliableClientRecipe recipe, Inventory inventory, boolean b) {
+    void updateRecipes(ReliableClientRecipe recipe, NonNullList<ItemStack> inventory, boolean b) {
         if (recipe.isVisualOnly()) return;
-        if (b && !RrvUtil.matchesAnyTransferClass(recipe, Minecraft.getInstance().screen)) return;
+        Minecraft client = Minecraft.getInstance();
+        if (b && !RrvUtil.matchesAnyTransferClass(recipe, client.screen)) return;
         AtomicInteger foundIngredientCount = new AtomicInteger();
         int requiredIngredientCount = recipe.getIngredients().size();
         recipe.getIngredients().forEach(ingredient -> {
-            if (inventory.hasAnyMatching(inv->ingredient.hasItem(inv.getItem()))) {
+            if (client.player.getInventory().hasAnyMatching(inv->ingredient.hasItem(inv.getItem()))) {
                 foundIngredientCount.getAndIncrement();
             }
         });

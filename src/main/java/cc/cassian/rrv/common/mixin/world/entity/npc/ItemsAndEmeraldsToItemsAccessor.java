@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.Optional;
 
 //? <26 {
-import net.minecraft.world.entity.npc.villager.VillagerTrades;
+/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
 
 @Mixin(VillagerTrades.ItemsAndEmeraldsToItems.class)
 public interface ItemsAndEmeraldsToItemsAccessor {
@@ -36,8 +36,8 @@ public interface ItemsAndEmeraldsToItemsAccessor {
 
 
 }
-//?} else {
-/*@Mixin(VillagerType.class)
+*///?} else {
+@Mixin(VillagerType.class)
 public interface ItemsAndEmeraldsToItemsAccessor {
 }
-*///?}
+//?}

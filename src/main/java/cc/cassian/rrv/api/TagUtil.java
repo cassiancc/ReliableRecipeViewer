@@ -55,15 +55,15 @@ public class TagUtil {
     }
 
     //? >26 {
-    /*/^*
+    /**
      * Decodes an ItemStackTemplate on the client side
      * @param tag The tag to decode
      * @return The decoded stack
-     ^/
+     */
     public static net.minecraft.world.item.ItemStackTemplate decodeItemStackTemplateOnClient(CompoundTag tag) {
         return net.minecraft.world.item.ItemStackTemplate.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(null);
     }
-    *///?}
+    //?}
 
     /**
      * Encodes an ItemStack on the client side
@@ -84,15 +84,15 @@ public class TagUtil {
     }
 
     //? if >26 {
-    /*/^*
+    /**
      * Encodes an ItemStackTemplate on the server side
      * @param stack The stack to encode
      * @return The encoded stack as CompoundTag
-     ^/
+     */
     public static CompoundTag encodeItemStackOnServer(net.minecraft.world.item.ItemStackTemplate stack) {
         return net.minecraft.world.item.ItemStackTemplate.CODEC.encode(stack, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
     }
-    *///?}
+    //?}
 
     /**
      * Encodes an ItemStack
@@ -157,9 +157,9 @@ public class TagUtil {
             CustomIngredient customIngredient = fabricIngredient.getCustomIngredient();
             if (customIngredient != null) {
                 //? >26 {
-                /*Stream<Holder<Item>> matchingItems = customIngredient.items();
-                *///?} else
-                Stream<Holder<Item>> matchingItems = customIngredient.getMatchingItems();
+                Stream<Holder<Item>> matchingItems = customIngredient.items();
+                //?} else
+                //Stream<Holder<Item>> matchingItems = customIngredient.getMatchingItems();
                 tag.put("items", TagUtil.createItemList(matchingItems.filter(Holder::isBound).map(Holder::value).toList()));
             }
         }

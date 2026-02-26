@@ -9,6 +9,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
+import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
@@ -18,6 +19,7 @@ import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -28,7 +30,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.SpriteIconButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -51,8 +53,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     private SearchBar searchbar = null;
 
-    public SpriteIconButton next = null;
-    public SpriteIconButton back = null;
+    public ReliableSpriteIconButton next = null;
+    public ReliableSpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
     private static int FOOTER_HEIGHT = 20;
@@ -108,15 +110,13 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         //---- Client Settings Button ----
-        SpriteIconButton btn = SpriteIconButton.builder(
+        ReliableSpriteIconButton btn = new ReliableSpriteIconButton(
+                        18,
                         Component.translatable("rrv.client_settings.btn"),
-                        button -> Minecraft.getInstance().setScreen(new RrvClientSettingsScreen(info.screen())),
-                        true
-                )
-                .size(18, 18)
-                .sprite(SETTINGS_WHEEL, 14, 14)
-                .withTootip()
-                .build();
+                        14,
+                        new WidgetSprites(SETTINGS_WHEEL),
+                        button -> Minecraft.getInstance().setScreen(new RrvClientSettingsScreen(info.screen()))
+        );
 
         int position = 0;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
@@ -214,8 +214,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event))
-                BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
+				BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
+			}
         }
 
         return false;
@@ -327,8 +328,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = SpriteIconButton.builder(Component.translatable("rrv.previous_page"), this::prevPage, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
-        next = SpriteIconButton.builder(Component.translatable("rrv.next_page"), this::nextPage, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back")), this::prevPage);
+        next =  new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next")), this::nextPage);
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
 
@@ -388,10 +389,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
 
         //? fabric && <26.1 {
-        if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
+        /*if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
             RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
         }
-        //?}
+        *///?}
 
         List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();;
 

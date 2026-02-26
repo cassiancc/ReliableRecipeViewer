@@ -3,6 +3,8 @@ package cc.cassian.rrv.client.builtin;
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
 import cc.cassian.rrv.common.builtin.blasting.BlastingServerRecipe;
 import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
@@ -44,15 +46,11 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.StrictJsonParser;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -149,23 +147,13 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         // world interaction
         ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
             ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
+
             Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_world_interaction", (identifier) -> true);
-            identifierResourceMap.forEach((identifier, resource) -> {
-                try {
-                    JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
-                    if (parsedRecipe.get("type").getAsString().equals("rrv:world_interaction")) {
-                        worldInteractionRecipes.add(new WorldInteractionClientRecipe(
-                                RrvUtil.readSlotContent("left", "world interaction", identifier, parsedRecipe),
-                                RrvUtil.readSlotContent("right", "world interaction", identifier, parsedRecipe),
-                                RrvUtil.readSlotContent("result", "world interaction", identifier, parsedRecipe)
-                        ));
-                    } else {
-                        LOGGER.error("Could not parse world interaction recipe '{}' as it was missing a type!", identifier);
-                    }
-                } catch (IOException e) {
-                    LOGGER.error("Could not parse world interaction recipe '{}' due to an exception: ", identifier, e);
-                }
-            });
+            for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
+                var slots = getSlotContents("world_interaction", entry);
+                if (slots != null)
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(slots.left, slots.right, slots.result, slots.priority));
+            }
 
             var axes = SlotContent.of(ItemTags.AXES);
             var shovels = SlotContent.of(ItemTags.SHOVELS);
@@ -223,8 +211,44 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             return worldInteractionRecipes;
         });
         // repairing
+        ItemView.addClientRecipeWrapper(AnvilCombiningServerRecipe.TYPE, modRecipe -> {
+                ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
+                Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_anvil_combining", (identifier) -> true);
+                for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
+                    var slots = getSlotContents("anvil_combining", entry);
+                    if (slots != null)
+                        anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(slots.left, slots.right, slots.result, slots.priority));
+                }
+                return anvilCombiningRecipes;
+        });
         ItemView.addClientRecipeWrapper(RepairingServerRecipe.TYPE, unwrapped -> List.of(new RepairingClientRecipe(unwrapped.getBase(), unwrapped.getTemplate(), unwrapped.getResult())));
     }
+
+    private static ResourceDrivenRecipeResult getSlotContents(String type, Map.Entry<Identifier, Resource> entry) {
+        String typeSpaced = type.replace("_", " ");
+        Identifier identifier = entry.getKey();
+        Resource resource = entry.getValue();
+        try {
+            JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
+            if (parsedRecipe.get("type").getAsString().equals("rrv:" + type)) {
+
+                SlotContent left = RrvUtil.readSlotContent("left", typeSpaced, identifier, parsedRecipe);
+                SlotContent right = RrvUtil.readSlotContent("right", typeSpaced, identifier, parsedRecipe);
+                SlotContent result = RrvUtil.readSlotContent("result", typeSpaced, identifier, parsedRecipe);
+                int priority = 0;
+                if (parsedRecipe.has("priority") && parsedRecipe.get("priority").isJsonPrimitive() && parsedRecipe.getAsJsonPrimitive("priority").isNumber())
+                    priority = parsedRecipe.getAsJsonPrimitive("priority").getAsInt();
+                return new ResourceDrivenRecipeResult(left, right, result, priority);
+            } else {
+                LOGGER.error("Could not parse {} recipe '{}' as it was missing a type!", typeSpaced, identifier);
+            }
+        } catch (IOException e) {
+            LOGGER.error("Could not parse {} recipe '{}' due to an exception: ", typeSpaced, identifier, e);
+        }
+        return null;
+    }
+    
+    public record ResourceDrivenRecipeResult(SlotContent left, SlotContent right, SlotContent result, int priority) {}
 
 
 }
