@@ -116,6 +116,7 @@ dependencies {
         modLocalRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
     modCompileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         modLocalRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
+        modLocalRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
     modCompileOnly("maven.modrinth:polydex:${property("deps.polydex")}")
         modLocalRuntime("maven.modrinth:polydex:${property("deps.polydex")}")
     modCompileOnly("eu.pb4:sgui:${property("deps.sgui")}")
