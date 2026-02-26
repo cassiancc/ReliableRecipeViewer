@@ -3,8 +3,8 @@ package cc.cassian.rrv.client.builtin;
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
-import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningServerRecipe;
+import cc.cassian.rrv.common.builtin.anvil.ResourceDrivenAnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
 import cc.cassian.rrv.common.builtin.blasting.BlastingServerRecipe;
 import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
@@ -19,8 +19,7 @@ import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
-import cc.cassian.rrv.common.builtin.repairing.RepairingClientRecipe;
-import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipe;
 import cc.cassian.rrv.common.builtin.shaped.ShapedServerRecipe;
 import cc.cassian.rrv.common.builtin.shapeless.ShapelessServerRecipe;
@@ -212,16 +211,21 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
         // repairing
         ItemView.addClientRecipeWrapper(AnvilCombiningServerRecipe.TYPE, modRecipe -> {
-                ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
-                Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_anvil_combining", (identifier) -> true);
-                for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
-                    var slots = getSlotContents("anvil_combining", entry);
-                    if (slots != null)
-                        anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(slots.left, slots.right, slots.result, slots.priority));
-                }
-                return anvilCombiningRecipes;
+            ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
+            anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(modRecipe.getLeft(), modRecipe.getRight(), modRecipe.getResult()));
+            return anvilCombiningRecipes;
+
         });
-        ItemView.addClientRecipeWrapper(RepairingServerRecipe.TYPE, unwrapped -> List.of(new RepairingClientRecipe(unwrapped.getBase(), unwrapped.getTemplate(), unwrapped.getResult())));
+        ItemView.addClientRecipeWrapper(ResourceDrivenAnvilCombiningServerRecipe.TYPE, modRecipe -> {
+            ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
+            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_anvil_combining", (identifier) -> true);
+            for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
+                var slots = getSlotContents("anvil_combining", entry);
+                if (slots != null)
+                    anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(slots.left, slots.right, slots.result, slots.priority));
+            }
+            return anvilCombiningRecipes;
+        });
     }
 
     private static ResourceDrivenRecipeResult getSlotContents(String type, Map.Entry<Identifier, Resource> entry) {

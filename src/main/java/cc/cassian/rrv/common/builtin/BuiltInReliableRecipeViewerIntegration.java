@@ -3,9 +3,9 @@ package cc.cassian.rrv.common.builtin;
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningServerRecipe;
+import cc.cassian.rrv.common.builtin.anvil.ResourceDrivenAnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
-import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
@@ -38,7 +38,6 @@ import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetPotionF
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -53,10 +52,7 @@ import net.minecraft.world.entity.EntityType;
 /*import net.minecraft.world.entity.npc.villager.VillagerTrades;
 *///?} else {
 import net.minecraft.world.item.trading.TradeSet;
-import net.minecraft.world.item.trading.VillagerTrade;
-import net.minecraft.world.item.trading.VillagerTrades;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
-import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.core.HolderLookup;
 //?}
 import net.minecraft.world.item.*;
@@ -138,7 +134,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ItemView.addServerRecipeProvider(recipeList -> {
             recipeList.add(new InfoServerRecipe());
             recipeList.add(new WorldInteractionServerRecipe());
-            recipeList.add(new AnvilCombiningServerRecipe());
+            recipeList.add(new ResourceDrivenAnvilCombiningServerRecipe());
 
             BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
                 if (entityType.getDefaultLootTable().isEmpty())
@@ -431,7 +427,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 Repairable repairable = stack.get(DataComponents.REPAIRABLE);
                 var damagedStack = stack.copy();
                 damagedStack.setDamageValue(stack.getMaxDamage() / 2);
-                recipeList.add(new RepairingServerRecipe(damagedStack, Ingredient.of(repairable.items()), stack));
+                recipeList.add(new AnvilCombiningServerRecipe(damagedStack, Ingredient.of(repairable.items()), stack));
             }
         });
     }

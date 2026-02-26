@@ -213,7 +213,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (this.fittingPerPage() == 0 || Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED))
+        if (Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED))
             return;
 
         guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());

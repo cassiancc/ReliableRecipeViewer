@@ -6,38 +6,32 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class AnvilCombiningServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<AnvilCombiningServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.fromNamespaceAndPath("rrv", "anvil_combining"),
-            () -> new AnvilCombiningServerRecipe()
+            () -> new AnvilCombiningServerRecipe(null,null,null)
     );
 
 
     private ItemStack left;
-    private ItemStack right;
+    private Ingredient right;
     private ItemStack result;
 
-    public AnvilCombiningServerRecipe(ItemStack left, ItemStack right, ItemStack result
+    public AnvilCombiningServerRecipe(ItemStack left, Ingredient right, ItemStack result
     ) {
         this.left = left;
         this.right = right;
         this.result = result;
     }
 
-    public AnvilCombiningServerRecipe() {
-        this.left = null;
-        this.right = null;
-        this.result = null;
-    }
-
-
     public ItemStack getLeft() {
         return this.left;
     }
 
-    public ItemStack getRight() {
+    public Ingredient getRight() {
         return right;
     }
 
@@ -49,16 +43,16 @@ public class AnvilCombiningServerRecipe implements ReliableServerRecipe {
     public void writeToTag(CompoundTag tag) {
         if (this.left != null) {
             tag.put("left", TagUtil.encodeItemStackOnServer(this.left));
-            tag.put("right", TagUtil.encodeItemStackOnServer(this.right));
-            tag.put("result", TagUtil.encodeItemStackOnServer(this.right));
+            tag.put("right", TagUtil.writeIngredient(this.right));
+            tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
         }
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
         this.left = TagUtil.decodeItemStackOnClient(tag.getCompound("left").orElseGet(CompoundTag::new));
-        this.right = TagUtil.decodeItemStackOnClient(tag.getCompound("right").orElseGet(CompoundTag::new));
-        this.right = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.right = TagUtil.readIngredient(tag.getCompound("right").orElseGet(CompoundTag::new));
+        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
     }
 
     @Override

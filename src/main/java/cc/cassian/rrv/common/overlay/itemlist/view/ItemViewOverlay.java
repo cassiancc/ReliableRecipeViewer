@@ -328,14 +328,14 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back")), this::prevPage);
-        next =  new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next")), this::nextPage);
-        back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
-        next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back")), this::prevPage);
+        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, new WidgetSprites(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next")), this::nextPage);
+        back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 5);
+        next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 5);
 
 
-        next.visible = ItemViewOverlay.INSTANCE.isEnabled();
         back.visible = ItemViewOverlay.INSTANCE.isEnabled();
+        next.visible = ItemViewOverlay.INSTANCE.isEnabled();
     }
 
     public void openRecipeView(ItemStack stack, ActionType openType) {
