@@ -37,8 +37,6 @@ public class ResourceRecipeManager {
 						LOGGER.info("RRV: Loaded info recipe from legacy path 'rrv_info'. Please move your recipes to 'rrv/recipe' in the future!");
 					else
 						LOGGER.debug("RRV: Loaded info recipe {}", identifier);
-				} else {
-					LOGGER.error("RRV: Could not parse info recipe '{}' as it was missing a type!", identifier);
 				}
 			} catch (IOException e) {
 				LOGGER.error("RRV: Could not parse info recipe '{}' due to an exception: ", identifier, e);
