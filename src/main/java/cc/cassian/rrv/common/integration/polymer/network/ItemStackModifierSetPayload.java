@@ -1,5 +1,5 @@
 //? fabric && <26 {
-package cc.cassian.rrv.common.integration.polymer.network;
+/*package cc.cassian.rrv.common.integration.polymer.network;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.integration.polymer.api.ItemViewServerModifier;
@@ -55,4 +55,4 @@ public record ItemStackModifierSetPayload(List<ItemStack> itemStacks) implements
 
 
 }
-//?}
+*///?}

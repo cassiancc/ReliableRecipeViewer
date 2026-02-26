@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.overlay;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
@@ -25,33 +26,6 @@ public class OverlayManager {
 	public static boolean shouldShowOverlays() {
 		return Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching());
 	}
-
-    public enum OverlayDisplay implements StringRepresentable {
-        ENABLED,
-        DISABLED,
-        WHEN_SEARCHING;
-
-        @Override
-        public String getSerializedName() {
-            return this.name().toLowerCase(Locale.ROOT);
-        }
-
-        public static final Codec<OverlayDisplay> CODEC = StringRepresentable.fromEnum(OverlayDisplay::values);
-    }
-
-    public enum SidePanel implements StringRepresentable {
-        BOOKMARKS,
-        CRAFTABLES,
-        DISABLED;
-
-        @Override
-        public String getSerializedName() {
-            return this.name().toLowerCase(Locale.ROOT);
-        }
-
-        public static final Codec<SidePanel> CODEC = StringRepresentable.fromEnum(SidePanel::values);
-    }
-
 
     private AbstractRrvOverlay.InventoryPositionInfo currentInvInfo = null;
 

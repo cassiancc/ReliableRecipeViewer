@@ -25,6 +25,7 @@
   "view.rrv.type.item_tag": "Item Tags",
   "view.rrv.type.info": "Info",
   "view.rrv.type.repairing": "Repairing",
+  "view.rrv.type.anvil_combining": "Anvil Combining",
   "view.rrv.type.world_interaction": "World Interaction",
   "view.rrv.type.world_interaction.time": "Time",
   "view.rrv.type.world_interaction.time_passes": "Copper will oxidize over time.",
@@ -91,6 +92,10 @@
   "rrv.client_settings.index_source": "Index Source",
   "rrv.client_settings.index_source.creative": "Creative",
   "rrv.client_settings.index_source.registry": "Registry",
+  "rrv.client_settings.wrap_scrolling": "Wrap Scrolling",
+  "rrv.client_settings.wrap_scrolling.enabled": "Enabled",
+  "rrv.client_settings.wrap_scrolling.disabled": "Disabled",
+  "rrv.client_settings.wrap_scrolling.on_buttons": "On Buttons",
 
   "tag.item.minecraft.acacia_logs": "Acacia Logs",
   "tag.item.minecraft.anvil": "Anvils",

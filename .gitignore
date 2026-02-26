@@ -48,3 +48,4 @@ bin/
 
 ### Jetbrains ###
 .idea/
+/src/main/resources/assets/rrv/rrv/recipe/demo

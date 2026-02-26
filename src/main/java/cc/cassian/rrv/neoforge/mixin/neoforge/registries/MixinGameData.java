@@ -3,6 +3,8 @@
 
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -20,7 +22,6 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.HashMap;
 
@@ -30,9 +31,9 @@ public class MixinGameData {
 
     @Shadow @Final private static Logger LOGGER;
 
-    @Redirect(method = "postRegisterEvents", at = @At(value = "INVOKE", target = "Lnet/neoforged/fml/ModLoader;postEventWrapContainerInModOrder(Lnet/neoforged/bus/api/Event;)V"))
-    private static <T extends Event & IModBusEvent> void injectFluidItems(T e){
-        ModLoader.postEventWrapContainerInModOrder(e);
+    @WrapOperation(method = "postRegisterEvents", at = @At(value = "INVOKE", target = "Lnet/neoforged/fml/ModLoader;postEventWrapContainerInModOrder(Lnet/neoforged/bus/api/Event;)V"))
+    private static <T extends Event & IModBusEvent> void injectFluidItems(T e, Operation<Void> original){
+        original.call(e);
 
         RegisterEvent event = (RegisterEvent) e;
         if(!event.getRegistryKey().location().equals(Registries.ITEM.location()))

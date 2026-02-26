@@ -1,9 +1,11 @@
 package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
+import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningServerRecipe;
+import cc.cassian.rrv.common.builtin.anvil.ResourceDrivenAnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
-import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
@@ -36,7 +38,6 @@ import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetPotionF
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -48,15 +49,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 //? if <26 {
-import net.minecraft.world.entity.npc.VillagerTrades;
-//?} else {
-/*import net.minecraft.world.item.trading.TradeSet;
-import net.minecraft.world.item.trading.VillagerTrade;
-import net.minecraft.world.item.trading.VillagerTrades;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerType;
+/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
+*///?} else {
+import net.minecraft.world.item.trading.TradeSet;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.core.HolderLookup;
-*///?}
+//?}
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -136,6 +134,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ItemView.addServerRecipeProvider(recipeList -> {
             recipeList.add(new InfoServerRecipe());
             recipeList.add(new WorldInteractionServerRecipe());
+            recipeList.add(new ResourceDrivenAnvilCombiningServerRecipe());
 
             BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
                 if (entityType.getDefaultLootTable().isEmpty())
@@ -280,10 +279,10 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                     ingredients.forEach(ingredient -> {
                         //? >26 {
-                        /*results.add(RrvUtil.decodeTemplate(accessor.getResult()));
-                        *///?} else {
-                        results.add(accessor.getResult().apply(new ItemStack(ingredient)));
-                        //?}
+                        results.add(RrvUtil.decodeTemplate(accessor.getResult()));
+                        //?} else {
+                        /*results.add(accessor.getResult().apply(new ItemStack(ingredient)));
+                        *///?}
                     });
 
                     if (!ingredients.isEmpty() && !results.isEmpty())
@@ -351,7 +350,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         //Trading
         //? <26 {
-        ItemView.addServerRecipeProvider(recipeList -> {
+        /*ItemView.addServerRecipeProvider(recipeList -> {
 
             VillagerTrades.TRADES.forEach((profession, byProfessionLevel) -> {
 
@@ -392,17 +391,17 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TYPE_SPECIFIC, typeSpecificTrade)));
 
                         //? neoforge {
-                        /*if (listing instanceof BasicItemListing basicItemListing)
+                        /^if (listing instanceof BasicItemListing basicItemListing)
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(NEOFORGE_BASIC, basicItemListing)));
-                        *///?}
+                        ^///?}
                     });
                 });
 
             });
 
         });
-        //?} else {
-        /*ItemView.addServerRecipeProvider(recipeList -> {
+        *///?} else {
+        ItemView.addServerRecipeProvider(recipeList -> {
             HolderLookup.RegistryLookup<VillagerProfession> villagerProfessionRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_PROFESSION);
             HolderLookup.RegistryLookup<TradeSet> tradeSetRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.TRADE_SET);
 
@@ -416,18 +415,20 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             });
 
         });
-        *///?}
+        //?}
 
-        ItemView.addServerRecipeProvider(recipeList -> {
-            BuiltInRegistries.ITEM.forEach(item -> {
-                var stack = item.getDefaultInstance();
-                if (stack.has(DataComponents.REPAIRABLE)) {
-                    Repairable repairable = stack.get(DataComponents.REPAIRABLE);
-					var damagedStack = stack.copy();
-					damagedStack.setDamageValue(stack.getMaxDamage() / 2);
-					recipeList.add(new RepairingServerRecipe(damagedStack, Ingredient.of(repairable.items()), stack));
-                }
-            });
+        ItemView.addServerRecipeProvider(BuiltInReliableRecipeViewerIntegration::addRepairRecipes);
+    }
+
+    private static void addRepairRecipes(List<ReliableServerRecipe> recipeList) {
+        BuiltInRegistries.ITEM.forEach(item -> {
+            var stack = item.getDefaultInstance();
+            if (stack.has(DataComponents.REPAIRABLE)) {
+                Repairable repairable = stack.get(DataComponents.REPAIRABLE);
+                var damagedStack = stack.copy();
+                damagedStack.setDamageValue(stack.getMaxDamage() / 2);
+                recipeList.add(new AnvilCombiningServerRecipe(damagedStack, Ingredient.of(repairable.items()), stack));
+            }
         });
     }
 
