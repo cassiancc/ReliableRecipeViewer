@@ -48,20 +48,22 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowOverlays(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowOverlays(sidePanel));
         addChild(linearLayout,"rrv.client_settings.sidepanel", Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel));
 
+        linearLayout.addChild(new StringWidget(clientSetting("behavior"), this.font));
+        addChild(linearLayout,"rrv.client_settings.wrap_scrolling", Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel));
+
         linearLayout.addChild(new StringWidget(clientSetting("style"), this.font));
         addChild(linearLayout, clientSetting("background.enabled"), clientSetting("background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), clientSetting("background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
         addChild(linearLayout, clientSetting("resize_mode.wrap"), clientSetting("resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), clientSetting("resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
         addChild(linearLayout, clientSetting("center_search.centered"), clientSetting("center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), clientSetting("center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
         addChild(linearLayout, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
 
-        linearLayout.addChild(new StringWidget(clientSetting("behavior"), this.font));
-        addChild(linearLayout,"rrv.client_settings.wrap_scrolling", Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel));
-
         linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
         addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
         addChild(linearLayout, clientSetting("index_source.creative"), clientSetting("index_source.registry"), Configs.CLIENT_SETTINGS.isCreativeIndexSource(), clientSetting("index_source"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCreativeIndexSource(b));
-//        linearLayout.addChild(Button.builder(clientSetting("export_item_view"), button -> ItemFilters.exportFullStackList()).size(250, 20).build());
-        
+
+        if (Minecraft.getInstance().level != null)
+            linearLayout.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(250, 20).build());
+
         this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build()));
 
         ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
@@ -71,7 +73,7 @@ public class RrvClientSettingsScreen extends Screen {
         this.layout.arrangeElements();
     }
 
-	private static MutableComponent clientSetting(String s) {
+	public static MutableComponent clientSetting(String s) {
 		return Component.translatable("rrv.client_settings." + s);
 	}
 

@@ -101,6 +101,8 @@
   "rrv.client_settings.style": "Style",
   "rrv.client_settings.behavior": "Behavior",
   "rrv.client_settings.export_item_view": "Export Item View",
+  "rrv.client_settings.export_item_view.failed": "Failed to export!",
+  "rrv.client_settings.export_item_view.success": "Successfully exported to 'data/rrv_index.json'",
 
   "tag.item.minecraft.acacia_logs": "Acacia Logs",
   "tag.item.minecraft.anvil": "Anvils",

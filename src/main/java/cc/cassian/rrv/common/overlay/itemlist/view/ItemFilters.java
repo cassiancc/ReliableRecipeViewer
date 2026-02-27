@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.extra.FluidStack;
+import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
@@ -14,19 +15,21 @@ import com.google.gson.*;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -272,15 +275,28 @@ public class ItemFilters {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
-    public static void exportFullStackList() {
-        try (var output = Files.newOutputStream(Platform.INSTANCE.getDataDirectory().resolve("rrv/index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
+    public static void exportFullStackList(Button button) {
+        try (var output = Files.newOutputStream(Platform.INSTANCE.getDataDirectory().resolve("rrv_index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
+            JsonObject index = new JsonObject();
             JsonArray encodedStacks = new JsonArray();
             for (ItemStack itemStack : fullStackList()) {
-                DataResult<JsonElement> result = ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, itemStack);
-                encodedStacks.add(result.getOrThrow());
+                if (!itemStack.isEmpty()) {
+                    JsonObject result = ItemStack.CODEC.encodeStart(Minecraft.getInstance().level.registryAccess().createSerializationContext(JsonOps.INSTANCE), itemStack).getOrThrow().getAsJsonObject();
+                    result.remove("count");
+                    if (result.has("components")) {
+                        encodedStacks.add(result);
+                    } else {
+                        encodedStacks.add(result.get("id"));
+                    }
+                }
             }
-            GSON.toJson(encodedStacks, writer);
+            index.addProperty("replace", true);
+            index.add("values", encodedStacks);
+            GSON.toJson(index, writer);
+            button.setMessage(RrvClientSettingsScreen.clientSetting("export_item_view.success"));
+            Util.getPlatform().openPath(Platform.INSTANCE.getDataDirectory());
         } catch (Exception e) {
+            button.setMessage(RrvClientSettingsScreen.clientSetting("export_item_view.failed"));
             ReliableRecipeViewer.LOGGER.error("Unable to export full stack list!", e);
         }
     }
