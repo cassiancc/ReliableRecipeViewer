@@ -1,14 +1,43 @@
-# Excluding Items
+# Adding and Removing Items
 
-## Via Tags
+## Via Datapacks
 
 Items can easily be excluded from RRV using the `c:hidden_from_recipe_viewers` common [tag](https://minecraft.wiki/w/Tag_(Java_Edition)) adopted by Fabric and NeoForge in 1.21. Using this tag ensures that all recipe viewers that respect the tag (JEI, REI, EMI, EIV, RRV, etc.) will not display your item without needing dedicated integration.
 
 RRV respects this tag for blocks, items, fluids, enchantments, and potions.
 
+## Via Resource Packs
+
+The Item View can be easily modified by adding JSON files to `assets/<namespace>/rrv/index`. The format is as follows:
+
+```json
+{
+  "replace": true,
+  "values": [
+    {
+      "components": {
+        "minecraft:stored_enchantments": {
+          "minecraft:aqua_affinity": 1
+        }
+      },
+      "count": 1,
+      "id": "minecraft:enchanted_book"
+    },
+    "minecraft:water",
+    "minecraft:stone"
+  ]
+}
+```
+
 ## Via Code
 
-Mods that prefer having dedicated RRV integration (wanting to hide more complicated `ItemStack`s, or changing the index at runtime without a virtual data pack) can also make use of various methods in `ItemView` to exclude items as well.
+Mods that prefer having dedicated RRV integration (wanting to hide more complicated `ItemStack`s, or changing the index at runtime without a virtual resource/data pack) can also make use of various methods in `ItemView` to include and exclude items as well.
+
+### Including Items
+
+- `ItemView.addStackSensitive` adds item stacks to the index.
+
+### Excluding Items
 
 - `ItemView.excludeItem` and `ItemView.excludeItems` exclude instances of `Item`.
 - `ItemView.excludeEnchantment` exclude resource keys representing an `Enchantment`.
