@@ -2,15 +2,17 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.builtin.tag.TagClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -18,15 +20,16 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.StrictJsonParser;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -265,6 +268,21 @@ public class ItemFilters {
         ResourceRecipeManager.replaceIndex(results);
 
         return results;
+    }
+
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+
+    public static void exportFullStackList() {
+        try (var output = Files.newOutputStream(Platform.INSTANCE.getDataDirectory().resolve("rrv/index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
+            JsonArray encodedStacks = new JsonArray();
+            for (ItemStack itemStack : fullStackList()) {
+                DataResult<JsonElement> result = ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, itemStack);
+                encodedStacks.add(result.getOrThrow());
+            }
+            GSON.toJson(encodedStacks, writer);
+        } catch (Exception e) {
+            ReliableRecipeViewer.LOGGER.error("Unable to export full stack list!", e);
+        }
     }
 
 }
