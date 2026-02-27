@@ -10,6 +10,10 @@ RRV respects this tag for blocks, items, fluids, enchantments, and potions.
 
 The Item View can be easily modified by adding JSON files to `assets/<namespace>/rrv/index`. The format is as follows:
 
+- `replace`: An optional boolean stating whether the index should be entirely replaced with this new index.
+- `values`: An optional array containing either `Item` or `ItemStack`s to add to the index.
+- `remove`: An optional array containing either `Item` or `ItemStack`s to be removed to the index. Specifying an item will remove all `ItemStack`s of that type.
+
 ```json
 {
   "replace": true,

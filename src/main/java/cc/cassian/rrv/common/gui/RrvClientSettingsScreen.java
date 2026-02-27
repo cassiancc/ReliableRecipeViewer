@@ -4,9 +4,11 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -30,13 +32,13 @@ public class RrvClientSettingsScreen extends Screen {
         this.lastScreen = lastScreen;
     }
 
-
     @Override
     protected void init() {
 
-        this.layout.addToHeader(new StringWidget(TITLE, this.font));
+        StringWidget stringWidget = this.layout.addToHeader(new StringWidget(TITLE, this.font));
+        this.addRenderableWidget(stringWidget);
 
-        LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
+        LinearLayout linearLayout = LinearLayout.vertical().spacing(2);
 
         addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowOverlays(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowOverlays(sidePanel));
         addChild(linearLayout,"rrv.client_settings.sidepanel", Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel));
@@ -50,9 +52,12 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout, Component.translatable("rrv.client_settings.center_search.centered"), Component.translatable("rrv.client_settings.center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), Component.translatable("rrv.client_settings.center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
         addChild(linearLayout, Component.translatable("rrv.client_settings.index_source.creative"), Component.translatable("rrv.client_settings.index_source.registry"), Configs.CLIENT_SETTINGS.isCreativeIndexSource(), Component.translatable("rrv.client_settings.index_source"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCreativeIndexSource(b));
 
-        this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build());
+        Button button1 = this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build());
+        this.addRenderableWidget(button1);
 
-        this.layout.visitWidgets(this::addRenderableWidget);
+        ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
+
+        scrollableLayout.visitWidgets(this::addRenderableWidget);
         this.layout.arrangeElements();
     }
 
