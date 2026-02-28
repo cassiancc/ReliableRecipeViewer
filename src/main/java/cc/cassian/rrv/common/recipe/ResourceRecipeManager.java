@@ -1,11 +1,11 @@
 package cc.cassian.rrv.common.recipe;
 
-import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,14 +14,12 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.StrictJsonParser;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
@@ -127,23 +125,15 @@ public class ResourceRecipeManager {
 				// new values to insert into the index
 				if (parsedRecipe.has("values") && parsedRecipe.get("values").isJsonArray()) {
 					parsedRecipe.getAsJsonArray("values").forEach(item -> {
-						if (item.isJsonObject()) {
-							JsonObject itemObject = item.getAsJsonObject();
-							if (itemObject.has("after")) {
-								Optional<ItemStack> after = results.stream().filter(stack -> ItemStack.isSameItem(stack, RrvUtil.getItemStack(itemObject.get("after")))).findFirst();
-								after.ifPresent(stack -> {
-									var i = results.indexOf(stack);
-									results.add(i+1, RrvUtil.getItemStack(itemObject));
-								});
-							} else {
-								ItemStack itemStack = RrvUtil.getItemStack(item);
-								if (itemStack.isEmpty())
-									results.add(itemStack);
-							}
+						if (item.isJsonObject() && item.getAsJsonObject().has("after")) {
+							findAndAddStack(results, item.getAsJsonObject(), "after", 1);
+						} else if (item.isJsonObject() && item.getAsJsonObject().has("before")) {
+							findAndAddStack(results, item.getAsJsonObject(), "before", 0);
 						}
-						else if (item.isJsonPrimitive() && item.getAsJsonPrimitive().isString()) {
-							Optional<Item> optional = BuiltInRegistries.ITEM.getOptional(Identifier.parse(item.getAsString()));
-							optional.ifPresent(value -> results.add(new ItemStack(value)));
+						else {
+							ItemStack itemStack = RrvUtil.getItemStack(item);
+							if (itemStack.isEmpty())
+								results.add(itemStack);
 						}
 					});
 				}
@@ -151,6 +141,14 @@ public class ResourceRecipeManager {
 				LOGGER.error("Could not parse index modification {} due to an exception: ", identifier, e);
 			}
 		});
+	}
+
+	private static void findAndAddStack(List<ItemStack> results, JsonObject itemObject, String key, int offset) {
+		Optional<ItemStack> first = results.stream().filter(stack -> ItemStack.isSameItem(stack, RrvUtil.getItemStack(itemObject.get(key)))).findFirst();
+		if (first.isPresent()) {
+			var indexOf = results.indexOf(first.get());
+			results.add(indexOf+offset, RrvUtil.getItemStack(itemObject));
+		}
 	}
 
 	private record CombinationRecipeResult(SlotContent left, SlotContent right, SlotContent result, int priority) {}
