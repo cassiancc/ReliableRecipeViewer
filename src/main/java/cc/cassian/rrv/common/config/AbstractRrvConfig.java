@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.config;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -29,7 +30,7 @@ public abstract class AbstractRrvConfig {
 
     public void load() {
         try {
-            File file = new File(ReliableRecipeViewer.CONFIG_PATH + this.fileName + ".json");
+            File file = ReliableRecipeViewer.CONFIG_PATH.resolve(this.fileName + ".json").toFile();
 
             if (!file.exists()) {
                 ReliableRecipeViewer.LOGGER.info("Config file: {}.json not present, creating a new one...", this.fileName);
@@ -38,7 +39,7 @@ public abstract class AbstractRrvConfig {
             }
 
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            this.data = new GsonBuilder().create().fromJson(fileContent, JsonObject.class);
+            this.data = ReliableRecipeViewer.GSON.fromJson(fileContent, JsonObject.class);
 
             ReliableRecipeViewer.LOGGER.info("Loading config file: {}.json", this.fileName);
             this.loadData();
@@ -53,17 +54,16 @@ public abstract class AbstractRrvConfig {
         try {
 
             this.saveData();
-            File configDirectory = new File(ReliableRecipeViewer.CONFIG_PATH);
-            File saveFile = new File(ReliableRecipeViewer.CONFIG_PATH + this.fileName + ".json");
+            File configDirectory = ReliableRecipeViewer.CONFIG_PATH.toFile();
+            File saveFile = ReliableRecipeViewer.CONFIG_PATH.resolve(this.fileName + ".json").toFile();
 
             if(configDirectory.mkdirs())
-                ReliableRecipeViewer.LOGGER.info("Couldn't find config directory, creating new one...");
-
+                ReliableRecipeViewer.LOGGER.debug("Couldn't find config directory, creating new one...");
 
             if (saveFile.createNewFile())
                 ReliableRecipeViewer.LOGGER.info("Created new config file: {}.json", this.fileName);
 
-            String encoded = new GsonBuilder().setPrettyPrinting().create().toJson(this.data);
+            String encoded = ReliableRecipeViewer.GSON.toJson(this.data);
 
             FileUtils.writeStringToFile(saveFile, encoded, StandardCharsets.UTF_8);
             ReliableRecipeViewer.LOGGER.info("Saved config file: {}.json", this.fileName);

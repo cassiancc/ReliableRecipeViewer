@@ -10,6 +10,7 @@ import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import com.google.gson.*;
 import com.mojang.serialization.DataResult;
@@ -273,15 +274,13 @@ public class ItemFilters {
         return results;
     }
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-
     public static void exportFullStackList(Button button) {
         try (var output = Files.newOutputStream(Platform.INSTANCE.getDataDirectory().resolve("rrv_index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
             JsonObject index = new JsonObject();
             JsonArray encodedStacks = new JsonArray();
             for (ItemStack itemStack : fullStackList()) {
                 if (!itemStack.isEmpty()) {
-                    JsonObject result = ItemStack.CODEC.encodeStart(Minecraft.getInstance().level.registryAccess().createSerializationContext(JsonOps.INSTANCE), itemStack).getOrThrow().getAsJsonObject();
+                    JsonObject result = ItemStack.CODEC.encodeStart(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), itemStack).getOrThrow().getAsJsonObject();
                     result.remove("count");
                     if (result.has("components")) {
                         encodedStacks.add(result);
@@ -292,7 +291,7 @@ public class ItemFilters {
             }
             index.addProperty("replace", true);
             index.add("values", encodedStacks);
-            GSON.toJson(index, writer);
+            ReliableRecipeViewer.GSON.toJson(index, writer);
             button.setMessage(RrvClientSettingsScreen.clientSetting("export_item_view.success"));
             Util.getPlatform().openPath(Platform.INSTANCE.getDataDirectory());
         } catch (Exception e) {

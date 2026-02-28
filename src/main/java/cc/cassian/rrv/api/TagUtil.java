@@ -80,7 +80,7 @@ public class TagUtil {
      * @return The encoded stack as CompoundTag
      */
     public static CompoundTag encodeItemStackOnServer(ItemStack stack) {
-        return ItemStack.CODEC.encode(stack, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
+        return ItemStack.CODEC.encode(stack, ServerRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
     }
 
     //? if >26 {
@@ -90,7 +90,7 @@ public class TagUtil {
      * @return The encoded stack as CompoundTag
      */
     public static CompoundTag encodeItemStackOnServer(net.minecraft.world.item.ItemStackTemplate stack) {
-        return net.minecraft.world.item.ItemStackTemplate.CODEC.encode(stack, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
+        return net.minecraft.world.item.ItemStackTemplate.CODEC.encode(stack, ServerRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
     }
     //?}
 
@@ -118,7 +118,7 @@ public class TagUtil {
      * @return The decoded stack
      */
     public static ItemStack decodeItemStackOnServer(CompoundTag tag) {
-        return ItemStack.CODEC.parse(ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), tag).result().orElse(ItemStack.EMPTY);
+        return ItemStack.CODEC.parse(ServerRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(ItemStack.EMPTY);
     }
 
     /**

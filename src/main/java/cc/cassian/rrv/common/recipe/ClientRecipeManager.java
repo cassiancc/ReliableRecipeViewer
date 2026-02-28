@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.recipe;
 import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -101,9 +102,12 @@ public class ClientRecipeManager {
 	}
 
 	public RegistryOps<Tag> createSerializationContext() {
-		return Minecraft.getInstance().player.level().registryAccess().createSerializationContext(NbtOps.INSTANCE);
+		return createSerializationContext(NbtOps.INSTANCE);
 	}
 
+	public <T> RegistryOps<T> createSerializationContext(final DynamicOps<T> parent) {
+		return Minecraft.getInstance().level.registryAccess().createSerializationContext(parent);
+	}
 
 	public static class Status {
 
