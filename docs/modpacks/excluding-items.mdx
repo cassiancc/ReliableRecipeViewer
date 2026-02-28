@@ -12,6 +12,7 @@ The Item View can be easily modified by adding JSON files to `assets/<namespace>
 
 - `replace`: An optional boolean stating whether the index should be entirely replaced with this new index.
 - `values`: An optional array containing either `Item` or `ItemStack`s to add to the index.
+    - Specifying `after` when adding an item stack will place it after a specific item in the index.
 - `remove`: An optional array containing either `Item` or `ItemStack`s to be removed to the index. Specifying an item will remove all `ItemStack`s of that type.
 
 ```json
@@ -26,6 +27,10 @@ The Item View can be easily modified by adding JSON files to `assets/<namespace>
       },
       "count": 1,
       "id": "minecraft:enchanted_book"
+    },
+    {
+      "id": "minecraft:water",
+      "after": "minecraft:grass_block"
     },
     "minecraft:water",
     "minecraft:stone"

@@ -18,7 +18,6 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean appendModNamespace = true;
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
-	private boolean creativeIndexSource = false;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -72,7 +71,6 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
 		this.rightIndex = this.data().get("rightIndex").getAsBoolean();
 		this.centerSearch = this.data().get("centerSearch").getAsBoolean();
-		this.creativeIndexSource = this.data().get("creativeIndexSource").getAsBoolean();
 		this.wrapScrolling = WrapScrolling.CODEC.decode(JsonOps.INSTANCE, this.data().get("wrapScrolling")).mapOrElse(Pair::getFirst, (e)->WrapScrolling.ON_BUTTONS);
 		this.sidePanel = SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)-> SidePanel.BOOKMARKS);
 	}
@@ -85,19 +83,9 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.data().addProperty("appendModNamespace", this.appendModNamespace);
 		this.data().addProperty("rightIndex", this.rightIndex);
 		this.data().addProperty("centerSearch", this.centerSearch);
-		this.data().addProperty("creativeIndexSource", this.creativeIndexSource);
 		this.data().add("wrapScrolling", WrapScrolling.CODEC.encodeStart(JsonOps.INSTANCE, this.wrapScrolling).getOrThrow());
 		this.data().add("sidePanel", SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
 
-	}
-
-	public boolean isCreativeIndexSource() {
-		return creativeIndexSource;
-	}
-
-	public void setCreativeIndexSource(boolean creativeIndexSource) {
-		this.creativeIndexSource = creativeIndexSource;
-		ServerRecipeManager.INSTANCE.reload();
 	}
 
 	public OverlayDisplay isShowOverlays() {

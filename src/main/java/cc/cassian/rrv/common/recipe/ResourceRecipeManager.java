@@ -14,6 +14,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.StrictJsonParser;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -127,7 +128,18 @@ public class ResourceRecipeManager {
 				if (parsedRecipe.has("values") && parsedRecipe.get("values").isJsonArray()) {
 					parsedRecipe.getAsJsonArray("values").forEach(item -> {
 						if (item.isJsonObject()) {
-							results.add(RrvUtil.getItemStack(item));
+							JsonObject itemObject = item.getAsJsonObject();
+							if (itemObject.has("after")) {
+								Optional<ItemStack> after = results.stream().filter(stack -> ItemStack.isSameItem(stack, RrvUtil.getItemStack(itemObject.get("after")))).findFirst();
+								after.ifPresent(stack -> {
+									var i = results.indexOf(stack);
+									results.add(i+1, RrvUtil.getItemStack(itemObject));
+								});
+							} else {
+								ItemStack itemStack = RrvUtil.getItemStack(item);
+								if (itemStack.isEmpty())
+									results.add(itemStack);
+							}
 						}
 						else if (item.isJsonPrimitive() && item.getAsJsonPrimitive().isString()) {
 							Optional<Item> optional = BuiltInRegistries.ITEM.getOptional(Identifier.parse(item.getAsString()));

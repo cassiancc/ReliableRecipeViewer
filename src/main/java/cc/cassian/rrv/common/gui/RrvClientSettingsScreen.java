@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.gui;
 
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
@@ -59,8 +60,6 @@ public class RrvClientSettingsScreen extends Screen {
 
         linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
         addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
-        addChild(linearLayout, clientSetting("index_source.creative"), clientSetting("index_source.registry"), Configs.CLIENT_SETTINGS.isCreativeIndexSource(), clientSetting("index_source"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCreativeIndexSource(b));
-
         if (Minecraft.getInstance().level != null)
             linearLayout.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(250, 20).build());
 

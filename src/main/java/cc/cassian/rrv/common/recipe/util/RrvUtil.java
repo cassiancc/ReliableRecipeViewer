@@ -97,6 +97,11 @@ public class RrvUtil {
     }
 
     public static ItemStack getItemStack(JsonElement keyElement) {
-        return ItemStack.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), keyElement).result().orElseThrow();
+        if (keyElement.isJsonObject())
+            return ItemStack.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), keyElement).result().orElseThrow();
+        else if (keyElement.isJsonPrimitive() && keyElement.getAsJsonPrimitive().isString()) {
+            return BuiltInRegistries.ITEM.getValue(Identifier.parse(keyElement.getAsString())).getDefaultInstance();
+        }
+        return ItemStack.EMPTY;
     }
 }

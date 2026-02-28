@@ -26,6 +26,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Util;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -251,20 +252,10 @@ public class ItemFilters {
     private static List<ItemStack> fullStackList() {
         List<ItemStack> results = new ArrayList<>();
 
-        if (Configs.CLIENT_SETTINGS.isCreativeIndexSource()) {
-			results.addAll(CreativeModeTabs.searchTab().getDisplayItems());
-            BuiltInRegistries.ITEM.forEach(item -> {
-                results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
-            });
-            BuiltInRegistries.FLUID.forEach(fluid -> {
-                results.add(new FluidStack(fluid).createItemStack());
-            });
-		} else {
-            BuiltInRegistries.ITEM.forEach(item -> {
-                results.add(new ItemStack(item));
-                results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
-            });
-        }
+        BuiltInRegistries.ITEM.forEach(item -> {
+            results.add(new ItemStack(item));
+            results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
+        });
 
         if (ModCompat.POLYDEX)
             PolymerHelpers.polymerFilter(results);
