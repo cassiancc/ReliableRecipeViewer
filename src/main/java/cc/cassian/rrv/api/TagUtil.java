@@ -95,29 +95,21 @@ public class TagUtil {
     //?}
 
     /**
-     * Encodes an ItemStack
+     * Encodes an ItemStack on the server.
      * @param stack The stack to encode
      * @return The encoded stack as CompoundTag
      */
     public static CompoundTag writeItemStack(ItemStack stack) {
-        if (ServerRecipeManager.INSTANCE.getServer() == null) {
-            return encodeItemStackOnClient(stack);
-        } else {
-            return encodeItemStackOnServer(stack);
-        }
+        return encodeItemStackOnServer(stack);
     }
 
     /**
-     * Decodes an {@link ItemStack}
-     * @param tag  The encoded stack as CompoundTag
+     * Decodes an {@link ItemStack} on the client
+     * @param tag The encoded stack as CompoundTag
      * @return The decoded {@link ItemStack}
      */
     public static ItemStack readItemStack(CompoundTag tag) {
-        if (ServerRecipeManager.INSTANCE.getServer() == null) {
-            return decodeItemStackOnClient(tag);
-        } else {
-            return decodeItemStackOnServer(tag);
-        }
+        return decodeItemStackOnClient(tag);
     }
 
     /**

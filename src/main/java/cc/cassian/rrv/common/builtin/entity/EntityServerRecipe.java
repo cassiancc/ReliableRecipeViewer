@@ -47,7 +47,7 @@ public class EntityServerRecipe implements ReliableServerRecipe {
     public void loadFromTag(CompoundTag tag) {
 
         this.entityType = tag.read("entity", BuiltInRegistries.ENTITY_TYPE.byNameCodec()).orElse(null);
-        this.drops = TagUtil.readList(tag, "stacks", TagUtil::readItemStack);
+        this.drops = TagUtil.readList(tag, "stacks", TagUtil::decodeItemStackOnClient);
 
     }
 

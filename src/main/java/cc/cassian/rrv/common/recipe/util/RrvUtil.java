@@ -95,6 +95,6 @@ public class RrvUtil {
     }
 
     public static ItemStack getItemStack(JsonElement keyElement) {
-        return ItemStackTemplate.CODEC.parse(Minecraft.getInstance().player.level().registryAccess().createSerializationContext(JsonOps.INSTANCE), keyElement).result().orElseThrow().create();
+        return ItemStack.CODEC.parse(Minecraft.getInstance().player.level().registryAccess().createSerializationContext(JsonOps.INSTANCE), keyElement).result().orElseThrow();
     }
 }
