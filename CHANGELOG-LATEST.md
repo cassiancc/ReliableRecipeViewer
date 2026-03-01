@@ -5,6 +5,7 @@
 
 ### Fixed
 - Bug causing Villager Trades to be inaccurate on 1.21.11.
+- Clock showing up as an input for world interaction recipes.
 
 ### Removed
 - Buggy creative index source option - hopefully will return in a future update.
