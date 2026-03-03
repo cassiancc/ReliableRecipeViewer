@@ -62,7 +62,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         color = new Color(unmodified.getRed(), unmodified.getGreen(), unmodified.getBlue(), 255).getRGB();
 
         //? if >26 {
-        TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockModelSet().get(fluid.defaultFluidState().createLegacyBlock()).particleMaterial().sprite();
+        TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(fluid.defaultFluidState().createLegacyBlock()).particleMaterial().sprite();
         //?} else {
         /*TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(fluid.defaultFluidState().createLegacyBlock()).particleIcon();
         *///?}

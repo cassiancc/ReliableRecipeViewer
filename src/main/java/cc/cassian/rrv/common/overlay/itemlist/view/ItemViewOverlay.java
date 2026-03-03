@@ -57,7 +57,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public ReliableSpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
-    private static int FOOTER_HEIGHT = 20;
+    private static final int FOOTER_HEIGHT = 20;
 
     private String currentQuery;
     boolean itemFilterMode;
@@ -202,7 +202,16 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.availableItems().removeIf(stack -> ItemView.isExcludedItem(stack));
 
         this.updateSlots();
+
+        this.updateButtons();
     }
+
+	private void updateButtons() {
+        if (back != null) {
+            back.visible = this.isEnabled();
+            next.visible = this.isEnabled();
+        }
+	}
 
 
     @Override
@@ -328,11 +337,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), this::prevPage);
-        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), this::nextPage);
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ReliableRecipeViewer.of("back"), this::prevPage);
+        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ReliableRecipeViewer.of("next"), this::nextPage);
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 5);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 5);
-
 
         back.visible = ItemViewOverlay.INSTANCE.isEnabled();
         next.visible = ItemViewOverlay.INSTANCE.isEnabled();
@@ -346,8 +354,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack)) {
             MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
             if (server != null) {
-                RegistryAccess.Frozen registryManager = server.registryAccess();
-                stack = PolymerHelpers.getRealItemStack(stack, registryManager);
+                stack = PolymerHelpers.getRealItemStack(stack, server.registryAccess());
             }
         }
         //?}
@@ -410,8 +417,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, ActionType.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
         }
-
-
     }
 
 
@@ -422,7 +427,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public boolean isItemFilterMode() {
         return this.itemFilterMode;
     }
-
 
     public String getCurrentQuery() {
         return this.currentQuery;
