@@ -29,21 +29,18 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     private final SlotContent result;
     private final int width, height;
     private final boolean shapeless;
+	private int dependentIndex = -1;
 
-    public CraftingClientRecipe(ShapedServerRecipe recipe) {
-
+	public CraftingClientRecipe(ShapedServerRecipe recipe) {
         this.shapeless = false;
-
         this.width = recipe.getWidth();
         this.height = recipe.getHeight();
 
         recipe.getIngredients().forEach((slotId, ingredient) -> this.ingredients.put(slotId, SlotContent.of(ingredient)));
         this.result = SlotContent.of(recipe.getResult());
-
     }
 
     public CraftingClientRecipe(ShapelessServerRecipe recipe) {
-
         this.shapeless = true;
         var size = recipe.getIngredients().size();
 		switch (size) {
@@ -78,8 +75,8 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         recipe.getIngredients().forEach((ingredient) -> {
 			this.ingredients.put(i.getAndIncrement(), SlotContent.of(ingredient));
 		});
-        this.result = SlotContent.of(recipe.getResult());
 
+        this.result = SlotContent.of(recipe.getResult());
     }
 
     public CraftingClientRecipe(TippedArrowServerRecipe recipe) {
@@ -98,7 +95,6 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         ItemStack result = new ItemStack(Items.TIPPED_ARROW, 8);
         result.set(DataComponents.POTION_CONTENTS, recipe.getPotion().get(DataComponents.POTION_CONTENTS));
         this.result = SlotContent.of(result);
-
     }
 
     public CraftingClientRecipe(TransmuteServerRecipe transmuteRecipe) {
@@ -107,6 +103,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.shapeless = true;
         this.ingredients.put(0, SlotContent.of(transmuteRecipe.getInput()));
         this.ingredients.put(1, SlotContent.of(transmuteRecipe.getMaterial()));
+		this.dependentIndex = 1;
 
         this.result = SlotContent.of(transmuteRecipe.getResults());
     }
@@ -119,8 +116,11 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
         this.ingredients.forEach(slotFillContext::bindSlot);
-        slotFillContext.bindSlot(9, this.result);
-    }
+		if (dependentIndex != -1)
+        	slotFillContext.bindDependentSlot(9, ()->this.ingredients.get(dependentIndex).index(), this.result);
+		else
+			slotFillContext.bindSlot(9, this.result);
+	}
 
     @Override
     public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {

@@ -292,7 +292,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                 }
                 //? if >26 {
-                /*if (recipe instanceof DyeRecipe) {
+                if (recipe instanceof DyeRecipe) {
                     DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
                     List<ItemStack> results = new ArrayList<>();
 
@@ -316,8 +316,8 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 					}
                     recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results));
                 }
-                *///?} else {
-                if (recipe instanceof ArmorDyeRecipe) {
+                //?} else {
+                /*if (recipe instanceof ArmorDyeRecipe) {
                     var dyeable = SlotContent.getItemsFromTag(ItemTags.DYEABLE);
 					dyeable.ifPresent(holders -> holders.forEach(dyeableItemHolder -> {
                         if (dyeableItemHolder.isBound()) {
@@ -334,7 +334,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         }
 					}));
                 }
-                //?}
+                *///?}
             });
 
             //Tipped arrows
