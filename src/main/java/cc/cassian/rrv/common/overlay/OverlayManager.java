@@ -1,7 +1,9 @@
 package cc.cassian.rrv.common.overlay;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
@@ -26,33 +28,6 @@ public class OverlayManager {
 	public static boolean shouldShowOverlays() {
 		return Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching());
 	}
-
-    public enum OverlayDisplay implements StringRepresentable {
-        ENABLED,
-        DISABLED,
-        WHEN_SEARCHING;
-
-        @Override
-        public String getSerializedName() {
-            return this.name().toLowerCase(Locale.ROOT);
-        }
-
-        public static final Codec<OverlayDisplay> CODEC = StringRepresentable.fromEnum(OverlayDisplay::values);
-    }
-
-    public enum SidePanel implements StringRepresentable {
-        BOOKMARKS,
-        CRAFTABLES,
-        DISABLED;
-
-        @Override
-        public String getSerializedName() {
-            return this.name().toLowerCase(Locale.ROOT);
-        }
-
-        public static final Codec<SidePanel> CODEC = StringRepresentable.fromEnum(SidePanel::values);
-    }
-
 
     private AbstractRrvOverlay.InventoryPositionInfo currentInvInfo = null;
 
@@ -252,7 +227,7 @@ public class OverlayManager {
     public void renderAll(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.render(guiGraphics, mouseX, mouseY, partialTicks));
 
-        if (Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
+        if (Platform.INSTANCE.isDevelopment() && Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
             this.renderDebug(guiGraphics, mouseX, mouseY, partialTicks);
     }
 

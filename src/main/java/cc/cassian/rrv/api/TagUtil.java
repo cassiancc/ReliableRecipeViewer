@@ -4,7 +4,11 @@ import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.datafixers.util.Either;
-import net.minecraft.client.Minecraft;
+//? fabric {
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
+import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
+//?}
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -22,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Helper class for network encoding based on CompoundTags
@@ -50,15 +55,15 @@ public class TagUtil {
     }
 
     //? >26 {
-    /*/^*
+    /**
      * Decodes an ItemStackTemplate on the client side
      * @param tag The tag to decode
      * @return The decoded stack
-     ^/
+     */
     public static net.minecraft.world.item.ItemStackTemplate decodeItemStackTemplateOnClient(CompoundTag tag) {
         return net.minecraft.world.item.ItemStackTemplate.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(null);
     }
-    *///?}
+    //?}
 
     /**
      * Encodes an ItemStack on the client side
@@ -75,44 +80,36 @@ public class TagUtil {
      * @return The encoded stack as CompoundTag
      */
     public static CompoundTag encodeItemStackOnServer(ItemStack stack) {
-        return ItemStack.CODEC.encode(stack, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
+        return ItemStack.CODEC.encode(stack, ServerRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
     }
 
     //? if >26 {
-    /*/^*
+    /**
      * Encodes an ItemStackTemplate on the server side
      * @param stack The stack to encode
      * @return The encoded stack as CompoundTag
-     ^/
+     */
     public static CompoundTag encodeItemStackOnServer(net.minecraft.world.item.ItemStackTemplate stack) {
-        return net.minecraft.world.item.ItemStackTemplate.CODEC.encode(stack, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
+        return net.minecraft.world.item.ItemStackTemplate.CODEC.encode(stack, ServerRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
     }
-    *///?}
+    //?}
 
     /**
-     * Encodes an ItemStack
+     * Encodes an ItemStack on the server.
      * @param stack The stack to encode
      * @return The encoded stack as CompoundTag
      */
     public static CompoundTag writeItemStack(ItemStack stack) {
-        if (ServerRecipeManager.INSTANCE.getServer() == null) {
-            return encodeItemStackOnClient(stack);
-        } else {
-            return encodeItemStackOnServer(stack);
-        }
+        return encodeItemStackOnServer(stack);
     }
 
     /**
-     * Decodes an {@link ItemStack}
-     * @param tag  The encoded stack as CompoundTag
+     * Decodes an {@link ItemStack} on the client
+     * @param tag The encoded stack as CompoundTag
      * @return The decoded {@link ItemStack}
      */
     public static ItemStack readItemStack(CompoundTag tag) {
-        if (ServerRecipeManager.INSTANCE.getServer() == null) {
-            return decodeItemStackOnClient(tag);
-        } else {
-            return decodeItemStackOnServer(tag);
-        }
+        return decodeItemStackOnClient(tag);
     }
 
     /**
@@ -121,7 +118,7 @@ public class TagUtil {
      * @return The decoded stack
      */
     public static ItemStack decodeItemStackOnServer(CompoundTag tag) {
-        return ItemStack.CODEC.parse(ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), tag).result().orElse(ItemStack.EMPTY);
+        return ItemStack.CODEC.parse(ServerRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(ItemStack.EMPTY);
     }
 
     /**
@@ -147,7 +144,23 @@ public class TagUtil {
         if(ingredientContent.right().isEmpty())
             return new CompoundTag();
 
-        tag.put("items", TagUtil.createItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList()));
+        //? fabric {
+        if (ingredient instanceof FabricIngredient fabricIngredient) {
+            CustomIngredient customIngredient = fabricIngredient.getCustomIngredient();
+            if (customIngredient != null) {
+                //? >26 {
+                Stream<Holder<Item>> matchingItems = customIngredient.items();
+                //?} else
+                //Stream<Holder<Item>> matchingItems = customIngredient.getMatchingItems();
+                tag.put("items", TagUtil.createItemList(matchingItems.filter(Holder::isBound).map(Holder::value).toList()));
+            }
+        }
+        //?}
+
+        if (!tag.contains("items")) {
+            tag.put("items", TagUtil.createItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList()));
+        }
+
         return tag;
     }
 

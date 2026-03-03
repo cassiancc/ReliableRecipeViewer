@@ -1,3 +1,62 @@
+## [6.5.0]
+
+### Added
+
+- "Repairing" has been replaced with "Anvil Combining", a new resource-pack driven recipe format based on world interaction recipes.
+- Resource driven recipes can now specify component data.
+
+### Changed
+- Info recipes and word interaction recipes can now both be put into the `rrv/recipe` folder rather than `rrv_world_interaction` or `rrv_info` folders. These legacy folders will become ignored in a future update.
+- Next/previous page buttons have been resized and no longer hold the mouse's focus.
+- Bookmarking an item now switches the overlay to the bookmark panel.
+- Side panel is now hidden by default.
+
+## [6.4.3]
+
+### Added
+- Wrap scrolling - enabled by default for next/previous page buttons, can be enabled for scrolling as well.
+- Initial work to support Fabric custom ingredients.
+
+### Fixed
+- Scrolling issues from mixins.
+
+## [6.4.2]
+
+### Fixed
+- Log spam from side panel.
+
+## [6.4.1]
+
+### Added
+- Support for 26.1-snapshot-8.
+
+### Fixed
+- F3 menu showing RRV debug information.
+- Minor improvements to craftables performance. This is still being worked on and improved.
+
+## [6.4.0]
+
+### Added
+- Craftables can now be seen in the left panel. To quickly switch to the craftable panel, just click on the title bar.
+- Direct integration with Polydex, based on the now archived Polydex2EIV.
+- Support for 26.1-snapshot-7 and its new item tags.
+- The Item View can now be filtered by item ID using the `:` prefix (thanks @fireboy637!)
+- The client recipe type icon can now be rendering dynamically using `renderIcon`. If this is not overridden, it will render an `ItemStack` as usual.
+- Translation to Simplified Chinese (thanks @moqyng!)
+
+### Changed
+- Internal changes to unify interactions with the item view and slot contents.
+- Internal changes to fluid rendering.
+- Internal changes to the bookmark manager, decoupling it from the overlay system.
+
+### Fixed
+- Log message about missing model.
+- Remaining missing tag translations.
+- Item View scrollbar no longer overflows when set to the left panel.
+- Multiple effects clipping with the Item View.
+- Info recipes can no longer overflow.
+- Search bar no longer is hidden upon first launch with "Display when searching" is enabled.
+
 ## [6.3.3]
 
 ### Added

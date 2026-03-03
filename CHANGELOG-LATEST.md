@@ -1,20 +1,16 @@
 ### Added
-- Craftables can now be seen in the left panel. To quickly switch to the craftable panel, just click on the title bar.
-- Direct integration with Polydex, based on the now archived Polydex2EIV.
+- The index can now be edited via resource packs. Any file in `assets/<namespace/rrv/index` will modify what items are shown in the item view, for more details see its docs page.
+- Client configs screen now makes use of sections and scrolls to better handle the additional options.
+- The Item View can now be exported to the format used by the index editor.
+- Buttons can now be hidden.
 - Dyeable item recipes are now present in RRV.
-- Support for 26.1-snapshot-6 and its new item tags.
-- The Item View can now be filtered by item ID using the `:` prefix (thanks @fireboy637)
-- The client recipe type icon can now be rendering dynamically using `renderIcon`. If this is not overridden, it will render an `ItemStack` as usual.
 
-### Changed
-- Internal changes to unify interactions with the item view and slot contents.
-- Internal changes to fluid rendering.
-- Internal changes to the bookmark manager, decoupling it from the overlay system.
 
 ### Fixed
-- Log message about missing model.
-- Remaining missing tag translations.
-- Item View scrollbar no longer overflows when set to the left panel.
-- Multiple effects clipping with the Item View.
-- Info recipes can no longer overflow.
-- Search bar no longer is hidden upon first launch with "Display when searching" is enabled.
+- Bug causing Villager Trades to be inaccurate on 1.21.11.
+- Clock showing up as an input for world interaction recipes.
+- Issues with Item View when searching option not correctly hiding buttons.
+- Smithing recipes without templates now look nicer.
+
+### Removed
+- Buggy creative index source option - hopefully will return in a future update.

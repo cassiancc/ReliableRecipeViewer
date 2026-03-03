@@ -1,10 +1,18 @@
 package cc.cassian.rrv.common.gui;
 
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.overlay.OverlayManager;
+import cc.cassian.rrv.common.config.options.OverlayDisplay;
+import cc.cassian.rrv.common.config.options.SidePanel;
+import cc.cassian.rrv.common.config.options.WrapScrolling;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -12,10 +20,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.StringRepresentable;
 
 public class RrvClientSettingsScreen extends Screen {
 
-    private static final Component TITLE = Component.translatable("rrv.client_settings.title");
+    private static final Component TITLE = clientSetting("title");
 
     private final Screen lastScreen;
 
@@ -27,47 +36,69 @@ public class RrvClientSettingsScreen extends Screen {
         this.lastScreen = lastScreen;
     }
 
-
     @Override
     protected void init() {
 
-        this.layout.addToHeader(new StringWidget(TITLE, this.font));
+        StringWidget stringWidget = this.layout.addToHeader(new StringWidget(TITLE, this.font));
+        this.addRenderableWidget(stringWidget);
 
-        LinearLayout linearLayout = this.layout.addToContents(LinearLayout.vertical().spacing(2));
+        LinearLayout linearLayout = LinearLayout.vertical().spacing(2);
 
-        linearLayout.addChild(
-                CycleButton.builder((overlayDisplay)-> Component.translatable("rrv.client_settings.itemview."+overlayDisplay.getSerializedName()), Configs.CLIENT_SETTINGS.isShowOverlays()).withValues(OverlayManager.OverlayDisplay.values())
-                        .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.itemview"),
-                                (cycleButton, b) -> OverlayManager.setOverlays(b))
-        );
-        linearLayout.addChild(
-                CycleButton.builder((sidePanel)-> Component.translatable("rrv.client_settings.sidepanel."+sidePanel.getSerializedName()), Configs.CLIENT_SETTINGS.getSidePanel()).withValues(OverlayManager.SidePanel.values())
-                        .create(0, 0, 250, 20, Component.translatable("rrv.client_settings.sidepanel"),
-                                (cycleButton, b) -> Configs.CLIENT_SETTINGS.setSidePanel(b))
-        );
+        linearLayout.addChild(new StringWidget(clientSetting("general"), this.font));
 
+        addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowOverlays(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowOverlays(sidePanel));
+        addChild(linearLayout,"rrv.client_settings.sidepanel", Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel));
 
+        linearLayout.addChild(new StringWidget(clientSetting("behavior"), this.font));
+        addChild(linearLayout,"rrv.client_settings.wrap_scrolling", Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel));
 
-        addChild(linearLayout, Component.translatable("rrv.client_settings.background.enabled"), Component.translatable("rrv.client_settings.background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), Component.translatable("rrv.client_settings.background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
-        addChild(linearLayout, Component.translatable("rrv.client_settings.resize_mode.wrap"), Component.translatable("rrv.client_settings.resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), Component.translatable("rrv.client_settings.resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
-        addChild(linearLayout, Component.translatable("rrv.client_settings.append_namespace.show"), Component.translatable("rrv.client_settings.append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), Component.translatable("rrv.client_settings.append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
-        addChild(linearLayout, Component.translatable("rrv.client_settings.right_index.right"), Component.translatable("rrv.client_settings.right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), Component.translatable("rrv.client_settings.right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
-        addChild(linearLayout, Component.translatable("rrv.client_settings.center_search.centered"), Component.translatable("rrv.client_settings.center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), Component.translatable("rrv.client_settings.center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
-        addChild(linearLayout, Component.translatable("rrv.client_settings.index_source.creative"), Component.translatable("rrv.client_settings.index_source.registry"), Configs.CLIENT_SETTINGS.isCreativeIndexSource(), Component.translatable("rrv.client_settings.index_source"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCreativeIndexSource(b));
+        linearLayout.addChild(new StringWidget(clientSetting("style"), this.font));
+        addChild(linearLayout, clientSetting("background.enabled"), clientSetting("background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), clientSetting("background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
+        addChild(linearLayout, clientSetting("resize_mode.wrap"), clientSetting("resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), clientSetting("resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
+        addChild(linearLayout, clientSetting("center_search.centered"), clientSetting("center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), clientSetting("center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
+        addChild(linearLayout, clientSetting("show_buttons.show"), clientSetting("show_buttons.hide"), Configs.CLIENT_SETTINGS.isShowButtons(), clientSetting("show_buttons"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowButtons(b));
+        addChild(linearLayout, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
 
-        this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build());
+        linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
+        addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
+        if (Minecraft.getInstance().level != null)
+            linearLayout.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(250, 20).build());
 
-        this.layout.visitWidgets(this::addRenderableWidget);
+        this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build()));
+
+        ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
+        scrollableLayout.arrangeElements();
+
+        scrollableLayout.visitWidgets(this::addRenderableWidget);
         this.layout.arrangeElements();
     }
 
-	private void addChild(LinearLayout linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter) {
+	public static MutableComponent clientSetting(String s) {
+		return Component.translatable("rrv.client_settings." + s);
+	}
+
+    private <T extends StringRepresentable> void addChild(LinearLayout linearLayout, String key, T initialValue, T[] values, CycleButton.OnValueChange<T> newValueSetter) {
+        //? if >1.21.10 {
+                linearLayout.addChild(
+                CycleButton.builder((value)-> Component.translatable(key+"."+value.getSerializedName()), initialValue).withValues(values)
+                        .create(0, 0, 250, 20, Component.translatable(key), newValueSetter)
+        );
+        //?} else {
+        /*linearLayout.addChild(
+                CycleButton.<T>builder((overlayDisplay)-> Component.translatable(key+"."+overlayDisplay.getSerializedName())).withInitialValue(initialValue).withValues(values)
+                        .create(0, 0, 250, 20, Component.translatable(key), newValueSetter)
+        );
+        *///?}
+
+	}
+
+    private void addChild(LinearLayout linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter) {
         //? >1.21.10 {
         linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
         //?} else {
         /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(0, 0, 250, 20, translatable, newValueSetter));
-        *///?}
-	}
+         *///?}
+    }
 
 
     @Override

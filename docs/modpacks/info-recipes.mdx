@@ -1,12 +1,18 @@
 # Info Recipes
 
-RRV provides a format for info recipes, allowing modpacks (or mods!) to show information about an item or item tag through resource packs. These JSON files should be added to a `assets/namespace/rrv_info` folder in your resource pack.
+<Callout variant='info'>
+Prior to RRV 6.5.0, the path to info recipes was `rrv_info`, not `rrv/recipe`. `rrv_info` will become ignored in a future update.
+</Callout>
+
+RRV provides a format for info recipes, allowing modpacks (or mods!) to show information about an item or item tag through resource packs. These JSON files should be added to a `assets/<namespace>/rrv/recipe` folder in your resource pack.
 
 ## Examples
 
+The `key` entry can be supplied with either an item tag, an item, or an item stack. The `text` entry should be supplied with a translation key.
+
 ### Chest Boats (Item Tags)
 
-Recipe file - `assets/rrv/rrv_info/chest_boats.json`
+Recipe file - `assets/rrv/rrv/recipe/chest_boats.json`
 ```json
 {
   "type": "rrv:info",
@@ -23,7 +29,7 @@ Language file - `assets/rrv/lang/en_us.json`
 
 ### Stone (Items)
 
-Recipe file - `assets/rrv/rrv_info/stone.json`
+Recipe file - `assets/rrv/rrv/recipe/stone.json`
 ```json
 {
   "type": "rrv:info",

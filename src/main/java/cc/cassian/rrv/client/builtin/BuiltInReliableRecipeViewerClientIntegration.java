@@ -3,6 +3,8 @@ package cc.cassian.rrv.client.builtin;
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningServerRecipe;
+import cc.cassian.rrv.common.builtin.anvil.ResourceDrivenAnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
 import cc.cassian.rrv.common.builtin.blasting.BlastingServerRecipe;
 import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
@@ -17,8 +19,7 @@ import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
-import cc.cassian.rrv.common.builtin.repairing.RepairingClientRecipe;
-import cc.cassian.rrv.common.builtin.repairing.RepairingServerRecipe;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipe;
 import cc.cassian.rrv.common.builtin.shaped.ShapedServerRecipe;
 import cc.cassian.rrv.common.builtin.shapeless.ShapelessServerRecipe;
@@ -44,15 +45,12 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.StrictJsonParser;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -66,6 +64,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
+import static cc.cassian.rrv.common.recipe.ResourceRecipeManager.*;
 
 public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {
 
@@ -130,49 +129,22 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         // info
         ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
             ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
-            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_info", (identifier) -> true);
-            identifierResourceMap.forEach((identifier, resource) -> {
-				try {
-                    JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
-                    if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
-                        var text = parsedRecipe.get("text").getAsString();
-                        infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
-                    } else {
-                        LOGGER.error("Could not parse info recipe '{}' as it was missing a type!", identifier);
-                    }
-                } catch (IOException e) {
-					LOGGER.error("Could not parse info recipe '{}' due to an exception: ", identifier, e);
-				}
-			});
+            addInfoRecipes("rrv_info", infoRecipes, true);
+            addInfoRecipes("rrv/recipe", infoRecipes, false);
             return infoRecipes;
         });
         // world interaction
         ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
             ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
-            Map<Identifier, Resource> identifierResourceMap = Minecraft.getInstance().getResourceManager().listResources("rrv_world_interaction", (identifier) -> true);
-            identifierResourceMap.forEach((identifier, resource) -> {
-                try {
-                    JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
-                    if (parsedRecipe.get("type").getAsString().equals("rrv:world_interaction")) {
-                        worldInteractionRecipes.add(new WorldInteractionClientRecipe(
-                                RrvUtil.readSlotContent("left", "world interaction", identifier, parsedRecipe),
-                                RrvUtil.readSlotContent("right", "world interaction", identifier, parsedRecipe),
-                                RrvUtil.readSlotContent("result", "world interaction", identifier, parsedRecipe)
-                        ));
-                    } else {
-                        LOGGER.error("Could not parse world interaction recipe '{}' as it was missing a type!", identifier);
-                    }
-                } catch (IOException e) {
-                    LOGGER.error("Could not parse world interaction recipe '{}' due to an exception: ", identifier, e);
-                }
-            });
+            addWorldInteractionRecipes("rrv_world_interaction", worldInteractionRecipes, true);
+            addWorldInteractionRecipes("rrv/recipe", worldInteractionRecipes, false);
 
             var axes = SlotContent.of(ItemTags.AXES);
             var shovels = SlotContent.of(ItemTags.SHOVELS);
             BuiltInRegistries.BLOCK.stream().forEach((block -> {
                 if (block instanceof WeatheringCopper weatheringCopper) {
                     Optional<Block> next = WeatheringCopper.getNext(block);
-                    next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(new ItemStack(Items.CLOCK.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.ITEM_NAME, Component.translatable("view.rrv.type.world_interaction.time")).set(DataComponents.LORE, new ItemLore(List.of(Component.translatable("view.rrv.type.world_interaction.time_passes")))).build())), SlotContent.of(value.asItem()))));
+                    next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), WorldInteractionClientRecipe.TIME, SlotContent.of(value.asItem()))));
 
                     Optional<Block> previous = WeatheringCopper.getPrevious(block);
                     previous.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(value.asItem()))));
@@ -223,7 +195,12 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             return worldInteractionRecipes;
         });
         // repairing
-        ItemView.addClientRecipeWrapper(RepairingServerRecipe.TYPE, unwrapped -> List.of(new RepairingClientRecipe(unwrapped.getBase(), unwrapped.getTemplate(), unwrapped.getResult())));
+        ItemView.addClientRecipeWrapper(AnvilCombiningServerRecipe.TYPE, modRecipe -> {
+            return List.of(new AnvilCombiningClientRecipe(modRecipe.getLeft(), modRecipe.getRight(), modRecipe.getResult()));
+        });
+        ItemView.addClientRecipeWrapper(ResourceDrivenAnvilCombiningServerRecipe.TYPE, modRecipe -> {
+            return addAnvilCombiningRecipes("rrv/recipe");
+        });
     }
 
 

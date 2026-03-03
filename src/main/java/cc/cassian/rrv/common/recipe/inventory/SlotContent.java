@@ -2,8 +2,8 @@ package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
 //? if >26 {
-/*import cc.cassian.rrv.common.recipe.util.RrvUtil;
-*///?}
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
+//?}
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -199,11 +199,11 @@ public class SlotContent {
     }
 
     //? >26 {
-    /*public static SlotContent of(net.minecraft.world.item.ItemStackTemplate stack) {
+    public static SlotContent of(net.minecraft.world.item.ItemStackTemplate stack) {
         if (stack == null) return SlotContent.of();
         return new SlotContent(List.of(RrvUtil.decodeTemplate(stack)));
     }
-    *///?}
+    //?}
 
     public static SlotContent of(List<ItemStack> stacks) {
         if (stacks == null) return SlotContent.of();
@@ -241,15 +241,25 @@ public class SlotContent {
     }
 
     /**
-	 * Moved to standardized system - see {@link ActionType}.
-     * <p>{@link Type#INGREDIENT} moved to {@link ActionType#INPUT}</p>
-     * <p>{@link Type#RESULT} moved to {@link ActionType#RESULT}</p>
-     * <p>{@link Type#ANY} moved to {@link ActionType#ANY}</p>
+	 * Standardized across codebase as {@link ActionType}.
 	 */
+    @SuppressWarnings("all")
     @Deprecated(since = "6.4.0", forRemoval = true)
     public enum Type {
+        /**
+		 * Moved to {@link ActionType#INPUT}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         INGREDIENT,
+        /**
+		 * Moved to {@link ActionType#RESULT}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         RESULT,
+        /**
+		 * Moved to {@link ActionType#ANY}.
+		 */
+        @Deprecated(since = "6.4.0", forRemoval = true)
         ANY
     }
 

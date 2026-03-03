@@ -12,7 +12,7 @@ public class WorldInteractionServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<WorldInteractionServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.fromNamespaceAndPath("rrv", "world_interaction"),
-            () -> new WorldInteractionServerRecipe(null, null, null)
+            () -> new WorldInteractionServerRecipe()
     );
 
 
@@ -48,9 +48,11 @@ public class WorldInteractionServerRecipe implements ReliableServerRecipe {
 
     @Override
     public void writeToTag(CompoundTag tag) {
-        tag.put("left", TagUtil.encodeItemStackOnServer(this.left));
-        tag.put("right", TagUtil.encodeItemStackOnServer(this.right));
-        tag.put("result", TagUtil.encodeItemStackOnServer(this.right));
+        if (this.left != null) {
+            tag.put("left", TagUtil.encodeItemStackOnServer(this.left));
+            tag.put("right", TagUtil.encodeItemStackOnServer(this.right));
+            tag.put("result", TagUtil.encodeItemStackOnServer(this.right));
+        }
     }
 
     @Override

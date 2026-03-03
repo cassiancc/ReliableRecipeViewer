@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.builtin.repairing;
+package cc.cassian.rrv.common.builtin.anvil;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -10,20 +10,20 @@ import net.minecraft.world.item.Items;
 
 import java.util.List;
 
-public class RepairingClientRecipeType implements ReliableClientRecipeType {
+public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType {
 
-	protected static final RepairingClientRecipeType INSTANCE = new RepairingClientRecipeType();
+	protected static final AnvilCombiningClientRecipeType INSTANCE = new AnvilCombiningClientRecipeType();
 
-	private static final Identifier ANVIL_LOCATION = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
+	private static final Identifier ANVIL_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/anvil.png");
 
 	@Override
 	public Component getDisplayName() {
-		return Component.translatable("view.rrv.type.repairing");
+		return Component.translatable("view.rrv.type.anvil_combining");
 	}
 
 	@Override
 	public Identifier getId() {
-		return ReliableRecipeViewer.of("repairing");
+		return Identifier.fromNamespaceAndPath("rrv", "anvil_combining");
 	}
 
 	@Override
@@ -63,7 +63,6 @@ public class RepairingClientRecipeType implements ReliableClientRecipeType {
 		//Result
 		slotDefinition.addItemSlot(2, 110, 2);
 	}
-
 
 	@Override
 	public List<ItemStack> getCraftReferences() {

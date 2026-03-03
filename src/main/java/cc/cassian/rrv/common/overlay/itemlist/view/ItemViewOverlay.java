@@ -8,6 +8,8 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.OverlayDisplay;
+import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
@@ -17,6 +19,7 @@ import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -27,7 +30,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.SpriteIconButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -46,15 +49,15 @@ import java.util.List;
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public static final ItemViewOverlay INSTANCE = new ItemViewOverlay();
-    private static final Identifier SETTINGS_WHEEL = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "settings_wheel");
+    private static final Identifier SETTINGS_WHEEL = ReliableRecipeViewer.of("settings_wheel");
 
     private SearchBar searchbar = null;
 
-    public SpriteIconButton next = null;
-    public SpriteIconButton back = null;
+    public ReliableSpriteIconButton next = null;
+    public ReliableSpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
-    private static int FOOTER_HEIGHT = 20;
+    private static final int FOOTER_HEIGHT = 20;
 
     private String currentQuery;
     boolean itemFilterMode;
@@ -72,17 +75,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         boolean prev = this.isEnabled();
         super.setEnabled(enabled);
 
-        if (prev != enabled && enabled) {
-            this.searchbar.visible = true;
-            this.next.visible = true;
-            this.back.visible = true;
+        if (prev != enabled) {
+            this.searchbar.visible = enabled;
         }
-
-        if (prev != enabled && !enabled) {
-            this.searchbar.visible = false;
-            this.next.visible = false;
-            this.back.visible = false;
-        }
+        updateButtons();
     }
 
 
@@ -107,15 +103,13 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         //---- Client Settings Button ----
-        SpriteIconButton btn = SpriteIconButton.builder(
+        ReliableSpriteIconButton btn = new ReliableSpriteIconButton(
+                        18,
                         Component.translatable("rrv.client_settings.btn"),
-                        button -> Minecraft.getInstance().setScreen(new RrvClientSettingsScreen(info.screen())),
-                        true
-                )
-                .size(18, 18)
-                .sprite(SETTINGS_WHEEL, 14, 14)
-                .withTootip()
-                .build();
+                        14,
+                        SETTINGS_WHEEL,
+                        button -> Minecraft.getInstance().setScreen(new RrvClientSettingsScreen(info.screen()))
+        );
 
         int position = 0;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
@@ -201,7 +195,16 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.availableItems().removeIf(stack -> ItemView.isExcludedItem(stack));
 
         this.updateSlots();
+
+        this.updateButtons();
     }
+
+	private void updateButtons() {
+        if (back != null) {
+            back.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
+            next.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
+        }
+	}
 
 
     @Override
@@ -213,8 +216,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event))
-                BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
+				BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
+			}
         }
 
         return false;
@@ -291,8 +295,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void createSearchbarElement(InventoryPositionInfo info) {
         boolean wrapMode = Configs.CLIENT_SETTINGS.isItemWrapMode();
 
-
-
         int boxWidth;
         int x;
         if (Configs.CLIENT_SETTINGS.isCenterSearch()) {
@@ -321,29 +323,19 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         newSearchbar.setResponder(this::updateQuery);
         newSearchbar.setHint(Component.translatable("rrv.search_hint"));
 
-        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayManager.OverlayDisplay.DISABLED);
+        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.DISABLED);
 
         this.searchbar = newSearchbar;
     }
 
     public void createButtons(InventoryPositionInfo info){
 
-        back = SpriteIconButton.builder(Component.translatable("rrv.previous_page"), (button)-> {
-            int fittingPerPage = this.fittingPerPage();
-            this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
-            this.updateSlots();
-        }, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
-        next = SpriteIconButton.builder(Component.translatable("rrv.next_page"), (button)->{
-            int fittingPerPage = this.fittingPerPage();
-            this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
-            this.updateSlots();
-        }, true).withTootip().sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
-        back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 3);
-        next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 3);
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ReliableRecipeViewer.of("back"), this::prevPage);
+        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ReliableRecipeViewer.of("next"), this::nextPage);
+        back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 5);
+        next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 5);
 
-
-        next.visible = ItemViewOverlay.INSTANCE.isEnabled();
-        back.visible = ItemViewOverlay.INSTANCE.isEnabled();
+        updateButtons();
     }
 
     public void openRecipeView(ItemStack stack, ActionType openType) {
@@ -354,8 +346,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack)) {
             MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
             if (server != null) {
-                RegistryAccess.Frozen registryManager = server.registryAccess();
-                stack = PolymerHelpers.getRealItemStack(stack, registryManager);
+                stack = PolymerHelpers.getRealItemStack(stack, server.registryAccess());
             }
         }
         //?}
@@ -397,12 +388,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
 
         //? fabric && <26.1 {
-        if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
+        /*if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
             RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
         }
-        //?}
+        *///?}
 
-        List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();;
+        List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();
 
         if (!foundRecipes.isEmpty()) {
             Screen parent = Minecraft.getInstance().screen;
@@ -418,8 +409,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, ActionType.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
         }
-
-
     }
 
 
@@ -431,7 +420,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         return this.itemFilterMode;
     }
 
-
     public String getCurrentQuery() {
         return this.currentQuery;
     }
@@ -439,6 +427,4 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 	public boolean isSearching() {
 		return searchbar != null && searchbar.isVisible() && !searchbar.getValue().isEmpty();
 	}
-
-
 }

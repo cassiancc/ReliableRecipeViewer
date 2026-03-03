@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.builtin.repairing;
+package cc.cassian.rrv.common.builtin.anvil;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
@@ -12,34 +12,48 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
 
-public class RepairingClientRecipe implements ReliableClientRecipe {
+public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
 
-    private final SlotContent base, repairIngredient, result;
+    private final SlotContent left, right, result;
+    private final int priority;
 
 
-    public RepairingClientRecipe(ItemStack base, Ingredient repairIngredient, ItemStack result) {
-        this.base = base != null ? SlotContent.of(base) : SlotContent.of(Items.AIR);
-        this.repairIngredient = repairIngredient != null ? SlotContent.of(repairIngredient) : SlotContent.of(Items.AIR);
-
+    public AnvilCombiningClientRecipe(ItemStack base, Ingredient repairIngredient, ItemStack result) {
+        this.left = base != null ? SlotContent.of(base) : SlotContent.of(Items.AIR);
+        this.right = repairIngredient != null ? SlotContent.of(repairIngredient) : SlotContent.of(Items.AIR);
         this.result = SlotContent.of(result);
+        this.priority = -10;
+    }
+
+    public AnvilCombiningClientRecipe(SlotContent left, SlotContent right, SlotContent result, int priority) {
+        this.left = left;
+        this.right = right;
+        this.result = result;
+        this.priority = priority;
+    }
+
+
+    @Override
+    public int getPriority() {
+        return priority;
     }
 
     @Override
     public ReliableClientRecipeType getViewType() {
-        return RepairingClientRecipeType.INSTANCE;
+        return AnvilCombiningClientRecipeType.INSTANCE;
     }
 
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 
-        slotFillContext.bindSlot(0, this.base);
-        slotFillContext.bindSlot(1, this.repairIngredient);
+        slotFillContext.bindSlot(0, this.left);
+        slotFillContext.bindSlot(1, this.right);
         slotFillContext.bindSlot(2, this.result);
     }
 
     @Override
     public List<SlotContent> getIngredients() {
-        return List.of(this.base, this.repairIngredient);
+        return List.of(this.left, this.right);
     }
 
     @Override

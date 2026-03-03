@@ -8,7 +8,7 @@ plugins {
     id("org.moddedmc.wiki.toolkit") version "0.4.1"
 }
 
-stonecutter active "1.21.11-fabric"
+stonecutter active "26.1-fabric"
 
 stonecutter parameters {
     constants.match(node.metadata.project.substringAfterLast('-'), "fabric", "neoforge")
