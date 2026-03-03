@@ -49,7 +49,7 @@ import java.util.List;
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public static final ItemViewOverlay INSTANCE = new ItemViewOverlay();
-    private static final Identifier SETTINGS_WHEEL = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "settings_wheel");
+    private static final Identifier SETTINGS_WHEEL = ReliableRecipeViewer.of("settings_wheel");
 
     private SearchBar searchbar = null;
 
@@ -75,17 +75,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         boolean prev = this.isEnabled();
         super.setEnabled(enabled);
 
-        if (prev != enabled && enabled) {
-            this.searchbar.visible = true;
-            this.next.visible = true;
-            this.back.visible = true;
+        if (prev != enabled) {
+            this.searchbar.visible = enabled;
         }
-
-        if (prev != enabled && !enabled) {
-            this.searchbar.visible = false;
-            this.next.visible = false;
-            this.back.visible = false;
-        }
+        updateButtons();
     }
 
 
@@ -208,8 +201,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 	private void updateButtons() {
         if (back != null) {
-            back.visible = this.isEnabled();
-            next.visible = this.isEnabled();
+            back.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
+            next.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
         }
 	}
 
@@ -342,8 +335,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 5);
         next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 5);
 
-        back.visible = ItemViewOverlay.INSTANCE.isEnabled();
-        next.visible = ItemViewOverlay.INSTANCE.isEnabled();
+        updateButtons();
     }
 
     public void openRecipeView(ItemStack stack, ActionType openType) {

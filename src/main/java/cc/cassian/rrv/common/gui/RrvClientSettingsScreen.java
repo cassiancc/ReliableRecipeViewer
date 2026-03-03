@@ -56,6 +56,7 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout, clientSetting("background.enabled"), clientSetting("background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), clientSetting("background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
         addChild(linearLayout, clientSetting("resize_mode.wrap"), clientSetting("resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), clientSetting("resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
         addChild(linearLayout, clientSetting("center_search.centered"), clientSetting("center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), clientSetting("center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
+        addChild(linearLayout, clientSetting("show_buttons.show"), clientSetting("show_buttons.hide"), Configs.CLIENT_SETTINGS.isShowButtons(), clientSetting("show_buttons"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowButtons(b));
         addChild(linearLayout, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
 
         linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));

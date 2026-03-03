@@ -28,7 +28,6 @@ public class FabricEntrypoint implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Hello Minecraft!");
 
         CommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext, commandSelection) -> RrvCommand.register(commandDispatcher));
 
