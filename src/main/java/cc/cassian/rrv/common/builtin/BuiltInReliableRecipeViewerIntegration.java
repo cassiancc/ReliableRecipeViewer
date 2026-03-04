@@ -314,7 +314,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 							results.add(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(o)));
 						}
 					}
-                    recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results));
+                    recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results, 1));
                 }
                 //?} else {
                 /*if (recipe instanceof ArmorDyeRecipe) {
@@ -330,7 +330,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                                     results.add(result);
                                 }
                             });
-                            recipeList.add(new TransmuteServerRecipe(Ingredient.of(dyeableItemHolder.value()), Ingredient.of(inputs.stream()), results));
+                            recipeList.add(new TransmuteServerRecipe(Ingredient.of(dyeableItemHolder.value()), Ingredient.of(inputs.stream()), results, 1));
                         }
 					}));
                 }

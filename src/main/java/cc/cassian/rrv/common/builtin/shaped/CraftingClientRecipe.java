@@ -103,7 +103,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.shapeless = true;
         this.ingredients.put(0, SlotContent.of(transmuteRecipe.getInput()));
         this.ingredients.put(1, SlotContent.of(transmuteRecipe.getMaterial()));
-		this.dependentIndex = 1;
+		this.dependentIndex = transmuteRecipe.getDependentIndex();
 
         this.result = SlotContent.of(transmuteRecipe.getResults());
     }

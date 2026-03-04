@@ -131,7 +131,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
     }
 
 
-    @Inject(method = "keyPressed", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void injectOverlay$3(KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir) {
 
         if (OverlayManager.INSTANCE.isTextWidgetFocused() && this.getFocused() instanceof EditBox box) {
