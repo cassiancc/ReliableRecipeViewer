@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO split Smithing recipes in upgrade and trim recipes
 public class SmithingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent additionIngredient;
@@ -89,9 +88,9 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 
-        slotFillContext.bindSlot(0, this.template);
-        slotFillContext.bindSlot(1, this.base);
-        slotFillContext.bindSlot(2, this.additionIngredient);
+        slotFillContext.bindOptionalSlot(0, this.template, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
+        slotFillContext.bindOptionalSlot(1, this.base, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
+        slotFillContext.bindOptionalSlot(2, this.additionIngredient, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
 
         slotFillContext.bindDependentSlot(3, this.additionIngredient::index, this.result);
     }
@@ -110,7 +109,6 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     public int getPriority() {
         return this.isTrimType ? 1 : 0;
     }
-
 
     @Override
     public boolean supportsItemTransfer() {

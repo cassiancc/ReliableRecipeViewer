@@ -10,6 +10,7 @@ import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public interface Platform {
@@ -42,4 +43,8 @@ public interface Platform {
 	boolean isLoadingLoaded(String mod);
 
 	boolean isDevelopment();
+
+    Path getConfigDirectory();
+
+    Path getDataDirectory();
 }

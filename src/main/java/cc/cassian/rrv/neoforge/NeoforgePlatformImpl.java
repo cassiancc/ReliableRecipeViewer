@@ -11,9 +11,11 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.LoadingModList;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -81,6 +83,16 @@ public class NeoforgePlatformImpl implements Platform {
     @Override
     public boolean isDevelopment() {
         return !FMLLoader.isProduction();
+    }
+
+    @Override
+    public Path getConfigDirectory() {
+        return FMLPaths.CONFIGDIR.get();
+    }
+
+    @Override
+    public Path getDataDirectory() {
+        return FMLPaths.GAMEDIR.get().resolve("data");
     }
 
 }

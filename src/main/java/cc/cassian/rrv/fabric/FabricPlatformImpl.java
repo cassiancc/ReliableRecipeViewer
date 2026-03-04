@@ -11,6 +11,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -70,6 +71,16 @@ public class FabricPlatformImpl implements Platform {
     @Override
     public boolean isDevelopment() {
         return FabricLoader.getInstance().isDevelopmentEnvironment();
+    }
+
+    @Override
+    public Path getConfigDirectory() {
+        return FabricLoader.getInstance().getConfigDir();
+    }
+
+    @Override
+    public Path getDataDirectory() {
+        return FabricLoader.getInstance().getGameDir().resolve("data");
     }
 
 

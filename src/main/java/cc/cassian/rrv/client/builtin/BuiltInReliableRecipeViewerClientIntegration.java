@@ -146,7 +146,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             BuiltInRegistries.BLOCK.stream().forEach((block -> {
                 if (block instanceof WeatheringCopper weatheringCopper) {
                     Optional<Block> next = WeatheringCopper.getNext(block);
-                    next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(new ItemStack(Items.CLOCK.builtInRegistryHolder(), 1, DataComponentPatch.builder().set(DataComponents.ITEM_NAME, Component.translatable("view.rrv.type.world_interaction.time")).set(DataComponents.LORE, new ItemLore(List.of(Component.translatable("view.rrv.type.world_interaction.time_passes")))).build())), SlotContent.of(value.asItem()))));
+                    next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), WorldInteractionClientRecipe.TIME, SlotContent.of(value.asItem()))));
 
                     Optional<Block> previous = WeatheringCopper.getPrevious(block);
                     previous.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(value.asItem()))));

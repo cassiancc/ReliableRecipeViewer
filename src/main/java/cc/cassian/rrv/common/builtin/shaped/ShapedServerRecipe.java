@@ -74,7 +74,7 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
         });
 
         this.ingredients = ingredients;
-        this.result = TagUtil.readItemStack(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
     }
 
     @Override

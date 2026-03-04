@@ -269,7 +269,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                 (listing, out) -> {
                     EmeraldForItemsAccessor accessor = (EmeraldForItemsAccessor) listing;
 
-                    out.put("cost", TagUtil.writeItemStack(accessor.getItemStack().itemStack()));
+                    out.put("cost", TagUtil.encodeItemStackOnServer(accessor.getItemStack().itemStack()));
                     out.putInt("emeraldCount", accessor.getEmeraldAmount());
                     out.putInt("villagerXp", accessor.getVillagerXp());
                     out.putInt("maxUses", accessor.getMaxUses());
@@ -277,7 +277,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    ItemStack cost = TagUtil.readItemStack(in.getCompoundOrEmpty("cost"));
+                    ItemStack cost = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("cost"));
                     int emeraldCount = in.getIntOr("emeraldCount", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -304,7 +304,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                         offerStacks.add(accessor.itemStack().copy());
 
 
-                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.writeItemStack(origin)));
+                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
                     out.putInt("emeraldCost", accessor.emeraldCost());
                     out.putInt("villagerXp", accessor.villagerXp());
                     out.putInt("maxUses", accessor.maxUses());
@@ -312,7 +312,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                 (profession, professionLevel, in) -> {
 
 
-                    List<ItemStack> offers = TagUtil.readList(in, "offers", TagUtil::readItemStack);
+                    List<ItemStack> offers = TagUtil.readList(in, "offers", TagUtil::decodeItemStackOnClient);
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -331,7 +331,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                     ItemStack stewStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
                     stewStack.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, accessor.effects());
 
-                    out.put("stew", TagUtil.writeItemStack(stewStack));
+                    out.put("stew", TagUtil.encodeItemStackOnServer(stewStack));
                     out.putInt("emeraldCost", 1);
                     out.putInt("villagerXp", accessor.xp());
                     out.putInt("maxUses", 12);
@@ -339,7 +339,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    ItemStack stew = TagUtil.readItemStack(in.getCompoundOrEmpty("stew"));
+                    ItemStack stew = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("stew"));
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -403,9 +403,9 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                         List<ItemStack> costStacks = costs.get(enchantment);
 
                         CompoundTag offerTag = new CompoundTag();
-                        offerTag.put("offerStacks", TagUtil.writeList(stacks, (origin, tag) -> TagUtil.writeItemStack(origin)));
-                        offerTag.put("costStacks", TagUtil.writeList(costStacks, (origin, tag) -> TagUtil.writeItemStack(origin)));
-                        offersTag.put(enchantment.location().toDebugFileName(), offerTag);
+                        offerTag.put("offerStacks", TagUtil.writeList(stacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
+                        offerTag.put("costStacks", TagUtil.writeList(costStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
+                        offersTag.put(enchantment.identifier().toDebugFileName(), offerTag);
                     });
 
                     out.put("offers", offersTag);
@@ -425,8 +425,8 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                     CompoundTag offersTag = in.getCompoundOrEmpty("offers");
                     offersTag.values().stream().map(tag -> tag.asCompound().orElseGet(CompoundTag::new)).forEach(offerTag -> {
 
-                        List<ItemStack> offerStacks = TagUtil.readList(offerTag, "offerStacks", TagUtil::readItemStack);
-                        List<ItemStack> costStacks = TagUtil.readList(offerTag, "costStacks", TagUtil::readItemStack);
+                        List<ItemStack> offerStacks = TagUtil.readList(offerTag, "offerStacks", TagUtil::decodeItemStackOnClient);
+                        List<ItemStack> costStacks = TagUtil.readList(offerTag, "costStacks", TagUtil::decodeItemStackOnClient);
 
                         VillagerOffer offer = new VillagerOffer(profession, professionLevel, villagerType, offerStacks, costStacks, List.of(new ItemStack(Items.BOOK)), villagerXp, maxUses);
                         villagerOffers.add(offer);
@@ -490,7 +490,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                         offerStacks.add(offerStack);
                     });
 
-                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.writeItemStack(origin)));
+                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
                     out.putString("fromItem", TagUtil.itemToString(accessor.fromItem()));
                     out.putInt("fromCount", accessor.fromCount());
                     out.putInt("emeraldCost", accessor.emeraldCost());
@@ -500,7 +500,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    List<ItemStack> offers = TagUtil.readList(in, "offers", TagUtil::readItemStack);
+                    List<ItemStack> offers = TagUtil.readList(in, "offers", TagUtil::decodeItemStackOnClient);
                     Item fromItem = TagUtil.itemFromString(in.getStringOr("fromItem", ""));
                     int fromCount = in.getIntOr("fromCount", 0);
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
@@ -567,16 +567,16 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                     costStack.set(DataComponents.LORE, lore);
 
 
-                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.writeItemStack(origin)));
-                    out.put("costStack", TagUtil.writeItemStack(costStack));
+                    out.put("offers", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
+                    out.put("costStack", TagUtil.encodeItemStackOnServer(costStack));
                     out.putInt("villagerXp", accessor.villagerXp());
                     out.putInt("maxUses", accessor.maxUses());
                 },
                 (profession, professionLevel, in) -> {
 
 
-                    List<ItemStack> offerStacks = TagUtil.readList(in, "offers", TagUtil::readItemStack);
-                    ItemStack costStack = TagUtil.readItemStack(in.getCompoundOrEmpty("costStack"));
+                    List<ItemStack> offerStacks = TagUtil.readList(in, "offers", TagUtil::decodeItemStackOnClient);
+                    ItemStack costStack = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("costStack"));
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
 
@@ -598,7 +598,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
                     ItemStack offerStack = new ItemStack(accessor.getItem());
 
-                    out.put("offerStack", TagUtil.writeItemStack(offerStack));
+                    out.put("offerStack", TagUtil.encodeItemStackOnServer(offerStack));
 
                     out.putInt("emeraldCost", accessor.getValue());
                     out.putInt("villagerXp", accessor.getVillagerXp());
@@ -607,7 +607,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    ItemStack offerStack = TagUtil.readItemStack(in.getCompoundOrEmpty("offerStack"));
+                    ItemStack offerStack = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("offerStack"));
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);
@@ -653,8 +653,8 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                     } else
                         offerStacks.add(accessor.toItem().copy());
 
-                    out.put("offerStacks", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.writeItemStack(origin)));
-                    out.put("costStack", TagUtil.writeItemStack(costStack));
+                    out.put("offerStacks", TagUtil.writeList(offerStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
+                    out.put("costStack", TagUtil.encodeItemStackOnServer(costStack));
                     out.putInt("emeraldCost", accessor.emeraldCost());
                     out.putInt("villagerXp", accessor.getVillagerXp());
                     out.putInt("maxUses", accessor.getMaxUses());
@@ -662,8 +662,8 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                 },
                 (profession, professionLevel, in) -> {
 
-                    List<ItemStack> offerStacks = TagUtil.readList(in, "offerStacks", TagUtil::readItemStack);
-                    ItemStack costStack = TagUtil.readItemStack(in.getCompoundOrEmpty("costStack"));
+                    List<ItemStack> offerStacks = TagUtil.readList(in, "offerStacks", TagUtil::decodeItemStackOnClient);
+                    ItemStack costStack = TagUtil.decodeItemStackOnClient(in.getCompoundOrEmpty("costStack"));
                     int emeraldCost = in.getIntOr("emeraldCost", 0);
                     int villagerXp = in.getIntOr("villagerXp", 0);
                     int maxUses = in.getIntOr("maxUses", 0);

@@ -18,9 +18,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
+import org.apache.commons.lang3.text.WordUtils;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -133,7 +134,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         String path = profession.location().getPath();
         float scale = 0.75F;
 
-        Component professionComp = Component.translatable("entity." + namespace + ".villager." + path).append(" - ").append(Component.translatable("merchant.level." + this.villagerOffer.professionLevel())).withStyle(ChatFormatting.DARK_GRAY);
+        Component professionComp = Component.translatable("entity.%s.villager.%s".formatted(namespace, path)).append(" - ").append(Component.translatable("merchant.level." + this.villagerOffer.professionLevel())).withStyle(ChatFormatting.DARK_GRAY);
 
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(0, -(font.lineHeight) * scale);
@@ -153,8 +154,8 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
             return;
 
         if (mouseX >= 0 && mouseX <= 24 && mouseY >= 0 && mouseY <= 36) {
-            ResourceLocation typeLocation = this.villagerOffer.requiredType().location();
-            Component typeComponent = Component.translatable("view.rrv.type.trading." + typeLocation.getNamespace() + "." + typeLocation.getPath()).withStyle(ChatFormatting.GOLD);
+            Identifier typeLocation = this.villagerOffer.requiredType().identifier();
+            Component typeComponent = Component.translatableWithFallback("view.rrv.type.trading.%s.%s".formatted(typeLocation.getNamespace(), typeLocation.getPath()), WordUtils.capitalizeFully(typeLocation.getPath().replace("_", " "))).withStyle(ChatFormatting.GOLD);
             guiGraphics.setComponentTooltipForNextFrame(font, List.of(typeComponent), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
         }
     }

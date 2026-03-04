@@ -8,6 +8,7 @@ import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.mixin.world.item.crafting.DyeRecipeAccessor;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
@@ -45,13 +46,15 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 //? if <26 {
-import net.minecraft.world.entity.npc.VillagerTrades;
-//?} else {
-/*import net.minecraft.world.item.trading.TradeSet;
+/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
+/*import net.minecraft.world.item.component.DyedItemColor;
+*///?} else {
+import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.core.HolderLookup;
 *///?}
@@ -59,6 +62,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.*;
@@ -92,40 +96,38 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
     public void onIntegrationInitialize() {
 
         ItemView.addServerReloadCallback(() -> {
-            if (!Configs.CLIENT_SETTINGS.isCreativeIndexSource()) {
-                Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
+            Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
 
-                potionRegistry.forEach(potion -> {
-                    var potionHolder = potionRegistry.wrapAsHolder(potion);
+            potionRegistry.forEach(potion -> {
+                var potionHolder = potionRegistry.wrapAsHolder(potion);
 
-                    if (!ItemView.isExcludedPotion(potionHolder)) {
-                        ItemView.addStackSensitive(PotionContents.createItemStack(Items.POTION, potionHolder));
-                        ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
-                        ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
+                if (!ItemView.isExcludedPotion(potionHolder)) {
+                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.POTION, potionHolder));
+                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
+                    ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
 
-                        if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder)) {
-                            ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
-                            tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
-                            ItemView.addStackSensitive(tipped);
-                        }
+                    if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder)) {
+                        ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
+                        tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
+                        ItemView.addStackSensitive(tipped);
                     }
-                });
+                }
+            });
 
 
-                Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                enchantmentRegistry.entrySet().forEach((entry) -> {
-                    var key = entry.getKey();
-                    var enchantment = entry.getValue();
-                    for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
+            Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+            enchantmentRegistry.entrySet().forEach((entry) -> {
+                var key = entry.getKey();
+                var enchantment = entry.getValue();
+                for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
 
-                        var enchantmentHolder = enchantmentRegistry.wrapAsHolder(enchantment);
-                        if (!enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) && !ItemView.getExcludedEnchantments().contains(key)) {
-                            ItemStack enchantedBook = EnchantmentHelper.createBook(new EnchantmentInstance(enchantmentHolder, i));
-                            ItemView.addStackSensitive(enchantedBook);
-                        }
+                    var enchantmentHolder = enchantmentRegistry.wrapAsHolder(enchantment);
+                    if (!enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) && !ItemView.getExcludedEnchantments().contains(key)) {
+                        ItemStack enchantedBook = EnchantmentHelper.createBook(new EnchantmentInstance(enchantmentHolder, i));
+                        ItemView.addStackSensitive(enchantedBook);
                     }
-                });
-            }
+                }
+            });
         });
 
         //providers
@@ -289,7 +291,50 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         recipeList.add(new TransmuteServerRecipe(accessor.getInput(), accessor.getMaterial(), results));
 
                 }
+                //? if >26 {
+                if (recipe instanceof DyeRecipe) {
+                    DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
+                    List<ItemStack> results = new ArrayList<>();
 
+                    Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) accessor.getTarget()).getValues().unwrap();
+
+                    List<Item> ingredients = new ArrayList<>();
+                    if (ingredientContent.left().isPresent()) {
+                        SlotContent.getItemsFromTag(ingredientContent.left().get()).ifPresent(holders -> {
+                            holders.forEach(holder -> ingredients.add(holder.value()));
+                        });
+                    }
+
+
+                    if (ingredientContent.right().isPresent())
+                        ingredients.addAll(ingredientContent.right().get().stream().map(Holder::value).toList());
+					for (Item ingredient : ingredients) {
+						for (Holder<Item> value : accessor.getDye().values) {
+							DyeColor o = value.value().getDefaultInstance().get(DataComponents.DYE);
+							results.add(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(o)));
+						}
+					}
+                    recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results, 1));
+                }
+                //?} else {
+                /*if (recipe instanceof ArmorDyeRecipe) {
+                    var dyeable = SlotContent.getItemsFromTag(ItemTags.DYEABLE);
+					dyeable.ifPresent(holders -> holders.forEach(dyeableItemHolder -> {
+                        if (dyeableItemHolder.isBound()) {
+                            ArrayList<Item> inputs = new ArrayList<>();
+                            ArrayList<ItemStack> results = new ArrayList<>();
+                            BuiltInRegistries.ITEM.stream().forEach(potentialDye -> {
+                                if (potentialDye instanceof DyeItem dyeItem) {
+                                    inputs.add(potentialDye);
+                                    ItemStack result = DyedItemColor.applyDyes(dyeableItemHolder.value().getDefaultInstance(), List.of(dyeItem));
+                                    results.add(result);
+                                }
+                            });
+                            recipeList.add(new TransmuteServerRecipe(Ingredient.of(dyeableItemHolder.value()), Ingredient.of(inputs.stream()), results, 1));
+                        }
+					}));
+                }
+                *///?}
             });
 
             //Tipped arrows

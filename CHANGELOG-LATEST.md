@@ -1,10 +1,16 @@
 ### Added
+- The index can now be edited via resource packs. Any file in `assets/<namespace/rrv/index` will modify what items are shown in the item view, for more details see its docs page.
+- Client configs screen now makes use of sections and scrolls to better handle the additional options.
+- The Item View can now be exported to the format used by the index editor.
+- Buttons can now be hidden.
+- Dyeable item recipes are now present in RRV.
 
-- "Repairing" has been replaced with "Anvil Combining", a new resource-pack driven recipe format based on world interaction recipes.
-- Resource driven recipes can now specify component data.
 
-### Changed
-- Info recipes and word interaction recipes can now both be put into the `rrv/recipe` folder rather than `rrv_world_interaction` or `rrv_info` folders. These legacy folders will become ignored in a future update.
-- Next/previous page buttons have been resized and no longer hold the mouse's focus.
-- Bookmarking an item now switches the overlay to the bookmark panel.
-- Side panel is now hidden by default.
+### Fixed
+- Bug causing Villager Trades to be inaccurate on 1.21.11.
+- Clock showing up as an input for world interaction recipes.
+- Issues with Item View when searching option not correctly hiding buttons.
+- Smithing recipes without templates now look nicer.
+
+### Removed
+- Buggy creative index source option - hopefully will return in a future update.

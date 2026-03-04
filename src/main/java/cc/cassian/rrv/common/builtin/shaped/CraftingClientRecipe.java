@@ -29,57 +29,54 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     private final SlotContent result;
     private final int width, height;
     private final boolean shapeless;
+	private int dependentIndex = -1;
 
-    public CraftingClientRecipe(ShapedServerRecipe recipe) {
-
+	public CraftingClientRecipe(ShapedServerRecipe recipe) {
         this.shapeless = false;
-
         this.width = recipe.getWidth();
         this.height = recipe.getHeight();
 
         recipe.getIngredients().forEach((slotId, ingredient) -> this.ingredients.put(slotId, SlotContent.of(ingredient)));
         this.result = SlotContent.of(recipe.getResult());
-
     }
 
     public CraftingClientRecipe(ShapelessServerRecipe recipe) {
-
         this.shapeless = true;
         var size = recipe.getIngredients().size();
-        switch (size) {
-            case 1:
-                this.width = 1;
-                this.height = 1;
-                break;
-            case 2:
-                this.width = 2;
-                this.height = 1;
-                break;
-            case 3:
-                this.width = 3;
-                this.height = 1;
-                break;
-            case 4:
-                this.width = 2;
-                this.height = 2;
-                break;
-            case 5, 6:
-                this.width = 3;
-                this.height = 2;
-                break;
-            default:
-                this.width = 3;
-                this.height = 3;
-                break;
-        }
+		switch (size) {
+			case 1 -> {
+				this.width = 1;
+				this.height = 1;
+			}
+			case 2 -> {
+				this.width = 2;
+				this.height = 1;
+			}
+			case 3 -> {
+				this.width = 3;
+				this.height = 1;
+			}
+			case 4 -> {
+				this.width = 2;
+				this.height = 2;
+			}
+			case 5, 6 -> {
+				this.width = 3;
+				this.height = 2;
+			}
+			default -> {
+				this.width = 3;
+				this.height = 3;
+			}
+		}
 
 
         AtomicInteger i = new AtomicInteger();
         recipe.getIngredients().forEach((ingredient) -> {
 			this.ingredients.put(i.getAndIncrement(), SlotContent.of(ingredient));
 		});
-        this.result = SlotContent.of(recipe.getResult());
 
+        this.result = SlotContent.of(recipe.getResult());
     }
 
     public CraftingClientRecipe(TippedArrowServerRecipe recipe) {
@@ -98,7 +95,6 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         ItemStack result = new ItemStack(Items.TIPPED_ARROW, 8);
         result.set(DataComponents.POTION_CONTENTS, recipe.getPotion().get(DataComponents.POTION_CONTENTS));
         this.result = SlotContent.of(result);
-
     }
 
     public CraftingClientRecipe(TransmuteServerRecipe transmuteRecipe) {
@@ -107,6 +103,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.shapeless = true;
         this.ingredients.put(0, SlotContent.of(transmuteRecipe.getInput()));
         this.ingredients.put(1, SlotContent.of(transmuteRecipe.getMaterial()));
+		this.dependentIndex = transmuteRecipe.getDependentIndex();
 
         this.result = SlotContent.of(transmuteRecipe.getResults());
     }
@@ -119,8 +116,11 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
         this.ingredients.forEach(slotFillContext::bindSlot);
-        slotFillContext.bindSlot(9, this.result);
-    }
+		if (dependentIndex != -1)
+        	slotFillContext.bindDependentSlot(9, ()->this.ingredients.get(dependentIndex).index(), this.result);
+		else
+			slotFillContext.bindSlot(9, this.result);
+	}
 
     @Override
     public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {

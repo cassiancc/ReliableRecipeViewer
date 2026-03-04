@@ -21,11 +21,17 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
     private Ingredient input;
     private Ingredient material;
     private List<ItemStack> results;
+    private int dependentIndex;
 
     public TransmuteServerRecipe(Ingredient input, Ingredient material, List<ItemStack> results) {
+        this(input, material, results, -1);
+    }
+
+    public TransmuteServerRecipe(Ingredient input, Ingredient material, List<ItemStack> results, int dependentIndex) {
         this.input = input;
         this.material = material;
         this.results = results;
+        this.dependentIndex = dependentIndex;
     }
 
     public Ingredient getInput() {
@@ -40,6 +46,10 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
         return this.results;
     }
 
+    public int getDependentIndex() {
+        return dependentIndex;
+    }
+
     @Override
     public void writeToTag(CompoundTag tag) {
 
@@ -49,6 +59,7 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
 
         tag.put("results", TagUtil.writeList(this.results, (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
 
+        tag.putInt("dependent_index", this.dependentIndex);
     }
 
     @Override
@@ -58,6 +69,7 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
         this.material = TagUtil.readIngredient(tag.getCompound("materials").orElseGet(CompoundTag::new));
 
         this.results = TagUtil.readList(tag, "results", TagUtil::decodeItemStackOnClient);
+        this.dependentIndex = tag.getIntOr("dependent_index", -1);
     }
 
     @Override

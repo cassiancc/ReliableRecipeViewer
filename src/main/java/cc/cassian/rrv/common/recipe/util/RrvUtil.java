@@ -1,23 +1,19 @@
 package cc.cassian.rrv.common.recipe.util;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
+import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.ClientAsset;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -93,13 +89,19 @@ public class RrvUtil {
             });
            return SlotContent.of(itemStacks);
         } else if (keyElement.isJsonObject()) {
-            //? if >26
-            //return SlotContent.of(ItemStackTemplate.CODEC.decode(JsonOps.INSTANCE, keyElement).getOrThrow().getFirst());
-            //? if <26
-            return SlotContent.of(ItemStack.CODEC.decode(JsonOps.INSTANCE, keyElement).getOrThrow().getFirst());
+            return SlotContent.of(getItemStack(keyElement));
         } else {
             LOGGER.error("Could not parse {} recipe '{}' as it was missing a key!", type, identifier);
         }
         return SlotContent.of();
+    }
+
+    public static ItemStack getItemStack(JsonElement keyElement) {
+        if (keyElement.isJsonObject())
+            return ItemStack.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), keyElement).result().orElseThrow();
+        else if (keyElement.isJsonPrimitive() && keyElement.getAsJsonPrimitive().isString()) {
+            return BuiltInRegistries.ITEM.getValue(Identifier.parse(keyElement.getAsString())).getDefaultInstance();
+        }
+        return ItemStack.EMPTY;
     }
 }
