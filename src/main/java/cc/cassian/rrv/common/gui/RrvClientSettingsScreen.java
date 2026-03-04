@@ -99,7 +99,7 @@ public class RrvClientSettingsScreen extends Screen {
                 CycleButton.<T>builder((overlayDisplay)-> Component.translatable(key+"."+overlayDisplay.getSerializedName())).withInitialValue(initialValue).withValues(values)
                         .create(x, yPos, width, 20, Component.translatable(key), newValueSetter)
         );
-        *///?}
+        //?}
         if (newLine)
             yPos+=22;
 
@@ -107,25 +107,25 @@ public class RrvClientSettingsScreen extends Screen {
 
     private void addChild(LinearLayout linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter, int x, boolean newLine, int width) {
         //? >1.21.10 {
-        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(x, yPos, width, 20, translatable, newValueSetter));
-        //?} else {
-        /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(x, yPos, width, 20, translatable, newValueSetter));
-         *///?}
+        /*linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(x, yPos, width, 20, translatable, newValueSetter));
+        *///?} else {
+        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled).withInitialValue(currentValue).create(x, yPos, width, 20, translatable, newValueSetter));
+         //?}
         if (newLine)
             yPos+=22;
     }
 
     //? if >1.21.11 {
-    @Override
+    /*@Override
     public void resize(int width, int height) {
         this.minecraft.setScreen(new RrvClientSettingsScreen(this.lastScreen));
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     public void resize(Minecraft minecraft, int width, int height) {
         minecraft.setScreen(new RrvClientSettingsScreen(this.lastScreen));
     }
-    *///?}
+    //?}
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
