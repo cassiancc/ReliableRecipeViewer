@@ -65,9 +65,12 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b), col1, true, buttonWidth);
 
         addString(linearLayout, "advanced");
-        addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b), col1, true, buttonWidth);
-        if (Minecraft.getInstance().level != null)
-            linearLayout.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(250, 20).build());
+        addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b), col1, false, buttonWidth);
+        if (Minecraft.getInstance().level != null) {
+            Button exportItemView = linearLayout.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(buttonWidth, 20).build());
+            exportItemView.setX(col2);
+            exportItemView.setY(yPos);
+        }
 
         Button close = this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build()));
         close.setX(this.width/2 - close.getWidth()/2);
