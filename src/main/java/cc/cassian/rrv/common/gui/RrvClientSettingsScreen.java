@@ -118,7 +118,7 @@ public class RrvClientSettingsScreen extends Screen {
             yPos+=22;
     }
 
-    //? if >1.21.11 {
+    //? if >1.21.10 {
     @Override
     public void resize(int width, int height) {
         this.minecraft.setScreen(new RrvClientSettingsScreen(this.lastScreen));
