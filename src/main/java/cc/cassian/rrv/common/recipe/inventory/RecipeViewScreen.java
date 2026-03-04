@@ -61,6 +61,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     private final List<ViewTypeButton> viewTypeButtons;
     private int viewTypePage;
     private Button prevTypePage, nextTypePage;
+    private final ArrayList<Renderable> widgets = new ArrayList<>();
 
     public RecipeViewScreen(RecipeViewMenu recipeViewMenu, Inventory inventory, Component component) {
         super(recipeViewMenu, inventory, component);
@@ -158,9 +159,15 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
     }
 
-    @Override
-    public <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
+    public <T extends GuiEventListener & Renderable & NarratableEntry> T addRecipeWidget(T widget) {
+        this.widgets.add(widget);
         return super.addRenderableWidget(widget);
+    }
+
+    public void clearRecipeWidgets() {
+        this.widgets.forEach(r->{
+            this.removeWidget((GuiEventListener) r);
+        });
     }
 
     public void prevPage() {
@@ -173,8 +180,8 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.checkGui();
 	}
 
-
     protected void checkGui() {
+        this.clearRecipeWidgets();
 
         this.prevRecipe.active = this.getMenu().hasPrevRecipe();
         this.nextRecipe.active = this.getMenu().hasNextRecipe();
