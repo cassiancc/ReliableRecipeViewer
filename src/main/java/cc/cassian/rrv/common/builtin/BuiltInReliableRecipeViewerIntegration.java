@@ -96,7 +96,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
     public void onIntegrationInitialize() {
 
         ItemView.addServerReloadCallback(() -> {
-            Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
+            Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().theGame().registryAccess().lookupOrThrow(Registries.POTION);
 
             potionRegistry.forEach(potion -> {
                 var potionHolder = potionRegistry.wrapAsHolder(potion);
@@ -106,7 +106,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
 
-                    if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder)) {
+                    if (ServerRecipeManager.INSTANCE.getServer().theGame().potionBrewing().isBrewablePotion(potionHolder)) {
                         ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
                         tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
                         ItemView.addStackSensitive(tipped);
@@ -115,7 +115,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             });
 
 
-            Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+            Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().theGame().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
             enchantmentRegistry.entrySet().forEach((entry) -> {
                 var key = entry.getKey();
                 var enchantment = entry.getValue();
@@ -142,7 +142,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 if (entityType.getDefaultLootTable().isEmpty())
                     return;
 
-                LootTable table = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().getLootTable(entityType.getDefaultLootTable().get());
+                LootTable table = ServerRecipeManager.INSTANCE.getServer().theGame().reloadableRegistries().getLootTable(entityType.getDefaultLootTable().get());
                 LootTableAccessor accessor = (LootTableAccessor) table;
 
                 List<ItemStack> loot = new ArrayList<>();
@@ -201,7 +201,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         //Burning
         ItemView.addServerRecipeProvider(recipeList -> {
-            FuelValues fuelValues = ServerRecipeManager.INSTANCE.getServer().fuelValues();
+            FuelValues fuelValues = ServerRecipeManager.INSTANCE.getServer().theGame().fuelValues();
             fuelValues.fuelItems().forEach(item -> {
                 //? fabric
                 recipeList.add(new BurningServerRecipe(item, fuelValues.burnDuration(new ItemStack(item))));
@@ -338,7 +338,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             });
 
             //Tipped arrows
-            Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
+            Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().theGame().registryAccess().lookupOrThrow(Registries.POTION);
             potionRegistry.forEach(potion -> {
                 ItemStack potionStack = PotionContents.createItemStack(Items.LINGERING_POTION, potionRegistry.wrapAsHolder(potion));
                 recipeList.add(new TippedArrowServerRecipe(potionStack));
@@ -376,7 +376,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         //Brewing
         ItemView.addServerRecipeProvider(recipeList -> {
 
-            PotionBrewing potionBrewing = ServerRecipeManager.INSTANCE.getServer().potionBrewing();
+            PotionBrewing potionBrewing = ServerRecipeManager.INSTANCE.getServer().theGame().potionBrewing();
             List<PotionBrewing.Mix<Potion>> potionMixes = ((PotionBrewingAccessor) potionBrewing).getPotionMixes();
             List<PotionBrewing.Mix<Item>> containerMixes = ((PotionBrewingAccessor) potionBrewing).getContainerMixes();
 

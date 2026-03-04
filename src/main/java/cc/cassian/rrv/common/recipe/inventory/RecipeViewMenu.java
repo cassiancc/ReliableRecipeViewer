@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -133,7 +134,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         if (recipes.isEmpty())
             ReliableRecipeViewer.LOGGER.error("Attempting to open Menu with 0 recipes");
 
-        player = inventory.player;
+        player = inventory.getPlayer();
         this.updateByViewType();
 
         if (!this.sortedByType.isEmpty())
@@ -145,6 +146,10 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     }
 
     public RecipeViewMenu(int containerId, Inventory inventory) {
+        this(null, containerId, inventory, ReliableClientRecipe.PLACEHOLDER, ItemStack.EMPTY, ActionType.ANY, new ArrayList<>());
+    }
+
+    public RecipeViewMenu(int containerId, Inventory inventory, List<Integer> integers) {
         this(null, containerId, inventory, ReliableClientRecipe.PLACEHOLDER, ItemStack.EMPTY, ActionType.ANY, new ArrayList<>());
     }
 
@@ -875,7 +880,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     public interface OptionalSlotRenderer {
 
         RecipeViewMenu.OptionalSlotRenderer DEFAULT = (guiGraphics, mouseX, mouseY, partialTicks) -> {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.DEFAULT_SLOT_TEXTURE, 0, 0, 0, 0, 18, 18, 18, 18);
+            guiGraphics.blit(RenderType::guiTextured, BuiltInReliableRecipeViewerIntegration.DEFAULT_SLOT_TEXTURE, 0, 0, 0, 0, 18, 18, 18, 18);
         };
 
         /**

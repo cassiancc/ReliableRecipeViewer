@@ -9,6 +9,7 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -73,12 +74,12 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
     @Override
     public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 39, 30, 38, 0, 18, 4, 128, 128);
+        guiGraphics.blit(RenderType::guiTextured, BuiltInReliableRecipeViewerIntegration.WIDGETS, 39, 30, 38, 0, 18, 4, 128, 128);
 
         int brewProgress = Math.round(this.brewProgressTicker.getProgress() * 28);
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 76, 2, 56, 0, 9, brewProgress, 128, 128);
+        guiGraphics.blit(RenderType::guiTextured, BuiltInReliableRecipeViewerIntegration.WIDGETS, 76, 2, 56, 0, 9, brewProgress, 128, 128);
 
         int bubbleProgress = 29 - BUBBLELENGTHS[this.brewProgressTicker.getTick() / 2 % 7];
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 42, 29 - bubbleProgress, 64, 29 - bubbleProgress, 13, bubbleProgress, 128, 128);
+        guiGraphics.blit(RenderType::guiTextured, BuiltInReliableRecipeViewerIntegration.WIDGETS, 42, 29 - bubbleProgress, 64, 29 - bubbleProgress, 13, bubbleProgress, 128, 128);
     }
 }

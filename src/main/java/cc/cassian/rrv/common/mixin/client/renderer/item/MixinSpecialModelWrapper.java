@@ -19,7 +19,7 @@ public abstract class MixinSpecialModelWrapper {
 
     @Inject(method = "update", at = @At("HEAD"))
     private void makeFluidItemsAnimated(ItemStackRenderState itemStackRenderState, ItemStack itemStack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, ClientLevel level, LivingEntity entity, int seed, CallbackInfo ci){
-        if(itemStack.getItem() instanceof FluidItem)
-            itemStackRenderState.setAnimated();
+//        if(itemStack.getItem() instanceof FluidItem)
+//            itemStackRenderState.setAnimated();
     }
 }

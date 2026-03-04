@@ -63,7 +63,7 @@ public class ServerRecipeManager {
     }
 
     public RegistryOps<Tag> createSerializationContext() {
-        return server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        return server.theGame().registryAccess().createSerializationContext(NbtOps.INSTANCE);
     }
 
     public void reload() {
@@ -75,7 +75,7 @@ public class ServerRecipeManager {
 
         ItemView.getStackSensitive().clear();
         ItemView.getReloadCallbacks().forEach(ItemView.ReloadCallback::onReload);
-        this.server.getPlayerList().getPlayers().forEach(player -> {
+        this.server.theGame().playerList().getPlayers().forEach(player -> {
             RrvNetworkManager.INSTANCE.sendPacket(player, new ClientboundServerReloadPayload());
         });
 
@@ -93,8 +93,8 @@ public class ServerRecipeManager {
             return;
 
         ReliableRecipeViewer.LOGGER.info("Broadcasting Stack-Sensitives...");
-        ReliableRecipeViewer.LOGGER.info("Informing {} players about {} stack-sensitives", this.server.getPlayerList().getPlayers().size(), ItemView.getStackSensitive().size());
-        this.server.getPlayerList().getPlayers().forEach(this::updateStackSensitives);
+        ReliableRecipeViewer.LOGGER.info("Informing {} players about {} stack-sensitives", this.server.theGame().playerList().getPlayers().size(), ItemView.getStackSensitive().size());
+        this.server.theGame().playerList().getPlayers().forEach(this::updateStackSensitives);
 
 
     }
@@ -117,7 +117,7 @@ public class ServerRecipeManager {
             return;
         }
         ReliableRecipeViewer.LOGGER.info("Broadcasting recipes...");
-        this.server.getPlayerList().getPlayers().forEach(this::informAboutRecipes);
+        this.server.theGame().playerList().getPlayers().forEach(this::informAboutRecipes);
     }
 
 

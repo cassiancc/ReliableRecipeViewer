@@ -6,15 +6,18 @@ import cc.cassian.rrv.common.command.RrvCommand;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -30,6 +33,8 @@ public class FabricEntrypoint implements ModInitializer {
     public void onInitialize() {
 
         CommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext, commandSelection) -> RrvCommand.register(commandDispatcher));
+
+        ServerLifecycleEvents.SERVER_STARTED.register(ServerRecipeManager.INSTANCE::setServer);
 
         FabricLoader.getInstance().invokeEntrypoints("rrv", ReliableRecipeViewerPlugin.class, ReliableRecipeViewerPlugin::onIntegrationInitialize);
 

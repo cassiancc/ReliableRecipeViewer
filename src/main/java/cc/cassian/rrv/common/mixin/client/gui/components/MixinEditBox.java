@@ -9,11 +9,14 @@ import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.function.Function;
 
 @Mixin(EditBox.class)
 public abstract class MixinEditBox extends AbstractWidget {
@@ -22,11 +25,11 @@ public abstract class MixinEditBox extends AbstractWidget {
         super(x, y, width, height, message);
     }
 
-    @WrapOperation(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"))
+    @WrapOperation(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V"))
     @SuppressWarnings("all")
-    private void renderFilterMode(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height, Operation<Void> original) {
+    private void renderFilterMode(GuiGraphics instance, Function<ResourceLocation, RenderType> pipeline, ResourceLocation sprite, int x, int y, int width, int height, Operation<Void> original) {
         if (((Object) this) instanceof SearchBar && ItemViewOverlay.INSTANCE.isItemFilterMode()) {
-            instance.blitSprite(pipeline, ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "widget/searchbar_filtermode"), x, y, width, height);
+            original.call(pipeline, ResourceLocation.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "widget/searchbar_filtermode"), x, y, width, height);
         } else
             original.call(instance, pipeline, sprite, x, y, width, height);
     }

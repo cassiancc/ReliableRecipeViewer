@@ -12,10 +12,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -44,6 +44,8 @@ public class RrvClientSettingsScreen extends Screen {
 
         LinearLayout linearLayout = LinearLayout.vertical().spacing(2);
 
+        linearLayout.addChild(new SpacerElement(3, 3));
+
         linearLayout.addChild(new StringWidget(clientSetting("general"), this.font));
 
         addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowOverlays(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowOverlays(sidePanel));
@@ -59,17 +61,17 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout, clientSetting("show_buttons.show"), clientSetting("show_buttons.hide"), Configs.CLIENT_SETTINGS.isShowButtons(), clientSetting("show_buttons"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowButtons(b));
         addChild(linearLayout, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
 
-        linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
-        addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
-        if (Minecraft.getInstance().level != null)
-            linearLayout.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(250, 20).build());
+        // i can't fit everything in this non-scrollable screen
+//        linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
+//        addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
+//        if (Minecraft.getInstance().level != null)
+//            linearLayout.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(250, 20).build());
 
         this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build()));
 
-        ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
-        scrollableLayout.arrangeElements();
+        linearLayout.arrangeElements();
 
-        scrollableLayout.visitWidgets(this::addRenderableWidget);
+        linearLayout.visitWidgets(this::addRenderableWidget);
         this.layout.arrangeElements();
     }
 

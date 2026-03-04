@@ -84,7 +84,7 @@ public class ItemSlot {
 
 
         if (this.isHovered())
-            guiGraphics.setComponentTooltipForNextFrame(mc.font, tooltip, mouseX, mouseY);
+            guiGraphics.renderComponentTooltip(mc.font, tooltip, mouseX, mouseY);
     }
 
     /**

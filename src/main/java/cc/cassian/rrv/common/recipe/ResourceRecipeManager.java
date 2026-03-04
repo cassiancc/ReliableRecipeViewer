@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.util.StrictJsonParser;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static cc.cassian.rrv.common.ReliableRecipeViewer.GSON;
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
 public class ResourceRecipeManager {
@@ -35,7 +35,7 @@ public class ResourceRecipeManager {
 	private static void addInfoRecipes(Map<ResourceLocation, Resource> identifierResourceMap, ArrayList<InfoClientRecipe> infoRecipes, boolean b) {
 		identifierResourceMap.forEach((identifier, resource) -> {
 			try {
-				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
+				JsonObject parsedRecipe = GSON.fromJson(resource.openAsReader(), JsonObject.class).getAsJsonObject();
 				if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
 					var text = parsedRecipe.get("text").getAsString();
 					infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
@@ -86,7 +86,7 @@ public class ResourceRecipeManager {
 		ResourceLocation identifier = entry.getKey();
 		Resource resource = entry.getValue();
 		try {
-			JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
+			JsonObject parsedRecipe = GSON.fromJson(resource.openAsReader(), JsonObject.class).getAsJsonObject();
 			if (parsedRecipe.get("type").getAsString().equals("rrv:" + type)) {
 				SlotContent left = RrvUtil.readSlotContent("left", typeSpaced, identifier, parsedRecipe);
 				SlotContent right = RrvUtil.readSlotContent("right", typeSpaced, identifier, parsedRecipe);
@@ -105,7 +105,7 @@ public class ResourceRecipeManager {
 	public static void replaceIndex(List<ItemStack> results) {
 		getResourceLocationResourceMap("rrv/index").forEach((identifier, resource) -> {
 			try {
-				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
+				JsonObject parsedRecipe = GSON.fromJson(resource.openAsReader(), JsonObject.class).getAsJsonObject();
 				// replace - whether to replace the entire index with this modified one
 				if (parsedRecipe.has("replace") && parsedRecipe.get("replace").isJsonPrimitive() && parsedRecipe.get("replace").getAsJsonPrimitive().isBoolean() && parsedRecipe.getAsJsonPrimitive("replace").getAsBoolean()) {
 					results.clear();

@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -60,9 +61,9 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
         int litProgress = Math.round(this.smeltingTicker.getProgress() * 14);
         int smeltProgress = Math.round(this.smeltingTicker.getProgress() * 24);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 1, 20 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
+        guiGraphics.blit(RenderType::guiTextured, BuiltInReliableRecipeViewerIntegration.WIDGETS, 1, 20 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 24, 19, 14, 0, smeltProgress, 16, 128, 128);
+        guiGraphics.blit(RenderType::guiTextured, BuiltInReliableRecipeViewerIntegration.WIDGETS, 24, 19, 14, 0, smeltProgress, 16, 128, 128);
     }
 
 

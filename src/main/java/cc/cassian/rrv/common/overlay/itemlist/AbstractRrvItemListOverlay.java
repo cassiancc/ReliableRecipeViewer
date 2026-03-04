@@ -160,11 +160,11 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
         float scaleFactor = Math.min(1.0F, 1.0F / (font.width(comp) / ((Configs.CLIENT_SETTINGS.isItemWrapMode() ? this.width : this.effectiveWidth) - 4.0F)));
 
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(x, y);
-        guiGraphics.pose().scale(scaleFactor, scaleFactor);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(x, y, 0);
+        guiGraphics.pose().scale(scaleFactor, scaleFactor, 0);
         guiGraphics.drawCenteredString(font, comp, 0, 0, color);
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
 
     }
 

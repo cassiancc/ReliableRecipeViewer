@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -126,9 +127,9 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         ReliableClientRecipe.super.renderRecipe(screen, recipePosition, guiGraphics, mouseX, mouseY, partialTicks);
         if (shapeless) {
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ResourceLocation.fromNamespaceAndPath("rrv", "crafting_shapeless"), 26, 14, 0, 0, 92, 0, 26, 14);
+            guiGraphics.blitSprite(RenderType::guiTextured, ResourceLocation.fromNamespaceAndPath("rrv", "crafting_shapeless"), 26, 14, 0, 0, 92, 0, 26, 14);
             if ((mouseX > 92 && mouseX < 122) && (mouseY>0 && mouseY < 14)) {
-                guiGraphics.setComponentTooltipForNextFrame(screen.getFont(), List.of(Component.translatable("view.rrv.type.crafting.shapeless")), mouseX+recipePosition.left(), mouseY+recipePosition.top());
+                guiGraphics.renderComponentTooltip(screen.getFont(), List.of(Component.translatable("view.rrv.type.crafting.shapeless")), mouseX+recipePosition.left(), mouseY+recipePosition.top());
             }
         }
 

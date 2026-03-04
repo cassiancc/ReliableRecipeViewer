@@ -298,7 +298,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                     List<ItemStack> offerStacks = new ArrayList<>();
 
                     if (accessor.enchantmentProvider().isPresent()) {
-                        EnchantmentProvider provider = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT_PROVIDER).get(accessor.enchantmentProvider().get()).orElseThrow().value();
+                        EnchantmentProvider provider = ServerRecipeManager.INSTANCE.getServer().theGame().registryAccess().lookupOrThrow(Registries.ENCHANTMENT_PROVIDER).get(accessor.enchantmentProvider().get()).orElseThrow().value();
                         offerStacks.addAll(VillagerServerRecipe.createOfferStacksFromEnchantmentProvider(provider, accessor.itemStack()));
                     } else
                         offerStacks.add(accessor.itemStack().copy());
@@ -360,7 +360,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                     HashMap<ResourceKey<Enchantment>, List<ItemStack>> offers = new HashMap<>();
                     HashMap<ResourceKey<Enchantment>, List<ItemStack>> costs = new HashMap<>();
 
-                    Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                    Registry<Enchantment> enchantmentRegistry = ServerRecipeManager.INSTANCE.getServer().theGame().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
 
                     enchantmentRegistry.get(accessor.tradeableEnchantments()).ifPresent(holders -> {
                         holders.stream().forEach(enchantment -> {
@@ -482,7 +482,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
                     List<ItemStack> offerStacks = new ArrayList<>();
 
-                    List<Holder<Potion>> potions = BuiltInRegistries.POTION.listElements().filter((potionReference) -> !potionReference.value().getEffects().isEmpty() && ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionReference)).collect(Collectors.toList());
+                    List<Holder<Potion>> potions = BuiltInRegistries.POTION.listElements().filter((potionReference) -> !potionReference.value().getEffects().isEmpty() && ServerRecipeManager.INSTANCE.getServer().theGame().potionBrewing().isBrewablePotion(potionReference)).collect(Collectors.toList());
                     potions.forEach(holder -> {
 
                         ItemStack offerStack = new ItemStack(accessor.toItem().getItem(), accessor.toCount());
@@ -529,7 +529,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                     int totalCostsMin = Math.min(accessor.baseEmeraldCost() + bonusCostMin, 64);
                     int totalCostsMax = Math.min(accessor.baseEmeraldCost() + bonusCostMax, 64);
 
-                    RegistryAccess registryAccess = ServerRecipeManager.INSTANCE.getServer().registryAccess();
+                    RegistryAccess registryAccess = ServerRecipeManager.INSTANCE.getServer().theGame().registryAccess();
                     Optional<HolderSet.Named<Enchantment>> optional = registryAccess.lookupOrThrow(Registries.ENCHANTMENT).get(EnchantmentTags.ON_TRADED_EQUIPMENT);
 
                     Enchantable enchantable = accessor.itemStack().get(DataComponents.ENCHANTABLE);
@@ -648,7 +648,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                     List<ItemStack> offerStacks = new ArrayList<>();
 
                     if (accessor.enchantmentProvider().isPresent()) {
-                        EnchantmentProvider provider = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.ENCHANTMENT_PROVIDER).get(accessor.enchantmentProvider().get()).orElseThrow().value();
+                        EnchantmentProvider provider = ServerRecipeManager.INSTANCE.getServer().theGame().registryAccess().lookupOrThrow(Registries.ENCHANTMENT_PROVIDER).get(accessor.enchantmentProvider().get()).orElseThrow().value();
                         offerStacks.addAll(createOfferStacksFromEnchantmentProvider(provider, accessor.toItem()));
                     } else
                         offerStacks.add(accessor.toItem().copy());

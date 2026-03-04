@@ -25,8 +25,8 @@ stonecutter {
                 else
                     version("$version-$it", version).buildscript = "build.$it.gradle.kts"
             }
-        match("1.21.8", "fabric", "neoforge")
+        match("1.21.5", "fabric")
 
-        vcsVersion = "1.21.8-fabric"
+        vcsVersion = "1.21.5-fabric"
     }
 }

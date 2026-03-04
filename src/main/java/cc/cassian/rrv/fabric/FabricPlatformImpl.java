@@ -8,6 +8,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -42,7 +43,7 @@ public class FabricPlatformImpl implements Platform {
 
     @Override
     public String getModNamespaceForItem(ItemStack stack) {
-        return stack.getCreatorNamespace();
+        return BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().toString();
     }
 
     @Override

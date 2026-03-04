@@ -11,6 +11,7 @@ import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
@@ -73,7 +74,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
         poseStack.pushPose();
         poseStack.scale(1.0F, 1.0F, 1.0F);
-        VertexConsumer vertexConsumer = sprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, RenderType.entityTranslucent(sprite.atlasLocation()), itemDisplayContext == ItemDisplayContext.GUI, bl));
+        VertexConsumer vertexConsumer = sprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, RenderType.entityTranslucent(sprite.atlasLocation()), itemDisplayContext == ItemDisplayContext.GUI, ItemStackRenderState.FoilType.NONE));
         Matrix4f matrix4f = poseStack.last().pose();
         vertexConsumer.addVertex(matrix4f, 0, 0, 0).setUv(u0, v0).setOverlay(overlay).setLight(light).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
         vertexConsumer.addVertex(matrix4f, 0, renderHeight, 0).setUv(u0, v0 + height).setOverlay(overlay).setLight(light).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
@@ -84,17 +85,6 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
     private static int getColor(Fluid fluid) {
         return fluid == Fluids.WATER ? Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor() : -1;
-    }
-
-    @Override
-    public void getExtents(
-            //? if >1.21.10 {
-            /*Consumer<Vector3fc>
-            *///?} else {
-            Set<Vector3f>
-            //?}
-             consumer) {
-
     }
 
     @Override

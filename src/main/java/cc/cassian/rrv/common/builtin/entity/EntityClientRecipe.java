@@ -9,6 +9,7 @@ import cc.cassian.rrv.common.rendering.RrvGuiRenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -125,7 +126,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
             this.hovered = false;
 
         if (this.hovered)
-            guiGraphics.setComponentTooltipForNextFrame(screen.getFont(), List.of(Component.empty().append(entityName).withStyle(ChatFormatting.GOLD)), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
+            guiGraphics.renderComponentTooltip(screen.getFont(), List.of(Component.empty().append(entityName).withStyle(ChatFormatting.GOLD)), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
 
     }
 
@@ -140,8 +141,10 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         if (boundingBox.getYsize() * scale > 26)
             scale = (float) (26.0F / boundingBox.getYsize());
 
-        RrvGuiRenderHelper.renderEntityOnScreen(guiGraphics, this.previewEntity, recipePosition.left() + 67, recipePosition.top() + 2, recipePosition.left() + 67 + 28, recipePosition.top() + 2 + 28, scale, new Vector3f(0.0F, (28.0F / scale / 2.0F), 0.0F), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + partialTicks) / 180.0F * Mth.PI, 0.0F), null);
-
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(81, 29, 0);
+        InventoryScreen.renderEntityInInventory(guiGraphics, 0, 0, scale, new Vector3f(), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + partialTicks) / 180.0F * Mth.PI, 0.0F), null, this.previewEntity);
+        guiGraphics.pose().popPose();
     }
 
     @Override

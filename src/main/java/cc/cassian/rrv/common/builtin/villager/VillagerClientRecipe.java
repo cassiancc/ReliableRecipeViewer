@@ -10,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -136,11 +137,11 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
 
         Component professionComp = Component.translatable("entity.%s.villager.%s".formatted(namespace, path)).append(" - ").append(Component.translatable("merchant.level." + this.villagerOffer.professionLevel())).withStyle(ChatFormatting.DARK_GRAY);
 
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(0, -(font.lineHeight) * scale);
-        guiGraphics.pose().scale(scale, scale);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0, -(font.lineHeight) * scale, 0);
+        guiGraphics.pose().scale(scale, scale, 0);
         guiGraphics.drawString(font, professionComp, 0, 0, -1, false);
-        guiGraphics.pose().popMatrix();
+        guiGraphics.pose().popPose();
 
         if (this.villagerLookLeft != this.prevVillagerLookLeft && this.currentTick - this.lastHeadChange <= 0.25F * 20) {
             float pastTime = this.currentTick - this.lastHeadChange + partialTicks;
@@ -156,7 +157,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         if (mouseX >= 0 && mouseX <= 24 && mouseY >= 0 && mouseY <= 36) {
             ResourceLocation typeLocation = this.villagerOffer.requiredType().location();
             Component typeComponent = Component.translatableWithFallback("view.rrv.type.trading.%s.%s".formatted(typeLocation.getNamespace(), typeLocation.getPath()), WordUtils.capitalizeFully(typeLocation.getPath().replace("_", " "))).withStyle(ChatFormatting.GOLD);
-            guiGraphics.setComponentTooltipForNextFrame(font, List.of(typeComponent), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
+            guiGraphics.renderComponentTooltip(font, List.of(typeComponent), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
         }
     }
 
@@ -166,7 +167,11 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         if (this.previewVillager == null)
             return;
 
-        RrvGuiRenderHelper.renderEntityOnScreen(guiGraphics, this.previewVillager, recipePosition.left() + 2, recipePosition.top() + 2, recipePosition.left() + 2 + 20, recipePosition.top() + 2 + 32, 15.0F, new Vector3f(0, (32.0F / 15.0F / 2.0F), 0), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), 0.0F, 0.0F), null);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(12, 34, 0);
+        InventoryScreen.renderEntityInInventory(guiGraphics, 0, 0, 15.0F, new Vector3f(), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), 0.0F, 0.0F), null, this.previewVillager);
 
+
+        guiGraphics.pose().popPose();
     }
 }
