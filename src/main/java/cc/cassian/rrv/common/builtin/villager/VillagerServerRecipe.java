@@ -405,7 +405,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
                         CompoundTag offerTag = new CompoundTag();
                         offerTag.put("offerStacks", TagUtil.writeList(stacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
                         offerTag.put("costStacks", TagUtil.writeList(costStacks, (origin, tag) -> TagUtil.encodeItemStackOnServer(origin)));
-                        offersTag.put(enchantment.identifier().toDebugFileName(), offerTag);
+                        offersTag.put(enchantment.location().toDebugFileName(), offerTag);
                     });
 
                     out.put("offers", offersTag);

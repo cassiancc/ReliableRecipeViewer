@@ -100,7 +100,7 @@ public class RrvUtil {
         if (keyElement.isJsonObject())
             return ItemStack.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), keyElement).result().orElseThrow();
         else if (keyElement.isJsonPrimitive() && keyElement.getAsJsonPrimitive().isString()) {
-            return BuiltInRegistries.ITEM.getValue(Identifier.parse(keyElement.getAsString())).getDefaultInstance();
+            return BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(keyElement.getAsString())).getDefaultInstance();
         }
         return ItemStack.EMPTY;
     }

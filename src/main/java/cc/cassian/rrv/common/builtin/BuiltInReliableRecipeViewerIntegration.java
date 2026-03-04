@@ -46,15 +46,15 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 //? if <26 {
-/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
+import net.minecraft.world.entity.npc.VillagerTrades;
 /*import net.minecraft.world.item.component.DyedItemColor;
-*///?} else {
-import net.minecraft.world.item.trading.TradeSet;
+//?} else {
+/*import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.core.HolderLookup;
 *///?}
@@ -292,7 +292,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                 }
                 //? if >26 {
-                if (recipe instanceof DyeRecipe) {
+                /*if (recipe instanceof DyeRecipe) {
                     DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
                     List<ItemStack> results = new ArrayList<>();
 
@@ -316,8 +316,8 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 					}
                     recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results, 1));
                 }
-                //?} else {
-                /*if (recipe instanceof ArmorDyeRecipe) {
+                *///?} else {
+                if (recipe instanceof ArmorDyeRecipe) {
                     var dyeable = SlotContent.getItemsFromTag(ItemTags.DYEABLE);
 					dyeable.ifPresent(holders -> holders.forEach(dyeableItemHolder -> {
                         if (dyeableItemHolder.isBound()) {
@@ -334,7 +334,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         }
 					}));
                 }
-                *///?}
+                //?}
             });
 
             //Tipped arrows

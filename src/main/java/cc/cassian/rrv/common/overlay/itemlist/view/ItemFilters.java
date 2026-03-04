@@ -25,7 +25,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;

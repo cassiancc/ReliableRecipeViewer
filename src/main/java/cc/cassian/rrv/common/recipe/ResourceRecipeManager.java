@@ -103,7 +103,7 @@ public class ResourceRecipeManager {
 	}
 
 	public static void replaceIndex(List<ItemStack> results) {
-		getIdentifierResourceMap("rrv/index").forEach((identifier, resource) -> {
+		getResourceLocationResourceMap("rrv/index").forEach((identifier, resource) -> {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
 				// replace - whether to replace the entire index with this modified one
@@ -117,7 +117,7 @@ public class ResourceRecipeManager {
 							results.remove(RrvUtil.getItemStack(item));
 						}
 						else if (item.isJsonPrimitive() && item.getAsJsonPrimitive().isString()) {
-							Optional<Item> optional = BuiltInRegistries.ITEM.getOptional(Identifier.parse(item.getAsString()));
+							Optional<Item> optional = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(item.getAsString()));
 							optional.ifPresent(value -> results.removeIf((i)-> i.is(value)));
 						}
 					});
