@@ -39,7 +39,7 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 		MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, Component.translatableWithFallback(text, text).withoutShadow().withColor(-16777216), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
 		widget.setX(recipePosition.left()+ 5);
 		widget.setY(recipePosition.top()+20);
-		screen.addRenderableWidget(widget);
+		screen.addRecipeWidget(widget);
 		//?} else {
 		/*guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(I18n.get(text)), 5, 20, 112, -16777216, false);
 		*///?}
