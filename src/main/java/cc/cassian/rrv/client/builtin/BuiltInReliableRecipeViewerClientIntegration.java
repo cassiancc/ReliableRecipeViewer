@@ -191,7 +191,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
             worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
 
-            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Blocks.WATER), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Blocks.WATER), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
 
 
             return worldInteractionRecipes;
