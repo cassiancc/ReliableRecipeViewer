@@ -305,13 +305,11 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         });
                     }
 
-
                     if (ingredientContent.right().isPresent())
                         ingredients.addAll(ingredientContent.right().get().stream().map(Holder::value).toList());
 					for (Item ingredient : ingredients) {
-						for (Holder<Item> value : accessor.getDye().values) {
-							DyeColor o = value.value().getDefaultInstance().get(DataComponents.DYE);
-							results.add(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(o)));
+						for (DyeColor dyeColor : DyeColor.values()) {
+							results.add(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor)));
 						}
 					}
                     recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results, 1));
