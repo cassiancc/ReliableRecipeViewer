@@ -95,16 +95,22 @@ public class ItemFilters {
             modName = modName.toLowerCase();
 
             if (modName.startsWith(query.toLowerCase()))
-                firstPrio.add(stack);
+                add(firstPrio, stack);
             else if (modName.contains(query.toLowerCase()))
-                secondPrio.add(stack);
+                add(secondPrio, stack);
 
         }
 
-        List<ItemStack> results = new ArrayList<>();
-        results.addAll(firstPrio);
-        results.addAll(secondPrio);
+		List<ItemStack> results = new ArrayList<>(firstPrio);
+        secondPrio.stream().filter(results::contains).forEach(results::add);
+
         return results;
+    }
+
+    private static void add(List<ItemStack> results, ItemStack stack) {
+        if (!results.contains(stack)) {
+            results.add(stack);
+        }
     }
 
     /**
@@ -137,14 +143,13 @@ public class ItemFilters {
             String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase();
 
             if (itemId.startsWith(query.toLowerCase()))
-                firstPrio.add(stack);
+                add(firstPrio, stack);
             else if (itemId.contains(query.toLowerCase()))
-                secondPrio.add(stack);
+                add(secondPrio, stack);
         }
 
-        List<ItemStack> results = new ArrayList<>();
-        results.addAll(firstPrio);
-        results.addAll(secondPrio);
+        List<ItemStack> results = new ArrayList<>(firstPrio);
+        secondPrio.stream().filter(results::contains).forEach(results::add);
         return results;
     }
 
@@ -173,22 +178,21 @@ public class ItemFilters {
 
             if (tagName.startsWith(query.toLowerCase())) {
                 BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).filter(item -> !firstPrio.contains(item)).forEach(stack -> {
-                    firstPrio.add(stack);
+                    add(firstPrio, stack);
                     firstPrio.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(stack.getItem()).stream().map(ItemView.StackSensitive::stack).toList());
                 }));
 
             } else if (tagName.contains(query.toLowerCase())) {
                 BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).filter(item -> !firstPrio.contains(item) && !secondPrio.contains(item)).forEach(stack -> {
-                    secondPrio.add(stack);
+                    add(secondPrio, stack);
                     secondPrio.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(stack.getItem()).stream().map(ItemView.StackSensitive::stack).toList());
                 }));
             }
 
         }
 
-        List<ItemStack> results = new ArrayList<>();
-        results.addAll(firstPrio);
-        results.addAll(secondPrio);
+		List<ItemStack> results = new ArrayList<>(firstPrio);
+        secondPrio.stream().filter(results::contains).forEach(results::add);
 
         return results;
     }

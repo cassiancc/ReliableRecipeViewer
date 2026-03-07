@@ -10,6 +10,7 @@ import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPaylo
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -93,13 +94,11 @@ public class ServerRecipeManager {
             return;
 
         ReliableRecipeViewer.LOGGER.info("Broadcasting Stack-Sensitives...");
-        ReliableRecipeViewer.LOGGER.info("Informing {} players about {} stack-sensitives", this.server.getPlayerList().getPlayers().size(), ItemView.getStackSensitive().size());
         this.server.getPlayerList().getPlayers().forEach(this::updateStackSensitives);
-
-
     }
 
     public void updateStackSensitives(ServerPlayer player) {
+        ReliableRecipeViewer.LOGGER.debug("Informing {} player about {} stack-sensitives",player.getName().getString(), ItemView.getStackSensitive().size());
         List<ItemView.StackSensitive> collected = new ArrayList<>();
         ItemView.getStackSensitive().forEach((item, stackSensitives) -> {
             collected.addAll(stackSensitives);
@@ -125,7 +124,7 @@ public class ServerRecipeManager {
         if (PRESENT_RECIPES.isEmpty())
             return;
 
-        ReliableRecipeViewer.LOGGER.info("Informing {} about {} recipe types", serverPlayer.getName(), PRESENT_RECIPES.size());
+        ReliableRecipeViewer.LOGGER.debug("Informing {} about {} recipe types", serverPlayer.getName().getString(), PRESENT_RECIPES.size());
 
         ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundStartUpdatesPayload());
 
