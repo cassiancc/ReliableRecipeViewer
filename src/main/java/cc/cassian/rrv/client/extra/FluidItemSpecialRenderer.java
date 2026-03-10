@@ -16,9 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -42,9 +41,8 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         this.model = model;
     }
 
-
     @Override
-    public void submit(@Nullable ItemStack stack, ItemDisplayContext itemDisplayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k) {
+    public void submit(@Nullable ItemStack stack, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
         if(stack == null)
             return;
 
@@ -61,11 +59,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         Color unmodified = new Color(color);
         color = new Color(unmodified.getRed(), unmodified.getGreen(), unmodified.getBlue(), 255).getRGB();
 
-        //? if >26 {
         TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(fluid.defaultFluidState().createLegacyBlock()).particleMaterial().sprite();
-        //?} else {
-        /*TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(fluid.defaultFluidState().createLegacyBlock()).particleIcon();
-        *///?}
         RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
 
         float u0 = uvInfo.u0();
@@ -83,10 +77,10 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         float finalHeight = height;
         int finalColor = color;
         submitNodeCollector.submitCustomGeometry(poseStack, entityTranslucent(sprite.atlasLocation()), (pose, vertexConsumer) -> {
-            vertexConsumer.addVertex(pose.pose(), 1.0F, 0, 0).setUv(u0 + width, v0).setOverlay(j).setLight(i).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 1.0F, renderHeight, 0).setUv(u0 + width, v0 + finalHeight).setOverlay(j).setLight(i).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 0, renderHeight, 0).setUv(u0, v0 + finalHeight).setOverlay(j).setLight(i).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 0, 0, 0).setUv(u0, v0).setOverlay(j).setLight(i).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
+            vertexConsumer.addVertex(pose.pose(), 1.0F, 0, 0).setUv(u0 + width, v0).setOverlay(overlayCoords).setLight(lightCoords).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
+            vertexConsumer.addVertex(pose.pose(), 1.0F, renderHeight, 0).setUv(u0 + width, v0 + finalHeight).setOverlay(overlayCoords).setLight(lightCoords).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
+            vertexConsumer.addVertex(pose.pose(), 0, renderHeight, 0).setUv(u0, v0 + finalHeight).setOverlay(overlayCoords).setLight(lightCoords).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
+            vertexConsumer.addVertex(pose.pose(), 0, 0, 0).setUv(u0, v0).setOverlay(overlayCoords).setLight(lightCoords).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
         });
 
         poseStack.popPose();
@@ -97,13 +91,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
     }
 
     @Override
-    public void getExtents(
-            //? if >1.21.10 {
-            Consumer<Vector3fc>
-            //?} else {
-            /*Set<Vector3f>
-            *///?}
-             consumer) {
+    public void getExtents(Consumer<Vector3fc> consumer) {
 
     }
 
@@ -119,12 +107,12 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
         
         @Override
-        public @NotNull SpecialModelRenderer<?> bake(BakingContext bakingContext) {
+        public SpecialModelRenderer<?> bake(BakingContext bakingContext) {
             return new FluidItemSpecialRenderer(new FluidItemModel(bakingContext.entityModelSet().bakeLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER)));
         }
 
         @Override
-        public @NotNull MapCodec<? extends SpecialModelRenderer.Unbaked> type() {
+        public MapCodec<? extends SpecialModelRenderer.Unbaked> type() {
             return MAP_CODEC;
         }
     }

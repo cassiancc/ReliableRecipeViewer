@@ -6,7 +6,7 @@ import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -157,14 +157,14 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     }
 
 
-    protected void drawScaledString(Font font, GuiGraphics guiGraphics, Component comp, int x, int y, int color) {
+    protected void drawScaledString(Font font, GuiGraphicsExtractor guiGraphics, Component comp, int x, int y, int color) {
 
         float scaleFactor = Math.min(1.0F, 1.0F / (font.width(comp) / ((Configs.CLIENT_SETTINGS.isItemWrapMode() ? this.width : this.effectiveWidth) - 4.0F)));
 
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(x, y);
         guiGraphics.pose().scale(scaleFactor, scaleFactor);
-        guiGraphics.drawCenteredString(font, comp, 0, 0, color);
+        guiGraphics.centeredText(font, comp, 0, 0, color);
         guiGraphics.pose().popMatrix();
 
     }

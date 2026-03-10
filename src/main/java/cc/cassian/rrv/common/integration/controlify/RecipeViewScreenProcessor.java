@@ -7,7 +7,7 @@ import dev.isxander.controlify.controller.ControllerEntity;
 import dev.isxander.controlify.screenop.ScreenProcessor;
 import dev.isxander.controlify.virtualmouse.VirtualMouseBehaviour;
 import dev.isxander.controlify.virtualmouse.VirtualMouseHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
@@ -50,10 +50,10 @@ public class RecipeViewScreenProcessor extends ScreenProcessor<RecipeViewScreen>
 		// called after the Screen#init() method
 	}
 
-	@Override
-	protected void render(ControllerEntity controller, GuiGraphics graphics, float tickDelta, Optional<VirtualMouseHandler> vmouse) {
-		// called after the screen has rendered.
-	}
+//	@Override
+//	protected void extractRenderState(ControllerEntity controller, GuiGraphicsExtractor graphics, float tickDelta, Optional<VirtualMouseHandler> vmouse) {
+//		// called after the screen has rendered.
+//	}
 
 	@Override
 	public VirtualMouseBehaviour virtualMouseBehaviour() {

@@ -5,15 +5,13 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
-import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.StringRepresentable;
 
 import java.awt.*;
 import java.util.*;
@@ -219,19 +217,19 @@ public class OverlayManager {
     }
 
 
-    public void renderAllBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderAllBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (Configs.CLIENT_SETTINGS.drawBackground())
-            PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.renderBackground(guiGraphics, mouseX, mouseY, partialTicks));
+            PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.extractBackground(guiGraphics, mouseX, mouseY, partialTicks));
     }
 
-    public void renderAll(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.render(guiGraphics, mouseX, mouseY, partialTicks));
+    public void renderAll(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks));
 
         if (Platform.INSTANCE.isDevelopment() && Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
             this.renderDebug(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
-    public void renderDebug(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderDebug(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
 
         this.guiBlockings.forEach(blockingGuiComponent -> {
@@ -239,11 +237,11 @@ public class OverlayManager {
             Random rand = new Random(blockingGuiComponent.id().toString().chars().sum());
             int debugColor = new Color(rand.nextInt(255 + 1), rand.nextInt(255 + 1), rand.nextInt(255 + 1)).getRGB();
 
-            guiGraphics.hLine(blockingGuiComponent.x(), blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y(), debugColor);
-            guiGraphics.hLine(blockingGuiComponent.x(), blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
+            guiGraphics.horizontalLine(blockingGuiComponent.x(), blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y(), debugColor);
+            guiGraphics.horizontalLine(blockingGuiComponent.x(), blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
 
-            guiGraphics.vLine(blockingGuiComponent.x(), blockingGuiComponent.y(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
-            guiGraphics.vLine(blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
+            guiGraphics.verticalLine(blockingGuiComponent.x(), blockingGuiComponent.y(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
+            guiGraphics.verticalLine(blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
 
         });
 

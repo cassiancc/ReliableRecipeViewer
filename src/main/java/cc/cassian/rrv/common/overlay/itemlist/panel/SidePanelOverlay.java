@@ -16,7 +16,7 @@ import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -212,7 +212,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     @Override
-    protected void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    protected void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED))
             return;
 
@@ -220,7 +220,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     @Override
-    protected void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    protected void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED)) {
             return;
         }
@@ -243,7 +243,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
 
         for (ItemSlot slot : this.itemSlots()) {
-            slot.render(guiGraphics, mouseX, mouseY, partialTicks);
+            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         }
 
 

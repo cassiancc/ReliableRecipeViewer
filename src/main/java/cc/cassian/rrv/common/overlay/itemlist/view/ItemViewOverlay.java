@@ -28,7 +28,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 //?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
@@ -225,7 +225,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     }
 
     @Override
-    protected void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    protected void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (this.fittingPerPage() == 0)
             return;
 
@@ -233,7 +233,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     }
 
     @Override
-    protected void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    protected void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
         Minecraft client = Minecraft.getInstance();
         Font font = client.font;
@@ -248,7 +248,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         for (ItemSlot slot : this.itemSlots()) {
-            slot.render(guiGraphics, mouseX, mouseY, partialTicks);
+            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         }
 
 
@@ -271,7 +271,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     }
 
 
-    public void renderItemHighlighting(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderItemHighlighting(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.itemFilterMode)
             return;
 

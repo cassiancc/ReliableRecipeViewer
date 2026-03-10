@@ -50,14 +50,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
-//? if <26 {
-/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
-/*import net.minecraft.world.item.component.DyedItemColor;
-*///?} else {
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.core.HolderLookup;
-//?}
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -75,10 +70,6 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
-//? neoforge && <26 {
-/*import net.neoforged.neoforge.common.BasicItemListing;
-import static cc.cassian.rrv.neoforge.builtin.NeoForgeBuiltinRrvIntegration.NEOFORGE_BASIC;
-*///?}
 
 import java.util.*;
 
@@ -214,21 +205,21 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         //Smelting
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMELTING).forEach(recipe -> {
-                recipeList.add(new SmeltingServerRecipe(recipe.input(), RrvUtil.decodeTemplate(recipe.result)));
+                recipeList.add(new SmeltingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
         //Blasting
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.BLASTING).forEach(recipe -> {
-                recipeList.add(new BlastingServerRecipe(recipe.input(), RrvUtil.decodeTemplate(recipe.result)));
+                recipeList.add(new BlastingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
         //Smoking
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMOKING).forEach(recipe -> {
-                recipeList.add(new SmokingServerRecipe(recipe.input(), RrvUtil.decodeTemplate(recipe.result)));
+                recipeList.add(new SmokingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
@@ -236,7 +227,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CRAFTING).forEach(recipe -> {
                 if (recipe instanceof ShapelessRecipe shapelessRecipe)
-                    recipeList.add(new ShapelessServerRecipe(shapelessRecipe.ingredients, RrvUtil.decodeTemplate(shapelessRecipe.result)));
+                    recipeList.add(new ShapelessServerRecipe(shapelessRecipe.ingredients, shapelessRecipe.result));
 
 
                 if (recipe instanceof ShapedRecipe shapedRecipe) {
@@ -258,13 +249,13 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         }
                     }
 
-                    recipeList.add(new ShapedServerRecipe(shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, RrvUtil.decodeTemplate(shapedRecipe.result)));
+                    recipeList.add(new ShapedServerRecipe(shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, shapedRecipe.result));
                 }
 
                 if (recipe instanceof TransmuteRecipe) {
                     TransmuteRecipeAccessor accessor = (TransmuteRecipeAccessor) recipe;
 
-                    List<ItemStack> results = new ArrayList<>();
+                    List<ItemStackTemplate> results = new ArrayList<>();
 
                     Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) accessor.getInput()).getValues().unwrap();
 
@@ -280,21 +271,16 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
 
                     ingredients.forEach(ingredient -> {
-                        //? >26 {
-                        results.add(RrvUtil.decodeTemplate(accessor.getResult()));
-                        //?} else {
-                        /*results.add(accessor.getResult().apply(new ItemStack(ingredient)));
-                        *///?}
+                        results.add(accessor.getResult());
                     });
 
                     if (!ingredients.isEmpty() && !results.isEmpty())
                         recipeList.add(new TransmuteServerRecipe(accessor.getInput(), accessor.getMaterial(), results));
 
                 }
-                //? if >26 {
                 if (recipe instanceof DyeRecipe) {
                     DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
-                    List<ItemStack> results = new ArrayList<>();
+                    List<ItemStackTemplate> results = new ArrayList<>();
 
                     Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) accessor.getTarget()).getValues().unwrap();
 
@@ -309,30 +295,11 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         ingredients.addAll(ingredientContent.right().get().stream().map(Holder::value).toList());
 					for (Item ingredient : ingredients) {
 						for (DyeColor dyeColor : DyeColor.values()) {
-							results.add(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor)));
+							results.add(ItemStackTemplate.fromNonEmptyStack(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor))));
 						}
 					}
                     recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results, 1));
                 }
-                //?} else {
-                /*if (recipe instanceof ArmorDyeRecipe) {
-                    var dyeable = SlotContent.getItemsFromTag(ItemTags.DYEABLE);
-					dyeable.ifPresent(holders -> holders.forEach(dyeableItemHolder -> {
-                        if (dyeableItemHolder.isBound()) {
-                            ArrayList<Item> inputs = new ArrayList<>();
-                            ArrayList<ItemStack> results = new ArrayList<>();
-                            BuiltInRegistries.ITEM.stream().forEach(potentialDye -> {
-                                if (potentialDye instanceof DyeItem dyeItem) {
-                                    inputs.add(potentialDye);
-                                    ItemStack result = DyedItemColor.applyDyes(dyeableItemHolder.value().getDefaultInstance(), List.of(dyeItem));
-                                    results.add(result);
-                                }
-                            });
-                            recipeList.add(new TransmuteServerRecipe(Ingredient.of(dyeableItemHolder.value()), Ingredient.of(inputs.stream()), results, 1));
-                        }
-					}));
-                }
-                *///?}
             });
 
             //Tipped arrows
@@ -346,14 +313,14 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         //Campfire
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(campfireCookingRecipe -> {
-                recipeList.add(new CampfireServerRecipe(campfireCookingRecipe.input(), RrvUtil.decodeTemplate(campfireCookingRecipe.result)));
+                recipeList.add(new CampfireServerRecipe(campfireCookingRecipe.input(), campfireCookingRecipe.result));
             });
         });
 
         //Stonecutting
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipe -> {
-                recipeList.add(new StonecutterServerRecipe(stonecutterRecipe.input(), RrvUtil.decodeTemplate(stonecutterRecipe.result)));
+                recipeList.add(new StonecutterServerRecipe(stonecutterRecipe.input(), stonecutterRecipe.result));
             });
         });
 
@@ -392,58 +359,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
 
         //Trading
-        //? <26 {
-        /*ItemView.addServerRecipeProvider(recipeList -> {
-
-            VillagerTrades.TRADES.forEach((profession, byProfessionLevel) -> {
-
-                byProfessionLevel.forEach((professionLevel, itemListings) -> {
-                    Arrays.stream(itemListings).toList().forEach(listing -> {
-
-                        if (listing instanceof VillagerTrades.EmeraldForItems emeraldForItems)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.EMERALD_FOR_ITEMS, emeraldForItems)));
-
-                        if (listing instanceof VillagerTrades.ItemsForEmeralds itemsForEmeralds)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.ITEMS_FOR_EMERALDS, itemsForEmeralds)));
-
-                        if (listing instanceof VillagerTrades.SuspiciousStewForEmerald suspiciousStewForEmerald)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.SUSPICIOUS_STEW, suspiciousStewForEmerald)));
-
-                        if (listing instanceof VillagerTrades.EnchantBookForEmeralds enchantBookForEmeralds)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.ENCHANT_BOOK, enchantBookForEmeralds)));
-
-                        if (listing instanceof VillagerTrades.TreasureMapForEmeralds treasureMapForEmeralds)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TREASURE_MAP, treasureMapForEmeralds)));
-
-                        if (listing instanceof VillagerTrades.TippedArrowForItemsAndEmeralds tippedArrowForItemsAndEmeralds)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TIPPED_ARROW, tippedArrowForItemsAndEmeralds)));
-
-                        if (listing instanceof VillagerTrades.EnchantedItemForEmeralds enchantedItemForEmeralds)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.ENCHANTED_ITEM_FOR_EMERALDS, enchantedItemForEmeralds)));
-
-                        if (listing instanceof VillagerTrades.DyedArmorForEmeralds dyedArmorForEmeralds)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.DYED_ARMOR, dyedArmorForEmeralds)));
-
-                        if (listing instanceof VillagerTrades.ItemsAndEmeraldsToItems itemsAndEmeraldsToItems)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.ITEMS_AND_EMERALDS_TO_ITEMS, itemsAndEmeraldsToItems)));
-
-                        if (listing instanceof VillagerTrades.EmeraldsForVillagerTypeItem emeraldsForVillagerTypeItem)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.EMERALDS_FOR_VILLAGER_TYPE, emeraldsForVillagerTypeItem)));
-
-                        if (listing instanceof VillagerTrades.TypeSpecificTrade typeSpecificTrade)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TYPE_SPECIFIC, typeSpecificTrade)));
-
-                        //? neoforge {
-                        /^if (listing instanceof BasicItemListing basicItemListing)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(NEOFORGE_BASIC, basicItemListing)));
-                        ^///?}
-                    });
-                });
-
-            });
-
-        });
-        *///?} else {
         ItemView.addServerRecipeProvider(recipeList -> {
             HolderLookup.RegistryLookup<VillagerProfession> villagerProfessionRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_PROFESSION);
             HolderLookup.RegistryLookup<TradeSet> tradeSetRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.TRADE_SET);
@@ -458,7 +373,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             });
 
         });
-        //?}
 
         ItemView.addServerRecipeProvider(BuiltInReliableRecipeViewerIntegration::addRepairRecipes);
     }

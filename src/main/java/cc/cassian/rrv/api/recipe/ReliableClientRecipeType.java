@@ -2,7 +2,7 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -120,8 +120,8 @@ public interface ReliableClientRecipeType {
      * @param mouseY       The current y-position of the mouse
      * @param partialTicks partialTicks
      */
-    default void renderIcon(RecipeViewScreen screen, int x, int y, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        guiGraphics.renderFakeItem(this.getIcon(), x, y);
+    default void renderIcon(RecipeViewScreen screen, int x, int y, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        guiGraphics.fakeItem(this.getIcon(), x, y);
     }
 
     /**

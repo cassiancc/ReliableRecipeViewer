@@ -38,30 +38,16 @@ public class RrvUtil {
     }
 
     public static boolean hasPermission(Player sender) {
-        //? if <1.21.11 {
-        /*return sender.hasPermissions(2);
-        *///?} else {
         return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
-        //?}
     }
 
     public static boolean hasPermission(CommandSourceStack sender) {
-        //? if <1.21.11 {
-        /*return sender.hasPermission(2);
-        *///?} else {
         return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
-         //?}
     }
 
-    //? >26 {
 	public static ItemStack decodeTemplate(ItemStackTemplate template) {
 		return new ItemStack(template.item(), template.count(), template.components());
 	}
-    //?}
-
-    public static ItemStack decodeTemplate(ItemStack template) {
-        return template;
-    }
 
     public static SlotContent readSlotContent(String key, String type, Identifier identifier, JsonObject parsedRecipe) {
         JsonElement keyElement = parsedRecipe.get(key);

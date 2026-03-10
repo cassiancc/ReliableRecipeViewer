@@ -6,6 +6,7 @@ import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
@@ -14,13 +15,13 @@ public class ShapelessServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<ShapelessServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("shapeless_crafting"),
-            () -> new ShapelessServerRecipe(List.of(), ItemStack.EMPTY)
+            () -> new ShapelessServerRecipe(List.of(), null)
     );
 
     private List<Ingredient> ingredients;
-    private ItemStack result;
+    private ItemStackTemplate result;
 
-    public ShapelessServerRecipe(List<Ingredient> ingredients, ItemStack result) {
+    public ShapelessServerRecipe(List<Ingredient> ingredients, ItemStackTemplate result) {
         this.ingredients = ingredients;
         this.result = result;
     }
@@ -30,7 +31,7 @@ public class ShapelessServerRecipe implements ReliableServerRecipe {
         return this.ingredients;
     }
 
-    public ItemStack getResult() {
+    public ItemStackTemplate getResult() {
         return this.result;
     }
 
@@ -46,7 +47,7 @@ public class ShapelessServerRecipe implements ReliableServerRecipe {
     public void loadFromTag(CompoundTag tag) {
 
         this.ingredients = TagUtil.readList(tag, "ingredients", TagUtil::readIngredient);
-        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.result = TagUtil.decodeItemStackTemplateOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
 
     }
 

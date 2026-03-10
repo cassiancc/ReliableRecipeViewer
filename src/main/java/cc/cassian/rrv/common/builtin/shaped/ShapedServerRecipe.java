@@ -6,6 +6,7 @@ import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.HashMap;
@@ -14,15 +15,15 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<ShapedServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("shaped_crafting"),
-            () -> new ShapedServerRecipe(0, 0, new HashMap<>(), ItemStack.EMPTY)
+            () -> new ShapedServerRecipe(0, 0, new HashMap<>(), null)
     );
 
 
     private HashMap<Integer, Ingredient> ingredients;
-    private ItemStack result;
+    private ItemStackTemplate result;
     private int width, height;
 
-    public ShapedServerRecipe(int width, int height, HashMap<Integer, Ingredient> ingredients, ItemStack result) {
+    public ShapedServerRecipe(int width, int height, HashMap<Integer, Ingredient> ingredients, ItemStackTemplate result) {
         this.ingredients = ingredients;
         this.result = result;
         this.width = width;
@@ -41,7 +42,7 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
         return this.ingredients;
     }
 
-    public ItemStack getResult() {
+    public ItemStackTemplate getResult() {
         return this.result;
     }
 
@@ -74,7 +75,7 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
         });
 
         this.ingredients = ingredients;
-        this.result = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.result = TagUtil.decodeItemStackTemplateOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
     }
 
     @Override

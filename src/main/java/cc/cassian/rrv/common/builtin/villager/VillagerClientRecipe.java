@@ -9,7 +9,7 @@ import cc.cassian.rrv.common.rendering.RrvGuiRenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -125,7 +125,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
         Font font = Minecraft.getInstance().font;
 
@@ -139,7 +139,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(0, -(font.lineHeight) * scale);
         guiGraphics.pose().scale(scale, scale);
-        guiGraphics.drawString(font, professionComp, 0, 0, -1, false);
+        guiGraphics.text(font, professionComp, 0, 0, -1, false);
         guiGraphics.pose().popMatrix();
 
         if (this.villagerLookLeft != this.prevVillagerLookLeft && this.currentTick - this.lastHeadChange <= 0.25F * 20) {
@@ -161,7 +161,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
     }
 
 
-    private void renderVillager(GuiGraphics guiGraphics, RecipePosition recipePosition, int mouseX, int mouseY, float partialTicks) {
+    private void renderVillager(GuiGraphicsExtractor guiGraphics, RecipePosition recipePosition, int mouseX, int mouseY, float partialTicks) {
 
         if (this.previewVillager == null)
             return;

@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.rendering;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -13,7 +13,7 @@ public class RrvGuiRenderHelper {
 
 
 
-    public static void renderEntityOnScreen(GuiGraphics guiGraphics, LivingEntity livingEntity, int x0, int y0, int x1, int y1, float scale, Vector3f translation, Quaternionf rotation, Quaternionf cameraAngleOverride) {
+    public static void renderEntityOnScreen(GuiGraphicsExtractor guiGraphics, LivingEntity livingEntity, int x0, int y0, int x1, int y1, float scale, Vector3f translation, Quaternionf rotation, Quaternionf cameraAngleOverride) {
 
         EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         EntityRenderer<LivingEntity, EntityRenderState> entityRenderer = (EntityRenderer<LivingEntity, EntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
@@ -24,7 +24,7 @@ public class RrvGuiRenderHelper {
         wrappedState.rrv$enableMultiRendering();
 
         entityRenderState.lightCoords = 15728880;
-        guiGraphics.submitEntityRenderState(entityRenderState, scale, translation, rotation, cameraAngleOverride, x0, y0, x1, y1);
+        guiGraphics.entity(entityRenderState, scale, translation, rotation, cameraAngleOverride, x0, y0, x1, y1);
     }
 
 }

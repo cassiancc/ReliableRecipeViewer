@@ -6,7 +6,7 @@ import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.ItemStack;
 
@@ -116,7 +116,7 @@ public interface ReliableClientRecipe {
      * @param mouseY       The current y-position of the mouse <b>relative to the position of the rendered recipe</b>
      * @param partialTicks partialTicks
      */
-    default void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    default void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
     }
 

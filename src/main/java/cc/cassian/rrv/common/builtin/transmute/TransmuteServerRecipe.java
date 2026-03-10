@@ -6,6 +6,7 @@ import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
@@ -20,14 +21,14 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
 
     private Ingredient input;
     private Ingredient material;
-    private List<ItemStack> results;
+    private List<ItemStackTemplate> results;
     private int dependentIndex;
 
-    public TransmuteServerRecipe(Ingredient input, Ingredient material, List<ItemStack> results) {
+    public TransmuteServerRecipe(Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
         this(input, material, results, -1);
     }
 
-    public TransmuteServerRecipe(Ingredient input, Ingredient material, List<ItemStack> results, int dependentIndex) {
+    public TransmuteServerRecipe(Ingredient input, Ingredient material, List<ItemStackTemplate> results, int dependentIndex) {
         this.input = input;
         this.material = material;
         this.results = results;
@@ -42,7 +43,7 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
         return this.material;
     }
 
-    public List<ItemStack> getResults() {
+    public List<ItemStackTemplate> getResults() {
         return this.results;
     }
 
@@ -68,7 +69,7 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
         this.input = TagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
         this.material = TagUtil.readIngredient(tag.getCompound("materials").orElseGet(CompoundTag::new));
 
-        this.results = TagUtil.readList(tag, "results", TagUtil::decodeItemStackOnClient);
+        this.results = TagUtil.readList(tag, "results", TagUtil::decodeItemStackTemplateOnClient);
         this.dependentIndex = tag.getIntOr("dependent_index", -1);
     }
 

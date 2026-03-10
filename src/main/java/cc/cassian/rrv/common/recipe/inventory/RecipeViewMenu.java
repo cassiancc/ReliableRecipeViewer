@@ -9,7 +9,7 @@ import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -881,12 +881,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         /**
          * Render method for rendering an optional slot
          *
-         * @param guiGraphics  GuiGraphics
+         * @param guiGraphics  GuiGraphicsExtractor
          * @param mouseX       current mouse position on x-direction (relative to the viewRecipe)
          * @param mouseY       current mouse position on y-direction (relative to the viewRecipe)
          * @param partialTicks partialTicks
          */
-        void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks);
+        void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);
 
     }
 

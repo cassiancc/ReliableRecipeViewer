@@ -17,6 +17,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -208,6 +209,11 @@ public class SlotContent {
     public static SlotContent of(List<ItemStack> stacks) {
         if (stacks == null) return SlotContent.of();
         return new SlotContent(stacks);
+    }
+
+    public static SlotContent ofTemplates(List<ItemStackTemplate> stacks) {
+        if (stacks == null) return SlotContent.of();
+        return new SlotContent(stacks.stream().map(ItemStackTemplate::create).toList());
     }
 
     public static SlotContent of(TagKey<Item> itemTag) {

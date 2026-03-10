@@ -2,7 +2,7 @@ package cc.cassian.rrv.common.mixin.client.gui.screens;
 
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,12 +18,12 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
 
     @Shadow protected Font font;
 
-    @Inject(method = "render", at = @At("RETURN"))
-    private void renderRecipeProgress(GuiGraphics guiGraphics, int i, int j, float f, CallbackInfo ci){
+    @Inject(method = "extractRenderState", at = @At("RETURN"))
+    private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics, int i, int j, float f, CallbackInfo ci){
         String statusMsg = ClientRecipeManager.INSTANCE.status().get();
 
         if(!ClientRecipeManager.INSTANCE.status().isIdle()) {
-			guiGraphics.drawString(this.font, statusMsg, guiGraphics.guiWidth() - this.font.width(statusMsg) - 2, 2, -1);
+			guiGraphics.text(this.font, statusMsg, guiGraphics.guiWidth() - this.font.width(statusMsg) - 2, 2, -1);
 		}
     }
 }

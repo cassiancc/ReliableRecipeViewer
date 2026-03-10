@@ -10,7 +10,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.item.ItemStack;
@@ -38,11 +38,11 @@ public class PolydexClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		tryOpen(openType, origin);
 		tickCount++;
 		if (tickCount >= 20) {
-			guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of("Polydex has no recipes for this entry."), 20, 20, 160, -16777216, false);
+			guiGraphics.textWithWordWrap(Minecraft.getInstance().font, FormattedText.of("Polydex has no recipes for this entry."), 20, 20, 160, -16777216, false);
 		}
 	}
 

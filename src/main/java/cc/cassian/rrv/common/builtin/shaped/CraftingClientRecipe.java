@@ -8,7 +8,7 @@ import cc.cassian.rrv.common.builtin.transmute.TransmuteServerRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -105,7 +105,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.ingredients.put(1, SlotContent.of(transmuteRecipe.getMaterial()));
 		this.dependentIndex = transmuteRecipe.getDependentIndex();
 
-        this.result = SlotContent.of(transmuteRecipe.getResults());
+        this.result = SlotContent.ofTemplates(transmuteRecipe.getResults());
     }
 
     @Override
@@ -123,7 +123,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
 	}
 
     @Override
-    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         ReliableClientRecipe.super.renderRecipe(screen, recipePosition, guiGraphics, mouseX, mouseY, partialTicks);
         if (shapeless) {
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath("rrv", "crafting_shapeless"), 26, 14, 0, 0, 92, 0, 26, 14);

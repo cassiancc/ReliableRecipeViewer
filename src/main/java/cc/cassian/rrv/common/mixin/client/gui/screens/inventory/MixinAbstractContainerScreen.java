@@ -12,7 +12,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -92,13 +92,13 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
     }
 
 
-    @Inject(method = "renderBackground", at = @At("HEAD"))
-    private void injectOverlayBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    @Inject(method = "extractContents", at = @At("HEAD"))
+    private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
-    @Inject(method = "renderContents", at = @At("TAIL"))
-    private void injectOverlay$1(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    @Inject(method = "extractContents", at = @At("TAIL"))
+    private void injectOverlay$1(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (minecraft == null) return;
 
 
@@ -186,14 +186,14 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
 
     //Optional Slots
 
-    @Inject(method = "renderSlotHighlightBack", at = @At("HEAD"), cancellable = true)
-    private void preventFromRender$0(GuiGraphics guiGraphics, CallbackInfo ci) {
+    @Inject(method = "extractSlotHighlightBack", at = @At("HEAD"), cancellable = true)
+    private void preventFromRender$0(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
         if (this.hoveredSlot != null && !this.hoveredSlot.hasItem() && ((AbstractContainerScreen) (Object) this) instanceof RecipeViewScreen viewScreen && viewScreen.getMenu().isOptionalSlot(this.hoveredSlot.index))
             ci.cancel();
     }
 
-    @Inject(method = "renderSlotHighlightFront", at = @At("HEAD"), cancellable = true)
-    private void preventFromRender$1(GuiGraphics guiGraphics, CallbackInfo ci) {
+    @Inject(method = "extractSlotHighlightFront", at = @At("HEAD"), cancellable = true)
+    private void preventFromRender$1(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
         if (this.hoveredSlot != null && !this.hoveredSlot.hasItem() && ((AbstractContainerScreen) (Object) this) instanceof RecipeViewScreen viewScreen && viewScreen.getMenu().isOptionalSlot(this.hoveredSlot.index))
             ci.cancel();
     }

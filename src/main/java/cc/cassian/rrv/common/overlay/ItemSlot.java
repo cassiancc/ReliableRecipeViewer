@@ -8,7 +8,7 @@ import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPa
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -58,7 +58,7 @@ public class ItemSlot {
     /**
      * Renders the slot
      */
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.hovered = this.isMouseOver(mouseX, mouseY);
 
         if (!this.isHovered() && this.currentCheatmodeCount > 1)
@@ -80,7 +80,7 @@ public class ItemSlot {
             guiGraphics.fill(this.x, this.y, this.x + 20, this.y + 20, new Color(255, 255, 255, 32).getRGB());
 
         }
-        guiGraphics.renderFakeItem(this.stack, this.x + 2, this.y + 2);
+        guiGraphics.fakeItem(this.stack, this.x + 2, this.y + 2);
 
 
         if (this.isHovered())

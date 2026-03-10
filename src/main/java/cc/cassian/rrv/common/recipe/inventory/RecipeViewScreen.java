@@ -14,7 +14,7 @@ import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
@@ -282,19 +282,19 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.page, (this.imageWidth - font.width(this.page)) / 2, this.imageHeight - 12, -12566464, false);
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.text(this.font, this.page, (this.imageWidth - font.width(this.page)) / 2, this.imageHeight - 12, -12566464, false);
         if (isHoveringOverTitle(mouseX, mouseY)) {
-            guiGraphics.drawString(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -5606651, false); // colored title
+            guiGraphics.text(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -5606651, false); // colored title
         } else {
-            guiGraphics.drawString(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -12566464, false); // normal title
+            guiGraphics.text(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -12566464, false); // normal title
         }
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+//        this.renderTooltip(guiGraphics, mouseX, mouseY);
         if (isHoveringOverTitle(mouseX, mouseY)) {
             guiGraphics.setComponentTooltipForNextFrame(this.font, List.of(this.guiTitle, Component.translatable("rrv.all_recipes_hint")), mouseX, mouseY);
         }
@@ -440,7 +440,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
 
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight - 3, 256, 256);
@@ -459,7 +459,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
 
         for (int i = this.viewTypePage * 5; i < this.viewTypePage * 5 + 5 && this.viewTypeButtons.size() > i; i++) {
-            this.viewTypeButtons.get(i).render(guiGraphics, mouseX, mouseY, partialTicks);
+            this.viewTypeButtons.get(i).extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         }
 
 
@@ -491,7 +491,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             this.getMenu().slots.stream().filter(slot -> this.getMenu().isOptionalSlot(slot.index) && slot.hasItem()).forEach(slot -> {
                 guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(slot.x - (guiLeft - this.leftPos) - 1, slot.y - (guiTop - this.topPos) - 1);
-                this.getMenu().getOptionalSlotRenderer(slot.index).render(guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
+                this.getMenu().getOptionalSlotRenderer(slot.index).extractRenderState(guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
                 guiGraphics.pose().popMatrix();
             });
             this.renderInvalidSlots(guiGraphics, i);
@@ -502,7 +502,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
 
-    private void renderInvalidSlots(GuiGraphics guiGraphics, int displayId) {
+    private void renderInvalidSlots(GuiGraphicsExtractor guiGraphics, int displayId) {
         Button button = this.transferButtons.get(displayId);
         if (!button.isHovered())
             return;
@@ -546,7 +546,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             return true;
         }
 
-        private void onHover(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        private void onHover(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
             if (!(mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height))
                 return;
 
@@ -558,7 +558,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
         }
 
-        private void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        private void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.viewType() == this.viewScreen.getMenu().getClientRecipeType() ? 24 : 0, 24, 24, 256, 256);
             this.viewType().renderIcon(this.viewScreen(), this.x()+4, this.y+4, guiGraphics, mouseX, mouseY, partialTicks);
 
