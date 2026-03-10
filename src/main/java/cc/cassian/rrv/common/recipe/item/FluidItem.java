@@ -11,7 +11,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.function.Consumer;
 
@@ -57,7 +57,7 @@ public class FluidItem extends BlockItem {
         }
 
         @Override
-        public @NotNull Identifier effectiveModel() {
+        public Identifier effectiveModel() {
             return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem");
         }
 

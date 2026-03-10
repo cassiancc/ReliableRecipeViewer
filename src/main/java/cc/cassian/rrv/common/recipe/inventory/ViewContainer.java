@@ -5,7 +5,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+
 
 public class ViewContainer implements Container {
 
@@ -28,17 +28,17 @@ public class ViewContainer implements Container {
     }
 
     @Override
-    public @NotNull ItemStack getItem(int slot) {
+    public ItemStack getItem(int slot) {
         return this.items.get(slot);
     }
 
     @Override
-    public @NotNull ItemStack removeItem(int slot, int amount) {
+    public ItemStack removeItem(int slot, int amount) {
         return ContainerHelper.takeItem(this.items, 0);
     }
 
     @Override
-    public @NotNull ItemStack removeItemNoUpdate(int slot) {
+    public ItemStack removeItemNoUpdate(int slot) {
         return ContainerHelper.takeItem(this.items, 0);
     }
 

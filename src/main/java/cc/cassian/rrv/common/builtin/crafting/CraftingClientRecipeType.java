@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.builtin.shaped;
+package cc.cassian.rrv.common.builtin.crafting;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;

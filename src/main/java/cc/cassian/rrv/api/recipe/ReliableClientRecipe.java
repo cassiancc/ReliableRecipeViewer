@@ -3,7 +3,7 @@ package cc.cassian.rrv.api.recipe;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
-import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipeType;
+import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

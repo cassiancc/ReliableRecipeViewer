@@ -7,7 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
+
 
 public record ClientboundTypeUpdateStartPayload(ReliableServerRecipeType<?> recipeType, int amount) implements CustomPacketPayload {
 
@@ -22,7 +22,7 @@ public record ClientboundTypeUpdateStartPayload(ReliableServerRecipeType<?> reci
     public static final Type<ClientboundTypeUpdateStartPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "type_start"));
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

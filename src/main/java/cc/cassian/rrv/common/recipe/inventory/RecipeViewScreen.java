@@ -34,7 +34,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -302,7 +302,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
 
     @Override
-    protected @NotNull List<Component> getTooltipFromContainerItem(ItemStack itemStack) {
+    protected List<Component> getTooltipFromContainerItem(ItemStack itemStack) {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
         CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();

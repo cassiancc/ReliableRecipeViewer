@@ -20,9 +20,9 @@ import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
-import cc.cassian.rrv.common.builtin.shaped.CraftingClientRecipe;
-import cc.cassian.rrv.common.builtin.shaped.ShapedServerRecipe;
-import cc.cassian.rrv.common.builtin.shapeless.ShapelessServerRecipe;
+import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.ShapedServerRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingClientRecipe;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingServerRecipe;
 import cc.cassian.rrv.common.builtin.smithing.SmithingClientRecipe;
@@ -33,37 +33,24 @@ import cc.cassian.rrv.common.builtin.stonecutting.StonecutterClientRecipe;
 import cc.cassian.rrv.common.builtin.stonecutting.StonecutterServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
-import cc.cassian.rrv.common.builtin.tipped_arrow.TippedArrowServerRecipe;
-import cc.cassian.rrv.common.builtin.transmute.TransmuteServerRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.TippedArrowServerRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.TransmuteServerRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
-import com.google.gson.JsonObject;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.StrictJsonParser;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.block.*;
 //? neoforge
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
-import java.io.IOException;
 import java.util.*;
 
-import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 import static cc.cassian.rrv.common.recipe.ResourceRecipeManager.*;
 
 public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {

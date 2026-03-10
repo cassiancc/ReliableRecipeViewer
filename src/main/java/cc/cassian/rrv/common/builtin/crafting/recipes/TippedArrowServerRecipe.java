@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.builtin.tipped_arrow;
+package cc.cassian.rrv.common.builtin.crafting.recipes;
 
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;

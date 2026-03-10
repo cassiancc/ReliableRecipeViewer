@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class PolydexClientRecipeType implements ReliableClientRecipeType {
 	public static final PolydexClientRecipeType INSTANCE = new PolydexClientRecipeType();

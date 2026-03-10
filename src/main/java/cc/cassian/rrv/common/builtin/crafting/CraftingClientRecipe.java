@@ -1,10 +1,11 @@
-package cc.cassian.rrv.common.builtin.shaped;
+package cc.cassian.rrv.common.builtin.crafting;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
-import cc.cassian.rrv.common.builtin.shapeless.ShapelessServerRecipe;
-import cc.cassian.rrv.common.builtin.tipped_arrow.TippedArrowServerRecipe;
-import cc.cassian.rrv.common.builtin.transmute.TransmuteServerRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.ShapedServerRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.TippedArrowServerRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.TransmuteServerRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
