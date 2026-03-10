@@ -20,6 +20,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -58,7 +59,7 @@ public class ItemFilters {
                 firstPrio.add(stack);
             else if (itemName.contains(query.toLowerCase()))
                 secondPrio.add(stack);
-            else if (stack.is(Items.ENCHANTED_BOOK)) {
+            else if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
 
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
                 if (compCheck == 1)

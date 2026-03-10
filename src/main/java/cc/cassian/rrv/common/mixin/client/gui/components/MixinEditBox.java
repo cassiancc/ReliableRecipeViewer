@@ -24,10 +24,15 @@ public abstract class MixinEditBox extends AbstractWidget {
 
     @WrapOperation(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"))
     private void renderFilterMode(GuiGraphics instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height, Operation<Void> original) {
-        if (((EditBox) (Object) this) instanceof SearchBar && ItemViewOverlay.INSTANCE.isItemFilterMode()) {
-            instance.blitSprite(pipeline, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "widget/searchbar_filtermode"), x, y, width, height);
-        } else
-            original.call(instance, pipeline, sprite, x, y, width, height);
+        if (((EditBox) (Object) this) instanceof SearchBar) {
+            if (ItemViewOverlay.INSTANCE.isItemFilterMode()) {
+                sprite = ReliableRecipeViewer.of("widget/searchbar_filtermode");
+            }
+            else if (ItemViewOverlay.INSTANCE.availableItems().isEmpty()) {
+                sprite = ReliableRecipeViewer.of( "widget/searchbar_no_results");
+            }
+        }
+        original.call(instance, pipeline, sprite, x, y, width, height);
     }
 
 }
