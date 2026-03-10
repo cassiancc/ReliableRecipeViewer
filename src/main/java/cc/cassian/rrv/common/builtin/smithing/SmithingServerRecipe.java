@@ -10,13 +10,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Ingredient;
-//? if >26 {
 import net.minecraft.world.item.ItemStackTemplate;
-//?} else {
-/*import net.minecraft.world.item.crafting.TransmuteResult;
-*///?}
 import net.minecraft.world.item.equipment.trim.TrimPattern;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class SmithingServerRecipe implements ReliableServerRecipe {
 
@@ -28,26 +24,14 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
     private boolean isTrim;
     private Ingredient base, template, addition;
     private TrimPattern pattern;
-
-    //? if >26 {
     private ItemStackTemplate upgradeResult;
-    //?} else {
-    /*private TransmuteResult upgradeResult;
-    *///?}
 
 
-    public SmithingServerRecipe(boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable
-    //? if >26 {
-    ItemStackTemplate
-    //?} else {
-    /*TransmuteResult
-    *///?}
-                                upgradeResult) {
+    public SmithingServerRecipe(boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable ItemStackTemplate upgradeResult) {
         this.isTrim = isTrim;
         this.base = base;
         this.template = template;
         this.addition = addition;
-
         this.pattern = pattern;
         this.upgradeResult = upgradeResult;
     }
@@ -73,13 +57,7 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
     }
 
     @Nullable
-    public
-    //? if >26 {
-    ItemStackTemplate
-    //?} else {
-    /*TransmuteResult
-     *///?}
-    getUpgradeResult() {
+    public ItemStackTemplate getUpgradeResult() {
         return this.upgradeResult;
     }
 
@@ -95,11 +73,7 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
             tag.put("pattern", TrimPattern.DIRECT_CODEC.encode(this.pattern, NbtOps.INSTANCE, new CompoundTag()).getOrThrow());
 
         if(this.upgradeResult != null) {
-            //? if >26 {
             tag.put("upgradeResult", ItemStackTemplate.CODEC.encode(this.upgradeResult, ServerRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).getOrThrow());
-            //?} else {
-            /*tag.put("upgradeResult", TransmuteResult.CODEC.encode(this.upgradeResult, NbtOps.INSTANCE, new CompoundTag()).getOrThrow());
-             *///?}
 		}
     }
 
@@ -112,12 +86,7 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
         this.addition = TagUtil.readIngredient(tag.getCompound("addition").orElseGet(CompoundTag::new));
 
         this.pattern = TrimPattern.DIRECT_CODEC.decode(NbtOps.INSTANCE, tag.getCompound("pattern").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
-
-        //? if >26 {
         this.upgradeResult = ItemStackTemplate.CODEC.decode(ClientRecipeManager.INSTANCE.createSerializationContext(), tag.getCompound("upgradeResult").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
-        //?} else {
-        /*this.upgradeResult = TransmuteResult.CODEC.decode(NbtOps.INSTANCE, tag.getCompound("upgradeResult").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
-         *///?}
     }
 
     @Override

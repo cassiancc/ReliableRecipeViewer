@@ -1,9 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
-//? if >26 {
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-//?}
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -55,10 +53,6 @@ public class SlotContent {
 
     public void setType(ActionType type) {
         this.type = type;
-    }
-
-    public void setType(Type type) {
-        this.type = ActionType.of(type);
     }
 
     public ActionType getType() {
@@ -199,12 +193,10 @@ public class SlotContent {
         return new SlotContent(List.of(stack));
     }
 
-    //? >26 {
-    public static SlotContent of(net.minecraft.world.item.ItemStackTemplate stack) {
+    public static SlotContent of(ItemStackTemplate stack) {
         if (stack == null) return SlotContent.of();
         return new SlotContent(List.of(RrvUtil.decodeTemplate(stack)));
     }
-    //?}
 
     public static SlotContent of(List<ItemStack> stacks) {
         if (stacks == null) return SlotContent.of();
@@ -244,29 +236,6 @@ public class SlotContent {
 
     public static Optional<HolderSet.Named<Item>> getItemsFromTag(TagKey<Item> tag) {
         return BuiltInRegistries.ITEM.get(tag);
-    }
-
-    /**
-	 * Standardized across codebase as {@link ActionType}.
-	 */
-    @SuppressWarnings("all")
-    @Deprecated(since = "6.4.0", forRemoval = true)
-    public enum Type {
-        /**
-		 * Moved to {@link ActionType#INPUT}.
-		 */
-        @Deprecated(since = "6.4.0", forRemoval = true)
-        INGREDIENT,
-        /**
-		 * Moved to {@link ActionType#RESULT}.
-		 */
-        @Deprecated(since = "6.4.0", forRemoval = true)
-        RESULT,
-        /**
-		 * Moved to {@link ActionType#ANY}.
-		 */
-        @Deprecated(since = "6.4.0", forRemoval = true)
-        ANY
     }
 
 }

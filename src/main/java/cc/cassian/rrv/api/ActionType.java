@@ -32,15 +32,6 @@ public enum ActionType implements StringRepresentable {
 		return ActionType.INPUT;
 	}
 
-	@SuppressWarnings("all")
-	public static ActionType of(SlotContent.Type type) {
-		return switch (type) {
-			case INGREDIENT -> INPUT;
-			case RESULT -> RESULT;
-			case ANY -> ANY;
-		};
-	}
-
 	@Override
 	public String getSerializedName() {
 		return this.name().toLowerCase();

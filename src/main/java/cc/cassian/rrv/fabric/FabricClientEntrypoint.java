@@ -9,13 +9,10 @@ import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.fabricmc.api.ClientModInitializer;
-//? >26 {
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
-//?} else {
-/*import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import cc.cassian.rrv.common.integration.polymer.client.PolydexClientIntegration;
+//? <26 {
+/*import cc.cassian.rrv.common.integration.polymer.client.PolydexClientIntegration;
 *///?}
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -38,13 +35,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
         FabricLoader.getInstance().invokeEntrypoints("rrv_client", ReliableRecipeViewerClientPlugin.class, ReliableRecipeViewerClientPlugin::onIntegrationInitialize);
 
-        //? >26 {
         ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyMappingHelper::registerKeyMapping);
         ModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
-        //?} else {
-        /*ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyBindingHelper::registerKeyBinding);
-        EntityModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
-        *///?}
 
         Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewer.RECIPE_VIEW_MENU);
         MenuScreens.register(ReliableRecipeViewer.RECIPE_VIEW_MENU, RecipeViewScreen::new);

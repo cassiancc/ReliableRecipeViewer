@@ -17,9 +17,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-//? >26 {
 import net.minecraft.world.item.ItemStackTemplate;
-//?}
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;

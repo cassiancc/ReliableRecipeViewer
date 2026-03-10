@@ -22,13 +22,7 @@ import org.jspecify.annotations.Nullable;
 import java.awt.*;
 import java.util.function.Consumer;
 
-//? if >1.21.10 {
 import static net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent;
-//?} else {
-/*import static net.minecraft.client.renderer.rendertype.RenderType.entityTranslucent;
-import java.util.Set;
-import org.joml.Vector3f;
-*///?}
 
 /**
  * A special renderer used for rendering the fluid-item in the world

@@ -35,8 +35,7 @@ public abstract class MixinEffectsInInventory {
     @Final
     private AbstractContainerScreen<?> screen;
 
-    //? if >1.21.10 {
-    @Inject(method = "renderEffects", at = @At("HEAD"))
+    @Inject(method = "extractEffects", at = @At("HEAD"))
     private void injectBlocking$0(GuiGraphicsExtractor guiGraphics, final Collection<MobEffectInstance> activeEffects, final int x0, final int yStep, final int mouseX, final int mouseY, final int maxWidth, CallbackInfo ci){
 
         List<Identifier> effectsToRemove = new ArrayList<>();
@@ -55,7 +54,7 @@ public abstract class MixinEffectsInInventory {
         OverlayManager.INSTANCE.removeGuiBlocking(effectsToRemove::contains, !effectsToRemove.isEmpty());
     }
 
-    @Inject(method = "renderBackground", at = @At("RETURN"))
+    @Inject(method = "extractBackground", at = @At("RETURN"))
     private void injectBlocking$1(final GuiGraphicsExtractor graphics, final Font font, final Component effectName, final Component duration, final int x0, final int y0, final boolean isAmbient, final int maxTextureWidth, CallbackInfoReturnable<Integer> cir){
 
         if (effectName.getContents() instanceof TranslatableContents translatableContents) {
@@ -66,48 +65,6 @@ public abstract class MixinEffectsInInventory {
 
 
     }
-    //?} else {
-    /*@Inject(method = "renderEffects", at = @At("HEAD"))
-    private void injectBlocking$0(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci){
-
-        List<Identifier> effectsToRemove = new ArrayList<>();
-        for(BlockingGuiComponent guiBlock : OverlayManager.INSTANCE.allGuiBlockings()){
-
-            if(!guiBlock.id().getPath().startsWith("mobeffect_"))
-                continue;
-
-            String descriptionId = guiBlock.id().getPath().split("mobeffect_")[1];
-
-            if(this.minecraft.player.getActiveEffects().stream().noneMatch(mobEffectInstance -> mobEffectInstance.getDescriptionId().equals(descriptionId)))
-                effectsToRemove.add(guiBlock.id());
-
-        }
-
-        OverlayManager.INSTANCE.removeGuiBlocking(effectsToRemove::contains, !effectsToRemove.isEmpty());
-    }
-    @Inject(method = "renderBackgrounds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"))
-    private void injectBlocking$1(GuiGraphicsExtractor guiGraphics, int x, int y, Iterable<MobEffectInstance> iterable, boolean large, CallbackInfo ci){
-
-        int k = OverlayManager.INSTANCE.currentInfo().topPos();
-
-        for (MobEffectInstance mobEffectInstance : iterable) {
-            if (large) {
-                OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                        Identifier.withDefaultNamespace("mobeffect_" + mobEffectInstance.getDescriptionId()), x, k, 120, 32
-                ));
-
-            } else {
-                OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                        Identifier.withDefaultNamespace("mobeffect_" + mobEffectInstance.getDescriptionId()), x, k, 32, 32
-                ));
-
-            }
-            k += y;
-        }
-
-
-    }
-    *///?}
 
 
 

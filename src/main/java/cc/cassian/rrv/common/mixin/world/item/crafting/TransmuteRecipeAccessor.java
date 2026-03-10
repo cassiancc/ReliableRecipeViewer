@@ -21,13 +21,8 @@ public interface TransmuteRecipeAccessor {
     @Accessor("material")
     Ingredient getMaterial();
 
-    //? if >26 {
     @Accessor("result")
     ItemStackTemplate getResult();
-    //?} else {
-    /*@Accessor("result")
-    TransmuteResult getResult();
-    *///?}
 
 
 }
