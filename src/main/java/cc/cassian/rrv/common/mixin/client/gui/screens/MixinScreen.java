@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.screens.Screen;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinScreen extends AbstractContainerEventHandler implements Renderable {
 
 
-    @Shadow protected Font font;
+    @Final
+	@Shadow protected Font font;
 
     @Inject(method = "extractRenderState", at = @At("RETURN"))
     private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics, int i, int j, float f, CallbackInfo ci){

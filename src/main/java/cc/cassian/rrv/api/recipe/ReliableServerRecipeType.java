@@ -35,19 +35,19 @@ public interface ReliableServerRecipeType<T extends ReliableServerRecipe> {
      */
     static <S extends ReliableServerRecipe> ReliableServerRecipeType<S> register(Identifier id, EmptyRecipeConstructor<S> emptyRecipeConstructor) {
 
-        ReliableServerRecipeType<S> type = new ReliableServerRecipeType<S>() {
-            @Override
-            public Identifier getId() {
-                return id;
-            }
+        ReliableServerRecipeType<S> type = new ReliableServerRecipeType<>() {
+			@Override
+			public Identifier getId() {
+				return id;
+			}
 
-            @Override
-            public EmptyRecipeConstructor<S> getEmptyConstructor() {
-                return emptyRecipeConstructor;
-            }
+			@Override
+			public EmptyRecipeConstructor<S> getEmptyConstructor() {
+				return emptyRecipeConstructor;
+			}
 
 
-        };
+		};
         RRV_RECIPE_TYPES.put(id, type);
         return type;
     }

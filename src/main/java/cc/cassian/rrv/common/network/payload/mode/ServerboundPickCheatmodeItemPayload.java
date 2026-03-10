@@ -8,6 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NullMarked;
 
 
 public record ServerboundPickCheatmodeItemPayload(ItemStack stack, int amount) implements CustomPacketPayload {
@@ -25,7 +26,7 @@ public record ServerboundPickCheatmodeItemPayload(ItemStack stack, int amount) i
 
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public @NullMarked Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

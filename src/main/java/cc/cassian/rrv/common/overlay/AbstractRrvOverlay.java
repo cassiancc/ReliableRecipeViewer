@@ -282,6 +282,6 @@ public abstract class AbstractRrvOverlay {
 
 
     public enum OverlayAlignment {
-        HORIZONTAL, VERTICAL;
+        HORIZONTAL, VERTICAL
     }
 }

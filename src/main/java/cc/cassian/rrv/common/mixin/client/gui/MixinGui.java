@@ -17,7 +17,7 @@ public abstract class MixinGui {
 
     @Shadow public abstract Font getFont();
 
-    @Inject(method = "render", at = @At("RETURN"))
+    @Inject(method = "extractRenderState", at = @At("RETURN"))
     private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         Font font = this.getFont();
         String statusMsg = ClientRecipeManager.INSTANCE.status().get();

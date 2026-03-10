@@ -105,7 +105,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         for (ItemSlot itemSlot : this.itemSlots()) {
             if (itemSlot.isHovered()) {
-                itemSlot.onClicked((int) event.x(), (int) event.y(), event.button());
+                itemSlot.onClicked(event);
                 return true;
             }
         }

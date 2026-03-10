@@ -8,6 +8,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NullMarked;
 
 
 import java.nio.charset.StandardCharsets;
@@ -36,7 +37,7 @@ public record ClientboundCompatPayload(CompoundTag data) implements CustomPacket
 
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public @NullMarked Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

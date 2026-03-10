@@ -10,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -90,7 +91,8 @@ public class ItemSlot {
     /**
      * Called on a mouse click in any inventory
      */
-    public void onClicked(int mouseX, int mouseY, int mouseButton) {
+    public void onClicked(MouseButtonEvent event) {
+        var mouseButton = event.button();
 
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;

@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Main API class used to register RRV compat for other mods
  */
+@SuppressWarnings("unused")
 public class ItemView {
 
     /**

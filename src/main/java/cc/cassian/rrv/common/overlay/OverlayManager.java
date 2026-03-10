@@ -48,7 +48,6 @@ public class OverlayManager {
         this.currentInvInfo = info;
     }
 
-
     public boolean checkForScreenChange(AbstractRrvOverlay.InventoryPositionInfo newInfo) {
         if (newInfo != null && (!newInfo.matches(this.currentInvInfo))) {
             this.setCurrentInvInfo(newInfo);
