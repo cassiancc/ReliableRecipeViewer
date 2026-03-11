@@ -88,7 +88,7 @@ public abstract class AbstractRrvOverlay {
     }
 
     public boolean isEnabled() {
-        return this.enabled && OverlayManager.shouldShowOverlays();
+        return this.enabled;
     }
 
     public boolean isEnoughSpaceToRender() {

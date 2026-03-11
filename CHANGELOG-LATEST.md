@@ -1,3 +1,6 @@
+### Added
+- Side panel visibility can now be individually set rather than always following the Item View.
+
 ### Changed
 - Various recipes have been refactored to return `ItemStackTemplate`s rather than `ItemStack`s.
 
@@ -6,3 +9,4 @@
 
 ### Removed
 - Deprecated `SlotContent.Type` enum, use `ActionType` instead.
+- Support for versions 1.21.8-1.21.11.

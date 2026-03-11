@@ -4,13 +4,13 @@ import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
-import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
 
-	private OverlayDisplay showOverlays = OverlayDisplay.ENABLED;
+	private OverlayDisplay showItemView = OverlayDisplay.ENABLED;
+	private OverlayDisplay showSidePanel = OverlayDisplay.WITH_ITEM_VIEW;
 	private SidePanel sidePanel = SidePanel.DISABLED;
 	private boolean background = true;
 	private boolean itemWrapMode = true;
@@ -65,12 +65,12 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.centerSearch = centerSearch;
 	}
 
-	public OverlayDisplay isShowOverlays() {
-		return showOverlays;
+	public OverlayDisplay isShowItemView() {
+		return showItemView;
 	}
 
-	public void setShowOverlays(OverlayDisplay showOverlays) {
-		this.showOverlays = showOverlays;
+	public void setShowItemView(OverlayDisplay showItemView) {
+		this.showItemView = showItemView;
 	}
 
 	public SidePanel getSidePanel() {
@@ -99,7 +99,8 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	@Override
 	protected void loadData() {
-		this.showOverlays = OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)-> OverlayDisplay.ENABLED);
+		this.showItemView = OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)-> OverlayDisplay.ENABLED);
+		this.showSidePanel = OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanelEnabled")).mapOrElse(Pair::getFirst, (e)-> OverlayDisplay.ENABLED);
 		this.background = this.data().get("background").getAsBoolean();
 		this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
 		this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
@@ -112,7 +113,8 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	@Override
 	protected void saveData() {
-		this.data().add("enabled", OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showOverlays).getOrThrow());
+		this.data().add("enabled", OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showItemView).getOrThrow());
+		this.data().add("sidePanelEnabled", OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showSidePanel).getOrThrow());
 		this.data().addProperty("background", this.background);
 		this.data().addProperty("itemWrapMode", this.itemWrapMode);
 		this.data().addProperty("appendModNamespace", this.appendModNamespace);
@@ -122,5 +124,13 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.data().add("wrapScrolling", WrapScrolling.CODEC.encodeStart(JsonOps.INSTANCE, this.wrapScrolling).getOrThrow());
 		this.data().add("sidePanel", SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
 
+	}
+
+	public OverlayDisplay isShowSidePanel() {
+		return showSidePanel;
+	}
+
+	public void setShowSidePanel(OverlayDisplay showSidePanel) {
+		this.showSidePanel = showSidePanel;
 	}
 }

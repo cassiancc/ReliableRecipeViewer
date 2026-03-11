@@ -17,18 +17,28 @@ import java.util.Arrays;
 public class SearchBar extends EditBox {
 
     private final ItemViewOverlay itemViewOverlay;
+	private ChatFormatting color = ChatFormatting.WHITE;
 
     public SearchBar(Font font, int x, int y, int width, int height, Component message, ItemViewOverlay itemViewOverlay) {
         super(font, x, y, width, height, message);
         this.itemViewOverlay = itemViewOverlay;
         this.addFormatter((text, offset) -> {
+			ChatFormatting style = color;
 			MutableComponent component = Component.empty();
 			for (String s : text.splitWithDelimiters(" ", 0)) {
-				if (s.contains("@")) component.append(Component.literal(s).withStyle(ChatFormatting.GOLD));
-				else if (s.contains("#")) component.append(Component.literal(s).withStyle(ChatFormatting.GREEN));
-				else if (s.contains(":")) component.append(Component.literal(s).withStyle(ChatFormatting.LIGHT_PURPLE));
-				else component.append(s);
+				if (s.contains("@")) {
+					style = ChatFormatting.GOLD;
+				} else if (s.contains("#")) {
+					style = ChatFormatting.GREEN;
+				} else if (s.contains(":")) {
+					style = ChatFormatting.LIGHT_PURPLE;
+				} else if (offset ==0) {
+					style = ChatFormatting.WHITE;
+				}
+				component.append(Component.literal(s).withStyle(style));
 			}
+			if (offset == 0)
+				color = style;
 			return component.getVisualOrderText();
 		});
     }

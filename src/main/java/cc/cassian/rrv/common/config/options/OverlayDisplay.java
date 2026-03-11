@@ -9,7 +9,8 @@ import java.util.Locale;
 public enum OverlayDisplay implements StringRepresentable {
 	ENABLED,
 	DISABLED,
-	WHEN_SEARCHING;
+	WHEN_SEARCHING,
+	WITH_ITEM_VIEW;
 
 	@Override
 	public String getSerializedName() {

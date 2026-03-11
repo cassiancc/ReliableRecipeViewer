@@ -23,10 +23,6 @@ public class OverlayManager {
 
     public static final OverlayManager INSTANCE = new OverlayManager();
 
-	public static boolean shouldShowOverlays() {
-		return Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching());
-	}
-
     private AbstractRrvOverlay.InventoryPositionInfo currentInvInfo = null;
 
     private final List<GuiEventListener> oldWidgets = new ArrayList<>();
@@ -139,11 +135,11 @@ public class OverlayManager {
 
     public static void toggleOverlays() {
         PRESENT_OVERLAYS.forEach(abstractRrvOverlay -> abstractRrvOverlay.setEnabled(!abstractRrvOverlay.isEnabled()));
-        Configs.CLIENT_SETTINGS.setShowOverlays(checkOverlays());
+        Configs.CLIENT_SETTINGS.setShowItemView(checkOverlays());
     }
 
     public static void setOverlays(OverlayDisplay enabled) {
-        Configs.CLIENT_SETTINGS.setShowOverlays(enabled);
+        Configs.CLIENT_SETTINGS.setShowItemView(enabled);
 		ItemViewOverlay.INSTANCE.getSearchbar().visible = !enabled.equals(OverlayDisplay.DISABLED);
     }
 

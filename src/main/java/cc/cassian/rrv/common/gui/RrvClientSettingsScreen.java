@@ -12,12 +12,13 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
-import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.StringRepresentable;
+
+import java.util.List;
 
 public class RrvClientSettingsScreen extends Screen {
 
@@ -46,16 +47,17 @@ public class RrvClientSettingsScreen extends Screen {
 
         addString(linearLayout, "general");
 
-        int buttonWidth = this.width/3;
-        int col1 = this.width / 4 - buttonWidth / 4;
+        int buttonWidth = (int) (this.width/2.5);
+        int col1 = this.width / 5 - buttonWidth / 5;
         int col2 = col1+buttonWidth+5;
-        addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowOverlays(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowOverlays(sidePanel), col1, false, buttonWidth);
-
-        addChild(linearLayout,"rrv.client_settings.sidepanel", Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel), col2, true, buttonWidth);
+        addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowItemView(), new OverlayDisplay[]{OverlayDisplay.ENABLED, OverlayDisplay.DISABLED, OverlayDisplay.WHEN_SEARCHING}, (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowItemView((OverlayDisplay) sidePanel), col1, false, buttonWidth);
+        addChild(linearLayout,"rrv.client_settings.show_side_panel", Configs.CLIENT_SETTINGS.isShowSidePanel(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowSidePanel(sidePanel), col2, true, buttonWidth);
 
         addString(linearLayout, "behavior");
 
-        addChild(linearLayout,"rrv.client_settings.wrap_scrolling", Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel), col1, true, buttonWidth);
+        addChild(linearLayout,"rrv.client_settings.sidepanel", Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel), col1, false, buttonWidth);
+
+        addChild(linearLayout,"rrv.client_settings.wrap_scrolling", Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel), col2, true, buttonWidth);
 
         addString(linearLayout,"style");
         addChild(linearLayout, clientSetting("background.enabled"), clientSetting("background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), clientSetting("background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b), col1, false, buttonWidth);

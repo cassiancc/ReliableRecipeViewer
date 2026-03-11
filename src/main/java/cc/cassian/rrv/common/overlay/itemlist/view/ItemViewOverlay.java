@@ -2,24 +2,19 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
-import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
-import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
-import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
-import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -28,12 +23,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -67,6 +60,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     }
 
+    @Override
+    public boolean isEnabled() {
+        return super.isEnabled() && (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching()));
+    }
 
     @Override
     public void setEnabled(boolean enabled) {
@@ -321,7 +318,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         newSearchbar.setResponder(this::updateQuery);
         newSearchbar.setHint(Component.translatable("rrv.search_hint"));
 
-        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowOverlays().equals(OverlayDisplay.DISABLED);
+        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.DISABLED);
 
         this.searchbar = newSearchbar;
     }
