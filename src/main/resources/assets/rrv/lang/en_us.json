@@ -30,7 +30,7 @@
   "view.rrv.type.world_interaction.time": "Time",
   "view.rrv.type.world_interaction.time_passes": "Copper will oxidize over time.",
 
-  "rrv.fluid.unit": "mb",
+  "rrv.fluid.unit": "%s mb",
   "commands.rrv.reloadedRecipes": "Reload success (Recipes)",
   "commands.rrv.reloadedStackSensitives": "Reload success (Stack-Sensitives)",
   "key.rrv.toggle_overlay": "Toggle Overlay",
@@ -58,7 +58,8 @@
   "key.rrv.cheatmode": "Use Cheatmode",
 
   "recipe_sync.rrv.denied": "RRV cannot request recipes from a server without RVV installed! Please install RVV on the server for accurate recipes.",
-  "cheatmode.rrv.cheated": "Cheated x",
+  "cheatmode.rrv.cheated": "Cheated x%s %s",
+  "cheatmode.rrv.taking": "Taking x%s",
   "cheatmode.rrv.denied": "You do not have permission to use the cheatmode",
   "rrv.client_settings.title": "RRV Client Settings",
   "rrv.client_settings.btn": "RRV Client Settings",

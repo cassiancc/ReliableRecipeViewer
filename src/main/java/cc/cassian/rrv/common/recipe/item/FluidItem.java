@@ -36,7 +36,7 @@ public class FluidItem extends BlockItem {
         super.appendHoverText(itemStack, tooltipContext, tooltipDisplay, consumer, tooltipFlag);
 
         FluidStack fluidStack = FluidStack.fromItemStack(itemStack);
-        consumer.accept(Component.literal(String.valueOf(fluidStack.amount())).append(Component.translatable("rrv.fluid.unit")).withStyle(ChatFormatting.GRAY));
+        consumer.accept(Component.translatable("rrv.fluid.unit", String.valueOf(fluidStack.amount())).withStyle(ChatFormatting.GRAY));
     }
 
 

@@ -1,5 +1,6 @@
 ### Added
 - Side panel visibility can now be individually set rather than always following the Item View.
+- Various strings have been made more translatable.
 
 ### Changed
 - Various recipes have been refactored to return `ItemStackTemplate`s rather than `ItemStack`s.

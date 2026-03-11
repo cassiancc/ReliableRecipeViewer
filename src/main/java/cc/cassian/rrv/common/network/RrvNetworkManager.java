@@ -215,12 +215,7 @@ public class RrvNetworkManager {
 
             if (RrvUtil.hasPermission(context.sender())) {
                 context.sender().sendSystemMessage(
-                        Component.translatable("cheatmode.rrv.cheated").withStyle(ChatFormatting.GRAY)
-                                .append(
-                                        Component.literal(String.valueOf(payload.amount())).withStyle(ChatFormatting.GOLD)
-                                )
-                                .append(" ")
-                                .append(payload.stack().getDisplayName().copy())
+                        Component.translatable("cheatmode.rrv.cheated", Component.literal(String.valueOf(payload.amount())).withStyle(ChatFormatting.GOLD), payload.stack().getDisplayName().copy()).withStyle(ChatFormatting.GRAY)
                 );
 
                 context.sender().addItem(payload.stack().copyWithCount(payload.amount()));
