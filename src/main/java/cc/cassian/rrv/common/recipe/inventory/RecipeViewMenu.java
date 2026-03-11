@@ -881,8 +881,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
          * Render method for rendering an optional slot
          *
          * @param guiGraphics  GuiGraphicsExtractor
-         * @param mouseX       current mouse position on x-direction (relative to the viewRecipe)
-         * @param mouseY       current mouse position on y-direction (relative to the viewRecipe)
+         * @param mouseX       current mouse position on x-direction (relative to the client recipe)
+         * @param mouseY       current mouse position on y-direction (relative to the client recipe)
          * @param partialTicks partialTicks
          */
         void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);

@@ -57,7 +57,7 @@ public class ItemView {
 
 
     /**
-     * ServerRecipeProviders offer a recipeList where mods can easily add their own server recipes
+     * ServerRecipeProviders offer a recipe list where mods can easily add their own server recipes
      *
      * @param provider The recipe provider
      */
