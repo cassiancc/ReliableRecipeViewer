@@ -32,7 +32,7 @@ public class SearchBar extends EditBox {
 					style = ChatFormatting.GREEN;
 				} else if (s.contains(":")) {
 					style = ChatFormatting.LIGHT_PURPLE;
-				} else if (offset ==0) {
+				} else if (offset == 0 || s.contains(" ")) {
 					style = ChatFormatting.WHITE;
 				}
 				component.append(Component.literal(s).withStyle(style));

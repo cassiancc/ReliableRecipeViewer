@@ -166,7 +166,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             for (String query : newQuery.split(" ")) {
                 if (query.startsWith("@")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.modName(stack, query.substring(1)));
+                    this.availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
                 }
                 else if (query.startsWith(":")) {
                     this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
@@ -178,7 +178,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         // standard filtering
         } else {
             if (newQuery.startsWith("@"))
-                this.availableItems = ItemFilters.modName(newQuery.substring(1));
+                this.availableItems = ItemFilters.modNamespace(newQuery.substring(1));
             else if (newQuery.startsWith(":"))
                 this.availableItems = ItemFilters.id(newQuery.substring(1));
             else if (newQuery.startsWith("#"))
@@ -187,7 +187,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 this.availableItems = ItemFilters.defaultFilter(newQuery);
         }
 
-        this.availableItems().removeIf(stack -> ItemView.isExcludedItem(stack));
+        this.availableItems().removeIf(ItemView::isExcludedItem);
 
         this.updateSlots();
 

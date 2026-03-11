@@ -10,7 +10,6 @@ import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPaylo
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
-import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;

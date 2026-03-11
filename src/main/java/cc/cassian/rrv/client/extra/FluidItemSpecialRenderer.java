@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biomes;
@@ -49,9 +50,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         float renderHeight = Math.max(Math.min((float) fluidStack.amount() / (float) FluidStack.AMOUNT_FULL, 1.0F), 0.1F);
 
 
-        int color = getColor(fluid);
-        Color unmodified = new Color(color);
-        color = new Color(unmodified.getRed(), unmodified.getGreen(), unmodified.getBlue(), 255).getRGB();
+        int color = ARGB.opaque(getColor(fluid));
 
         TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(fluid.defaultFluidState().createLegacyBlock()).particleMaterial().sprite();
         RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
@@ -69,12 +68,11 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         poseStack.pushPose();
         poseStack.scale(1.0F, 1.0F, 1.0F);
         float finalHeight = height;
-        int finalColor = color;
-        submitNodeCollector.submitCustomGeometry(poseStack, entityTranslucent(sprite.atlasLocation()), (pose, vertexConsumer) -> {
-            vertexConsumer.addVertex(pose.pose(), 1.0F, 0, 0).setUv(u0 + width, v0).setOverlay(overlayCoords).setLight(lightCoords).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 1.0F, renderHeight, 0).setUv(u0 + width, v0 + finalHeight).setOverlay(overlayCoords).setLight(lightCoords).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 0, renderHeight, 0).setUv(u0, v0 + finalHeight).setOverlay(overlayCoords).setLight(lightCoords).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
-            vertexConsumer.addVertex(pose.pose(), 0, 0, 0).setUv(u0, v0).setOverlay(overlayCoords).setLight(lightCoords).setColor(finalColor).setNormal(0.0F, 0.0F, 1.0F);
+		submitNodeCollector.submitCustomGeometry(poseStack, entityTranslucent(sprite.atlasLocation()), (pose, vertexConsumer) -> {
+            vertexConsumer.addVertex(pose.pose(), 1.0F, 0, 0).setUv(u0 + width, v0).setOverlay(overlayCoords).setLight(lightCoords).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
+            vertexConsumer.addVertex(pose.pose(), 1.0F, renderHeight, 0).setUv(u0 + width, v0 + finalHeight).setOverlay(overlayCoords).setLight(lightCoords).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
+            vertexConsumer.addVertex(pose.pose(), 0, renderHeight, 0).setUv(u0, v0 + finalHeight).setOverlay(overlayCoords).setLight(lightCoords).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
+            vertexConsumer.addVertex(pose.pose(), 0, 0, 0).setUv(u0, v0).setOverlay(overlayCoords).setLight(lightCoords).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
         });
 
         poseStack.popPose();

@@ -4,8 +4,6 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
@@ -13,7 +11,6 @@ import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import com.google.gson.*;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -22,16 +19,12 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Util;
-import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +33,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemFilters {
+
+    public static List<TagKey<Item>> TAGS;
 
     /**
      * Filters just by the items display name and tooltip
@@ -78,26 +73,26 @@ public class ItemFilters {
     }
 
     /**
-     * Filters by mod name
+     * Filters by mod namespace
      * @param query The query
      * @return A list of matching item stacks
      */
-    protected static List<ItemStack> modName(String query) {
+    protected static List<ItemStack> modNamespace(String query) {
 
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
 
         for (ItemStack stack : fullStackList()) {
 
-            String modName = ReliableRecipeViewerClient.resolver().getModNameForItem(stack);
-            if (modName == null)
+            String modNamespace = ReliableRecipeViewerClient.resolver().getModNamespaceForItem(stack);
+            if (modNamespace == null)
                 continue;
 
-            modName = modName.toLowerCase();
+            modNamespace = modNamespace.toLowerCase();
 
-            if (modName.startsWith(query.toLowerCase()))
+            if (modNamespace.startsWith(query.toLowerCase()))
                 add(firstPrio, stack);
-            else if (modName.contains(query.toLowerCase()))
+            else if (modNamespace.contains(query.toLowerCase()))
                 add(secondPrio, stack);
 
         }
@@ -120,14 +115,14 @@ public class ItemFilters {
      * @param query The query
      * @return Whether the item stack matches the mod name
      */
-    protected static boolean modName(ItemStack stack, String query) {
-        String modName = ReliableRecipeViewerClient.resolver().getModNameForItem(stack);
-        if (modName == null)
+    protected static boolean modNamespace(ItemStack stack, String query) {
+        String modNamespace = ReliableRecipeViewerClient.resolver().getModNamespaceForItem(stack);
+        if (modNamespace == null)
             return false;
 
-        modName = modName.toLowerCase();
+        modNamespace = modNamespace.toLowerCase();
 
-        return modName.startsWith(query.toLowerCase()) || modName.contains(query.toLowerCase());
+        return modNamespace.startsWith(query.toLowerCase()) || modNamespace.contains(query.toLowerCase());
     }
 
     /**
@@ -207,7 +202,7 @@ public class ItemFilters {
     protected static boolean tag(ItemStack stack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
-        for (TagKey<Item> tag : BuiltInRegistries.ITEM.getTags().map(HolderSet.Named::key).toList()) {
+        for (TagKey<Item> tag : TAGS) {
             String tagName = tag.location().getPath().toLowerCase();
 
             if (tagName.contains(query.toLowerCase())) {
@@ -296,4 +291,7 @@ public class ItemFilters {
         }
     }
 
+	public static void buildTagCache() {
+        TAGS = BuiltInRegistries.ITEM.getTags().map(HolderSet.Named::key).toList();
+	}
 }
