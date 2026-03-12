@@ -23,9 +23,8 @@ public class TagServerRecipe implements ReliableServerRecipe {
     );
 
     private TagKey<Item> tagKey;
-    private Iterable<Holder<Item>> itemStacks;
 
-    public TagServerRecipe(TagKey<Item> tagKey) {
+	public TagServerRecipe(TagKey<Item> tagKey) {
         this.tagKey = tagKey;
     }
 

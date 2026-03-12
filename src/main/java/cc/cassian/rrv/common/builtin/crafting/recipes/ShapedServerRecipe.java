@@ -14,18 +14,25 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<ShapedServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("shaped_crafting"),
-            () -> new ShapedServerRecipe(0, 0, new HashMap<>(), null)
+            () -> new ShapedServerRecipe(null, 0, 0, new HashMap<>(), null)
     );
 
+    private final Identifier id;
     private HashMap<Integer, Ingredient> ingredients;
     private ItemStackTemplate result;
     private int width, height;
 
-    public ShapedServerRecipe(int width, int height, HashMap<Integer, Ingredient> ingredients, ItemStackTemplate result) {
+    public ShapedServerRecipe(Identifier id, int width, int height, HashMap<Integer, Ingredient> ingredients, ItemStackTemplate result) {
         this.ingredients = ingredients;
         this.result = result;
         this.width = width;
         this.height = height;
+        this.id = id;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     public int getWidth() {

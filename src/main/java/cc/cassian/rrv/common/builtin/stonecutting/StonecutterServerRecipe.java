@@ -13,15 +13,22 @@ public class StonecutterServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<StonecutterServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("stonecutting"),
-            () -> new StonecutterServerRecipe(null, null)
+            () -> new StonecutterServerRecipe(null, null, null)
     );
 
-    private Ingredient input;
+	private final Identifier id;
+	private Ingredient input;
     private ItemStackTemplate result;
 
-    public StonecutterServerRecipe(Ingredient input, ItemStackTemplate result) {
-        this.input = input;
+    public StonecutterServerRecipe(Identifier id, Ingredient input, ItemStackTemplate result) {
+		this.id = id;
+		this.input = input;
         this.result = result;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     public Ingredient getInput() {

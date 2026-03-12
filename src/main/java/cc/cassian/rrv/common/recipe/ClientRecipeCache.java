@@ -61,7 +61,7 @@ public class ClientRecipeCache {
 
     public void updateType(ReliableServerRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
         this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> {
-            this.multiRecipeMap.getOrDefault(entry.modRecipeId(), new ArrayList<>()).forEach(Identifier -> {
+            this.multiRecipeMap.getOrDefault(entry.safeRecipeId(), new ArrayList<>()).forEach(Identifier -> {
                 this.recipeMap.remove(Identifier);
 
                 this.byItemIngredient.forEach((item, Identifiers) -> {
@@ -127,7 +127,7 @@ public class ClientRecipeCache {
             try {
                 wrappedRecipes = wrapper.wrap(modEntry.asWrapped());
             }catch (Exception e) {
-                ReliableRecipeViewer.LOGGER.error("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.modRecipeId(), e.getMessage());
+                ReliableRecipeViewer.LOGGER.error("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.safeRecipeId(), e.getMessage());
                 continue;
             }
 
@@ -138,9 +138,9 @@ public class ClientRecipeCache {
                 ReliableClientRecipe wrapped = wrappedRecipes.get(id);
 
                 Identifier uniqueId = this.getUniqueId(modEntry, id);
-                List<Identifier> summarized = this.multiRecipeMap.getOrDefault(modEntry.modRecipeId(), new ArrayList<>());
+                List<Identifier> summarized = this.multiRecipeMap.getOrDefault(modEntry.safeRecipeId(), new ArrayList<>());
                 summarized.add(uniqueId);
-                this.multiRecipeMap.put(modEntry.modRecipeId(), summarized);
+                this.multiRecipeMap.put(modEntry.safeRecipeId(), summarized);
 
                 this.recipeMap.put(uniqueId, wrapped);
 
@@ -181,7 +181,7 @@ public class ClientRecipeCache {
 
 
     private Identifier getUniqueId(ServerRecipeManager.ServerRecipeEntry modEntry, int index) {
-        return Identifier.fromNamespaceAndPath(modEntry.modRecipeId().getNamespace(), modEntry.modRecipeId().getPath() + "/" + index);
+        return Identifier.fromNamespaceAndPath(modEntry.safeRecipeId().getNamespace(), modEntry.safeRecipeId().getPath() + "/" + index);
     }
 
 

@@ -14,24 +14,31 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<TransmuteServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("transmutation_crafting"),
-            () -> new TransmuteServerRecipe(null, null, List.of())
+            () -> new TransmuteServerRecipe(null, null, null, List.of())
 
     );
 
+    private final Identifier id;
     private Ingredient input;
     private Ingredient material;
     private List<ItemStackTemplate> results;
     private int dependentIndex;
 
-    public TransmuteServerRecipe(Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
-        this(input, material, results, -1);
+    public TransmuteServerRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
+        this(id, input, material, results, -1);
     }
 
-    public TransmuteServerRecipe(Ingredient input, Ingredient material, List<ItemStackTemplate> results, int dependentIndex) {
+    public TransmuteServerRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results, int dependentIndex) {
         this.input = input;
         this.material = material;
         this.results = results;
         this.dependentIndex = dependentIndex;
+        this.id = id;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     public Ingredient getInput() {

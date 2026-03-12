@@ -5,7 +5,6 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -13,15 +12,22 @@ public class SmeltingServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<SmeltingServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("smelting"),
-            () -> new SmeltingServerRecipe(null, null)
+            () -> new SmeltingServerRecipe(null, null, null)
     );
 
+    private final Identifier id;
     private Ingredient input;
     private ItemStackTemplate result;
 
-    public SmeltingServerRecipe(Ingredient input, ItemStackTemplate result) {
+    public SmeltingServerRecipe(Identifier id, Ingredient input, ItemStackTemplate result) {
         this.input = input;
         this.result = result;
+        this.id = id;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     public Ingredient getInput() {

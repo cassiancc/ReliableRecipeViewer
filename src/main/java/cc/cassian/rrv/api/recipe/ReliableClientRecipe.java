@@ -8,10 +8,12 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public interface ReliableClientRecipe {
 
@@ -42,7 +44,7 @@ public interface ReliableClientRecipe {
     );
 
     /**
-     * @return The viewType of this recipe
+     * @return The client recipe type of this recipe
      */
     ReliableClientRecipeType getViewType();
 
@@ -63,7 +65,7 @@ public interface ReliableClientRecipe {
      */
     List<SlotContent> getResults();
 
-    /**
+	/**
      * Whether this recipe should be considered for tools like a craftable filter.
      * This is used to prevent informational recipes like tags or info recipes from affecting the craftable index.
      */

@@ -14,15 +14,17 @@ public class ShapelessServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<ShapelessServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("shapeless_crafting"),
-            () -> new ShapelessServerRecipe(List.of(), null)
+            () -> new ShapelessServerRecipe(null, List.of(), null)
     );
 
+    private final Identifier id;
     private List<Ingredient> ingredients;
     private ItemStackTemplate result;
 
-    public ShapelessServerRecipe(List<Ingredient> ingredients, ItemStackTemplate result) {
+    public ShapelessServerRecipe(Identifier id, List<Ingredient> ingredients, ItemStackTemplate result) {
         this.ingredients = ingredients;
         this.result = result;
+        this.id = id;
     }
 
 
@@ -34,6 +36,10 @@ public class ShapelessServerRecipe implements ReliableServerRecipe {
         return this.result;
     }
 
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public void writeToTag(CompoundTag tag) {
