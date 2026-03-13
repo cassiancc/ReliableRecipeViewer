@@ -7,8 +7,10 @@ import cc.cassian.rrv.common.command.RrvCommand;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -21,26 +23,33 @@ import java.util.Optional;
 public class NeoForgeEntrypoint {
 
     public NeoForgeEntrypoint(IEventBus eventBus) {
+    }
 
+    @SubscribeEvent
+    private static void setupIntegrations(FMLCommonSetupEvent event) {
         ReliableRecipeViewer.LOGGER.info("RRV: Scanning for integrations...");
-        if (FMLLoader.getCurrentOrNull() != null)
-            FMLLoader.getCurrent().getLoadingModList().getMods().forEach(modInfo -> {
-                Optional<String> optional = modInfo.getConfigElement("rrv");
-                if (optional.isPresent()) {
-                    ReliableRecipeViewer.LOGGER.info("RRV: Loading integration: {}", optional.get());
-                    try {
-                        Class<?> clazz = Class.forName(optional.get());
-                        ReliableRecipeViewerPlugin integration = ((ReliableRecipeViewerPlugin) clazz.getConstructor().newInstance());
-                        integration.onIntegrationInitialize();
-                        ReliableRecipeViewer.LOGGER.info("RRV: Integration initialized for mod: {}", modInfo.getModId());
-                        return;
+        ModList.get().getMods().forEach(modInfo -> {
+            Optional<String> optional = modInfo.getConfig().getConfigElement("rrv");
+            if (optional.isPresent()) {
+                ReliableRecipeViewer.LOGGER.info("RRV: Loading integration: {}", optional.get());
+                try {
+                    Class<?> clazz = Class.forName(optional.get());
+                    ReliableRecipeViewerPlugin integration = ((ReliableRecipeViewerPlugin) clazz.getConstructor().newInstance());
+                    integration.onIntegrationInitialize();
+                    ReliableRecipeViewer.LOGGER.info("RRV: Integration initialized for mod: {}", modInfo.getModId());
+                    return;
 
-                    } catch (Exception ignored) {
-                    }
-
-                    ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration: {}", optional.get());
+                } catch (Exception ignored) {
                 }
-            });
+
+                ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration: {}", optional.get());
+            } else {
+                ReliableRecipeViewer.LOGGER.info("RRV: Skipping integration: {}", modInfo.getModId());
+                if (modInfo.getModId().equals("bigger_fish")) {
+                    ReliableRecipeViewer.LOGGER.info(modInfo.toString());
+                }
+            }
+        });
     }
 
     @SubscribeEvent

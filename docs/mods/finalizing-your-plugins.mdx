@@ -44,7 +44,9 @@ Don't forget to add it as an entrypoint to your mod.
 
 ### NeoForge (neoforge.mods.toml)
 ```toml
-"rrv" = "com.example.mod.rrv.ExampleModRecipeViewerIntegration"
+[[mods]]
+modId = "example_mod"
+rrv = "com.example.mod.rrv.ExampleModRecipeViewerIntegration"
 ```
 
 ## Client Plugin
@@ -97,5 +99,7 @@ Don't forget to add it as an entrypoint to your mod.
 
 ### NeoForge (neoforge.mods.toml)
 ```toml
-"rrv" = "com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
+[[mods]]
+modId = "example_mod"
+"rrv_client" = "com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
 ```

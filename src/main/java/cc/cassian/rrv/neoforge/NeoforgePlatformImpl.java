@@ -72,12 +72,7 @@ public class NeoforgePlatformImpl implements Platform {
 
     @Override
     public boolean isLoadingLoaded(String mod) {
-        //? if >1.21.9 {
-        return FMLLoader.getCurrent().getLoadingModList()
-        //?} else {
-        /^return LoadingModList.get()
-        ^///?}
-        .getModFileById(mod) != null;
+        return FMLLoader.getCurrent().getLoadingModList().getModFileById(mod) != null;
     }
 
     @Override

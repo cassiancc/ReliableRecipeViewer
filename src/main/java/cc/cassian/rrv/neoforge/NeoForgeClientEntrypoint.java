@@ -15,10 +15,12 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -29,33 +31,30 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.Optional;
 
-@Mod(value = ReliableRecipeViewer.MOD_ID, dist =  Dist.CLIENT)
 @EventBusSubscriber(modid = ReliableRecipeViewer.MOD_ID, value = Dist.CLIENT)
 public class NeoForgeClientEntrypoint {
 
-    public NeoForgeClientEntrypoint(IEventBus eventBus) {
+	@SubscribeEvent
+	private static void setupIntegrations(FMLClientSetupEvent event) {
         ReliableRecipeViewer.LOGGER.info("RRV: Scanning for client integrations...");
-        if (FMLLoader.getCurrentOrNull() != null) {
-			FMLLoader.getCurrent().getLoadingModList().getMods().forEach(modInfo -> {
-				Optional<String> optional = modInfo.getConfigElement("rrv_client");
-				if (optional.isPresent()) {
-					ReliableRecipeViewer.LOGGER.info("RRV: Loading client integration: {}", optional.get());
-					try {
-						Class<?> clazz = Class.forName(optional.get());
-						ReliableRecipeViewerClientPlugin integration = ((ReliableRecipeViewerClientPlugin) clazz.getConstructor().newInstance());
-						integration.onIntegrationInitialize();
-						ReliableRecipeViewer.LOGGER.info("RRV: Client integration initialized for mod: {}", modInfo.getModId());
-						return;
+		ModList.get().getMods().forEach(modInfo -> {
+			Optional<String> optional = modInfo.getConfig().getConfigElement("rrv_client");
+			if (optional.isPresent()) {
+				ReliableRecipeViewer.LOGGER.info("RRV: Loading client integration: {}", optional.get());
+				try {
+					Class<?> clazz = Class.forName(optional.get());
+					ReliableRecipeViewerClientPlugin integration = ((ReliableRecipeViewerClientPlugin) clazz.getConstructor().newInstance());
+					integration.onIntegrationInitialize();
+					ReliableRecipeViewer.LOGGER.info("RRV: Client integration initialized for mod: {}", modInfo.getModId());
+					return;
 
-					} catch (Exception ignored) {
-					}
-
-					ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration: {}", optional.get());
+				} catch (Exception ignored) {
 				}
-			});
-		}
-        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new RrvClientSettingsScreen(screen));
 
+				ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration: {}", optional.get());
+			}
+		});
+        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new RrvClientSettingsScreen(screen));
     }
 
     @SubscribeEvent

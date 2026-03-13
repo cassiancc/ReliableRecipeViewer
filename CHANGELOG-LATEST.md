@@ -7,6 +7,7 @@
 ### Changed
 - Various recipes have been refactored to return `ItemStackTemplate`s rather than `ItemStack`s.
 - Mod name filter now filters based on namespace rather than mod name.
+- On NeoForge, integration setup is now done after the registry is frozen (in `FMLCommonSetupEvent`) to guarantee modded items exist.
 
 ### Fixed
 - Tag search causing items to appear twice in the index.
