@@ -61,15 +61,15 @@ public class ClientRecipeCache {
 
     public void updateType(ReliableServerRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
         this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> {
-            this.multiRecipeMap.getOrDefault(entry.safeRecipeId(), new ArrayList<>()).forEach(Identifier -> {
-                this.recipeMap.remove(Identifier);
+            this.multiRecipeMap.getOrDefault(entry.safeRecipeId(), new ArrayList<>()).forEach(id -> {
+                this.recipeMap.remove(id);
 
-                this.byItemIngredient.forEach((item, Identifiers) -> {
-                    Identifiers.remove(Identifier);
+                this.byItemIngredient.forEach((item, identifiers) -> {
+                    identifiers.remove(id);
                 });
 
-                this.byItemResult.forEach((item, Identifiers) -> {
-                    Identifiers.remove(Identifier);
+                this.byItemResult.forEach((item, identifiers) -> {
+                    identifiers.remove(id);
                 });
             });
         });
@@ -88,7 +88,7 @@ public class ClientRecipeCache {
         }
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> {
-            recipes.add(this.recipeMap.get(Identifier));
+            recipes.add(getRecipe(Identifier));
         });
 
         ItemStack finalInputStack = inputStack;
@@ -105,7 +105,7 @@ public class ClientRecipeCache {
 
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> {
-            recipes.add(this.recipeMap.get(Identifier));
+            recipes.add(getRecipe(Identifier));
         });
 
         ItemStack finalOutputStack = outputStack;
