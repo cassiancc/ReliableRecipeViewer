@@ -1,5 +1,5 @@
 ### Added
-- Support for Fabric's Component Ingredient type.
+- Support for Fabric and NeoForge's Data Component Ingredients.
 - Side panel visibility can now be individually set rather than always following the Item View.
 - Searching with filters now changes the colour of the text.
 - Searching without a result now changes the colour of the searchbar.

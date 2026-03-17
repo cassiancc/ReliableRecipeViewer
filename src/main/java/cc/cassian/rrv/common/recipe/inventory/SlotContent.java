@@ -12,8 +12,11 @@ import com.mojang.serialization.Codec;
 //? fabric {
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
-//?}
 import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
+//?} else {
+/*import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+*///?}
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentPatch;
@@ -260,7 +263,12 @@ public class SlotContent {
                 return SlotContent.ofItemList(matchingItems);
             }
         }
-        //?}
+        //?} else {
+        /*if (ingredient.getCustomIngredient() instanceof DataComponentIngredient dataComponentIngredient) {
+            DataComponentPatch dataComponentPatch = dataComponentIngredient.components();
+            return SlotContent.of(dataComponentIngredient.items().map((item)->new ItemStack(item, 1, dataComponentPatch)).toList());
+        }
+        *///?}
 
         return SlotContent.ofItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList());
 
