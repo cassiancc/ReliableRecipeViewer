@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.interaction;
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -16,11 +17,9 @@ public class WorldInteractionServerRecipe implements ReliableServerRecipe {
     );
 
 
-    private ItemStack left;
-    private ItemStack right;
-    private ItemStack result;
+    private SlotContent left, right, result;
 
-    public WorldInteractionServerRecipe(ItemStack left, ItemStack right, ItemStack result
+    public WorldInteractionServerRecipe(SlotContent left, SlotContent right, SlotContent result
     ) {
         this.left = left;
         this.right = right;
@@ -34,32 +33,32 @@ public class WorldInteractionServerRecipe implements ReliableServerRecipe {
     }
 
 
-    public ItemStack getLeft() {
+    public SlotContent getLeft() {
         return this.left;
     }
 
-    public ItemStack getRight() {
+    public SlotContent getRight() {
         return right;
     }
 
-    public ItemStack getResult() {
+    public SlotContent getResult() {
         return this.result;
     }
 
     @Override
     public void writeToTag(CompoundTag tag) {
         if (this.left != null) {
-            tag.put("left", TagUtil.encodeItemStackOnServer(this.left));
-            tag.put("right", TagUtil.encodeItemStackOnServer(this.right));
-            tag.put("result", TagUtil.encodeItemStackOnServer(this.right));
+            tag.put("left", TagUtil.writeSlotContent(this.left));
+            tag.put("right", TagUtil.writeSlotContent(this.right));
+            tag.put("result", TagUtil.writeSlotContent(this.right));
         }
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
-        this.left = TagUtil.decodeItemStackOnClient(tag.getCompound("left").orElseGet(CompoundTag::new));
-        this.right = TagUtil.decodeItemStackOnClient(tag.getCompound("right").orElseGet(CompoundTag::new));
-        this.right = TagUtil.decodeItemStackOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.left = TagUtil.readSlotContent(tag.getCompound("left").orElseGet(CompoundTag::new));
+        this.right = TagUtil.readSlotContent(tag.getCompound("right").orElseGet(CompoundTag::new));
+        this.right = TagUtil.readSlotContent(tag.getCompound("result").orElseGet(CompoundTag::new));
     }
 
     @Override

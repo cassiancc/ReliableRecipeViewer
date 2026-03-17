@@ -22,8 +22,8 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
 
     public BlastingClientRecipe(BlastingServerRecipe blastingRecipe) {
 
-        this.input = SlotContent.of(blastingRecipe.getInput());
-        this.result = SlotContent.of(blastingRecipe.getResult());
+        this.input = blastingRecipe.getInput();
+        this.result = blastingRecipe.getResult();
 
         this.blastingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("blasting_ticker"), 100);
     }

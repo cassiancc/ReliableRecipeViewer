@@ -133,7 +133,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 LootTable table = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().getLootTable(entityType.getDefaultLootTable().get());
                 LootTableAccessor accessor = (LootTableAccessor) table;
 
-                List<ItemStack> loot = new ArrayList<>();
+                List<SlotContent> loot = new ArrayList<>();
 
                 for (LootPool pool : accessor.getPools()) {
                     LootPoolAccessor lootPoolAccessor = (LootPoolAccessor) pool;
@@ -157,14 +157,14 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                                     stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.playerKill").withStyle(ChatFormatting.RED)));
                             }
 
-                            loot.add(stack);
+                            loot.add(SlotContent.of(stack));
                         }
                         if (container instanceof CompositeEntryBase entryBase) {
                             CompositeEntryBaseAccessor entryBaseAccessor = (CompositeEntryBaseAccessor) entryBase;
                             entryBaseAccessor.getChildren().forEach(child -> {
                                 if (child instanceof LootItem lootItem) {
                                     LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
-                                    loot.add(new ItemStack(lootItemAccessor.getItem()));
+                                    loot.add(SlotContent.of(new ItemStack(lootItemAccessor.getItem())));
                                 }
                             });
                         }
@@ -172,7 +172,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 }
 
                 if (entityType == EntityType.WITHER)
-                    loot.add(new ItemStack(Items.NETHER_STAR));
+                    loot.add(SlotContent.of(Items.NETHER_STAR));
 
                 if (!loot.isEmpty())
                     recipeList.add(new EntityServerRecipe(entityType, loot));
@@ -232,7 +232,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                 if (recipe instanceof ShapedRecipe shapedRecipe) {
 
-                    HashMap<Integer, Ingredient> ingredients = new HashMap<>();
+                    HashMap<Integer, SlotContent> ingredients = new HashMap<>();
 
                     int i = 0;
                     for (int y = 0; y < 3; y++) {
@@ -243,13 +243,13 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                             }
 
                             if (shapedRecipe.getIngredients().get(i).isPresent())
-                                ingredients.put(x + y * 3, shapedRecipe.getIngredients().get(i).get());
+                                ingredients.put(x + y * 3, SlotContent.of(shapedRecipe.getIngredients().get(i).get()));
 
                             i++;
                         }
                     }
 
-                    recipeList.add(new ShapedServerRecipe(id, shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, shapedRecipe.result));
+                    recipeList.add(new ShapedServerRecipe(id, shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, SlotContent.of(shapedRecipe.result)));
                 }
 
                 if (recipe instanceof TransmuteRecipe) {

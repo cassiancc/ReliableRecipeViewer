@@ -1,17 +1,9 @@
 package cc.cassian.rrv.api;
 
-import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import com.mojang.datafixers.util.Either;
-//? fabric {
-import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
-import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
-import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
-//?}
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
@@ -27,7 +19,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * Helper class for network encoding based on CompoundTags
@@ -47,7 +39,7 @@ public class TagUtil {
 
 
     /**
-     * Decodes an ItemStack on the client side
+     * Decodes an {@link ItemStack} on the client side
      * @param tag The tag to decode
      * @return The decoded stack
      */
@@ -56,7 +48,7 @@ public class TagUtil {
     }
 
     /**
-     * Decodes an ItemStackTemplate on the client side
+     * Decodes an {@link ItemStackTemplate} on the client side
      * @param tag The tag to decode
      * @return The decoded stack
      */
@@ -65,7 +57,7 @@ public class TagUtil {
     }
 
     /**
-     * Encodes an ItemStack on the client side
+     * Encodes an {@link ItemStack} on the client side
      * @param stack The stack to encode
      * @return The encoded stack as CompoundTag
      */
@@ -74,7 +66,7 @@ public class TagUtil {
     }
 
     /**
-     * Encodes an ItemStack on the server side
+     * Encodes an {@link ItemStack} on the server side
      * @param stack The stack to encode
      * @return The encoded stack as CompoundTag
      */
@@ -83,30 +75,12 @@ public class TagUtil {
     }
 
     /**
-     * Encodes an ItemStackTemplate on the server side
+     * Encodes an {@link ItemStackTemplate} on the server side
      * @param stack The stack to encode
      * @return The encoded stack as CompoundTag
      */
     public static CompoundTag encodeItemStackOnServer(ItemStackTemplate stack) {
         return ItemStackTemplate.CODEC.encode(stack, ServerRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).mapOrElse(tag -> tag.asCompound().orElseGet(CompoundTag::new), tagError -> new CompoundTag());
-    }
-
-    /**
-     * Encodes an ItemStack on the server.
-     * @param stack The stack to encode
-     * @return The encoded stack as CompoundTag
-     */
-    public static CompoundTag writeItemStack(ItemStack stack) {
-        return encodeItemStackOnServer(stack);
-    }
-
-    /**
-     * Decodes an {@link ItemStack} on the client
-     * @param tag The encoded stack as CompoundTag
-     * @return The decoded {@link ItemStack}
-     */
-    public static ItemStack readItemStack(CompoundTag tag) {
-        return decodeItemStackOnClient(tag);
     }
 
     /**
@@ -119,65 +93,27 @@ public class TagUtil {
     }
 
     /**
-     * Encodes an Ingredient
+     * Encodes an {@link Ingredient}. Since 7.0.0, it's recommended to store data as a SlotContent rather than as a raw ingredient via {@link TagUtil#writeSlotContent(SlotContent)}.
      * @param ingredient The ingredient to encode
      * @return The encoded ingredient as CompoundTag
      */
+    @Deprecated(since = "7.0.0")
     public static CompoundTag writeIngredient(Ingredient ingredient) {
-        if (ingredient == null)
-            return new CompoundTag();
-
-        HolderSet<Item> set = ((IngredientAccessor) (Object) ingredient).getValues();
-
-        Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = set.unwrap();
-        CompoundTag tag = new CompoundTag();
-
-
-        if (ingredientContent.left().isPresent()) {
-            tag.putString("tag", ingredientContent.left().get().location().toString());
-            return tag;
-        }
-
-        if(ingredientContent.right().isEmpty())
-            return new CompoundTag();
-
-        //? fabric {
-        if (ingredient instanceof FabricIngredient fabricIngredient) {
-            CustomIngredient customIngredient = fabricIngredient.getCustomIngredient();
-            if (customIngredient != null) {
-                Stream<Holder<Item>> matchingItems = customIngredient.items();
-                tag.put("items", TagUtil.createItemList(matchingItems.filter(Holder::isBound).map(Holder::value).toList()));
-            }
-        }
-        //?}
-
-        if (!tag.contains("items")) {
-            tag.put("items", TagUtil.createItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList()));
-        }
-
-        return tag;
+        return writeSlotContent(SlotContent.of(ingredient));
     }
 
     /**
-     * Decodes an Ingredient
+     * Decodes an {@link Ingredient}. Since 7.0.0, it's recommended to store data as a SlotContent rather than as a raw ingredient via {@link TagUtil#readSlotContent(CompoundTag)}.
      * @param tag The tag to decode
      * @return The decoded ingredient
      */
+    @Deprecated(since = "7.0.0")
     public static @Nullable Ingredient readIngredient(CompoundTag tag) {
         if (tag.isEmpty())
             return null;
 
-
-        if (tag.contains("tag")) {
-            TagKey<Item> tagKey = TagKey.create(Registries.ITEM, Identifier.parse(tag.getStringOr("tag", "")));
-            if (BuiltInRegistries.ITEM.get(tagKey).isEmpty())
-                return null;
-
-            return Ingredient.of(Objects.requireNonNull(BuiltInRegistries.ITEM.get(tagKey).get()));
-        }
-
-        List<Holder<Item>> itemList = TagUtil.reconstructItemList(tag, "items").stream().map(Holder::direct).toList();
-        return !itemList.isEmpty() ? Ingredient.of(HolderSet.direct(itemList)) : null;
+        SlotContent slotContent = readSlotContent(tag);
+        return slotContent.asIngredient();
 	}
 
 
@@ -335,6 +271,20 @@ public class TagUtil {
      */
     public static Fluid fluidFromString(String s) {
         return stringToRegistry(s, BuiltInRegistries.FLUID);
+    }
+
+	public static CompoundTag writeSlotContent(SlotContent slotContent) {
+        CompoundTag compoundTag = new CompoundTag();
+        compoundTag.put("stacks", TagUtil.writeList(slotContent.getValidContents(), (stack, tag)->TagUtil.encodeItemStackOnServer(stack)));
+        slotContent.getItemTag().ifPresent(itemTagKey -> compoundTag.store("tag", TagKey.codec(Registries.ITEM), itemTagKey));
+        return compoundTag;
+	}
+
+    public static SlotContent readSlotContent(CompoundTag tag) {
+        SlotContent slotContent = SlotContent.of(TagUtil.readList(tag, "stacks", TagUtil::decodeItemStackOnClient));
+        Optional<TagKey<Item>> tagKey = tag.read("tag", TagKey.codec(Registries.ITEM));
+		tagKey.ifPresent(slotContent::bindItemTag);
+        return slotContent;
     }
 
     //----------------- Custom object builder/reconstructor -----------------

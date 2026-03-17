@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.crafting.recipes;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -14,27 +15,27 @@ public class TippedArrowServerRecipe implements ReliableServerRecipe {
             () -> new TippedArrowServerRecipe(ItemStack.EMPTY)
     );
 
-    private ItemStack potionStack;
+    private SlotContent potionStack;
 
     public TippedArrowServerRecipe(ItemStack potionStack) {
-        this.potionStack = potionStack;
+        this.potionStack = SlotContent.of(potionStack);
     }
 
-    public ItemStack getPotion() {
+    public SlotContent getPotion() {
         return this.potionStack;
     }
 
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("potionStack", TagUtil.encodeItemStackOnServer(this.potionStack));
+        tag.put("potionStack", TagUtil.writeSlotContent(this.potionStack));
 
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.potionStack = TagUtil.decodeItemStackOnClient(tag.getCompound("potionStack").orElseGet(CompoundTag::new));
+        this.potionStack = TagUtil.readSlotContent(tag.getCompound("potionStack").orElseGet(CompoundTag::new));
 
     }
 

@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.crafting.recipes;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -18,11 +19,11 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
     );
 
     private final Identifier id;
-    private HashMap<Integer, Ingredient> ingredients;
-    private ItemStackTemplate result;
+    private HashMap<Integer, SlotContent> ingredients;
+    private SlotContent result;
     private int width, height;
 
-    public ShapedServerRecipe(Identifier id, int width, int height, HashMap<Integer, Ingredient> ingredients, ItemStackTemplate result) {
+    public ShapedServerRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result) {
         this.ingredients = ingredients;
         this.result = result;
         this.width = width;
@@ -43,11 +44,11 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
         return this.height;
     }
 
-    public HashMap<Integer, Ingredient> getIngredients() {
+    public HashMap<Integer, SlotContent> getIngredients() {
         return this.ingredients;
     }
 
-    public ItemStackTemplate getResult() {
+    public SlotContent getResult() {
         return this.result;
     }
 
@@ -58,9 +59,9 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
         tag.putInt("height", this.height);
 
         this.ingredients.forEach((slotId, ingredient) -> {
-            tag.put("ci_" + slotId, TagUtil.writeIngredient(ingredient));
+            tag.put("ci_" + slotId, TagUtil.writeSlotContent(ingredient));
         });
-        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
+        tag.put("result", TagUtil.writeSlotContent(this.result));
     }
 
     @Override
@@ -69,18 +70,18 @@ public class ShapedServerRecipe implements ReliableServerRecipe {
         this.width = tag.getIntOr("width", 0);
         this.height = tag.getIntOr("height", 0);
 
-        HashMap<Integer, Ingredient> ingredients = new HashMap<>();
+        HashMap<Integer, SlotContent> ingredients = new HashMap<>();
 
         tag.keySet().forEach(key -> {
             if (!key.startsWith("ci_"))
                 return;
 
             int slot = Integer.parseInt(key.replace("ci_", ""));
-            ingredients.put(slot, TagUtil.readIngredient(tag.getCompound(key).orElseGet(CompoundTag::new)));
+            ingredients.put(slot, TagUtil.readSlotContent(tag.getCompound(key).orElseGet(CompoundTag::new)));
         });
 
         this.ingredients = ingredients;
-        this.result = TagUtil.decodeItemStackTemplateOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.result = TagUtil.readSlotContent(tag.getCompound("result").orElseGet(CompoundTag::new));
     }
 
     @Override

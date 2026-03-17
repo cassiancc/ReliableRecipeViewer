@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.crafting.recipes;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -19,9 +20,9 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
     );
 
     private final Identifier id;
-    private Ingredient input;
-    private Ingredient material;
-    private List<ItemStackTemplate> results;
+    private SlotContent input;
+    private SlotContent material;
+    private SlotContent results;
     private int dependentIndex;
 
     public TransmuteServerRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
@@ -29,9 +30,9 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
     }
 
     public TransmuteServerRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results, int dependentIndex) {
-        this.input = input;
-        this.material = material;
-        this.results = results;
+        this.input = SlotContent.of(input);
+        this.material = SlotContent.of(material);
+        this.results = SlotContent.ofTemplates(results);
         this.dependentIndex = dependentIndex;
         this.id = id;
     }
@@ -41,15 +42,15 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
         return id;
     }
 
-    public Ingredient getInput() {
+    public SlotContent getInput() {
         return this.input;
     }
 
-    public Ingredient getMaterial() {
+    public SlotContent getMaterial() {
         return this.material;
     }
 
-    public List<ItemStackTemplate> getResults() {
+    public SlotContent getResults() {
         return this.results;
     }
 
@@ -60,11 +61,11 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("input", TagUtil.writeIngredient(this.input));
+        tag.put("input", TagUtil.writeSlotContent(this.input));
 
-        tag.put("materials", TagUtil.writeIngredient(this.material));
+        tag.put("materials", TagUtil.writeSlotContent(this.material));
 
-        tag.put("results", TagUtil.writeList(this.results, (origin, tag1) -> TagUtil.encodeItemStackOnServer(origin)));
+        tag.put("results", TagUtil.writeSlotContent(this.results));
 
         tag.putInt("dependent_index", this.dependentIndex);
     }
@@ -72,10 +73,10 @@ public class TransmuteServerRecipe implements ReliableServerRecipe {
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.input = TagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
-        this.material = TagUtil.readIngredient(tag.getCompound("materials").orElseGet(CompoundTag::new));
+        this.input = TagUtil.readSlotContent(tag.getCompound("input").orElseGet(CompoundTag::new));
+        this.material = TagUtil.readSlotContent(tag.getCompound("materials").orElseGet(CompoundTag::new));
 
-        this.results = TagUtil.readList(tag, "results", TagUtil::decodeItemStackTemplateOnClient);
+        this.results = TagUtil.readSlotContent(tag.getCompound("results").orElseGet(CompoundTag::new));
         this.dependentIndex = tag.getIntOr("dependent_index", -1);
     }
 

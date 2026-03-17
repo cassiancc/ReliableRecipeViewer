@@ -1,14 +1,22 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.fabric.mixin.ComponentsIngredientAccessor;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import com.mojang.serialization.Codec;
+//? fabric {
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
+//?}
+import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -16,17 +24,19 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class SlotContent {
 
+    public static final Codec<List<ItemStack>> CODEC = ItemStack.CODEC.listOf();
     private final List<ItemStack> content;
     private int current;
 
@@ -69,6 +79,9 @@ public class SlotContent {
         return this;
     }
 
+    public Optional<TagKey<Item>> getItemTag() {
+        return Optional.ofNullable(this.itemTag);
+    }
 
     public void bindOrigin(ItemStack stack, ActionType originType) {
         this.itemOrigin = stack.copy();
@@ -222,15 +235,34 @@ public class SlotContent {
     public static SlotContent of(Ingredient ingredient) {
         if (ingredient == null) return SlotContent.of();
 
-        Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) ingredient).getValues().unwrap();
+        HolderSet<Item> set = ((IngredientAccessor) (Object) ingredient).getValues();
 
-        if (ingredientContent.right().isPresent()) {
-            List<ItemStack> stacks = new ArrayList<>();
-            ingredientContent.right().get().forEach(holder -> stacks.add(new ItemStack(holder.value())));
-            return new SlotContent(stacks);
+        Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = set.unwrap();
+
+        // item tags
+        if (ingredientContent.left().isPresent()) {
+            return SlotContent.of(ingredientContent.left().get());
         }
 
-        return ingredientContent.left().isPresent() ? SlotContent.of(ingredientContent.left().get()) : SlotContent.of(Items.AIR);
+        if (ingredientContent.right().isEmpty())
+            return SlotContent.of();
+
+        // custom ingredients
+        //? fabric {
+        if (ingredient instanceof FabricIngredient fabricIngredient) {
+            CustomIngredient customIngredient = fabricIngredient.getCustomIngredient();
+            if (customIngredient != null) {
+                if (customIngredient instanceof ComponentsIngredient componentsIngredient) {
+                    DataComponentPatch dataComponentPatch = ((ComponentsIngredientAccessor) componentsIngredient).callGetComponents();
+                    return SlotContent.of(customIngredient.items().map((item)->new ItemStack(item, 1, dataComponentPatch)).toList());
+                }
+                List<Item> matchingItems = customIngredient.items().filter(Holder::isBound).map(Holder::value).toList();
+                return SlotContent.ofItemList(matchingItems);
+            }
+        }
+        //?}
+
+        return SlotContent.ofItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList());
 
     }
 
@@ -238,4 +270,19 @@ public class SlotContent {
         return BuiltInRegistries.ITEM.get(tag);
     }
 
+    /**
+	 * Allows for representing a {@link SlotContent} as an {@link  Ingredient}. Not recommended for general use as this loses modded data.
+	 */
+    @Deprecated
+	public @Nullable Ingredient asIngredient() {
+        if (this.itemTag != null) {
+            TagKey<Item> tagKey = this.itemTag;
+            if (BuiltInRegistries.ITEM.get(tagKey).isEmpty())
+                return null;
+            return Ingredient.of(Objects.requireNonNull(BuiltInRegistries.ITEM.get(tagKey).get()));
+        }
+        List<Holder<Item>> itemList = this.content.stream().map(ItemStack::getItem).map(Holder::direct).toList();
+		if (!itemList.isEmpty()) return Ingredient.of(HolderSet.direct(itemList));
+		return null;
+	}
 }

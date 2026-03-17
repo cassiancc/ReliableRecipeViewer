@@ -18,10 +18,10 @@ public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
     private final int priority;
 
 
-    public AnvilCombiningClientRecipe(ItemStack base, Ingredient repairIngredient, ItemStack result) {
-        this.left = base != null ? SlotContent.of(base) : SlotContent.of(Items.AIR);
-        this.right = repairIngredient != null ? SlotContent.of(repairIngredient) : SlotContent.of(Items.AIR);
-        this.result = SlotContent.of(result);
+    public AnvilCombiningClientRecipe(SlotContent base, SlotContent repairIngredient, SlotContent result) {
+        this.left = base;
+        this.right = repairIngredient;
+        this.result = result;
         this.priority = -10;
     }
 

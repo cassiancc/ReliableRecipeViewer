@@ -27,23 +27,16 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     private final SlotContent result;
 
     private final boolean isTrimType;
-    private final ItemStackTemplate upgradeResult;
+    private final SlotContent upgradeResult;
 
 
-    public SmithingClientRecipe(boolean isTrimType, Ingredient additionIngredient, Ingredient base, Ingredient template, TrimPattern trimPattern, @Nullable ItemStackTemplate upgradeResult) {
+    public SmithingClientRecipe(boolean isTrimType, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern, SlotContent upgradeResult) {
         this.isTrimType = isTrimType;
 
-        this.template = template != null ? SlotContent.of(template) : SlotContent.of(Items.AIR);
-        this.base = base != null ? SlotContent.of(base) : SlotContent.of(Items.AIR);
-        this.additionIngredient = additionIngredient != null ? SlotContent.of(additionIngredient) : SlotContent.of(Items.AIR);
+        this.template = template;
+        this.base = base;
+        this.additionIngredient = additionIngredient;
         this.upgradeResult = upgradeResult;
-
-        if (Minecraft.getInstance().player == null) {
-            this.result = SlotContent.of(Items.AIR);
-            return;
-        }
-
-        HolderLookup.Provider provider = Minecraft.getInstance().player.level().registryAccess();
 
         if (this.isTrimType) {
             List<ItemStack> possibleResults = new ArrayList<>();
@@ -57,7 +50,7 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
             return;
         }
 
-        this.result = SlotContent.of(this.upgradeResult == null ? ItemStack.EMPTY : this.upgradeResult.create());
+        this.result = this.upgradeResult;
 
     }
 

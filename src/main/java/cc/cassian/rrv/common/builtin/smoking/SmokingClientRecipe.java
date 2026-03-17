@@ -22,8 +22,8 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
 
     public SmokingClientRecipe(SmokingServerRecipe smokingRecipe) {
 
-        this.input = SlotContent.of(smokingRecipe.getInput());
-        this.result = SlotContent.of(smokingRecipe.getResult());
+        this.input = smokingRecipe.getInput();
+        this.result = smokingRecipe.getResult();
 
         this.smokingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("smoking_ticker"), 100);
     }

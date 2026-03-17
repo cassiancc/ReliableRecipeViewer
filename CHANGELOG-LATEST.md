@@ -1,13 +1,15 @@
 ### Added
+- Support for Fabric's Component Ingredient type.
 - Side panel visibility can now be individually set rather than always following the Item View.
 - Searching with filters now changes the colour of the text.
 - Searching without a result now changes the colour of the searchbar.
 - Various strings have been made more translatable.
+- Server recipes can now have their identifiers overridden. This is not currently required, but is part of future proofing to eventually allow for hiding recipes from the index.
 
 ### Changed
-- Various recipes have been refactored to return `ItemStackTemplate`s rather than `ItemStack`s.
+- Recipe types now serialize a `SlotContent` rather than a raw `Ingredient` or `ItemStack`. This allows for a more flexible and smooth experience when creating and serializing modded content.
 - Mod name filter now filters based on namespace rather than mod name.
-- On NeoForge, integration setup is now done after the registry is frozen (in `FMLCommonSetupEvent`) to guarantee modded items exist.
+- On NeoForge, integrations are now processed  after the registry is frozen (in `FMLCommonSetupEvent`) to guarantee modded items exist.
 
 ### Fixed
 - Tag search causing items to appear twice in the index.

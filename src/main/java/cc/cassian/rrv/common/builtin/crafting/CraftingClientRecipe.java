@@ -37,8 +37,8 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.width = recipe.getWidth();
         this.height = recipe.getHeight();
 
-        recipe.getIngredients().forEach((slotId, ingredient) -> this.ingredients.put(slotId, SlotContent.of(ingredient)));
-        this.result = SlotContent.of(recipe.getResult());
+		this.ingredients.putAll(recipe.getIngredients());
+        this.result = recipe.getResult();
     }
 
     public CraftingClientRecipe(ShapelessServerRecipe recipe) {
@@ -74,10 +74,10 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
 
         AtomicInteger i = new AtomicInteger();
         recipe.getIngredients().forEach((ingredient) -> {
-			this.ingredients.put(i.getAndIncrement(), SlotContent.of(ingredient));
+			this.ingredients.put(i.getAndIncrement(), (ingredient));
 		});
 
-        this.result = SlotContent.of(recipe.getResult());
+        this.result = recipe.getResult();
     }
 
     public CraftingClientRecipe(TippedArrowServerRecipe recipe) {
@@ -85,7 +85,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
 
         for (int i = 0; i < 9; i++){
             if (i == 4)
-                this.ingredients.put(i, SlotContent.of(recipe.getPotion()));
+                this.ingredients.put(i, (recipe.getPotion()));
             else
                 this.ingredients.put(i, SlotContent.of(Items.ARROW));
         }
@@ -94,7 +94,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.height = 3;
 
         ItemStack result = new ItemStack(Items.TIPPED_ARROW, 8);
-        result.set(DataComponents.POTION_CONTENTS, recipe.getPotion().get(DataComponents.POTION_CONTENTS));
+        result.set(DataComponents.POTION_CONTENTS, recipe.getPotion().next().get(DataComponents.POTION_CONTENTS));
         this.result = SlotContent.of(result);
     }
 
@@ -102,11 +102,11 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.width = 2;
         this.height = 1;
         this.shapeless = true;
-        this.ingredients.put(0, SlotContent.of(transmuteRecipe.getInput()));
-        this.ingredients.put(1, SlotContent.of(transmuteRecipe.getMaterial()));
+        this.ingredients.put(0, transmuteRecipe.getInput());
+        this.ingredients.put(1, transmuteRecipe.getMaterial());
 		this.dependentIndex = transmuteRecipe.getDependentIndex();
 
-        this.result = SlotContent.ofTemplates(transmuteRecipe.getResults());
+        this.result = transmuteRecipe.getResults();
     }
 
     @Override

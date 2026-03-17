@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.brewing;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -16,42 +17,45 @@ public class BrewingServerRecipe implements ReliableServerRecipe {
             () -> new BrewingServerRecipe(ItemStack.EMPTY, null, ItemStack.EMPTY)
     );
 
-    private ItemStack result, bottleIngredient;
-    private Ingredient magicIngredient;
+    private SlotContent result, bottleIngredient, magicIngredient;
 
     public BrewingServerRecipe(ItemStack result, Ingredient magicIngredient, ItemStack bottleIngredient) {
-        this.result = result;
-        this.magicIngredient = magicIngredient;
-        this.bottleIngredient = bottleIngredient;
+       this(SlotContent.of(magicIngredient), SlotContent.of(bottleIngredient), SlotContent.of(result));
     }
 
-    public ItemStack getResult() {
+    public BrewingServerRecipe(SlotContent reagent, SlotContent bottle, SlotContent result) {
+        this.result = result;
+        this.magicIngredient = reagent;
+        this.bottleIngredient = bottle;
+    }
+
+    public SlotContent getResult() {
         return this.result;
     }
 
-    public Ingredient getMagicIngredient() {
+    public SlotContent getMagicIngredient() {
         return this.magicIngredient;
     }
 
-    public ItemStack getBottleIngredient() {
+    public SlotContent getBottleIngredient() {
         return this.bottleIngredient;
     }
 
     @Override
     public void writeToTag(CompoundTag tag) {
 
-        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
-        tag.put("magicIngredient", TagUtil.writeIngredient(this.magicIngredient));
-        tag.put("bottleIngredient", TagUtil.encodeItemStackOnServer(this.bottleIngredient));
+        tag.put("result", TagUtil.writeSlotContent(this.result));
+        tag.put("magicIngredient", TagUtil.writeSlotContent(this.magicIngredient));
+        tag.put("bottleIngredient", TagUtil.writeSlotContent(this.bottleIngredient));
 
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
 
-        this.result = TagUtil.decodeItemStackOnClient(tag.getCompoundOrEmpty("result"));
-        this.magicIngredient = TagUtil.readIngredient(tag.getCompoundOrEmpty("magicIngredient"));
-        this.bottleIngredient = TagUtil.decodeItemStackOnClient(tag.getCompoundOrEmpty("bottleIngredient"));
+        this.result = TagUtil.readSlotContent(tag.getCompoundOrEmpty("result"));
+        this.magicIngredient = TagUtil.readSlotContent(tag.getCompoundOrEmpty("magicIngredient"));
+        this.bottleIngredient = TagUtil.readSlotContent(tag.getCompoundOrEmpty("bottleIngredient"));
 
     }
 

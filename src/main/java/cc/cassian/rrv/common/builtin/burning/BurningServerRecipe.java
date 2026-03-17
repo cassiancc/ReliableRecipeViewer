@@ -33,15 +33,12 @@ public class BurningServerRecipe implements ReliableServerRecipe {
 
     @Override
     public void writeToTag(CompoundTag tag) {
-
         tag.putString("fuel", TagUtil.itemToString(this.fuel));
         tag.putInt("burnTime", this.burnTime);
-
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
-
         this.fuel = TagUtil.itemFromString(tag.getStringOr("fuel", ""));
         this.burnTime = tag.getIntOr("burnTime", AbstractFurnaceBlockEntity.BURN_TIME_STANDARD);
     }

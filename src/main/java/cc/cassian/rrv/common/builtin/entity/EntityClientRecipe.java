@@ -35,12 +35,12 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     public EntityClientRecipe(EntityServerRecipe serverRecipe) {
         this.entityType = serverRecipe.getEntityType();
 
-        List<ItemStack> drops = serverRecipe.getDrops();
+        List<SlotContent> drops = serverRecipe.getDrops();
         List<SlotContent> dropContents = new ArrayList<>();
 
         for (int i = 0; i < this.getViewType().getSlotCount(); i++) {
             if (drops.size() > i)
-                dropContents.add(SlotContent.of(drops.get(i)));
+                dropContents.add(drops.get(i));
             else
                 dropContents.add(SlotContent.of());
         }

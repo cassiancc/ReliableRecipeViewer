@@ -21,8 +21,8 @@ public class CampfireClientRecipe implements ReliableClientRecipe {
     private final AnimationTicker cookingTicker;
 
     public CampfireClientRecipe(CampfireServerRecipe campfireCookingRecipe) {
-        this.input = SlotContent.of(campfireCookingRecipe.getInput());
-        this.result = SlotContent.of(campfireCookingRecipe.getResult());
+        this.input = campfireCookingRecipe.getInput();
+        this.result =campfireCookingRecipe.getResult();
 
         this.cookingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("campfire_cooking_ticker"), 300);
     }

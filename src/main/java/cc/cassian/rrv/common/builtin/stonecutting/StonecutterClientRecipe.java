@@ -15,8 +15,8 @@ public class StonecutterClientRecipe implements ReliableClientRecipe {
     private final SlotContent input, result;
 
     public StonecutterClientRecipe(StonecutterServerRecipe stonecutterRecipe) {
-        this.input = SlotContent.of(stonecutterRecipe.getInput());
-        this.result = SlotContent.of(stonecutterRecipe.getResult());
+        this.input = stonecutterRecipe.getInput();
+        this.result =stonecutterRecipe.getResult();
     }
 
     @Override

@@ -83,23 +83,23 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             List<SmithingClientRecipe> recipes = new ArrayList<>();
 
             if (unwrapped.getBase() != null && unwrapped.getTemplate() != null) {
-                SlotContent.of(unwrapped.getBase()).getValidContents().forEach(baseStack -> {
-                    SlotContent.of(unwrapped.getTemplate()).getValidContents().forEach(templateStack -> {
-                        recipes.add(new SmithingClientRecipe(unwrapped.isTrim(), unwrapped.getAddition(), Ingredient.of(baseStack.getItem()), Ingredient.of(templateStack.getItem()), unwrapped.getPattern(), unwrapped.getUpgradeResult()));
+                unwrapped.getBase().getValidContents().forEach(baseStack -> {
+                    unwrapped.getTemplate().getValidContents().forEach(templateStack -> {
+                        recipes.add(new SmithingClientRecipe(unwrapped.isTrim(), unwrapped.getAddition(), SlotContent.of(baseStack), SlotContent.of(templateStack), unwrapped.getPattern(), unwrapped.getUpgradeResult()));
                     });
 
                 });
             } else if (unwrapped.getBase() != null && unwrapped.getAddition() != null) {
-                SlotContent.of(unwrapped.getBase()).getValidContents().forEach(baseStack -> {
-                    SlotContent.of(unwrapped.getAddition()).getValidContents().forEach(additionStack -> {
-                        recipes.add(new SmithingClientRecipe(unwrapped.isTrim(), Ingredient.of(additionStack.getItem()), Ingredient.of(baseStack.getItem()), unwrapped.getTemplate(), unwrapped.getPattern(), unwrapped.getUpgradeResult()));
+                unwrapped.getBase().getValidContents().forEach(baseStack -> {
+                    unwrapped.getAddition().getValidContents().forEach(additionStack -> {
+                        recipes.add(new SmithingClientRecipe(unwrapped.isTrim(), SlotContent.of(additionStack), SlotContent.of(baseStack), unwrapped.getTemplate(), unwrapped.getPattern(), unwrapped.getUpgradeResult()));
                     });
 
                 });
             } else if (unwrapped.getAddition() != null && unwrapped.getTemplate() != null) {
-                SlotContent.of(unwrapped.getTemplate()).getValidContents().forEach(templateStack -> {
-                    SlotContent.of(unwrapped.getAddition()).getValidContents().forEach(additionStack -> {
-                        recipes.add(new SmithingClientRecipe(unwrapped.isTrim(), Ingredient.of(additionStack.getItem()), unwrapped.getBase(), Ingredient.of(templateStack.getItem()), unwrapped.getPattern(), unwrapped.getUpgradeResult()));
+                unwrapped.getTemplate().getValidContents().forEach(templateStack -> {
+                    unwrapped.getAddition().getValidContents().forEach(additionStack -> {
+                        recipes.add(new SmithingClientRecipe(unwrapped.isTrim(), SlotContent.of(additionStack), unwrapped.getBase(), SlotContent.of(templateStack), unwrapped.getPattern(), unwrapped.getUpgradeResult()));
                     });
 
                 });

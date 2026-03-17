@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.builtin.smithing;
 
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.mojang.datafixers.util.Pair;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
@@ -23,19 +24,18 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
 
 	private final Identifier id;
 	private boolean isTrim;
-    private Ingredient base, template, addition;
+    private SlotContent base, template, addition, upgradeResult;
     private TrimPattern pattern;
-    private ItemStackTemplate upgradeResult;
 
 
     public SmithingServerRecipe(Identifier id, boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable ItemStackTemplate upgradeResult) {
 		this.id = id;
 		this.isTrim = isTrim;
-        this.base = base;
-        this.template = template;
-        this.addition = addition;
+        this.base = SlotContent.of(base);
+        this.template = SlotContent.of(template);
+        this.addition = SlotContent.of(addition);
         this.pattern = pattern;
-        this.upgradeResult = upgradeResult;
+        this.upgradeResult = SlotContent.of(upgradeResult);
     }
 
     @Override
@@ -47,15 +47,15 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
         return this.isTrim;
     }
 
-    public Ingredient getBase() {
+    public SlotContent getBase() {
         return this.base;
     }
 
-    public Ingredient getTemplate() {
+    public SlotContent getTemplate() {
         return this.template;
     }
 
-    public Ingredient getAddition() {
+    public SlotContent getAddition() {
         return this.addition;
     }
 
@@ -64,7 +64,7 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
     }
 
     @Nullable
-    public ItemStackTemplate getUpgradeResult() {
+    public SlotContent getUpgradeResult() {
         return this.upgradeResult;
     }
 
@@ -72,15 +72,15 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
     public void writeToTag(CompoundTag tag) {
 
         tag.putBoolean("isTrim", this.isTrim);
-        tag.put("base", TagUtil.writeIngredient(this.base));
-        tag.put("template", TagUtil.writeIngredient(this.template));
-        tag.put("addition", TagUtil.writeIngredient(this.addition));
+        tag.put("base", TagUtil.writeSlotContent(this.base));
+        tag.put("template", TagUtil.writeSlotContent(this.template));
+        tag.put("addition", TagUtil.writeSlotContent(this.addition));
 
         if(this.pattern != null)
             tag.put("pattern", TrimPattern.DIRECT_CODEC.encode(this.pattern, NbtOps.INSTANCE, new CompoundTag()).getOrThrow());
 
-        if(this.upgradeResult != null) {
-            tag.put("upgradeResult", ItemStackTemplate.CODEC.encode(this.upgradeResult, ServerRecipeManager.INSTANCE.createSerializationContext(), new CompoundTag()).getOrThrow());
+        if(!this.upgradeResult.isEmpty()) {
+            tag.put("upgradeResult", TagUtil.writeSlotContent(this.upgradeResult));
 		}
     }
 
@@ -88,12 +88,12 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
     public void loadFromTag(CompoundTag tag) {
 
         this.isTrim = tag.getBooleanOr("isTrim", false);
-        this.base = TagUtil.readIngredient(tag.getCompound("base").orElseGet(CompoundTag::new));
-        this.template = TagUtil.readIngredient(tag.getCompound("template").orElseGet(CompoundTag::new));
-        this.addition = TagUtil.readIngredient(tag.getCompound("addition").orElseGet(CompoundTag::new));
+        this.base = TagUtil.readSlotContent(tag.getCompound("base").orElseGet(CompoundTag::new));
+        this.template = TagUtil.readSlotContent(tag.getCompound("template").orElseGet(CompoundTag::new));
+        this.addition = TagUtil.readSlotContent(tag.getCompound("addition").orElseGet(CompoundTag::new));
 
         this.pattern = TrimPattern.DIRECT_CODEC.decode(NbtOps.INSTANCE, tag.getCompound("pattern").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
-        this.upgradeResult = ItemStackTemplate.CODEC.decode(ClientRecipeManager.INSTANCE.createSerializationContext(), tag.getCompound("upgradeResult").orElseGet(CompoundTag::new)).mapOrElse(Pair::getFirst, pairError -> null);
+        this.upgradeResult = TagUtil.readSlotContent(tag.getCompound("upgradeResult").orElseGet(CompoundTag::new));
     }
 
     @Override

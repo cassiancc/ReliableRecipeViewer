@@ -21,8 +21,8 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
 
     public SmeltingClientRecipe(SmeltingServerRecipe recipe) {
 
-        this.input = SlotContent.of(recipe.getInput());
-        this.result = SlotContent.of(recipe.getResult());
+        this.input = recipe.getInput();
+        this.result = recipe.getResult();
 
         this.smeltingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("smelting_tick"), 200);
     }

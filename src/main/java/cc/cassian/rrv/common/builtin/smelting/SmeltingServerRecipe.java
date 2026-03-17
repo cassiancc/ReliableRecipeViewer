@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.smelting;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -16,12 +17,12 @@ public class SmeltingServerRecipe implements ReliableServerRecipe {
     );
 
     private final Identifier id;
-    private Ingredient input;
-    private ItemStackTemplate result;
+    private SlotContent input;
+    private SlotContent result;
 
     public SmeltingServerRecipe(Identifier id, Ingredient input, ItemStackTemplate result) {
-        this.input = input;
-        this.result = result;
+        this.input = SlotContent.of(input);
+        this.result = SlotContent.of(result);
         this.id = id;
     }
 
@@ -30,26 +31,24 @@ public class SmeltingServerRecipe implements ReliableServerRecipe {
         return id;
     }
 
-    public Ingredient getInput() {
+    public SlotContent getInput() {
         return this.input;
     }
 
-    public ItemStackTemplate getResult() {
+    public SlotContent getResult() {
         return this.result;
     }
 
     @Override
     public void writeToTag(CompoundTag tag) {
-
-        tag.put("input", TagUtil.writeIngredient(this.input));
-        tag.put("result", TagUtil.encodeItemStackOnServer(this.result));
+        tag.put("input", TagUtil.writeSlotContent(this.input));
+        tag.put("result", TagUtil.writeSlotContent(this.result));
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
-
-        this.input = TagUtil.readIngredient(tag.getCompound("input").orElseGet(CompoundTag::new));
-        this.result = TagUtil.decodeItemStackTemplateOnClient(tag.getCompound("result").orElseGet(CompoundTag::new));
+        this.input = TagUtil.readSlotContent(tag.getCompound("input").orElseGet(CompoundTag::new));
+        this.result = TagUtil.readSlotContent(tag.getCompound("result").orElseGet(CompoundTag::new));
     }
 
     @Override

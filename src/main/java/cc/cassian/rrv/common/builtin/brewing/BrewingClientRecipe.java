@@ -25,12 +25,12 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
 
     public BrewingClientRecipe(BrewingServerRecipe brewingServerRecipe) {
 
-        this.bottle1 = SlotContent.of(brewingServerRecipe.getBottleIngredient().copy());
-        this.bottle2 = SlotContent.of(brewingServerRecipe.getBottleIngredient().copy());
-        this.bottle3 = SlotContent.of(brewingServerRecipe.getBottleIngredient().copy());
+        this.bottle1 = brewingServerRecipe.getBottleIngredient();
+        this.bottle2 = brewingServerRecipe.getBottleIngredient();
+        this.bottle3 = brewingServerRecipe.getBottleIngredient();
 
-        this.result = SlotContent.of(brewingServerRecipe.getResult());
-        this.magicIngredient = SlotContent.of(brewingServerRecipe.getMagicIngredient());
+        this.result = brewingServerRecipe.getResult();
+        this.magicIngredient = brewingServerRecipe.getMagicIngredient();
 
         this.brewProgressTicker = AnimationTicker.create(Identifier.withDefaultNamespace("brew_progress_tick"), 400);
     }
