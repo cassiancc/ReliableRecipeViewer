@@ -1,7 +1,6 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
-import cc.cassian.rrv.fabric.mixin.ComponentsIngredientAccessor;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -13,6 +12,7 @@ import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
 import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
+import cc.cassian.rrv.fabric.mixin.ComponentsIngredientAccessor;
 //?} else {
 /*import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;

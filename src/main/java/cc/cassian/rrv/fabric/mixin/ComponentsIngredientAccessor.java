@@ -1,3 +1,4 @@
+//? fabric {
 package cc.cassian.rrv.fabric.mixin;
 
 import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
@@ -10,3 +11,4 @@ public interface ComponentsIngredientAccessor {
 	@Invoker
 	DataComponentPatch callGetComponents();
 }
+//?}
