@@ -28,21 +28,14 @@ public class ResourceRecipeManager {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
 	}
 
-	public static void addInfoRecipes(String path, ArrayList<InfoClientRecipe> infoRecipes, boolean b) {
-		addInfoRecipes(getIdentifierResourceMap(path), infoRecipes, b);
-	}
-
-	private static void addInfoRecipes(Map<Identifier, Resource> identifierResourceMap, ArrayList<InfoClientRecipe> infoRecipes, boolean b) {
-		identifierResourceMap.forEach((identifier, resource) -> {
+	public static void addInfoRecipes(ArrayList<InfoClientRecipe> infoRecipes) {
+		getIdentifierResourceMap("rrv/recipe").forEach((identifier, resource) -> {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
 				if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
 					var text = parsedRecipe.get("text").getAsString();
 					infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
-					if (b)
-						LOGGER.info("RRV: Loaded info recipe from legacy path 'rrv_info'. Please move your recipes to 'rrv/recipe' in the future!");
-					else
-						LOGGER.debug("RRV: Loaded info recipe {}", identifier);
+					LOGGER.debug("RRV: Loaded info recipe {}", identifier);
 				}
 			} catch (IOException e) {
 				LOGGER.error("RRV: Could not parse info recipe '{}' due to an exception: ", identifier, e);
@@ -50,30 +43,19 @@ public class ResourceRecipeManager {
 		});
 	}
 
-	public static void addWorldInteractionRecipes(String path, ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes, boolean b) {
-		addWorldInteractionRecipes(getIdentifierResourceMap(path), worldInteractionRecipes, b);
-	}
-
-	private static void addWorldInteractionRecipes(Map<Identifier, Resource> identifierResourceMap, ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes, boolean b) {
-		for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
+	public static void addWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
+		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
 			var slots = readCombinationRecipe("world_interaction", entry);
 			if (slots != null) {
 				worldInteractionRecipes.add(new WorldInteractionClientRecipe(slots.left, slots.right, slots.result, slots.priority));
-				if (b)
-					LOGGER.info("RRV: Loaded world interaction recipe from legacy path 'rrv_world_interaction'. Please move your recipes to 'rrv/recipe' in the future!");
-				else
-					LOGGER.debug("RRV: Loaded world interaction recipe {}", entry.getKey());
+				LOGGER.debug("RRV: Loaded world interaction recipe {}", entry.getKey());
 			}
 		}
 	}
 
-	public static ArrayList<AnvilCombiningClientRecipe> addAnvilCombiningRecipes(String path) {
-		return addAnvilCombiningRecipes(getIdentifierResourceMap(path));
-	}
-
-	private static ArrayList<AnvilCombiningClientRecipe> addAnvilCombiningRecipes(Map<Identifier, Resource> identifierResourceMap) {
+	public static ArrayList<AnvilCombiningClientRecipe> addAnvilCombiningRecipes() {
 		ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
-		for (Map.Entry<Identifier, Resource> entry : identifierResourceMap.entrySet()) {
+		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
 			var slots = readCombinationRecipe("anvil_combining", entry);
 			if (slots != null)
 				anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(slots.left, slots.right, slots.result, slots.priority));

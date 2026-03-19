@@ -120,15 +120,13 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         // info
         ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
             ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
-            addInfoRecipes("rrv_info", infoRecipes, true);
-            addInfoRecipes("rrv/recipe", infoRecipes, false);
+            addInfoRecipes(infoRecipes);
             return infoRecipes;
         });
         // world interaction
         ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
             ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
-            addWorldInteractionRecipes("rrv_world_interaction", worldInteractionRecipes, true);
-            addWorldInteractionRecipes("rrv/recipe", worldInteractionRecipes, false);
+            addWorldInteractionRecipes(worldInteractionRecipes);
 
             var axes = SlotContent.of(ItemTags.AXES);
             var shovels = SlotContent.of(ItemTags.SHOVELS);
@@ -190,7 +188,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             return List.of(new AnvilCombiningClientRecipe(modRecipe.getLeft(), modRecipe.getRight(), modRecipe.getResult()));
         });
         ItemView.addClientRecipeWrapper(ResourceDrivenAnvilCombiningServerRecipe.TYPE, modRecipe -> {
-            return addAnvilCombiningRecipes("rrv/recipe");
+            return addAnvilCombiningRecipes();
         });
     }
 
