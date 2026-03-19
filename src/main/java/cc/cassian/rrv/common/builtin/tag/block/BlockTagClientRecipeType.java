@@ -1,24 +1,20 @@
-package cc.cassian.rrv.common.builtin.tag;
+package cc.cassian.rrv.common.builtin.tag.block;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SpawnEggItem;
 
-import java.util.List;
+public class BlockTagClientRecipeType implements ReliableClientRecipeType {
 
-public class TagClientRecipeType implements ReliableClientRecipeType {
-
-    public static final TagClientRecipeType INSTANCE = new TagClientRecipeType();
+    public static final BlockTagClientRecipeType INSTANCE = new BlockTagClientRecipeType();
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("view.rrv.type.item_tag");
+        return Component.translatable("view.rrv.type.block_tag");
     }
 
     @Override
@@ -56,7 +52,7 @@ public class TagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getId() {
-        return ReliableRecipeViewer.of("item_tag");
+        return ReliableRecipeViewer.of("block_tag");
     }
 
     @Override

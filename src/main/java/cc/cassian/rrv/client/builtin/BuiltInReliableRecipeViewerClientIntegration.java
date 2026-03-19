@@ -31,10 +31,12 @@ import cc.cassian.rrv.common.builtin.smoking.SmokingClientRecipe;
 import cc.cassian.rrv.common.builtin.smoking.SmokingServerRecipe;
 import cc.cassian.rrv.common.builtin.stonecutting.StonecutterClientRecipe;
 import cc.cassian.rrv.common.builtin.stonecutting.StonecutterServerRecipe;
-import cc.cassian.rrv.common.builtin.tag.TagClientRecipe;
-import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
+import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
+import cc.cassian.rrv.common.builtin.tag.item.ItemTagServerRecipe;
 import cc.cassian.rrv.common.builtin.crafting.recipes.TippedArrowServerRecipe;
 import cc.cassian.rrv.common.builtin.crafting.recipes.TransmuteServerRecipe;
+import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
+import cc.cassian.rrv.common.builtin.tag.block.BlockTagServerRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
@@ -113,7 +115,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             return unwrapped.getOffers().stream().map(VillagerClientRecipe::new).toList();
         });
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
-        ItemView.addClientRecipeWrapper(TagServerRecipe.TYPE, unwrapped -> List.of(new TagClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(ItemTagServerRecipe.TYPE, unwrapped -> List.of(new ItemTagClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(BlockTagServerRecipe.TYPE, unwrapped -> List.of(new BlockTagClientRecipe(unwrapped)));
         // info
         ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
             ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();

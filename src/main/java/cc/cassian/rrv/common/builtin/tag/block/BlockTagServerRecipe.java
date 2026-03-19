@@ -1,34 +1,29 @@
-package cc.cassian.rrv.common.builtin.tag;
+package cc.cassian.rrv.common.builtin.tag.block;
 
-import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
 
-import java.util.List;
+public class BlockTagServerRecipe implements ReliableServerRecipe {
 
-public class TagServerRecipe implements ReliableServerRecipe {
-
-    public static final ReliableServerRecipeType<TagServerRecipe> TYPE = ReliableServerRecipeType.register(
-            ReliableRecipeViewer.of("item_tags"),
-            () -> new TagServerRecipe(null)
+    public static final ReliableServerRecipeType<BlockTagServerRecipe> TYPE = ReliableServerRecipeType.register(
+            ReliableRecipeViewer.of("block_tags"),
+            () -> new BlockTagServerRecipe(null)
     );
 
-    private TagKey<Item> tagKey;
+    private TagKey<Block> tagKey;
 
-	public TagServerRecipe(TagKey<Item> tagKey) {
+	public BlockTagServerRecipe(TagKey<Block> tagKey) {
         this.tagKey = tagKey;
     }
 
-    public TagKey<Item> getTagKey() {
+    public TagKey<Block> getTagKey() {
         return this.tagKey;
     }
 
@@ -39,7 +34,7 @@ public class TagServerRecipe implements ReliableServerRecipe {
 
     @Override
     public void loadFromTag(CompoundTag tag) {
-        this.tagKey = TagKey.create(Registries.ITEM, Identifier.parse(tag.getStringOr("tag", "")));
+        this.tagKey = TagKey.create(Registries.BLOCK, Identifier.parse(tag.getStringOr("tag", "")));
     }
 
     @Override

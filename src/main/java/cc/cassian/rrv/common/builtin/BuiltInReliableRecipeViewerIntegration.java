@@ -6,7 +6,8 @@ import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.anvil.ResourceDrivenAnvilCombiningServerRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
-import cc.cassian.rrv.common.builtin.tag.TagServerRecipe;
+import cc.cassian.rrv.common.builtin.tag.item.ItemTagServerRecipe;
+import cc.cassian.rrv.common.builtin.tag.block.BlockTagServerRecipe;
 import cc.cassian.rrv.common.mixin.world.item.crafting.DyeRecipeAccessor;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
@@ -58,6 +59,7 @@ import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.*;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -181,7 +183,14 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             BuiltInRegistries.ITEM.listTagIds().forEach((tag) -> {
                 Optional<HolderSet.Named<Item>> tagContents = BuiltInRegistries.ITEM.get(tag);
                 if (tagContents.isPresent() && !tagContents.get().stream().allMatch(item -> ItemView.getExcludedItems().contains(item.value()))) {
-                    recipeList.add(new TagServerRecipe(tag));
+                    recipeList.add(new ItemTagServerRecipe(tag));
+                }
+            });
+
+            BuiltInRegistries.BLOCK.listTagIds().forEach((tag) -> {
+                Optional<HolderSet.Named<Block>> tagContents = BuiltInRegistries.BLOCK.get(tag);
+                if (tagContents.isPresent() && !tagContents.get().stream().allMatch(item -> ItemView.getExcludedItems().contains(item.value().asItem()))) {
+                    recipeList.add(new BlockTagServerRecipe(tag));
                 }
             });
 
