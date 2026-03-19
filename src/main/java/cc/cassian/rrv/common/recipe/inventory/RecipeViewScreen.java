@@ -8,6 +8,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
@@ -307,10 +308,10 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_itemTag")) {
-            replaceTooltipWithTagDetails(tooltip, tagTag, "_itemTag", "tag.item");
+            replaceTooltipWithTagDetails(tooltip, tagTag, "_itemTag", "tag.item.");
         }
         else if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_blockTag")) {
-            replaceTooltipWithTagDetails(tooltip, tagTag, "_blockTag", "tag.block");
+            replaceTooltipWithTagDetails(tooltip, tagTag, "_blockTag", "tag.block.");
         }
 
         if (this.hoveredSlot != null && this.hoveredSlot.hasItem())
@@ -326,9 +327,10 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     private static void replaceTooltipWithTagDetails(List<Component> tooltip, CompoundTag nbt, String nbtPrefix, String languageKeyPrefix) {
         Component first = tooltip.getFirst();
         String tagKeyString = nbt.getStringOr(ReliableRecipeViewer.MOD_ID + nbtPrefix, "Error");
-        var blockTagKeyTranslation = Identifier.parse(tagKeyString).toLanguageKey(languageKeyPrefix).replace("/", ".");
-        if (I18n.exists(blockTagKeyTranslation)) {
-            tooltip.addFirst(Component.translatable(blockTagKeyTranslation));
+		String baseTagTranslation = Identifier.parse(tagKeyString).toLanguageKey().replace("/", ".");
+        String tagTranslation = languageKeyPrefix + baseTagTranslation;
+        if (I18n.exists(tagTranslation)) {
+            tooltip.addFirst(Component.translatable(tagTranslation));
         } else {
             tooltip.addFirst(Component.literal("#" + tagKeyString));
         }
