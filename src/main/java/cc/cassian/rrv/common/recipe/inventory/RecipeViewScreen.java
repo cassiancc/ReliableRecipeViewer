@@ -306,12 +306,28 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
         CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_recipeTag")) {
+        if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_itemTag")) {
             Component first = tooltip.getFirst();
-            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_recipeTag", "Error");
+            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_itemTag", "Error");
             var itemTagKeyTranslation = "tag.item."+ Identifier.parse(tagKeyString).toLanguageKey().replace("/", ".");
             if (I18n.exists(itemTagKeyTranslation)) {
                 tooltip.addFirst(Component.translatable(itemTagKeyTranslation));
+            } else {
+                tooltip.addFirst(Component.literal("#"+ tagKeyString));
+            }
+            tooltip.set(1, Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(first));
+            tooltip.add(
+                    Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
+                            .append(Component.literal("#" + tagKeyString).withStyle(ChatFormatting.GRAY))
+
+            );
+        }
+        else if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_blockTag")) {
+            Component first = tooltip.getFirst();
+            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_blockTag", "Error");
+            var blockTagKeyTranslation = "tag.block."+ Identifier.parse(tagKeyString).toLanguageKey().replace("/", ".");
+            if (I18n.exists(blockTagKeyTranslation)) {
+                tooltip.addFirst(Component.translatable(blockTagKeyTranslation));
             } else {
                 tooltip.addFirst(Component.literal("#"+ tagKeyString));
             }

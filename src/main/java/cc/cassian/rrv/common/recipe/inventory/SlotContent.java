@@ -14,7 +14,8 @@ import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
 import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
 import cc.cassian.rrv.fabric.mixin.ComponentsIngredientAccessor;
 //?} else {
-/*import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+/*import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 *///?}
 import net.minecraft.core.Holder;
@@ -23,6 +24,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,6 +46,7 @@ public class SlotContent {
     private int current;
 
     private TagKey<Item> itemTag;
+    private TagKey<Block> blockTag;
 
     private ItemStack itemOrigin;
     private ActionType originType;
@@ -78,12 +81,26 @@ public class SlotContent {
 	 */
     public SlotContent bindItemTag(TagKey<Item> tag) {
         this.itemTag = tag;
-        this.setDataComponent();
+        this.setDataComponent("itemTag", tag.location());
         return this;
     }
 
     public Optional<TagKey<Item>> getItemTag() {
         return Optional.ofNullable(this.itemTag);
+    }
+
+    /**
+     * Internal method to bind an item tag to a `SlotContent`.
+     * The preferred option is usually {@link SlotContent#of(TagKey)}.
+     */
+    public SlotContent bindBlockTag(TagKey<Block> tag) {
+        this.blockTag = tag;
+        this.setDataComponent("blockTag", tag.location());
+        return this;
+    }
+
+    public Optional<TagKey<Block>> getBlockTag() {
+        return Optional.ofNullable(this.blockTag);
     }
 
     public void bindOrigin(ItemStack stack, ActionType originType) {
@@ -130,13 +147,13 @@ public class SlotContent {
         return this.content;
     }
 
-    private void setDataComponent() {
-        if (this.itemTag().isEmpty())
+    private void setDataComponent(String key, Identifier id) {
+        if (id == null)
             return;
 
         this.content.forEach(stack -> {
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            tag.putString(ReliableRecipeViewer.MOD_ID + "_recipeTag", this.itemTag().get().location().toString());
+            tag.putString(ReliableRecipeViewer.MOD_ID + "_" + key, id.toString());
             CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
         });
 
@@ -235,6 +252,17 @@ public class SlotContent {
         return new SlotContent(stacks).bindItemTag(itemTag);
     }
 
+    public static SlotContent ofBlockTag(TagKey<Block> blockTag) {
+        if (blockTag == null) return SlotContent.of();
+        if (BuiltInRegistries.BLOCK.get(blockTag).isEmpty()) return SlotContent.of();
+        List<ItemStack> stacks = new ArrayList<>();
+        BuiltInRegistries.BLOCK.getTagOrEmpty(blockTag).forEach(holder -> {
+            stacks.add(holder.value().asItem().getDefaultInstance());
+        });
+
+        return new SlotContent(stacks).bindBlockTag(blockTag);
+    }
+
     public static SlotContent of(Ingredient ingredient) {
         if (ingredient == null) return SlotContent.of();
 
@@ -267,6 +295,10 @@ public class SlotContent {
         /*if (ingredient.getCustomIngredient() instanceof DataComponentIngredient dataComponentIngredient) {
             DataComponentPatch dataComponentPatch = dataComponentIngredient.components();
             return SlotContent.of(dataComponentIngredient.items().map((item)->new ItemStack(item, 1, dataComponentPatch)).toList());
+        }
+        else if (ingredient.getCustomIngredient() instanceof BlockTagIngredient blockTagIngredient) {
+            TagKey<Block> blockTag = blockTagIngredient.getTag();
+            return SlotContent.ofBlockTag(blockTag);
         }
         *///?}
 
