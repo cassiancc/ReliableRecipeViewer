@@ -210,33 +210,30 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         //Smelting
         ItemView.addServerRecipeProvider(recipeList -> {
-            ServerRecipeManager.INSTANCE.getRecipeHoldersForType(RecipeType.SMELTING).forEach(recipe -> {
-                recipeList.add(new SmeltingServerRecipe(recipe.id().identifier(), recipe.value().input(), recipe.value().result));
+            ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMELTING).forEach(recipe -> {
+                recipeList.add(new SmeltingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
         //Blasting
         ItemView.addServerRecipeProvider(recipeList -> {
-            ServerRecipeManager.INSTANCE.getRecipeHoldersForType(RecipeType.BLASTING).forEach(recipe -> {
-                recipeList.add(new BlastingServerRecipe(recipe.id().identifier(), recipe.value().input(), recipe.value().result));
+            ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.BLASTING).forEach(recipe -> {
+                recipeList.add(new BlastingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
         //Smoking
         ItemView.addServerRecipeProvider(recipeList -> {
-            ServerRecipeManager.INSTANCE.getRecipeHoldersForType(RecipeType.SMOKING).forEach(recipe -> {
-                recipeList.add(new SmokingServerRecipe(recipe.id().identifier(), recipe.value().input(), recipe.value().result));
+            ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMOKING).forEach(recipe -> {
+                recipeList.add(new SmokingServerRecipe(recipe.input(), recipe.result));
             });
         });
 
         //Crafting
         ItemView.addServerRecipeProvider(recipeList -> {
-            ServerRecipeManager.INSTANCE.getRecipeHoldersForType(RecipeType.CRAFTING).forEach(recipeHolder -> {
-                var recipe = recipeHolder.value();
-                Identifier id = recipeHolder.id().identifier();
-                if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-                    recipeList.add(new ShapelessServerRecipe(id, shapelessRecipe.ingredients, shapelessRecipe.result));
-                }
+            ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CRAFTING).forEach(recipe -> {
+                if (recipe instanceof ShapelessRecipe shapelessRecipe)
+                    recipeList.add(new ShapelessServerRecipe(shapelessRecipe.ingredients, shapelessRecipe.result));
 
 
                 if (recipe instanceof ShapedRecipe shapedRecipe) {
@@ -258,7 +255,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                         }
                     }
 
-                    recipeList.add(new ShapedServerRecipe(id, shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, SlotContent.of(shapedRecipe.result)));
+                    recipeList.add(new ShapedServerRecipe(shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, SlotContent.of(shapedRecipe.result)));
                 }
 
                 if (recipe instanceof TransmuteRecipe) {
@@ -284,7 +281,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                     });
 
                     if (!ingredients.isEmpty() && !results.isEmpty())
-                        recipeList.add(new TransmuteServerRecipe(id, accessor.getInput(), accessor.getMaterial(), results));
+                        recipeList.add(new TransmuteServerRecipe(accessor.getInput(), accessor.getMaterial(), results));
 
                 }
                 if (recipe instanceof DyeRecipe) {
@@ -307,7 +304,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 							results.add(ItemStackTemplate.fromNonEmptyStack(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor))));
 						}
 					}
-                    recipeList.add(new TransmuteServerRecipe(id, accessor.getTarget(), accessor.getDye(), results, 1));
+                    recipeList.add(new TransmuteServerRecipe(accessor.getTarget(), accessor.getDye(), results, 1));
                 }
             });
 
@@ -321,29 +318,27 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         //Campfire
         ItemView.addServerRecipeProvider(recipeList -> {
-            ServerRecipeManager.INSTANCE.getRecipeHoldersForType(RecipeType.CAMPFIRE_COOKING).forEach(campfireCookingRecipe -> {
-                recipeList.add(new CampfireServerRecipe(campfireCookingRecipe.id().identifier(), campfireCookingRecipe.value().input(), campfireCookingRecipe.value().result));
+            ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(campfireCookingRecipe -> {
+                recipeList.add(new CampfireServerRecipe(campfireCookingRecipe.input(), campfireCookingRecipe.result));
             });
         });
 
         //Stonecutting
         ItemView.addServerRecipeProvider(recipeList -> {
-            ServerRecipeManager.INSTANCE.getRecipeHoldersForType(RecipeType.STONECUTTING).forEach(stonecutterRecipe -> {
-                recipeList.add(new StonecutterServerRecipe(stonecutterRecipe.id().identifier(), stonecutterRecipe.value().input(), stonecutterRecipe.value().result));
+            ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipe -> {
+                recipeList.add(new StonecutterServerRecipe(stonecutterRecipe.input(), stonecutterRecipe.result));
             });
         });
 
         //Smithing
         ItemView.addServerRecipeProvider(recipeList -> {
-            ServerRecipeManager.INSTANCE.getRecipeHoldersForType(RecipeType.SMITHING).forEach(holder -> {
-                var smithingRecipe = holder.value();
-                var id = holder.id().identifier();
+            ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMITHING).forEach(smithingRecipe -> {
 
                 if (smithingRecipe instanceof SmithingTrimRecipe trimRecipe)
-                    recipeList.add(new SmithingServerRecipe(id, true, trimRecipe.baseIngredient(), trimRecipe.templateIngredient().orElse(null), trimRecipe.additionIngredient().orElse(null), trimRecipe.pattern.value(), null));
+                    recipeList.add(new SmithingServerRecipe(true, trimRecipe.baseIngredient(), trimRecipe.templateIngredient().orElse(null), trimRecipe.additionIngredient().orElse(null), trimRecipe.pattern.value(), null));
 
                 if (smithingRecipe instanceof SmithingTransformRecipe transformRecipe) {
-                    recipeList.add(new SmithingServerRecipe(id, false, transformRecipe.baseIngredient(), transformRecipe.templateIngredient().orElse(null), transformRecipe.additionIngredient().orElse(null), null, transformRecipe.result));
+                    recipeList.add(new SmithingServerRecipe(false, transformRecipe.baseIngredient(), transformRecipe.templateIngredient().orElse(null), transformRecipe.additionIngredient().orElse(null), null, transformRecipe.result));
                 }
 
             });

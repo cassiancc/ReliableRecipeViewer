@@ -14,26 +14,19 @@ public class StonecutterServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<StonecutterServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("stonecutting"),
-            () -> new StonecutterServerRecipe(null, SlotContent.of(), SlotContent.of())
+            () -> new StonecutterServerRecipe(SlotContent.of(), SlotContent.of())
     );
 
-	private final Identifier id;
 	private SlotContent input;
     private SlotContent result;
 
-    public StonecutterServerRecipe(Identifier id, SlotContent input, SlotContent result) {
-		this.id = id;
+    public StonecutterServerRecipe(SlotContent input, SlotContent result) {
 		this.input = input;
         this.result = result;
     }
 
-    public StonecutterServerRecipe(Identifier id, Ingredient input, ItemStackTemplate result) {
-        this(id, SlotContent.of(input), SlotContent.of(result));
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
+    public StonecutterServerRecipe(Ingredient input, ItemStackTemplate result) {
+        this(SlotContent.of(input), SlotContent.of(result));
     }
 
     public SlotContent getInput() {

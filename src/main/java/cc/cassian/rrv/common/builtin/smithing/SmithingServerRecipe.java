@@ -19,28 +19,21 @@ public class SmithingServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<SmithingServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("smithing"),
-            () -> new SmithingServerRecipe(null, false, null, null, null, null, null)
+            () -> new SmithingServerRecipe(false, null, null, null, null, null)
     );
 
-	private final Identifier id;
 	private boolean isTrim;
     private SlotContent base, template, addition, upgradeResult;
     private TrimPattern pattern;
 
 
-    public SmithingServerRecipe(Identifier id, boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable ItemStackTemplate upgradeResult) {
-		this.id = id;
+    public SmithingServerRecipe(boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable ItemStackTemplate upgradeResult) {
 		this.isTrim = isTrim;
         this.base = SlotContent.of(base);
         this.template = SlotContent.of(template);
         this.addition = SlotContent.of(addition);
         this.pattern = pattern;
         this.upgradeResult = SlotContent.of(upgradeResult);
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
     }
 
     public boolean isTrim() {

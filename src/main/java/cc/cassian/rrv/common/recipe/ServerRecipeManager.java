@@ -62,10 +62,6 @@ public class ServerRecipeManager {
         return (List<T>) this.recipeManager.getRecipes().stream().filter(holder -> holder.value().getType().equals(recipeType)).map(RecipeHolder::value).toList();
     }
 
-    public <H extends RecipeHolder<T>, T extends Recipe<?>> List<H> getRecipeHoldersForType(RecipeType<T> recipeType) {
-        return (List<H>) this.recipeManager.getRecipes().stream().filter(holder -> holder.value().getType().equals(recipeType)).toList();
-    }
-
     public RegistryOps<Tag> createSerializationContext() {
         return server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
     }
@@ -154,19 +150,23 @@ public class ServerRecipeManager {
         });
 
         serverRecipes.forEach(iRrvServerModRecipe -> {
+
+            Identifier typeId = iRrvServerModRecipe.getRecipeType().getId();
             List<ServerRecipeEntry> list = PRESENT_RECIPES.getOrDefault(iRrvServerModRecipe.getRecipeType(), new ArrayList<>());
-            list.add(new ServerRecipeEntry(iRrvServerModRecipe));
+            list.add(new ServerRecipeEntry(Identifier.fromNamespaceAndPath(typeId.getNamespace(), typeId.getPath() + "/" + UUID.randomUUID()), iRrvServerModRecipe));
             PRESENT_RECIPES.put(iRrvServerModRecipe.getRecipeType(), list);
         });
     }
 
 
-    public record ServerRecipeEntry(ReliableServerRecipe recipe) {
+    public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
 
         public static final StreamCodec<FriendlyByteBuf, ServerRecipeEntry> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8,
+                entry -> entry.modRecipeId().toString(),
                 ByteBufCodecs.COMPOUND_TAG,
                 ServerRecipeEntry::createFullTag,
-                (compoundTag) -> new ServerRecipeEntry(ServerRecipeEntry.fromTag(compoundTag))
+                (s, compoundTag) -> new ServerRecipeEntry(Identifier.tryParse(s), ServerRecipeEntry.fromTag(compoundTag))
         );
 
         public <T extends ReliableServerRecipe> T asWrapped() {
@@ -180,8 +180,8 @@ public class ServerRecipeManager {
                 CompoundTag dataTag = new CompoundTag();
                 this.recipe().writeToTag(dataTag);
                 tag.put("recipeData", dataTag);
-            } catch (Exception e) {
-                ReliableRecipeViewer.LOGGER.error("Failed to encode recipe {}: {}, please contact the mod author", safeRecipeId(), e.getMessage());
+            }catch (Exception e) {
+                ReliableRecipeViewer.LOGGER.error("Failed to encode recipe {}: {}, please contact the mod author", this.modRecipeId(), e.getMessage());
             }
 
             return tag;
@@ -199,10 +199,6 @@ public class ServerRecipeManager {
             modRecipe.loadFromTag(tag.getCompound("recipeData").orElseGet(CompoundTag::new));
             return modRecipe;
         }
-
-		public Identifier safeRecipeId() {
-			return Objects.requireNonNullElse(recipe.getId(), Identifier.fromNamespaceAndPath(recipe.getRecipeType().getId().getNamespace(), recipe.getRecipeType().getId().getPath() + "/" + UUID.randomUUID()));
-		}
     }
 
 

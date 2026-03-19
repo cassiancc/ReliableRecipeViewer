@@ -51,9 +51,10 @@ public class RrvPayloadConverter {
 
             CompoundTag fullTag = data.getCompoundOrEmpty("entry");
 
+            Identifier recipeId = Identifier.parse(fullTag.getStringOr("recipeId", ""));
             ReliableServerRecipe recipe = ServerRecipeManager.ServerRecipeEntry.fromTag(fullTag.getCompoundOrEmpty("recipe"));
 
-            ClientboundTypeUpdatePayload p = new ClientboundTypeUpdatePayload(new ServerRecipeManager.ServerRecipeEntry(recipe));
+            ClientboundTypeUpdatePayload p = new ClientboundTypeUpdatePayload(new ServerRecipeManager.ServerRecipeEntry(recipeId, recipe));
             connection.handleCustomPayload(p);
         }
 
