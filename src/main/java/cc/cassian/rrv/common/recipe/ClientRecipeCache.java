@@ -127,7 +127,11 @@ public class ClientRecipeCache {
             try {
                 wrappedRecipes = wrapper.wrap(modEntry.asWrapped());
             }catch (Exception e) {
-                ReliableRecipeViewer.LOGGER.error("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.modRecipeId(), e.getMessage());
+                if (e.getMessage() != null && !e.getMessage().isEmpty()) {
+                    ReliableRecipeViewer.LOGGER.error("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.modRecipeId(), e.getMessage());
+                } else {
+                    ReliableRecipeViewer.LOGGER.debug("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.modRecipeId(), e.getMessage());
+                }
                 continue;
             }
 

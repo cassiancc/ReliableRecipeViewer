@@ -236,6 +236,10 @@ public class SlotContent {
         return new SlotContent(stacks);
     }
 
+    public static SlotContent of(SlotContent content) {
+        return of(content.content);
+    }
+
     public static SlotContent ofTemplates(List<ItemStackTemplate> stacks) {
         if (stacks == null) return SlotContent.of();
         return new SlotContent(stacks.stream().map(ItemStackTemplate::create).toList());

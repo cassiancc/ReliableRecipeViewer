@@ -18,8 +18,8 @@ public class BlockTagClientRecipe implements ReliableClientRecipe {
 	private final SlotContent tagKeyContent;
 	private final List<SlotContent> items;
 
-	public BlockTagClientRecipe(BlockTagServerRecipe serverRecipe) {
-		this.tagKey = serverRecipe.getTagKey();
+	public BlockTagClientRecipe(TagKey<Block> serverRecipe) {
+		this.tagKey = serverRecipe;
 
 		List<SlotContent> drops = new ArrayList<>();
 		BuiltInRegistries.BLOCK.getTagOrEmpty(tagKey).forEach(itemHolder -> {
@@ -30,7 +30,7 @@ public class BlockTagClientRecipe implements ReliableClientRecipe {
 
 
 		this.items = drops;
-		this.tagKeyContent = items.getFirst().bindBlockTag(tagKey);
+		this.tagKeyContent = SlotContent.of(items.getFirst()).bindBlockTag(tagKey);
 	}
 
 	public TagKey<?> getTagKey() {

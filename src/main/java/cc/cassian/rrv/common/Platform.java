@@ -9,10 +9,12 @@ import cc.cassian.rrv.fabric.FabricPlatformImpl;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+@ApiStatus.Internal
 public interface Platform {
 
     //? fabric {

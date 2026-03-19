@@ -18,8 +18,8 @@ public class ItemTagClientRecipe implements ReliableClientRecipe {
 	private final SlotContent tagKeyContent;
 	private final List<SlotContent> items;
 
-	public ItemTagClientRecipe(ItemTagServerRecipe serverRecipe) {
-		this.tagKey = serverRecipe.getTagKey();
+	public ItemTagClientRecipe(TagKey<Item> serverRecipe) {
+		this.tagKey = serverRecipe;
 
 		List<SlotContent> drops = new ArrayList<>();
 		BuiltInRegistries.ITEM.getTagOrEmpty(tagKey).forEach(itemHolder -> {
@@ -30,7 +30,7 @@ public class ItemTagClientRecipe implements ReliableClientRecipe {
 
 
 		this.items = drops;
-		this.tagKeyContent = items.getFirst().bindItemTag(tagKey);
+		this.tagKeyContent = SlotContent.of(items.getFirst()).bindItemTag(tagKey);
 	}
 
 	public TagKey<?> getTagKey() {

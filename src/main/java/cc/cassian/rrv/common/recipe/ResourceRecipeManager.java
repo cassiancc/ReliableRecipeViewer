@@ -5,7 +5,6 @@ import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,11 +23,36 @@ import java.util.Optional;
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
 public class ResourceRecipeManager {
+	public static final ArrayList<Identifier> HIDDEN_ITEM_TAGS = new ArrayList<>();
+	public static final ArrayList<Identifier> HIDDEN_BLOCK_TAGS = new ArrayList<>();
+
 	private static Map<Identifier, Resource> getIdentifierResourceMap(String path) {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
 	}
 
-	public static void addInfoRecipes(ArrayList<InfoClientRecipe> infoRecipes) {
+	public static void getHiddenTags() {
+		getIdentifierResourceMap("rrv/exclusions").forEach((identifier, resource) -> {
+			try {
+				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
+				if (parsedRecipe.get("type").getAsString().equals("rrv:exclusions")) {
+					var itemTags = parsedRecipe.get("item").getAsJsonArray();
+					itemTags.forEach(item -> {
+						HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString()));
+					});
+					var blockTags = parsedRecipe.get("block").getAsJsonArray();
+					blockTags.forEach(item -> {
+						HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString()));
+					});
+					LOGGER.debug("RRV: Loaded exclusion list {}", identifier);
+				}
+			} catch (IOException e) {
+				LOGGER.error("RRV: Could not parse exclusion list '{}' due to an exception: ", identifier, e);
+			}
+		});
+	}
+
+	public static ArrayList<InfoClientRecipe> addInfoRecipes() {
+		ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
 		getIdentifierResourceMap("rrv/recipe").forEach((identifier, resource) -> {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
@@ -41,6 +65,7 @@ public class ResourceRecipeManager {
 				LOGGER.error("RRV: Could not parse info recipe '{}' due to an exception: ", identifier, e);
 			}
 		});
+		return infoRecipes;
 	}
 
 	public static void addWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {

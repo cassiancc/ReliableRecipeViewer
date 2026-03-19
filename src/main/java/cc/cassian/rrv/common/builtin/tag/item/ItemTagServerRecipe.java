@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.tag.item;
 
+import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -28,12 +29,12 @@ public class ItemTagServerRecipe implements ReliableServerRecipe {
 
     @Override
     public void writeToTag(CompoundTag tag) {
-        tag.putString("tag", this.tagKey.location().toString());
+        tag.store("tag", TagKey.codec(Registries.ITEM), this.tagKey);
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
-        this.tagKey = TagKey.create(Registries.ITEM, Identifier.parse(tag.getStringOr("tag", "")));
+        this.tagKey = tag.read("tag", TagKey.codec(Registries.ITEM)).orElse(CommonTags.EXCLUDED_ITEMS);
     }
 
     @Override

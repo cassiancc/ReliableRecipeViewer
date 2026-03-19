@@ -307,36 +307,10 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_itemTag")) {
-            Component first = tooltip.getFirst();
-            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_itemTag", "Error");
-            var itemTagKeyTranslation = "tag.item."+ Identifier.parse(tagKeyString).toLanguageKey().replace("/", ".");
-            if (I18n.exists(itemTagKeyTranslation)) {
-                tooltip.addFirst(Component.translatable(itemTagKeyTranslation));
-            } else {
-                tooltip.addFirst(Component.literal("#"+ tagKeyString));
-            }
-            tooltip.set(1, Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(first));
-            tooltip.add(
-                    Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
-                            .append(Component.literal("#" + tagKeyString).withStyle(ChatFormatting.GRAY))
-
-            );
+            replaceTooltipWithTagDetails(tooltip, tagTag, "_itemTag", "tag.item");
         }
         else if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_blockTag")) {
-            Component first = tooltip.getFirst();
-            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_blockTag", "Error");
-            var blockTagKeyTranslation = "tag.block."+ Identifier.parse(tagKeyString).toLanguageKey().replace("/", ".");
-            if (I18n.exists(blockTagKeyTranslation)) {
-                tooltip.addFirst(Component.translatable(blockTagKeyTranslation));
-            } else {
-                tooltip.addFirst(Component.literal("#"+ tagKeyString));
-            }
-            tooltip.set(1, Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(first));
-            tooltip.add(
-                    Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
-                            .append(Component.literal("#" + tagKeyString).withStyle(ChatFormatting.GRAY))
-
-            );
+            replaceTooltipWithTagDetails(tooltip, tagTag, "_blockTag", "tag.block");
         }
 
         if (this.hoveredSlot != null && this.hoveredSlot.hasItem())
@@ -347,6 +321,23 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             tooltip.addLast(Component.literal(ReliableRecipeViewerClient.resolver().getModNameForItem(itemStack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
 
         return tooltip;
+    }
+
+    private static void replaceTooltipWithTagDetails(List<Component> tooltip, CompoundTag nbt, String nbtPrefix, String languageKeyPrefix) {
+        Component first = tooltip.getFirst();
+        String tagKeyString = nbt.getStringOr(ReliableRecipeViewer.MOD_ID + nbtPrefix, "Error");
+        var blockTagKeyTranslation = Identifier.parse(tagKeyString).toLanguageKey(languageKeyPrefix).replace("/", ".");
+        if (I18n.exists(blockTagKeyTranslation)) {
+            tooltip.addFirst(Component.translatable(blockTagKeyTranslation));
+        } else {
+            tooltip.addFirst(Component.literal("#" + tagKeyString));
+        }
+        tooltip.set(1, Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(first));
+        tooltip.add(
+                Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
+                        .append(Component.literal("#" + tagKeyString).withStyle(ChatFormatting.GRAY))
+
+        );
     }
 
 

@@ -40,10 +40,12 @@ import cc.cassian.rrv.common.builtin.tag.block.BlockTagServerRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -68,6 +70,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             BuiltInRegistries.ITEM.get(CommonTags.EXCLUDED_ITEMS).ifPresent(items -> items.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(ItemView::excludeItem));
             BuiltInRegistries.FLUID.get(CommonTags.EXCLUDED_FLUIDS).ifPresent(fluids -> fluids.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(fluid -> ItemView.excludeItem(fluid.defaultFluidState().createLegacyBlock().getBlock().asItem())));
             ItemFilters.buildTagCache();
+            getHiddenTags();
         });
 
         //Wrapper
@@ -115,14 +118,22 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             return unwrapped.getOffers().stream().map(VillagerClientRecipe::new).toList();
         });
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
-        ItemView.addClientRecipeWrapper(ItemTagServerRecipe.TYPE, unwrapped -> List.of(new ItemTagClientRecipe(unwrapped)));
-        ItemView.addClientRecipeWrapper(BlockTagServerRecipe.TYPE, unwrapped -> List.of(new BlockTagClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(ItemTagServerRecipe.TYPE, unwrapped -> {
+            TagKey<Item> tagKey = unwrapped.getTagKey();
+            if (HIDDEN_ITEM_TAGS.contains(tagKey.location())) {
+                return List.of();
+            }
+            return List.of(new ItemTagClientRecipe(tagKey));
+		});
+        ItemView.addClientRecipeWrapper(BlockTagServerRecipe.TYPE, unwrapped -> {
+            TagKey<Block> tagKey = unwrapped.getTagKey();
+            if (HIDDEN_BLOCK_TAGS.contains(tagKey.location())) {
+                return List.of();
+            }
+            return List.of(new BlockTagClientRecipe(tagKey));
+		});
         // info
-        ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> {
-            ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
-            addInfoRecipes(infoRecipes);
-            return infoRecipes;
-        });
+        ItemView.addClientRecipeWrapper(InfoServerRecipe.TYPE, modRecipe -> addInfoRecipes());
         // world interaction
         ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
             ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
@@ -154,15 +165,9 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
             // honeycomb
             //? fabric {
-            HoneycombItem.WAXABLES.get().forEach(((block, block2) -> {
-				worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())));
-            }));
-            HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> {
-				worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block2.asItem())));
-            }));
-            AxeItem.STRIPPABLES.forEach(((block, state) -> {
-                worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(state)));
-            }));
+            HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())))));
+            HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block2.asItem())))));
+            AxeItem.STRIPPABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(state)))));
             //?}
 
             // flattenables
@@ -184,12 +189,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             return worldInteractionRecipes;
         });
         // repairing
-        ItemView.addClientRecipeWrapper(AnvilCombiningServerRecipe.TYPE, modRecipe -> {
-            return List.of(new AnvilCombiningClientRecipe(modRecipe.getLeft(), modRecipe.getRight(), modRecipe.getResult()));
-        });
-        ItemView.addClientRecipeWrapper(ResourceDrivenAnvilCombiningServerRecipe.TYPE, modRecipe -> {
-            return addAnvilCombiningRecipes();
-        });
+        ItemView.addClientRecipeWrapper(AnvilCombiningServerRecipe.TYPE, modRecipe -> List.of(new AnvilCombiningClientRecipe(modRecipe.getLeft(), modRecipe.getRight(), modRecipe.getResult())));
+        ItemView.addClientRecipeWrapper(ResourceDrivenAnvilCombiningServerRecipe.TYPE, modRecipe -> addAnvilCombiningRecipes());
     }
 
 
