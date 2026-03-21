@@ -9,6 +9,7 @@
 - Recipe types now serialize a `SlotContent` rather than a raw `Ingredient` or `ItemStack`. This allows for a more flexible and smooth experience when creating and serializing modded content.
 - Mod name filter now filters based on namespace rather than mod name.
 - On NeoForge, integrations are now processed  after the registry is frozen (in `FMLCommonSetupEvent`) to guarantee modded items exist.
+- Fluid stack rendering now uses smarter 26.1 exclusive logic (Fixes #15)
 
 ### Fixed
 - Tag search causing items to appear twice in the index.

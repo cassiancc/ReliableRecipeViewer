@@ -7,12 +7,12 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.util.ARGB;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.material.Fluid;
@@ -20,7 +20,6 @@ import net.minecraft.world.level.material.Fluids;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
-import java.awt.*;
 import java.util.function.Consumer;
 
 import static net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent;
@@ -49,10 +48,9 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
         float renderHeight = Math.max(Math.min((float) fluidStack.amount() / (float) FluidStack.AMOUNT_FULL, 1.0F), 0.1F);
 
-
-        int color = ARGB.opaque(getColor(fluid));
-
-        TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(fluid.defaultFluidState().createLegacyBlock()).particleMaterial().sprite();
+        FluidModel fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
+        TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
+        int color = getColor(fluid, fluidModel);
         RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
 
         float u0 = uvInfo.u0();
@@ -78,14 +76,20 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         poseStack.popPose();
     }
 
-    private static int getColor(Fluid fluid) {
-        return fluid == Fluids.WATER ? Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor() : -1;
-    }
-
     @Override
     public void getExtents(Consumer<Vector3fc> consumer) {
 
     }
+
+    private static int getColor(Fluid fluid, FluidModel fluidModel) {
+        if (fluid == Fluids.WATER) return Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor();
+        BlockTintSource blockTintSource = fluidModel.tintSource();
+        if (blockTintSource != null) {
+            return blockTintSource.color(fluid.defaultFluidState().createLegacyBlock());
+        }
+		return -1;
+	}
+
 
     @Override
     public @Nullable ItemStack extractArgument(ItemStack itemStack) {
