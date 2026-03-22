@@ -2,6 +2,7 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.TagUtil;
@@ -55,6 +56,10 @@ public class ItemView {
      */
     private static final List<ReloadCallback> CLIENT_RELOAD_CALLBACKS = new ArrayList<>();
 
+    /**
+     * A list of world interaction recipes to be added to the index.
+     */
+    private static final List<WorldInteractionClientRecipe> WORLD_INTERACTION_RECIPES = new ArrayList<>();
 
     /**
      * ServerRecipeProviders offer a recipe list where mods can easily add their own server recipes
@@ -275,10 +280,18 @@ public class ItemView {
      * <br>
      * <br>
      * They should register their excluded items here
-     * @param callback
+     * @param callback: A functional interface that runs on the client when the server reloads.
      */
     public static void addClientReloadCallback(ReloadCallback callback) {
         CLIENT_RELOAD_CALLBACKS.add(callback);
+    }
+
+    /**
+     * Mods can add a world interaction recipe via the API rather than via a resource pack.
+     * Run this via {@link ItemView#addClientReloadCallback} to ensure it's registered on time.
+     */
+    public static void addWorldInteractionRecipe(WorldInteractionClientRecipe recipe) {
+        WORLD_INTERACTION_RECIPES.add(recipe);
     }
 
     /**
@@ -294,6 +307,14 @@ public class ItemView {
      */
     public static List<ReloadCallback> getClientReloadCallbacks() {
         return CLIENT_RELOAD_CALLBACKS;
+    }
+
+    /**
+     *
+     * @return A list of currently present code-driven world interaction recipes
+     */
+    public static List<WorldInteractionClientRecipe> getWorldInteractionRecipes() {
+        return WORLD_INTERACTION_RECIPES;
     }
 
 	public static boolean isExcludedItem(Holder<Item> itemHolder) {

@@ -138,6 +138,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
             ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
             addWorldInteractionRecipes(worldInteractionRecipes);
+            worldInteractionRecipes.addAll(ItemView.getWorldInteractionRecipes());
 
             var axes = SlotContent.of(ItemTags.AXES);
             var shovels = SlotContent.of(ItemTags.SHOVELS);
