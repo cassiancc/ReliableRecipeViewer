@@ -5,6 +5,7 @@
 - Searching without a result now changes the colour of the searchbar.
 - Various strings have been made more translatable.
 - Block tags are now visible in the index.
+- World interaction recipes can now be registered via the API.
 
 ### Changed
 - Recipe types now serialize a `SlotContent` rather than a raw `Ingredient` or `ItemStack`. This allows for a more flexible and smooth experience when creating and serializing modded content.
