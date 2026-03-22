@@ -1,9 +1,26 @@
-# Translating Tags
+# Translating and Excluding Tags
 
 RRV follows the common standard for tag translations adopted by Fabric and NeoForge in 1.21. These tag translations are visible in the Item Tag view, and will be shown to users when hovering over a recipe that includes item tags. The format is as follows:
 
 ```json
 "tag.item.minecraft.beds": "Translation of the item tag 'minecraft:beds'"
+"tag.block.minecraft.mineable.pickaxe": "Translation of the block tag 'minecraft:mineable/pickaxe'"
 ```
 
-It is generally recommended to translate any tag your mod provides. This standard is employed by both Fabric and NeoForge, and is supported by other recipe viewers like JEI and [EMI](https://github.com/emilyploszaj/emi/wiki/Tag-Translation).
+It is generally recommended to translate any tag your mod provides that you wish to be user visible. This standard is employed by both Fabric and NeoForge, and is supported by other recipe viewers like JEI and [EMI](https://github.com/emilyploszaj/emi/wiki/Tag-Translation).
+
+## Excluding Tags
+
+If you do not wish for a tag to be user visible, you can hide it from the index by creating a JSON file in `assets/<namespace>/rrv/exclusions`. Any block tag listed under `block` will be excluded from the block tag list, and any item tag listed under the `item` list will be excluded from the item tag list.
+
+```json
+{
+  "type": "rrv:exclusions",
+  "block": [
+    "minecraft:all_hanging_signs",
+  ],
+  "item": [
+    "minecraft:completes_find_tree_tutorial"
+  ]
+}
+```

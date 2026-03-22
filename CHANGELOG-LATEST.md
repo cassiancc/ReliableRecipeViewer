@@ -1,9 +1,10 @@
 ### Added
-- Support for Fabric and NeoForge's Data Component Ingredients.
+- Support for Fabric and NeoForge's Data Component Ingredients and NeoForge's block tag ingredients.
 - Side panel visibility can now be individually set rather than always following the Item View.
 - Searching with filters now changes the colour of the text.
 - Searching without a result now changes the colour of the searchbar.
 - Various strings have been made more translatable.
+- Block tags are now visible in the index.
 
 ### Changed
 - Recipe types now serialize a `SlotContent` rather than a raw `Ingredient` or `ItemStack`. This allows for a more flexible and smooth experience when creating and serializing modded content.
