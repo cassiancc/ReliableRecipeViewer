@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.burning;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
@@ -12,18 +13,23 @@ public class BurningServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<BurningServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("burning"),
-            () -> new BurningServerRecipe(null, 0)
+            () -> new BurningServerRecipe(SlotContent.of(), 0)
     );
 
-    private Item fuel;
+    private SlotContent fuel;
     private int burnTime;
 
     public BurningServerRecipe(Item fuel, int burnTime) {
+        this.fuel = SlotContent.of(fuel);
+        this.burnTime = burnTime;
+    }
+
+    public BurningServerRecipe(SlotContent fuel, int burnTime) {
         this.fuel = fuel;
         this.burnTime = burnTime;
     }
 
-    public Item getFuel() {
+    public SlotContent getFuel() {
         return this.fuel;
     }
 
@@ -33,13 +39,13 @@ public class BurningServerRecipe implements ReliableServerRecipe {
 
     @Override
     public void writeToTag(CompoundTag tag) {
-        tag.putString("fuel", TagUtil.itemToString(this.fuel));
+        tag.put("fuel", TagUtil.writeSlotContent(this.fuel));
         tag.putInt("burnTime", this.burnTime);
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
-        this.fuel = TagUtil.itemFromString(tag.getStringOr("fuel", ""));
+        this.fuel = TagUtil.readSlotContent(tag.getCompoundOrEmpty("fuel"));
         this.burnTime = tag.getIntOr("burnTime", AbstractFurnaceBlockEntity.BURN_TIME_STANDARD);
     }
 

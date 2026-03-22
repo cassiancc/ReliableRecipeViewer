@@ -19,3 +19,4 @@
 ### Removed
 - Deprecated `SlotContent.Type` enum, use `ActionType` instead.
 - Support for versions 1.21.8-1.21.11.
+- Polydex and Controlify integrations are temporarily disabled until they update.

@@ -319,7 +319,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         //Campfire
         ItemView.addServerRecipeProvider(recipeList -> {
             ServerRecipeManager.INSTANCE.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(campfireCookingRecipe -> {
-                recipeList.add(new CampfireServerRecipe(campfireCookingRecipe.input(), campfireCookingRecipe.result));
+                recipeList.add(new CampfireServerRecipe(SlotContent.of(campfireCookingRecipe.input()), SlotContent.of(campfireCookingRecipe.result)));
             });
         });
 

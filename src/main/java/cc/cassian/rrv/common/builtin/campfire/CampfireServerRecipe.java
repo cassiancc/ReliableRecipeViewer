@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.campfire;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.common.builtin.smelting.SmeltingServerRecipe;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -15,7 +16,7 @@ public class CampfireServerRecipe extends SmeltingServerRecipe {
             () -> new CampfireServerRecipe(null, null)
     );
 
-    public CampfireServerRecipe(Ingredient input, ItemStackTemplate result) {
+    public CampfireServerRecipe(SlotContent input, SlotContent result) {
         super(input, result);
     }
 

@@ -237,6 +237,7 @@ public class SlotContent {
     }
 
     public static SlotContent of(SlotContent content) {
+        if (content == null || content.content == null) return SlotContent.of();
         return of(content.content);
     }
 

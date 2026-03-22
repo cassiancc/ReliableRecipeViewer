@@ -18,9 +18,9 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 import java.util.Optional;
 
-public class VillagerTypeClient implements ReliableClientRecipeType {
+public class VillagerClientRecipeType implements ReliableClientRecipeType {
 
-    protected static final VillagerTypeClient INSTANCE = new VillagerTypeClient();
+    protected static final VillagerClientRecipeType INSTANCE = new VillagerClientRecipeType();
 
     private static final ReferenceCondition REFERENCE_CONDITION = (stack, viewRecipe) -> {
         if(!(stack.getItem() instanceof BlockItem blockItem))

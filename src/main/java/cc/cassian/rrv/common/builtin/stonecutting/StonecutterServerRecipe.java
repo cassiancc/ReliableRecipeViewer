@@ -17,8 +17,7 @@ public class StonecutterServerRecipe implements ReliableServerRecipe {
             () -> new StonecutterServerRecipe(SlotContent.of(), SlotContent.of())
     );
 
-	private SlotContent input;
-    private SlotContent result;
+	private SlotContent input, result;
 
     public StonecutterServerRecipe(SlotContent input, SlotContent result) {
 		this.input = input;

@@ -14,13 +14,17 @@ public class SmeltingServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<SmeltingServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.withDefaultNamespace("smelting"),
-            () -> new SmeltingServerRecipe(null, null)
+            () -> new SmeltingServerRecipe(SlotContent.of(), SlotContent.of())
     );
 
     private SlotContent input;
     private SlotContent result;
 
     public SmeltingServerRecipe(Ingredient input, ItemStackTemplate result) {
+        this(SlotContent.of(input), SlotContent.of(result));
+    }
+
+    public SmeltingServerRecipe(SlotContent input, SlotContent result) {
         this.input = SlotContent.of(input);
         this.result = SlotContent.of(result);
     }

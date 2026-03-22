@@ -58,11 +58,10 @@ repositories {
         }
     }
     maven {
-        name = "Maven for PR #2993" // https://github.com/neoforged/NeoForge/pull/2993
-        url = uri("https://prmaven.neoforged.net/NeoForge/pr2993")
+        name = "Cassian's Maven"
+        url = uri("https://maven.cassian.cc/")
         content {
-            includeModule("net.neoforged", "neoforge")
-            includeModule("net.neoforged", "testframework")
+            includeGroupAndSubgroups("cc.cassian")
         }
     }
     mavenCentral()
@@ -73,6 +72,9 @@ dependencies {
         exclude(group = "maven.modrinth")
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+    compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+        isTransitive = false;
+    }
 }
 
 neoForge {
