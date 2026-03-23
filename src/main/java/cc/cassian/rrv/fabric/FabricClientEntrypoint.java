@@ -7,13 +7,11 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.client.PolydexClientIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
-//? <26 {
-/*import cc.cassian.rrv.common.integration.polymer.client.PolydexClientIntegration;
-*///?}
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.Registry;
@@ -43,11 +41,9 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
         ReliableRecipeViewerClient.loadConfigs();
 
-        //? if <26.1 {
-        /*if (ModCompat.POLYDEX) {
+        if (ModCompat.POLYDEX) {
             PolydexClientIntegration.onInitializeClient();
         }
-        *///?}
     }
 
 

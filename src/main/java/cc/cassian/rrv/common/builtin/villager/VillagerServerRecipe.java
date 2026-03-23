@@ -126,7 +126,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	}
 
 	private SlotContent getItemFromTradeCost(TradeCost wants) {
-		return SlotContent.of(new ItemStackTemplate(wants.item(), wants.count().getInt(lootContext()), wants.components().asPatch()));
+		return SlotContent.of(new ItemStack(wants.item(), wants.count().getInt(lootContext()), wants.components().asPatch()));
 	}
 
 	public ResourceKey<VillagerType> requiredType(VillagerTrade trade) {

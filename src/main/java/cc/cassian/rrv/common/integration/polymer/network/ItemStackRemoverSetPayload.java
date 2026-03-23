@@ -1,15 +1,15 @@
-//? fabric && <26 {
-/*package cc.cassian.rrv.common.integration.polymer.network;
+//? fabric {
+package cc.cassian.rrv.common.integration.polymer.network;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.integration.polymer.api.ItemViewRemoveModifier;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +35,10 @@ public record ItemStackRemoverSetPayload(List<ItemStack> itemStacks) implements 
 	public void write(RegistryFriendlyByteBuf buf) {
 		List<ItemStack> stacks = ItemViewRemoveModifier.ITEM_STACK_REMOVER.invoker().get();
 		List<ItemStack> modifiedStacks = new ArrayList<>();
-		PacketContext ctx = PacketContext.create(buf.registryAccess());
+		PacketContext ctx = PacketContext.get();
 		for (ItemStack stack : stacks) {
 			if (PolymerItemUtils.isPolymerServerItem(stack, ctx)) {
-				modifiedStacks.add(PolymerItemUtils.getClientItemStack(stack, ctx));
+				modifiedStacks.add(PolymerItemUtils.getPolymerItemStack(stack, ctx, buf.registryAccess()));
 			}
 		}
 		try {
@@ -55,4 +55,4 @@ public record ItemStackRemoverSetPayload(List<ItemStack> itemStacks) implements 
 
 
 }
-*///?}
+//?}

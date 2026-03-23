@@ -1,5 +1,5 @@
-//? fabric && <26.1 {
-/*package cc.cassian.rrv.common.integration.polymer;
+//? fabric {
+package cc.cassian.rrv.common.integration.polymer;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.common.Platform;
@@ -10,17 +10,15 @@ import cc.cassian.rrv.common.integration.polymer.network.*;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 
-import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import eu.pb4.polydex.api.v1.recipe.PolydexEntry;
 import eu.pb4.polydex.api.v1.recipe.PolydexPageUtils;
 import eu.pb4.polydex.impl.PolydexImpl;
-import eu.pb4.polymer.core.api.other.PolymerScreenHandlerUtils;
+import eu.pb4.polymer.core.api.other.PolymerMenuUtils;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.rsm.api.RegistrySyncUtils;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -46,13 +44,13 @@ public class PolydexIntegration {
 		RegistrySyncUtils.setServerEntry(BuiltInRegistries.MENU, ReliableRecipeViewer.RECIPE_VIEW_MENU);
 
 		if (Platform.INSTANCE.isClientSide()) {
-			PolymerScreenHandlerUtils.registerType(ReliableRecipeViewer.RECIPE_VIEW_MENU);
+			PolymerMenuUtils.registerType(ReliableRecipeViewer.RECIPE_VIEW_MENU);
 		}
 		PolymerResourcePackUtils.addModAssets("rrv");
 
 
-		PayloadTypeRegistry<RegistryFriendlyByteBuf> clientBoundPayloads = PayloadTypeRegistry.playS2C();
-		PayloadTypeRegistry<RegistryFriendlyByteBuf> serverBoundPayloads = PayloadTypeRegistry.playC2S();
+		PayloadTypeRegistry<RegistryFriendlyByteBuf> clientBoundPayloads = PayloadTypeRegistry.clientboundPlay();
+		PayloadTypeRegistry<RegistryFriendlyByteBuf> serverBoundPayloads = PayloadTypeRegistry.serverboundPlay();
 
 		clientBoundPayloads.register(ItemStackRemoverSetPayload.PACKET_ID, ItemStackRemoverSetPayload.CODEC);
 		serverBoundPayloads.register(ItemStackRemoverSetPayload.PACKET_ID, ItemStackRemoverSetPayload.CODEC);
@@ -119,4 +117,4 @@ public class PolydexIntegration {
 
 
 }
-*///?}
+//?}

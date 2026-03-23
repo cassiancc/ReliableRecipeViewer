@@ -114,6 +114,7 @@ dependencies {
     compileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
     localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
     localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
+    implementation("eu.pb4:polydex:${property("deps.polydex")}")
 
 //    val modules = listOf("command-api-v2", "key-mapping-api-v1", "item-api-v1", "recipe-api-v1", "rendering-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
 //    for (it in modules) compileOnly(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))

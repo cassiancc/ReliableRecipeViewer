@@ -382,7 +382,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (clientPlayer == null)
             return;
 
-        //? fabric && <26.1 {
+        //? fabric {
         /*if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
             RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
         }

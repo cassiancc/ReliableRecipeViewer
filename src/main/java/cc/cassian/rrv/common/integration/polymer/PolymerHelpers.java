@@ -10,14 +10,12 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-//? fabric && <26.1 {
-/*import cc.cassian.rrv.common.integration.polymer.api.ItemViewModifier;
+//? fabric {
+import cc.cassian.rrv.common.integration.polymer.api.ItemViewModifier;
 import cc.cassian.rrv.common.integration.polymer.api.ItemViewRemoveModifier;
 import eu.pb4.polymer.core.api.client.ClientPolymerItem;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
-import eu.pb4.sgui.virtual.FakeScreenHandler;
-import eu.pb4.sgui.virtual.VirtualScreenHandlerInterface;
-*///?}
+//?}
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,8 +25,8 @@ import java.util.Optional;
 public class PolymerHelpers {
 
 	public static void polymerFilter(List<ItemStack> list) {
-		//? fabric && <26.1 {
-		/*Iterator<ClientPolymerItem> iterator = ClientPolymerItem.REGISTRY.stream().iterator();
+		//? fabric {
+		Iterator<ClientPolymerItem> iterator = ClientPolymerItem.REGISTRY.stream().iterator();
 		Map<ItemStack, ClientPolymerItem> registry = new Object2ObjectOpenHashMap<>();
 		while (iterator.hasNext()) {
 			ClientPolymerItem next = iterator.next();
@@ -60,23 +58,23 @@ public class PolymerHelpers {
 				if (b) itemStackIterator.remove();
 			}
 		}
-		*///?}
+		//?}
 	}
 
 	public static boolean isPolymerServerItem(ItemStack stack) {
-		//? fabric && <26.1 {
-		/*return PolymerItemUtils.isPolymerServerItem(stack);
-		*///?} else {
-		return false;
-		//?}
+		//? fabric {
+		return PolymerItemUtils.isPolymerServerItem(stack);
+		//?} else {
+		/*return false;
+		*///?}
 	}
 
 	public static ItemStack getRealItemStack(ItemStack stack, RegistryAccess.Frozen registryManager) {
-		//? fabric && <26.1 {
-		/*return PolymerItemUtils.getRealItemStack(stack, registryManager);
-		 *///?} else {
-		return ItemStack.EMPTY;
-		//?}
+		//? fabric {
+		return PolymerItemUtils.getRealItemStack(stack, registryManager);
+		 //?} else {
+		/*return ItemStack.EMPTY;
+		*///?}
 	}
 
 	public static boolean isPolymerScreenOpen(LocalPlayer player) {
