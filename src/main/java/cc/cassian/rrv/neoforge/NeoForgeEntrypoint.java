@@ -43,11 +43,6 @@ public class NeoForgeEntrypoint {
                 }
 
                 ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration: {}", optional.get());
-            } else {
-                ReliableRecipeViewer.LOGGER.info("RRV: Skipping integration: {}", modInfo.getModId());
-                if (modInfo.getModId().equals("bigger_fish")) {
-                    ReliableRecipeViewer.LOGGER.info(modInfo.toString());
-                }
             }
         });
     }
