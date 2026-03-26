@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.Random;
 
 public class ReliableRecipeViewer {
 
@@ -21,6 +22,8 @@ public class ReliableRecipeViewer {
     public static final Path CONFIG_PATH = Platform.INSTANCE.getConfigDirectory().resolve("rrv");
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    public static final Random RANDOM = new Random();
 
     public static final MenuType<RecipeViewMenu> RECIPE_VIEW_MENU = new MenuType<>(RecipeViewMenu::new, FeatureFlagSet.of());
 

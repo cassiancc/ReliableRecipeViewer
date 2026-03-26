@@ -68,7 +68,7 @@ public class ResourceRecipeManager {
 		return infoRecipes;
 	}
 
-	public static void addWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
+	public static void addResourceDrivenWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
 		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
 			var slots = readCombinationRecipe("world_interaction", entry);
 			if (slots != null) {

@@ -309,14 +309,6 @@ public class ItemView {
         return CLIENT_RELOAD_CALLBACKS;
     }
 
-    /**
-     *
-     * @return A list of currently present code-driven world interaction recipes
-     */
-    public static List<WorldInteractionClientRecipe> getWorldInteractionRecipes() {
-        return WORLD_INTERACTION_RECIPES;
-    }
-
 	public static boolean isExcludedItem(Holder<Item> itemHolder) {
         if (!itemHolder.isBound()) return true;
 		return isExcludedItem(itemHolder.value());
@@ -358,6 +350,11 @@ public class ItemView {
     public static boolean isExcludedEnchantment(Holder<Enchantment> enchantmentHolder) {
         return enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) || EXCLUDED_ENCHANTMENTS.contains(enchantmentHolder.unwrapKey().orElseThrow());
     }
+
+	public static void addAllWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
+		worldInteractionRecipes.addAll(WORLD_INTERACTION_RECIPES);
+        WORLD_INTERACTION_RECIPES.clear();
+	}
 
     public interface ReloadCallback {
 

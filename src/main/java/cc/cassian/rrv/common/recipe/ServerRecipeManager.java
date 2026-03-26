@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
@@ -158,8 +159,13 @@ public class ServerRecipeManager {
         });
     }
 
+    @ApiStatus.Internal
+	public boolean isOffThread() {
+        if (server == null) return false;
+		return !server.isSameThread();
+	}
 
-    public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
+	public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
 
         public static final StreamCodec<FriendlyByteBuf, ServerRecipeEntry> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8,
