@@ -159,13 +159,23 @@ public class ServerRecipeManager {
         });
     }
 
-    @ApiStatus.Internal
-	public boolean isOffThread() {
-        if (server == null) return false;
-		return !server.isSameThread();
+    @Deprecated
+	public boolean needsWorkaround() {
+        return workaroundFlag;
 	}
 
-	public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
+    @Deprecated
+    boolean workaroundFlag = false;
+
+    /**
+	 * Avoids crash from multithreading in vanilla/mods
+	 */
+    @Deprecated
+	public void setWorkaroundFlag(boolean b) {
+		workaroundFlag = b;
+	}
+
+    public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
 
         public static final StreamCodec<FriendlyByteBuf, ServerRecipeEntry> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8,

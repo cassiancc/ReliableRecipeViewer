@@ -106,10 +106,12 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	public SlotContent offerStacks(VillagerTrade trade) {
 		VillagerTradeAccessor tradeAccessor = (VillagerTradeAccessor) trade;
 		AtomicReference<ItemStack> stack = new AtomicReference<>(RrvUtil.decodeTemplate(tradeAccessor.getGives()));
+		ServerRecipeManager.INSTANCE.setWorkaroundFlag(true);
 		tradeAccessor.getGivenItemModifiers().forEach(modifier -> {
 			if (modifier instanceof ExplorationMapFunction || modifier instanceof FilteredFunction) return; // utter bodge - fixes the map item getting entirely voided
 			stack.set(modifier.apply(stack.get(), lootContext()));
 		});
+		ServerRecipeManager.INSTANCE.setWorkaroundFlag(false);
 		return SlotContent.of(stack.get());
 	}
 
