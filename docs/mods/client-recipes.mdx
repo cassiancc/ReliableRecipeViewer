@@ -25,7 +25,7 @@ public class ExampleModClientRecipe implements ReliableClientRecipe {
 
     @Override
     public ReliableClientRecipeType getViewType() {
-        return YourCustomClientRecipeType.INSTANCE; //Here you need your type's instance you created before
+        return YourCustomClientRecipeType.INSTANCE; //Here you need your client recipe type's instance you created before
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ExampleModClientRecipe implements ReliableClientRecipe {
 
         // You can also bind a slot as "optional" and provide it with a valid SlotRenderer to ensure a slot
         // is only rendered if there's an item in it
-	    // The default SlotRenderer is used for rendering Minecraft's default slot texture
+        // The default SlotRenderer is used for rendering Minecraft's default slot texture
         slotFillContext.bindOptionalSlot(0, this.result, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
 
     }
@@ -56,9 +56,16 @@ public class ExampleModClientRecipe implements ReliableClientRecipe {
     public List<SlotContent> getResults() {
         return List.of(this.output); //Return all of your outputs here
     }
+
+    // Recipes with more complicated displays can override `renderRecipe`.
+    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        guiGraphics.text(Minecraft.getInstance().font, "Rendered text on the center of the screen!", 5, 20, -16777216, false);
+        if ((mouseX > 65 && mouseX < 90) && mouseY < 37 && mouseY > 5) {
+            guiGraphics.setTooltipForNextFrame(Component.literal("Text in a tooltip when hovering over an area!"), mouseX, mouseY);
+        }
+    }
 }
 ```
-
 
 ### Slot dependencies
 
@@ -102,7 +109,7 @@ To be able to shift items from the players inventory into the workstation's GUI,
     @Override
     public void mapRecipeItems(RecipeTransferMap map) {
 
-	//Link your recipe slots to the corresponding slots in the destination inventory (the crafting inventory)
+ //Link your recipe slots to the corresponding slots in the destination inventory (the crafting inventory)
 
         map.linkSlots(0, 1);
         map.linkSlots(1, 2);
@@ -116,6 +123,5 @@ To be able to shift items from the players inventory into the workstation's GUI,
 
     }
 ```
-
 
 With your client recipes created, you can move on to creating the [Server Recipes](server-recipes) that will supply them with data.

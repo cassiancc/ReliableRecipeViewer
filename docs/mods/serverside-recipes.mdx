@@ -7,32 +7,56 @@ For consistency, RRV requires a serverside representation of all recipes regardl
 Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `ReliableServerRecipe` and override the methods:
 
 ### Example
+
 ```java
 public class ExampleServerRecipe implements ReliableServerRecipe {
 
+    // SlotContent is used here as an abstraction over ever-changing Ingredients and ItemStacks.
+    private SlotContent input, output;
 
     //Create a server recipe type (the id does not have to match your client side viewtype id)
     public static final ModRecipeType<YourServerRecipe> TYPE = ModRecipeType.register(
             Identifier.fromNamespaceAndPath("example-mod", "your_recipe_id"),
-            () -> new YourServerRecipe()
+            () -> new ExampleServerRecipe(null, null)
     );
 
-    @Override
-    public void writeToTag(CompoundTag tag) {
 
+    public ExampleServerRecipe(Ingredient input, ItemStack result) {
+        this.input = SlotContent.of(left);
+        this.output = SlotContent.of(result);
     }
 
     @Override
-    public void loadFromTag(CompoundTag tag) {
+    public void writeToTag(CompoundTag tag) { // called on the server to encode recipes
+        tag.put("input", TagUtil.writeSlotContent(this.input));
+        tag.put("output", TagUtil.writeSlotContent(this.output));
+    }
 
+    @Override
+    public void loadFromTag(CompoundTag tag) { // called on the client to decode recipes
+        this.input = TagUtil.readSlotContent(tag.getCompound("input").orElseGet(CompoundTag::new));
+        this.output = TagUtil.readSlotContent(tag.getCompound("output").orElseGet(CompoundTag::new));
     }
 
     @Override
     public ModRecipeType<? extends ReliableServerRecipe> getRecipeType() {
         return TYPE;
     }
+
+    // Getter for the input, used in the client recipe wrapper.
+    public SlotContent getInput() {
+        return this.input;
+    }
+
+    // Getter for the output, used in the client recipe wraper.
+    public SlotContent getOutput() {
+        return this.output;
+    }
 }
 ```
-**INFO**: The API includes a `TagUtil` class that provides a lot of helper functions for encoding and decoding different objects. Note that `writeToTag` is called on the server, while `loadFromTag` is called on the client.
+
+<Callout variant='info'>
+The API includes a `TagUtil` class that provides a lot of helper functions for encoding and decoding different objects, primarily `writeSlotContent` and `readSlotContent`.
+</Callout>
 
 With all your recipe classes created, you can move on to creating the [plugins](finalizing-your-recipes).
