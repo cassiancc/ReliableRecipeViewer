@@ -65,6 +65,7 @@ public class ResourceRecipeManager {
 				LOGGER.error("RRV: Could not parse info recipe '{}' due to an exception: ", identifier, e);
 			}
 		});
+		ItemViewRecipes.addAllInfoRecipes(infoRecipes);
 		return infoRecipes;
 	}
 

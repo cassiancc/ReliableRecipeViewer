@@ -15,6 +15,7 @@ import cc.cassian.rrv.common.builtin.campfire.CampfireClientRecipe;
 import cc.cassian.rrv.common.builtin.campfire.CampfireServerRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityClientRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityServerRecipe;
+import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
@@ -39,6 +40,7 @@ import cc.cassian.rrv.common.builtin.tag.block.BlockTagServerRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -136,7 +138,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemView.addClientRecipeWrapper(WorldInteractionServerRecipe.TYPE, modRecipe -> {
             ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
             addResourceDrivenWorldInteractionRecipes(worldInteractionRecipes);
-            ItemView.addAllWorldInteractionRecipes(worldInteractionRecipes);
+            ItemViewRecipes.addAllWorldInteractionRecipes(worldInteractionRecipes);
 
             var axes = SlotContent.of(ItemTags.AXES);
             var shovels = SlotContent.of(ItemTags.SHOVELS);

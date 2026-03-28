@@ -40,6 +40,17 @@ Recipe file - `assets/rrv/rrv/recipe/stone.json`
 Language file - `assets/rrv/lang/en_us.json`
 ```json
 {
-"rrv.info.stone": "A grey rock!"
+"rrv.info.stone": "Stone can be found underground."
 }
+```
+
+## API
+
+World interaction recipes can also be added programmatically via a mod's client integration.
+
+```java
+ItemView.addClientReloadCallback(() -> {
+    ItemView.addInfoRecipe(new InfoClientRecipe(SlotContent.of(Items.STONE), "Stone can be found underground."));
+    ItemView.addInfoRecipe(new InfoClientRecipe(SlotContent.of(Items.STONE), Component.translatable("rrv.info.stone")));
+});
 ```

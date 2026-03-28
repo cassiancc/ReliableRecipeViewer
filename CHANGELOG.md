@@ -1,3 +1,9 @@
+## [7.0.2]
+
+### Fixed
+- World interaction recipes not being cleared correctly on `/reload`.
+- A rare crash logging into worlds.
+
 ## [7.0.0]
 
 ### Added

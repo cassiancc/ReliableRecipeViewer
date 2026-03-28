@@ -4,6 +4,8 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
+import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
@@ -171,6 +173,25 @@ public class ItemViewRecipes {
         return enchantments.keySet().stream().allMatch(enchantment -> {
             return stackEnchantments.getLevel(enchantment) == enchantments.getLevel(enchantment);
         }) && stackEnchantments.size() == enchantments.size();
+    }
+
+    /**
+     * A list of world interaction recipes to be added to the index.
+     */
+    public static final List<WorldInteractionClientRecipe> WORLD_INTERACTION_RECIPES = new ArrayList<>();
+    /**
+     * A list of info recipes to be added to the index.
+     */
+    public static final List<InfoClientRecipe> INFO_RECIPES = new ArrayList<>();
+
+    public static void addAllWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
+        worldInteractionRecipes.addAll(WORLD_INTERACTION_RECIPES);
+        WORLD_INTERACTION_RECIPES.clear();
+    }
+
+    public static void addAllInfoRecipes(ArrayList<InfoClientRecipe> infoClientRecipes) {
+        infoClientRecipes.addAll(INFO_RECIPES);
+        INFO_RECIPES.clear();
     }
 
 

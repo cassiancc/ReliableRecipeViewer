@@ -1,3 +1,3 @@
-### Fixed
-- World interaction recipes not being cleared correctly on `/reload`.
-- A rare crash logging into worlds.
+### Added
+- Info recipes can now be added via code.
+- Updated Chinese translations (thanks @moqyng!)

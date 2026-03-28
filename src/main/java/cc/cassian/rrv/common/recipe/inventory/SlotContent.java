@@ -228,7 +228,7 @@ public class SlotContent {
 
     public static SlotContent of(ItemStackTemplate stack) {
         if (stack == null) return SlotContent.of();
-        return new SlotContent(List.of(RrvUtil.decodeTemplate(stack)));
+        return new SlotContent(List.of(stack.create()));
     }
 
     public static SlotContent of(List<ItemStack> stacks) {

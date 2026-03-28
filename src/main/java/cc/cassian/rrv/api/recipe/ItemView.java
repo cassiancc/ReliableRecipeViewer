@@ -2,6 +2,7 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
@@ -17,9 +18,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static cc.cassian.rrv.common.recipe.ItemViewRecipes.INFO_RECIPES;
+import static cc.cassian.rrv.common.recipe.ItemViewRecipes.WORLD_INTERACTION_RECIPES;
 
 /**
  * Main API class used to register RRV compat for other mods
@@ -47,7 +52,6 @@ public class ItemView {
      */
     private static final List<ReloadCallback> RELOAD_CALLBACKS = new ArrayList<>();
 
-
     /**
      * A list of Callbacks used for mods to hook into a server reload (from the client side)
      * <br>
@@ -55,11 +59,6 @@ public class ItemView {
      * Client side functionality depending on tags should be handled here
      */
     private static final List<ReloadCallback> CLIENT_RELOAD_CALLBACKS = new ArrayList<>();
-
-    /**
-     * A list of world interaction recipes to be added to the index.
-     */
-    private static final List<WorldInteractionClientRecipe> WORLD_INTERACTION_RECIPES = new ArrayList<>();
 
     /**
      * ServerRecipeProviders offer a recipe list where mods can easily add their own server recipes
@@ -295,6 +294,14 @@ public class ItemView {
     }
 
     /**
+     * Mods can add an info recipe via the API rather than via a resource pack.
+     * Run this via {@link ItemView#addClientReloadCallback} to ensure it's registered on time.
+     */
+    public static void addInfoRecipe(InfoClientRecipe recipe) {
+        INFO_RECIPES.add(recipe);
+    }
+
+    /**
      * @return A list of currently present reload callbacks
      */
     public static List<ReloadCallback> getReloadCallbacks() {
@@ -351,10 +358,8 @@ public class ItemView {
         return enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) || EXCLUDED_ENCHANTMENTS.contains(enchantmentHolder.unwrapKey().orElseThrow());
     }
 
-	public static void addAllWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
-		worldInteractionRecipes.addAll(WORLD_INTERACTION_RECIPES);
-        WORLD_INTERACTION_RECIPES.clear();
-	}
+
+
 
     public interface ReloadCallback {
 

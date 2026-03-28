@@ -43,10 +43,6 @@ public class RrvUtil {
         return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
     }
 
-	public static ItemStack decodeTemplate(ItemStackTemplate template) {
-		return new ItemStack(template.item(), template.count(), template.components());
-	}
-
     public static SlotContent readSlotContent(String key, String type, Identifier identifier, JsonObject parsedRecipe) {
         JsonElement keyElement = parsedRecipe.get(key);
         if (keyElement.isJsonPrimitive() && keyElement.getAsJsonPrimitive().isString()) {

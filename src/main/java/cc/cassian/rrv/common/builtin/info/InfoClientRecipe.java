@@ -11,16 +11,25 @@ import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.List;
 
 public class InfoClientRecipe implements ReliableClientRecipe {
 	private final SlotContent key;
-	private final String text;
+	private final MutableComponent text;
 
 	public InfoClientRecipe(SlotContent key, String text) {
 		this.key = key;
-		this.text = text;
+		this.text = Component.translatableWithFallback(text, text).withColor(-16777216);
+	}
+
+	public InfoClientRecipe(SlotContent key, Component text) {
+		this.key = key;
+		if (text.getStyle().isEmpty())
+			this.text = text.copy().withColor(-16777216);
+		else
+			this.text = text.copy();
 	}
 
 	@Override
@@ -35,9 +44,9 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 
 	@Override
 	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, Component.translatableWithFallback(text, text).withoutShadow().withColor(-16777216), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
-		widget.setX(recipePosition.left()+ 5);
-		widget.setY(recipePosition.top()+20);
+		MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
+		widget.setX(recipePosition.left() + 5);
+		widget.setY(recipePosition.top() + 20);
 		screen.addRecipeWidget(widget);
 	}
 
