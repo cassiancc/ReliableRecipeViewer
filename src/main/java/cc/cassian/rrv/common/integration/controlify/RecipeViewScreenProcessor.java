@@ -50,10 +50,10 @@ public class RecipeViewScreenProcessor extends ScreenProcessor<RecipeViewScreen>
 		// called after the Screen#init() method
 	}
 
-//	@Override
-//	protected void extractRenderState(ControllerEntity controller, GuiGraphicsExtractor graphics, float tickDelta, Optional<VirtualMouseHandler> vmouse) {
-//		// called after the screen has rendered.
-//	}
+	@Override
+	protected void render(ControllerEntity controller, GuiGraphicsExtractor graphics, float tickDelta, Optional<VirtualMouseHandler> vmouse) {
+
+	}
 
 	@Override
 	public VirtualMouseBehaviour virtualMouseBehaviour() {

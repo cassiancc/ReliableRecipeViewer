@@ -1,3 +1,9 @@
+## [7.0.3]
+
+### Added
+- Info recipes can now be added via code.
+- Updated Chinese translations (thanks @moqyng!)
+
 ## [7.0.2]
 
 ### Fixed

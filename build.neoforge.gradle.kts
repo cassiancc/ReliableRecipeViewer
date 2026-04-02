@@ -69,7 +69,7 @@ repositories {
 
 dependencies {
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
-        exclude(group = "maven.modrinth")
+        isTransitive = false;
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
     compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {

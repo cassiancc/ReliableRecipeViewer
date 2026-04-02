@@ -91,12 +91,6 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
 
     }
 
-
-    @Inject(method = "extractContents", at = @At("HEAD"))
-    private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
-    }
-
     @Inject(method = "extractContents", at = @At("TAIL"))
     private void injectOverlay$1(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (minecraft == null) return;

@@ -1,3 +1,2 @@
-### Added
-- Info recipes can now be added via code.
-- Updated Chinese translations (thanks @moqyng!)
+### Fixed
+- Porting bug causing backgrounds to display over other GUIs.
