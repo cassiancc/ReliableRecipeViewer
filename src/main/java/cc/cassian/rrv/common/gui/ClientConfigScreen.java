@@ -1,17 +1,23 @@
 package cc.cassian.rrv.common.gui;
 
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -21,7 +27,6 @@ import net.minecraft.util.StringRepresentable;
 public class ClientConfigScreen extends Screen {
 
     private static final Component TITLE = clientSetting("title");
-    int yPos = 20;
 
     private final Screen lastScreen;
 
@@ -37,81 +42,65 @@ public class ClientConfigScreen extends Screen {
     protected void init() {
 
         StringWidget stringWidget = this.layout.addToHeader(new StringWidget(TITLE, this.font));
-        stringWidget.setX(this.width / 2 - stringWidget.getWidth() / 2);
-        stringWidget.setY(10);
         this.addRenderableWidget(stringWidget);
 
-        LinearLayout linearLayout = LinearLayout.vertical().spacing(2);
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
+        GridLayout.RowHelper helper = gridLayout.createRowHelper(2);
 
-        addString(linearLayout, "general");
+        // general
+        helper.addChild(new StringWidget(clientSetting("general"), this.font));
+        helper.addChild(new SpacerElement(2, 2));
+        addChild(helper,clientSetting("itemview"), Configs.CLIENT_SETTINGS.isShowItemView(), new OverlayDisplay[]{OverlayDisplay.ENABLED, OverlayDisplay.DISABLED, OverlayDisplay.WHEN_SEARCHING}, (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowItemView(sidePanel));
+        addChild(helper,clientSetting("show_side_panel"), Configs.CLIENT_SETTINGS.isShowSidePanel(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowSidePanel(sidePanel));
 
-        int buttonWidth = (int) (this.width/2.5);
-        int col1 = this.width / 5 - buttonWidth / 5;
-        int col2 = col1+buttonWidth+5;
-        addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowItemView(), new OverlayDisplay[]{OverlayDisplay.ENABLED, OverlayDisplay.DISABLED, OverlayDisplay.WHEN_SEARCHING}, (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowItemView((OverlayDisplay) sidePanel), col1, false, buttonWidth);
-        addChild(linearLayout,"rrv.client_settings.show_side_panel", Configs.CLIENT_SETTINGS.isShowSidePanel(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowSidePanel(sidePanel), col2, true, buttonWidth);
+        // behavior
+        helper.addChild(new StringWidget(clientSetting("behavior"), this.font));
+        helper.addChild(new SpacerElement(2, 2));
+        addChild(helper, clientSetting("sidepanel"), Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel));
+        addChild(helper, clientSetting("wrap_scrolling"), Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel));
 
-        addString(linearLayout, "behavior");
+        // style
+        helper.addChild(new StringWidget(clientSetting("style"), this.font));
+        helper.addChild(new SpacerElement(2, 2));
+        addChild(helper, clientSetting("background.enabled"), clientSetting("background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), clientSetting("background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
+        addChild(helper, clientSetting("resize_mode.wrap"), clientSetting("resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), clientSetting("resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
+        addChild(helper, clientSetting("center_search.centered"), clientSetting("center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), clientSetting("center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
+        addChild(helper, clientSetting("show_buttons.show"), clientSetting("show_buttons.hide"), Configs.CLIENT_SETTINGS.isShowButtons(), clientSetting("show_buttons"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowButtons(b));
+        addChild(helper, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
+        addChild(helper, clientSetting("recipe_screen_position.centered"), clientSetting("recipe_screen_position.top"), Configs.CLIENT_SETTINGS.isCenterRecipeScreen(), clientSetting("recipe_screen_position"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterRecipeScreen(b));
 
-        addChild(linearLayout,"rrv.client_settings.sidepanel", Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel), col1, false, buttonWidth);
+        helper.addChild(new StringWidget(clientSetting("advanced"), this.font));
+        helper.addChild(new SpacerElement(2, 2));
+        addChild(helper, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
+        if (Minecraft.getInstance().level != null)
+            helper.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size((int)(this.width/2.5), 20).build());
 
-        addChild(linearLayout,"rrv.client_settings.wrap_scrolling", Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel), col2, true, buttonWidth);
+        this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build()));
 
-        addString(linearLayout,"style");
-        addChild(linearLayout, clientSetting("background.enabled"), clientSetting("background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), clientSetting("background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b), col1, false, buttonWidth);
-        addChild(linearLayout, clientSetting("resize_mode.wrap"), clientSetting("resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), clientSetting("resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b), col2, true, buttonWidth);
-        addChild(linearLayout, clientSetting("center_search.centered"), clientSetting("center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), clientSetting("center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b), col1, false, buttonWidth);
-        addChild(linearLayout, clientSetting("show_buttons.show"), clientSetting("show_buttons.hide"), Configs.CLIENT_SETTINGS.isShowButtons(), clientSetting("show_buttons"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowButtons(b), col2, true, buttonWidth);
-        addChild(linearLayout, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b), col1, false, buttonWidth);
-        addChild(linearLayout, clientSetting("recipe_screen_position.centered"), clientSetting("recipe_screen_position.top"), Configs.CLIENT_SETTINGS.isCenterRecipeScreen(), clientSetting("recipe_screen_position"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterRecipeScreen(b), col2, true, buttonWidth);
+        ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), gridLayout, 175));
+        scrollableLayout.arrangeElements();
 
-        addString(linearLayout, "advanced");
-        addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b), col1, false, buttonWidth);
-        if (Minecraft.getInstance().level != null) {
-            Button exportItemView = linearLayout.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(buttonWidth, 20).build());
-            exportItemView.setX(col2);
-            exportItemView.setY(yPos);
-        }
-
-        Button close = this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build()));
-        close.setX(this.width/2 - close.getWidth()/2);
-        close.setY(this.height - 25);
-
-        linearLayout.visitWidgets(this::addRenderableWidget);
+        scrollableLayout.visitWidgets(this::addRenderableWidget);
+        this.layout.arrangeElements();
     }
 
-	private void addString(LinearLayout linearLayout, String string) {
-        StringWidget behavior = new StringWidget(clientSetting(string), this.font);
-        behavior.setX(this.width/2 - behavior.getWidth()/2);
-        behavior.setY(yPos+3);
-        yPos+=15;
-        linearLayout.addChild(behavior);
-	}
-
-    public static MutableComponent clientSetting(String s) {
+	public static MutableComponent clientSetting(String s) {
 		return Component.translatable("rrv.client_settings." + s);
 	}
 
-    private <T extends StringRepresentable> void addChild(LinearLayout linearLayout, String key, T initialValue, T[] values, CycleButton.OnValueChange<T> newValueSetter, int x, boolean newLine, int width) {
+    private <T extends StringRepresentable> void addChild(GridLayout.RowHelper linearLayout, MutableComponent key, T initialValue, T[] values, CycleButton.OnValueChange<T> newValueSetter) {
         linearLayout.addChild(
-        CycleButton.builder((value)-> Component.translatable(key+"."+value.getSerializedName()), initialValue).withValues(values)
-                .create(x, yPos, width, 20, Component.translatable(key), newValueSetter)
+            CycleButton.builder((value)-> Component.translatable(key+"."+value.getSerializedName()), initialValue)
+                .withValues(values)
+                .create(0, 0, (int)(this.width/2.5), 20, key, newValueSetter)
         );
-        if (newLine)
-            yPos+=22;
-
 	}
 
-    private void addChild(LinearLayout linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter, int x, boolean newLine, int width) {
-        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(x, yPos, width, 20, translatable, newValueSetter));
-        if (newLine)
-            yPos+=22;
+    private void addChild(GridLayout.RowHelper linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter) {
+        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, (int)(this.width/2.5), 20, translatable, newValueSetter));
     }
 
-    @Override
-    public void resize(int width, int height) {
-        this.minecraft.setScreen(new ClientConfigScreen(this.lastScreen));
-    }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
