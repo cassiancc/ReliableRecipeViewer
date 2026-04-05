@@ -1,13 +1,11 @@
 package cc.cassian.rrv.common.gui;
 
-import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
-import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
-import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -17,7 +15,6 @@ import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
-import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -41,64 +38,91 @@ public class ClientConfigScreen extends Screen {
     @Override
     protected void init() {
 
+        // setup
+
+        ClientConfig configs = Configs.CLIENT_SETTINGS;
         StringWidget stringWidget = this.layout.addToHeader(new StringWidget(TITLE, this.font));
         this.addRenderableWidget(stringWidget);
-
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
-        GridLayout.RowHelper helper = gridLayout.createRowHelper(2);
+        LinearLayout linearLayout = LinearLayout.vertical().spacing(2);
 
         // general
-        helper.addChild(new StringWidget(clientSetting("general"), this.font));
-        helper.addChild(new SpacerElement(2, 2));
-        addChild(helper,clientSetting("itemview"), Configs.CLIENT_SETTINGS.isShowItemView(), new OverlayDisplay[]{OverlayDisplay.ENABLED, OverlayDisplay.DISABLED, OverlayDisplay.WHEN_SEARCHING}, (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowItemView(sidePanel));
-        addChild(helper,clientSetting("show_side_panel"), Configs.CLIENT_SETTINGS.isShowSidePanel(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowSidePanel(sidePanel));
+        GridLayout general = createGridLayout();
+        GridLayout.RowHelper generalHelper = general.createRowHelper(2);
+        linearLayout.addChild(new StringWidget(clientSetting("general"), this.font));
+
+        addChild(generalHelper, "itemview", configs.isShowItemView(), new OverlayDisplay[]{OverlayDisplay.ENABLED, OverlayDisplay.DISABLED, OverlayDisplay.WHEN_SEARCHING}, (button, sidePanel)-> configs.setShowItemView(sidePanel));
+        addChild(generalHelper, "show_side_panel", configs.isShowSidePanel(), OverlayDisplay.values(), (button, sidePanel)-> configs.setShowSidePanel(sidePanel));
+
+        linearLayout.addChild(general);
 
         // behavior
-        helper.addChild(new StringWidget(clientSetting("behavior"), this.font));
-        helper.addChild(new SpacerElement(2, 2));
-        addChild(helper, clientSetting("sidepanel"), Configs.CLIENT_SETTINGS.getSidePanel(), SidePanel.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setSidePanel(sidePanel));
-        addChild(helper, clientSetting("wrap_scrolling"), Configs.CLIENT_SETTINGS.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setWrapScrolling(sidePanel));
+        GridLayout behavior = createGridLayout();
+        GridLayout.RowHelper behaviorHelper = behavior.createRowHelper(2);
+        linearLayout.addChild(new StringWidget(clientSetting("behavior"), this.font));
+
+        addChild(behaviorHelper, "sidepanel", configs.getSidePanel(), SidePanel.values(), (button, sidePanel)-> configs.setSidePanel(sidePanel));
+        addChild(behaviorHelper, "wrap_scrolling", configs.isWrapScrolling(), WrapScrolling.values(), (button, sidePanel)-> configs.setWrapScrolling(sidePanel));
+
+        linearLayout.addChild(behavior);
 
         // style
-        helper.addChild(new StringWidget(clientSetting("style"), this.font));
-        helper.addChild(new SpacerElement(2, 2));
-        addChild(helper, clientSetting("background.enabled"), clientSetting("background.disabled"), Configs.CLIENT_SETTINGS.drawBackground(), clientSetting("background"), (cycleButton, b )-> Configs.CLIENT_SETTINGS.setDrawBackground(b));
-        addChild(helper, clientSetting("resize_mode.wrap"), clientSetting("resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), clientSetting("resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b));
-        addChild(helper, clientSetting("center_search.centered"), clientSetting("center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), clientSetting("center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b));
-        addChild(helper, clientSetting("show_buttons.show"), clientSetting("show_buttons.hide"), Configs.CLIENT_SETTINGS.isShowButtons(), clientSetting("show_buttons"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowButtons(b));
-        addChild(helper, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b));
-        addChild(helper, clientSetting("recipe_screen_position.centered"), clientSetting("recipe_screen_position.top"), Configs.CLIENT_SETTINGS.isCenterRecipeScreen(), clientSetting("recipe_screen_position"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterRecipeScreen(b));
+        GridLayout style = createGridLayout();
+        GridLayout.RowHelper styleHelper = style.createRowHelper(2);
+        linearLayout.addChild(new StringWidget(clientSetting("style"), this.font));
 
-        helper.addChild(new StringWidget(clientSetting("advanced"), this.font));
-        helper.addChild(new SpacerElement(2, 2));
-        addChild(helper, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b));
+        addChild(styleHelper, "background", "enabled", "disabled", configs.drawBackground(), (cycleButton, b )-> configs.setDrawBackground(b));
+        addChild(styleHelper, "resize_mode", "wrap", "cut", configs.isItemWrapMode(), (cycleButton, b) -> configs.setItemWrapMode(b));
+        addChild(styleHelper, "center_search", "centered", "with_index", configs.isCenterSearch(), (cycleButton, b) -> configs.setCenterSearch(b));
+        addChild(styleHelper, "show_buttons", "show", "hide", configs.isShowButtons(), (cycleButton, b) -> configs.setShowButtons(b));
+        addChild(styleHelper, "right_index", "right", "left", configs.isRightIndex(), (cycleButton, b) -> configs.setRightIndex(b));
+        addChild(styleHelper, "recipe_screen_position", "centered", "top", configs.isCenterRecipeScreen(), (cycleButton, b) -> configs.setCenterRecipeScreen(b));
+
+        linearLayout.addChild(style);
+
+        // advanced
+        GridLayout advanced = createGridLayout();
+        GridLayout.RowHelper advancedHelper = advanced.createRowHelper(2);
+        linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
+
+        addChild(advancedHelper, "append_namespace", "show", "hide", configs.isAppendModNamespace(), (cycleButton, b) -> configs.setAppendModNamespace(b));
         if (Minecraft.getInstance().level != null)
-            helper.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size((int)(this.width/2.5), 20).build());
+            advancedHelper.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size((int)(this.width/2.5), 20).build());
+
+        linearLayout.addChild(advanced);
+
+        // done
 
         this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build()));
 
-        ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), gridLayout, 175));
+        // finalize
+
+        ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
         scrollableLayout.arrangeElements();
 
         scrollableLayout.visitWidgets(this::addRenderableWidget);
         this.layout.arrangeElements();
     }
 
-	public static MutableComponent clientSetting(String s) {
-		return Component.translatable("rrv.client_settings." + s);
+    private GridLayout createGridLayout() {
+        var gridLayout = new GridLayout();
+        gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
+        return gridLayout;
+    }
+
+    public static MutableComponent clientSetting(String s) {
+		return Component.translatable("rrv.client_settings.%s".formatted(s));
 	}
 
-    private <T extends StringRepresentable> void addChild(GridLayout.RowHelper linearLayout, MutableComponent key, T initialValue, T[] values, CycleButton.OnValueChange<T> newValueSetter) {
+    private <T extends StringRepresentable> void addChild(GridLayout.RowHelper linearLayout, String key, T initialValue, T[] values, CycleButton.OnValueChange<T> newValueSetter) {
         linearLayout.addChild(
-            CycleButton.builder((value)-> Component.translatable(key+"."+value.getSerializedName()), initialValue)
+            CycleButton.builder((value)-> clientSetting(key+"."+value.getSerializedName()), initialValue)
                 .withValues(values)
-                .create(0, 0, (int)(this.width/2.5), 20, key, newValueSetter)
+                .create(0, 0, (int)(this.width/2.5), 20, clientSetting(key), newValueSetter)
         );
 	}
 
-    private void addChild(GridLayout.RowHelper linearLayout, MutableComponent enabled, MutableComponent disabled, boolean currentValue, MutableComponent translatable, CycleButton.OnValueChange<Boolean> newValueSetter) {
-        linearLayout.addChild(CycleButton.booleanBuilder(enabled, disabled, currentValue).create(0, 0, (int)(this.width/2.5), 20, translatable, newValueSetter));
+    private void addChild(GridLayout.RowHelper linearLayout, String key, String enabled, String disabled, boolean currentValue, CycleButton.OnValueChange<Boolean> newValueSetter) {
+        linearLayout.addChild(CycleButton.booleanBuilder(clientSetting("%s.%s".formatted(key, enabled)), clientSetting("%s.%s".formatted(key, disabled)), currentValue).create(0, 0, (int)(this.width/2.5), 20, clientSetting(key), newValueSetter));
     }
 
 
