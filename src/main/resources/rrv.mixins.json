@@ -42,6 +42,7 @@
     "client.gui.screens.inventory.MixinAbstractRecipeBookScreen",
     "client.gui.screens.inventory.MixinCreativeModeInventoryScreen",
     "client.gui.screens.inventory.MixinEffectsInInventory",
+    "client.gui.screens.inventory.MixinMineCraftingScreen",
     "client.gui.screens.recipebook.MixinRecipeBookComponent",
     "client.multiplayer.MixinClientPacketListener",
     "client.renderer.entity.state.MixinEntityRenderState",

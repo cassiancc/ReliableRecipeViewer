@@ -46,8 +46,8 @@ public class RrvClientSettingsScreen extends Screen {
 
         addString(linearLayout, "general");
 
-        int col1 = 40;
         int buttonWidth = 175;
+        int col1 = this.width / 4 - buttonWidth / 4;
         int col2 = col1+buttonWidth+5;
         addChild(linearLayout,"rrv.client_settings.itemview", Configs.CLIENT_SETTINGS.isShowOverlays(), OverlayDisplay.values(), (button, sidePanel)-> Configs.CLIENT_SETTINGS.setShowOverlays(sidePanel), col1, false, buttonWidth);
 
