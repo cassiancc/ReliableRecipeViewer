@@ -85,6 +85,8 @@ public class ClientConfigScreen extends Screen {
         linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
 
         addChild(advancedHelper, "append_namespace", "show", "hide", configs.isAppendModNamespace(), (cycleButton, b) -> configs.setAppendModNamespace(b));
+        addChild(advancedHelper, "fluid_unit", "droplets", "mb", configs.isFluidUnitDroplets(), (cycleButton, b) -> configs.setFluidUnitDroplets(b));
+
         if (Minecraft.getInstance().level != null)
             advancedHelper.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size((int)(this.width/2.5), 20).build());
 

@@ -1,6 +1,8 @@
 package cc.cassian.rrv.common.recipe.item;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.extra.FluidStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -36,7 +38,10 @@ public class FluidItem extends BlockItem {
         super.appendHoverText(itemStack, tooltipContext, tooltipDisplay, consumer, tooltipFlag);
 
         FluidStack fluidStack = FluidStack.fromItemStack(itemStack);
-        consumer.accept(Component.translatable("rrv.fluid.unit", String.valueOf(fluidStack.amount())).withStyle(ChatFormatting.GRAY));
+        if (Configs.CLIENT_SETTINGS.isFluidUnitDroplets())
+            consumer.accept(Component.translatable("rrv.fluid_droplets.unit", String.format("%,d", fluidStack.amount()*81)).withStyle(ChatFormatting.GRAY));
+        else
+            consumer.accept(Component.translatable("rrv.fluid.unit", String.format("%,d", fluidStack.amount())).withStyle(ChatFormatting.GRAY));
     }
 
 

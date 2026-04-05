@@ -1,3 +1,8 @@
+## [7.0.4]
+
+### Fixed
+- Porting bug causing backgrounds to display over other GUIs.
+
 ## [7.0.3]
 
 ### Added

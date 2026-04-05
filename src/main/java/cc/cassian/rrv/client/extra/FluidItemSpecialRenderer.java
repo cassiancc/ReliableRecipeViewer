@@ -46,7 +46,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         FluidStack fluidStack = FluidStack.fromItemStack(stack);
         Fluid fluid = fluidStack.fluid();
 
-        float renderHeight = Math.max(Math.min((float) fluidStack.amount() / (float) FluidStack.AMOUNT_FULL, 1.0F), 0.1F);
+        float renderHeight = Math.clamp((float) fluidStack.amount() / (float) FluidStack.AMOUNT_FULL, 0.1F, 1.0F);
 
         FluidModel fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
         TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();

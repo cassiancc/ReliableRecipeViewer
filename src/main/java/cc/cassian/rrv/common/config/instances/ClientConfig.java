@@ -19,7 +19,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
 	private boolean centerRecipeScreen = false;
-
+	private boolean fluidUnitDroplets = false;
 	private boolean showButtons = true;
 
 	public ClientConfig() {
@@ -108,6 +108,8 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.rightIndex = this.data().get("rightIndex").getAsBoolean();
 		this.centerSearch = this.data().get("centerSearch").getAsBoolean();
 		this.showButtons = this.data().get("showButtons").getAsBoolean();
+		this.showButtons = this.data().get("fluidUnitDroplets").getAsBoolean();
+		this.centerRecipeScreen = this.data().get("centerRecipeScreen").getAsBoolean();
 		this.wrapScrolling = WrapScrolling.CODEC.decode(JsonOps.INSTANCE, this.data().get("wrapScrolling")).mapOrElse(Pair::getFirst, (e)->WrapScrolling.ON_BUTTONS);
 		this.sidePanel = SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)-> SidePanel.BOOKMARKS);
 	}
@@ -122,6 +124,8 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.data().addProperty("rightIndex", this.rightIndex);
 		this.data().addProperty("centerSearch", this.centerSearch);
 		this.data().addProperty("showButtons", this.showButtons);
+		this.data().addProperty("fluidUnitDroplets", this.fluidUnitDroplets);
+		this.data().addProperty("centerRecipeScreen", this.centerRecipeScreen);
 		this.data().add("wrapScrolling", WrapScrolling.CODEC.encodeStart(JsonOps.INSTANCE, this.wrapScrolling).getOrThrow());
 		this.data().add("sidePanel", SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
 
@@ -141,5 +145,13 @@ public class ClientConfig extends AbstractRrvConfig {
 
     public void setCenterRecipeScreen(boolean centerRecipeScreen) {
         this.centerRecipeScreen = centerRecipeScreen;
+    }
+
+    public boolean isFluidUnitDroplets() {
+        return fluidUnitDroplets;
+    }
+
+    public void setFluidUnitDroplets(boolean fluidUnitDroplets) {
+        this.fluidUnitDroplets = fluidUnitDroplets;
     }
 }
