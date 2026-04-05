@@ -18,9 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.StringRepresentable;
 
-import java.util.List;
-
-public class RrvClientSettingsScreen extends Screen {
+public class ClientConfigScreen extends Screen {
 
     private static final Component TITLE = clientSetting("title");
     int yPos = 20;
@@ -29,7 +27,7 @@ public class RrvClientSettingsScreen extends Screen {
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
 
-    public RrvClientSettingsScreen(Screen lastScreen) {
+    public ClientConfigScreen(Screen lastScreen) {
         super(TITLE);
 
         this.lastScreen = lastScreen;
@@ -64,7 +62,8 @@ public class RrvClientSettingsScreen extends Screen {
         addChild(linearLayout, clientSetting("resize_mode.wrap"), clientSetting("resize_mode.cut"), Configs.CLIENT_SETTINGS.isItemWrapMode(), clientSetting("resize_mode"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setItemWrapMode(b), col2, true, buttonWidth);
         addChild(linearLayout, clientSetting("center_search.centered"), clientSetting("center_search.with_index"), Configs.CLIENT_SETTINGS.isCenterSearch(), clientSetting("center_search"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterSearch(b), col1, false, buttonWidth);
         addChild(linearLayout, clientSetting("show_buttons.show"), clientSetting("show_buttons.hide"), Configs.CLIENT_SETTINGS.isShowButtons(), clientSetting("show_buttons"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setShowButtons(b), col2, true, buttonWidth);
-        addChild(linearLayout, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b), col1, true, buttonWidth);
+        addChild(linearLayout, clientSetting("right_index.right"), clientSetting("right_index.left"), Configs.CLIENT_SETTINGS.isRightIndex(), clientSetting("right_index"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setRightIndex(b), col1, false, buttonWidth);
+        addChild(linearLayout, clientSetting("recipe_screen_position.centered"), clientSetting("recipe_screen_position.top"), Configs.CLIENT_SETTINGS.isCenterRecipeScreen(), clientSetting("recipe_screen_position"), (cycleButton, b) -> Configs.CLIENT_SETTINGS.setCenterRecipeScreen(b), col2, true, buttonWidth);
 
         addString(linearLayout, "advanced");
         addChild(linearLayout, clientSetting("append_namespace.show"), clientSetting("append_namespace.hide"), Configs.CLIENT_SETTINGS.isAppendModNamespace(), clientSetting("append_namespace"),(cycleButton, b) -> Configs.CLIENT_SETTINGS.setAppendModNamespace(b), col1, false, buttonWidth);
@@ -111,7 +110,7 @@ public class RrvClientSettingsScreen extends Screen {
 
     @Override
     public void resize(int width, int height) {
-        this.minecraft.setScreen(new RrvClientSettingsScreen(this.lastScreen));
+        this.minecraft.setScreen(new ClientConfigScreen(this.lastScreen));
     }
 
     @Override

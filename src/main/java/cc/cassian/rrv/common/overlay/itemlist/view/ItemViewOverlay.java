@@ -8,7 +8,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
-import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
+import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
@@ -103,7 +103,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                         Component.translatable("rrv.client_settings.btn"),
                         14,
                         SETTINGS_WHEEL,
-                        button -> Minecraft.getInstance().setScreen(new RrvClientSettingsScreen(info.screen()))
+                        button -> Minecraft.getInstance().setScreen(new ClientConfigScreen(info.screen()))
         );
 
         int position = 0;

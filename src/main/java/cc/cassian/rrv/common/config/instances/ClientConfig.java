@@ -18,6 +18,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean appendModNamespace = true;
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
+	private boolean centerRecipeScreen = false;
 
 	private boolean showButtons = true;
 
@@ -133,4 +134,12 @@ public class ClientConfig extends AbstractRrvConfig {
 	public void setShowSidePanel(OverlayDisplay showSidePanel) {
 		this.showSidePanel = showSidePanel;
 	}
+
+    public boolean isCenterRecipeScreen() {
+        return centerRecipeScreen;
+    }
+
+    public void setCenterRecipeScreen(boolean centerRecipeScreen) {
+        this.centerRecipeScreen = centerRecipeScreen;
+    }
 }

@@ -8,7 +8,6 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
@@ -59,7 +58,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     public final List<Button> transferButtons;
 
     //View Type
-    private final List<ViewTypeButton> viewTypeButtons;
+    private final List<RecipeTypeButton> recipeTypeButtons;
     private int viewTypePage;
     private Button prevTypePage, nextTypePage;
     private final ArrayList<Renderable> widgets = new ArrayList<>();
@@ -68,7 +67,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         super(recipeViewMenu, inventory, component);
 
         this.transferButtons = new ArrayList<>();
-        this.viewTypeButtons = new ArrayList<>();
+        this.recipeTypeButtons = new ArrayList<>();
         this.viewTypePage = 0;
 
         this.animationTickers = new ArrayList<>();
@@ -146,17 +145,19 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.addRenderableWidget(this.prevTypePage);
         this.addRenderableWidget(this.nextTypePage);
 
-        int width = 24;
-        int height = 24;
+        updateRecipeTypeButtons();
+    }
 
-        this.viewTypeButtons.clear();
+    private void updateRecipeTypeButtons() {
+        int size = 24;
+        this.recipeTypeButtons.clear();
         for (int i = 0; i < this.getMenu().getViewTypeOrder().size(); i++) {
             int tempId = i % 5;
 
-            int xPos = this.width / 2 - (5 * width / 2 + 4 * 2 / 2) + tempId * width + tempId * 2;
-            int yPos = this.topPos - height - 1;
+            int xPos = this.width / 2 - (5 * size / 2 + 4 * 2 / 2) + tempId * size + tempId * 2;
+            int yPos = this.getTopPos() - size - 1;
 
-            this.viewTypeButtons.add(new ViewTypeButton(this, xPos, yPos, width, height, this.getMenu().getViewTypeOrder().get(i), i));
+            this.recipeTypeButtons.add(new RecipeTypeButton(this, xPos, yPos, size, size, this.getMenu().getViewTypeOrder().get(i), i));
         }
     }
 
@@ -194,12 +195,14 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.imageWidth = this.getMenu().getWidth();
 
         this.topPos = 32;
+        if (Configs.CLIENT_SETTINGS.isCenterRecipeScreen())
+            this.topPos += ((Minecraft.getInstance().getWindow().getGuiScaledHeight() - this.imageHeight) / 4);
 
-        this.prevRecipe.setPosition(this.leftPos + 8, this.topPos + 4);
-        this.nextRecipe.setPosition(this.leftPos + this.imageWidth - 8 - 12, this.topPos + 4);
+        this.prevRecipe.setPosition(this.leftPos + 8, getTopPos() + 4);
+        this.nextRecipe.setPosition(this.leftPos + this.imageWidth - 8 - 12, getTopPos() + 4);
 
-        this.prevTypePage.setPosition(this.width / 2 - (5 * 24 + 4 * 2) / 2 - 2 - 12, this.topPos - 1 - 12 - 6);
-        this.nextTypePage.setPosition(this.width / 2 + (5 * 24 + 4 * 2) / 2 + 2, this.topPos - 1 - 12 - 6);
+        this.prevTypePage.setPosition(this.width / 2 - 64 - 2 - 12, getTopPos() - 19);
+        this.nextTypePage.setPosition(this.width / 2 + 64 + 2, getTopPos() - 19);
 
         this.guiTitle = this.getMenu().getClientRecipeType().getDisplayName();
         this.titleLabelX = this.imageWidth / 2 - this.font.width(this.guiTitle) / 2;
@@ -219,7 +222,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         for (int i = 0; i < this.getMenu().getCurrentDisplay().size(); i++) {
             final ReliableClientRecipe currentView = this.getMenu().getCurrentDisplay().get(i);
 
-            int guiTop = this.topPos + this.getMenu().guiOffsetTop(i);
+            int guiTop = getTopPos() + this.getMenu().guiOffsetTop(i);
 
             int finalI = i;
             Button button = Button.builder(Component.literal("+"), button1 -> {
@@ -259,6 +262,8 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             this.transferButtons.add(button);
 
         }
+
+        updateRecipeTypeButtons();
 
     }
 
@@ -346,7 +351,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 
-        if (mouseX <= this.leftPos && mouseX >= this.leftPos - 25 && mouseY >= this.topPos && mouseY <= this.topPos + this.imageHeight) {
+        if (mouseX <= this.leftPos && mouseX >= this.leftPos - 25 && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight) {
             if (scrollY < 0)
                 this.getMenu().nextReference();
 
@@ -356,7 +361,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             return true;
         }
 
-        if (!(mouseX >= this.leftPos && mouseX <= this.leftPos + this.imageWidth && mouseY >= this.topPos && mouseY <= this.topPos + this.imageHeight))
+        if (!(mouseX >= this.leftPos && mouseX <= this.leftPos + this.imageWidth && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight))
             return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 
 
@@ -389,8 +394,8 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         if (mouseButtonEvent.button() == 0) {
 
-            for (int i = this.viewTypePage * 5; i < this.viewTypePage * 5 + 5 && this.viewTypeButtons.size() > i; i++) {
-                if (this.viewTypeButtons.get(i).onClick(mouseButtonEvent.button(), (int) mouseButtonEvent.x(), (int) mouseButtonEvent.y()))
+            for (int i = this.viewTypePage * 5; i < this.viewTypePage * 5 + 5 && this.recipeTypeButtons.size() > i; i++) {
+                if (this.recipeTypeButtons.get(i).onClick(mouseButtonEvent))
                     return true;
             }
 
@@ -406,15 +411,15 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 	private boolean isHoveringOverTitle(double mouseX, double mouseY) {
         int xMin = this.width / 2 - 64 - 2 - 3;
         int xMax = this.width / 2 + 64 + 2;
-		return (mouseX > xMin && mouseX < xMax) && (mouseY >= this.topPos && mouseY <= this.topPos + 16);
+		return (mouseX > xMin && mouseX < xMax) && (mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + 16);
 	}
 
     private boolean isPrevTypeHovered(double mouseX, double mouseY) {
-        return mouseX >= this.leftPos - 14 - 2 && mouseX <= this.leftPos - 2 && mouseY >= this.topPos + 2 && mouseY <= this.topPos + 2 + 14;
+        return mouseX >= this.leftPos - 14 - 2 && mouseX <= this.leftPos - 2 && mouseY >= this.getTopPos() + 2 && mouseY <= this.getTopPos() + 2 + 14;
     }
 
     private boolean isNextTypeHovered(double mouseX, double mouseY) {
-        return mouseX >= this.leftPos + this.imageWidth + 2 && mouseX <= this.leftPos + this.imageWidth + 2 + 14 && mouseY >= this.topPos + 2 && mouseY <= this.topPos + 2 + 14;
+        return mouseX >= this.leftPos + this.imageWidth + 2 && mouseX <= this.leftPos + this.imageWidth + 2 + 14 && mouseY >= this.getLeftPos() + 2 && mouseY <= this.getTopPos() + 2 + 14;
     }
 
     @Override
@@ -452,11 +457,11 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight - 3, 256, 256);
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.topPos + (this.imageHeight - 3), 0, 256 - 3, this.imageWidth, 3, 256, 256);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.getTopPos(), 0.0F, 0.0F, this.imageWidth, this.imageHeight - 3, 256, 256);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.getTopPos() + (this.imageHeight - 3), 0, 256 - 3, this.imageWidth, 3, 256, 256);
 
 
-        ReliableClientRecipeType viewType = this.getMenu().getClientRecipeType();
+        ReliableClientRecipeType recipeType = this.getMenu().getClientRecipeType();
 
         //Render icons
 
@@ -464,47 +469,47 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         for (int i = 0; i < 5; i++) {
 
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.width / 2 - (5 * 24 + 4 * 2) / 2 + i * 24 + i * 2, this.topPos - 24 - 1, 208, 0, 24, 24, 256, 256);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.width / 2 - (5 * 24 + 4 * 2) / 2 + i * 24 + i * 2, this.getTopPos() - 24 - 1, 208, 0, 24, 24, 256, 256);
         }
 
-        for (int i = this.viewTypePage * 5; i < this.viewTypePage * 5 + 5 && this.viewTypeButtons.size() > i; i++) {
-            this.viewTypeButtons.get(i).extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        for (int i = this.viewTypePage * 5; i < this.viewTypePage * 5 + 5 && this.recipeTypeButtons.size() > i; i++) {
+            this.recipeTypeButtons.get(i).extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         }
 
 
         //Render craft references
 
         for (int i = 0; i < this.getMenu().getDisplayableCraftReferences(); i++) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 25, this.topPos + 4 + i * 24 + i, 231, 48, 25, 24, 256, 256);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 25, this.getTopPos() + 4 + i * 24 + i, 231, 48, 25, 24, 256, 256);
         }
 
         if (this.getMenu().getCurrentCraftReference() > 0)
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.topPos + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
 
         if (this.getMenu().getCurrentCraftReference() < this.getMenu().getClientRecipeType().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.topPos + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
 
         int guiLeft = this.leftPos + this.getMenu().guiOffsetLeft();
 
         for (int i = 0; i < this.getMenu().getCurrentDisplay().size(); i++) {
 
-            int guiTop = this.topPos + this.getMenu().guiOffsetTop(i);
+            int guiTop = this.getTopPos() + this.getMenu().guiOffsetTop(i);
 
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(guiLeft, guiTop);
 
-            if (viewType.getGuiTexture() != null)
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, viewType.getGuiTexture(), 0, 0, 0, 0, viewType.getDisplayWidth(), viewType.getDisplayHeight(), viewType.getDisplayWidth(), viewType.getDisplayHeight());
+            if (recipeType.getGuiTexture() != null)
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, recipeType.getGuiTexture(), 0, 0, 0, 0, recipeType.getDisplayWidth(), recipeType.getDisplayHeight(), recipeType.getDisplayWidth(), recipeType.getDisplayHeight());
 
             //Optional slot rendering
             this.getMenu().slots.stream().filter(slot -> this.getMenu().isOptionalSlot(slot.index) && slot.hasItem()).forEach(slot -> {
                 guiGraphics.pose().pushMatrix();
-                guiGraphics.pose().translate(slot.x - (guiLeft - this.leftPos) - 1, slot.y - (guiTop - this.topPos) - 1);
+                guiGraphics.pose().translate(slot.x - (guiLeft - this.leftPos) - 1, slot.y - (guiTop - this.getTopPos()) - 1);
                 this.getMenu().getOptionalSlotRenderer(slot.index).extractRenderState(guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
                 guiGraphics.pose().popMatrix();
             });
             this.renderInvalidSlots(guiGraphics, i);
-            this.getMenu().getCurrentDisplay().get(i).renderRecipe(this, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, viewType.getDisplayWidth(), viewType.getDisplayHeight()), guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
+            this.getMenu().getCurrentDisplay().get(i).renderRecipe(this, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
             guiGraphics.pose().popMatrix();
         }
 
@@ -542,9 +547,12 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
 
-    record ViewTypeButton(RecipeViewScreen viewScreen, int x, int y, int width, int height, ReliableClientRecipeType viewType,
-                          int viewTypeId) {
+    record RecipeTypeButton(RecipeViewScreen viewScreen, int x, int y, int width, int height, ReliableClientRecipeType recipeType,
+                            int viewTypeId) {
 
+        private boolean onClick(MouseButtonEvent event) {
+            return onClick(event.button(), (int) event.x(), (int) event.y());
+        }
 
         private boolean onClick(int mouseButton, int mouseX, int mouseY) {
             if (!(mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height))
@@ -559,17 +567,17 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             if (!(mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height))
                 return;
 
-			ArrayList<Component> tooltip = new ArrayList<>(Collections.singleton(this.viewType.getDisplayName()));
+			ArrayList<Component> tooltip = new ArrayList<>(Collections.singleton(this.recipeType.getDisplayName()));
             if (Minecraft.getInstance().options.advancedItemTooltips) {
-                tooltip.add(Component.literal(this.viewType.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
+                tooltip.add(Component.literal(this.recipeType.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
             }
-            tooltip.add(Component.literal(Platform.INSTANCE.getModNameForNamespace(this.viewType.getId().getNamespace())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
+            tooltip.add(Component.literal(Platform.INSTANCE.getModNameForNamespace(this.recipeType.getId().getNamespace())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
             guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
         }
 
         private void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.viewType() == this.viewScreen.getMenu().getClientRecipeType() ? 24 : 0, 24, 24, 256, 256);
-            this.viewType().renderIcon(this.viewScreen(), this.x()+4, this.y+4, guiGraphics, mouseX, mouseY, partialTicks);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.recipeType() == this.viewScreen.getMenu().getClientRecipeType() ? 24 : 0, 24, 24, 256, 256);
+            this.recipeType().renderIcon(this.viewScreen(), this.x()+4, this.y+4, guiGraphics, mouseX, mouseY, partialTicks);
 
             this.onHover(guiGraphics, mouseX, mouseY);
         }

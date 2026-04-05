@@ -4,7 +4,7 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
+import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
@@ -283,10 +283,10 @@ public class ItemFilters {
             index.addProperty("replace", true);
             index.add("values", encodedStacks);
             ReliableRecipeViewer.GSON.toJson(index, writer);
-            button.setMessage(RrvClientSettingsScreen.clientSetting("export_item_view.success"));
+            button.setMessage(ClientConfigScreen.clientSetting("export_item_view.success"));
             Util.getPlatform().openPath(Platform.INSTANCE.getDataDirectory());
         } catch (Exception e) {
-            button.setMessage(RrvClientSettingsScreen.clientSetting("export_item_view.failed"));
+            button.setMessage(ClientConfigScreen.clientSetting("export_item_view.failed"));
             ReliableRecipeViewer.LOGGER.error("Unable to export full stack list!", e);
         }
     }
