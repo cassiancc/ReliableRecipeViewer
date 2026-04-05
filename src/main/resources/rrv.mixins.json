@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "mixins": [
-    "BitRandomSourceMixin",
     "advancements.critereon.MixinInventoryChangeTrigger",
     "server.MixinMinecraftServer",
     "world.entity.npc.VillagerTradeAccessor",
@@ -19,7 +18,14 @@
     "world.level.storage.loot.entries.CompositeEntryBaseAccessor",
     "world.level.storage.loot.entries.LootItemAccessor",
     "world.level.storage.loot.entries.LootPoolSingletonContainerAccessor",
-    "world.level.storage.loot.functions.SetPotionFunctionAccessor"
+    "world.level.storage.loot.functions.EnchantRandomlyFunctionAccessor",
+    "world.level.storage.loot.functions.EnchantWithLevelsFunctionAccessor",
+    "world.level.storage.loot.functions.ExplorationMapFunctionAccessor",
+    "world.level.storage.loot.functions.SetEnchantmentsFunctionAccessor",
+    "world.level.storage.loot.functions.SetNameFunctionAccessor",
+    "world.level.storage.loot.functions.SetPotionFunctionAccessor",
+    "world.level.storage.loot.functions.SetRandomDyesFunctionAccessor",
+    "world.level.storage.loot.functions.SetRandomPotionFunctionAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

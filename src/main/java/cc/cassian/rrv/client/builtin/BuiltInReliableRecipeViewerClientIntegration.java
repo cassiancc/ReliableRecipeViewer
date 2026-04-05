@@ -114,9 +114,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             return recipes;
         });
         ItemView.addClientRecipeWrapper(BrewingServerRecipe.TYPE, unwrapped -> List.of(new BrewingClientRecipe(unwrapped)));
-        ItemView.addClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> {
-            return unwrapped.getOffers().stream().map(VillagerClientRecipe::new).toList();
-        });
+        ItemView.addClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> unwrapped.getClientOffers().stream().map(VillagerClientRecipe::new).toList());
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
         ItemView.addClientRecipeWrapper(ItemTagServerRecipe.TYPE, unwrapped -> {
             TagKey<Item> tagKey = unwrapped.getTagKey();

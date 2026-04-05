@@ -43,9 +43,9 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
 
     public VillagerClientRecipe(VillagerServerRecipe.VillagerOffer villagerOffer) {
 
-        this.offer = villagerOffer.offerStacks();
-        this.cost1 = villagerOffer.cost1();
-        this.cost2 = villagerOffer.cost2();
+        this.offer = SlotContent.of(villagerOffer.offerStacks());
+        this.cost1 = SlotContent.of(villagerOffer.cost1());
+        this.cost2 = SlotContent.of(villagerOffer.cost2());
 
         this.villagerOffer = villagerOffer;
         this.random = new Random();

@@ -365,6 +365,8 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
 
         //Trading
+        VillagerServerRecipe.registerDefaultProcessors();
+
         ItemView.addServerRecipeProvider(recipeList -> {
             HolderLookup.RegistryLookup<VillagerProfession> villagerProfessionRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_PROFESSION);
             HolderLookup.RegistryLookup<TradeSet> tradeSetRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.TRADE_SET);
@@ -373,7 +375,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 professionReference.value().tradeSetsByLevel().forEach((level, tradeSetKey) -> {
                     var trades = tradeSetRegistryLookup.getOrThrow(tradeSetKey).value().getTrades();
                     trades.forEach(villagerTradeHolder -> {
-                        recipeList.add(new VillagerServerRecipe(professionReference.key(), level, villagerTradeHolder));
+                        recipeList.add(new VillagerServerRecipe(professionReference.key(), level, villagerTradeHolder.value()));
                     });
                 });
             });

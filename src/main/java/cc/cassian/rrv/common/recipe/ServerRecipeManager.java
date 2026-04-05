@@ -159,22 +159,6 @@ public class ServerRecipeManager {
         });
     }
 
-    @Deprecated
-	public boolean needsWorkaround() {
-        return workaroundFlag;
-	}
-
-    @Deprecated
-    boolean workaroundFlag = false;
-
-    /**
-	 * Avoids crash from multithreading in vanilla/mods
-	 */
-    @Deprecated
-	public void setWorkaroundFlag(boolean b) {
-		workaroundFlag = b;
-	}
-
     public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
 
         public static final StreamCodec<FriendlyByteBuf, ServerRecipeEntry> STREAM_CODEC = StreamCodec.composite(
