@@ -45,8 +45,11 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.InstrumentTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
@@ -156,7 +159,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                             for (LootItemCondition condition : lootPoolAccessor.conditions()) {
                                 if (condition instanceof LootItemKilledByPlayerCondition)
-                                    stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.playerKill").withStyle(ChatFormatting.RED)));
+                                    stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.player_kill").withStyle(ChatFormatting.GRAY)));
                             }
 
                             loot.add(SlotContent.of(stack));
@@ -175,6 +178,16 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                 if (entityType == EntityType.WITHER)
                     loot.add(SlotContent.of(Items.NETHER_STAR));
+
+                if (entityType == EntityType.GOAT) {
+                    ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.INSTRUMENT).asHolderIdMap().iterator().forEachRemaining(instrument->{
+                        if (instrument.is(InstrumentTags.GOAT_HORNS)) {
+                            ItemStack stack = InstrumentItem.create(Items.GOAT_HORN, instrument);
+                            stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.goat_horn").setStyle(Style.EMPTY.applyFormat(ChatFormatting.GRAY))));
+                            loot.add(SlotContent.of(stack));
+                        }
+                    });
+                }
 
                 if (!loot.isEmpty())
                     recipeList.add(new EntityServerRecipe(entityType, loot));

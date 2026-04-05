@@ -21,7 +21,7 @@
   "view.rrv.type.trading.minecraft.plains": "平原村民",
   "view.rrv.type.trading.minecraft.savanna": "热带草原村民",
   "view.rrv.type.entity": "实体掉落",
-  "view.rrv.type.entity.playerKill": "\u00a78» 仅限玩家击杀",
+  "view.rrv.type.entity.player_kill": "\u00a78» 仅限玩家击杀",
   "view.rrv.type.item_tag": "物品标签",
   "view.rrv.type.block_tag": "方块标签",
   "view.rrv.type.info": "信息",

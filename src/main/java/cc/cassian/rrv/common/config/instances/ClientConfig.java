@@ -108,7 +108,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.rightIndex = this.data().get("rightIndex").getAsBoolean();
 		this.centerSearch = this.data().get("centerSearch").getAsBoolean();
 		this.showButtons = this.data().get("showButtons").getAsBoolean();
-		this.showButtons = this.data().get("fluidUnitDroplets").getAsBoolean();
+		this.fluidUnitDroplets = this.data().get("fluidUnitDroplets").getAsBoolean();
 		this.centerRecipeScreen = this.data().get("centerRecipeScreen").getAsBoolean();
 		this.wrapScrolling = WrapScrolling.CODEC.decode(JsonOps.INSTANCE, this.data().get("wrapScrolling")).mapOrElse(Pair::getFirst, (e)->WrapScrolling.ON_BUTTONS);
 		this.sidePanel = SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)-> SidePanel.BOOKMARKS);
