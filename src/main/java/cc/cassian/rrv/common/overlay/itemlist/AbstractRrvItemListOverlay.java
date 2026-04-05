@@ -79,6 +79,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
     protected void prevPage(Button button) {
         int fittingPerPage = this.fittingPerPage();
+        if (fittingPerPage == 0) return;
         if (this.startIndex == 0 && shouldWrapScroll(button)) {
             int size = this.availableItems.size();
             this.startIndex = size - (size - (size / fittingPerPage) * fittingPerPage);
@@ -92,6 +93,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     protected void nextPage(Button button) {
         var currentIndex = this.startIndex;
         int fittingPerPage = this.fittingPerPage();
+        if (fittingPerPage == 0) return;
         int size = this.availableItems.size();
         this.startIndex = Math.min(this.startIndex + fittingPerPage, size - (size - (size / fittingPerPage) * fittingPerPage));
         if (currentIndex == this.startIndex && shouldWrapScroll(button)) {
