@@ -67,7 +67,7 @@ public class ServerRecipeManager {
     }
 
     public void reload() {
-        if (this.server == null || this.recipeManager == null)
+        if (this.server == null || this.server.theGame() == null || this.recipeManager == null)
             return;
 
 
