@@ -55,11 +55,13 @@ public class ReliableRecipeViewerClient {
     public static void loadConfigs() {
         Configs.CLIENT_SETTINGS.load();
         Configs.BOOKMARKS.load();
+        Configs.CATEGORIES.load();
     }
 
     public static void saveConfigs() {
         Configs.CLIENT_SETTINGS.save();
         Configs.BOOKMARKS.save();
+        Configs.CATEGORIES.save();
     }
 
     public static boolean isCheatmodeActive() {

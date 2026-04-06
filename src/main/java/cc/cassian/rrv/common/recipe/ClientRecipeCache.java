@@ -4,6 +4,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import net.minecraft.resources.Identifier;
@@ -147,6 +148,8 @@ public class ClientRecipeCache {
                 this.multiRecipeMap.put(modEntry.modRecipeId(), summarized);
 
                 this.recipeMap.put(uniqueId, wrapped);
+
+                Configs.CATEGORIES.addNewCategory(wrapped.getViewType().getId(), 0);
 
                 wrapped.getIngredients().forEach(ingredient -> {
                     ingredient.getValidContents().forEach(stack -> {

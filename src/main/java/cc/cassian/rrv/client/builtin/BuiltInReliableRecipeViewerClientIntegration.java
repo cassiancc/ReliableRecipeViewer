@@ -39,6 +39,7 @@ import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagServerRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
