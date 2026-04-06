@@ -37,6 +37,7 @@
     "client.gui.screens.MixinScreen",
     "client.gui.screens.inventory.MixinAbstractContainerScreen",
     "client.gui.screens.inventory.MixinAbstractRecipeBookScreen",
+    "client.gui.screens.inventory.MixinAnvilScreen",
     "client.gui.screens.inventory.MixinCreativeModeInventoryScreen",
     "client.gui.screens.inventory.MixinEffectsInInventory",
     "client.gui.screens.inventory.MixinScreen",
