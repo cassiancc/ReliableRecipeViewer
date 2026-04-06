@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.client.gui.components;
 
+import cc.cassian.rrv.common.config.widgets.IntegerEditBox;
 import cc.cassian.rrv.common.overlay.itemlist.view.SearchBar;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -24,11 +25,16 @@ public abstract class MixinEditBox extends AbstractWidget {
 
     @WrapOperation(method = "extractWidgetRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"))
     private void extractRenderStateFilterMode(GuiGraphicsExtractor instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height, Operation<Void> original) {
-        if (((EditBox) (Object) this) instanceof SearchBar) {
+        EditBox editBox = (EditBox) (Object) this;
+        if (editBox instanceof SearchBar) {
             if (ItemViewOverlay.INSTANCE.isItemFilterMode()) {
                 sprite = ReliableRecipeViewer.of("widget/searchbar_filtermode");
             }
             else if (ItemViewOverlay.INSTANCE.availableItems().isEmpty()) {
+                sprite = ReliableRecipeViewer.of( "widget/searchbar_no_results");
+            }
+        } else if (editBox instanceof IntegerEditBox integerEditBox) {
+            if (!integerEditBox.valid) {
                 sprite = ReliableRecipeViewer.of( "widget/searchbar_no_results");
             }
         }

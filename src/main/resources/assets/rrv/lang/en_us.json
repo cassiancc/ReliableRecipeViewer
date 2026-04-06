@@ -122,6 +122,11 @@
   "rrv.client_settings.show_buttons.show": "Show",
   "rrv.client_settings.show_buttons.hide": "Hide",
   "rrv.client_settings.show_buttons": "Buttons",
+  "rrv.category_settings": "Recipe Categories",
+  "rrv.category_settings.enabled": "Enabled",
+  "rrv.category_settings.disabled": "Disabled",
+  "rrv.category_settings.category": "Category",
+  "rrv.category_settings.priority": "Priority",
 
   "tag.item.minecraft.acacia_logs": "Acacia Logs",
   "tag.item.minecraft.anvil": "Anvils",

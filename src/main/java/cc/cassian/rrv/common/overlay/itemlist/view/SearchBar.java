@@ -8,11 +8,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.FormattedCharSequence;
-import org.jspecify.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SearchBar extends EditBox {
 

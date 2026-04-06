@@ -1,6 +1,7 @@
 ### Added
 - The client can now configure what recipe types they wish to see in the index and in which order.
   - Categories are automatically saved to the `.minecraft/rrv/recipe_categories.json` file. A category can have an `enabled` value setting whether it should be visible, and a `priority` value for where to place in the index. When a new category is loaded, it will automatically be sorted by alphabetical priority.
+  - Configuration can also be done in-game from the config screen, under Advanced.
   - Client recipe types can now override `getPriority` to ignore alphabetical sorting and place themselves manually.
 - The "Entity Fighting"  recipe type has been renamed to the Mob Drops recipe type.
   - Mob drops can be added via `ItemView.addMobDrops()`.

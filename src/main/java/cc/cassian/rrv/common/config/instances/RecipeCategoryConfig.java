@@ -74,6 +74,14 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 	    return true; // this shouldn't ever be the case, but safer to allow it
     }
 
+    public void setPriority(Identifier identifier, Integer newPriority) {
+        CATEGORIES.computeIfPresent(identifier, (k, oldCategory) -> new RecipeCategory(oldCategory.id, newPriority, oldCategory.enabled));
+    }
+
+    public void setEnabled(Identifier identifier, Boolean newState) {
+		CATEGORIES.computeIfPresent(identifier, (k, oldCategory) -> new RecipeCategory(oldCategory.id, oldCategory.priority, newState));
+    }
+
 	public record RecipeCategory(Identifier id, int priority, boolean enabled) {
 
 	}
