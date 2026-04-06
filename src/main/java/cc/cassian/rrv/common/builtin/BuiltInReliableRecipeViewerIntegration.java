@@ -48,9 +48,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.InstrumentTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
@@ -65,6 +65,7 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.FuelValues;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.CompositeEntryBase;
@@ -73,6 +74,7 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
@@ -145,45 +147,14 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 if (entityType.getDefaultLootTable().isEmpty())
                     return;
 
-                LootTable table = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().getLootTable(entityType.getDefaultLootTable().get());
-                LootTableAccessor accessor = (LootTableAccessor) table;
+                LootTable table = getLootTable(entityType.getDefaultLootTable().get());
 
                 List<SlotContent> loot = new ArrayList<>();
 
-                for (LootPool pool : accessor.getPools()) {
-                    LootPoolAccessor lootPoolAccessor = (LootPoolAccessor) pool;
+                addLoot(table, loot, null);
 
-                    for (LootPoolEntryContainer container : lootPoolAccessor.entries()) {
-                        if (container instanceof LootItem lootItem) {
-                            LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
-                            LootPoolSingletonContainerAccessor containerAccessor = (LootPoolSingletonContainerAccessor) lootItemAccessor;
-
-                            ItemStack stack = new ItemStack(lootItemAccessor.getItem().value());
-
-                            containerAccessor.getFunctions().forEach(function -> {
-
-                                if (function instanceof SetPotionFunction setPotionFunction)
-                                    stack.set(DataComponents.POTION_CONTENTS, stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).withPotion(((SetPotionFunctionAccessor) setPotionFunction).getPotion()));
-
-                            });
-
-                            for (LootItemCondition condition : lootPoolAccessor.conditions()) {
-                                if (condition instanceof LootItemKilledByPlayerCondition)
-                                    stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.player_kill").withStyle(ChatFormatting.GRAY)));
-                            }
-
-                            loot.add(SlotContent.of(stack));
-                        }
-                        if (container instanceof CompositeEntryBase entryBase) {
-                            CompositeEntryBaseAccessor entryBaseAccessor = (CompositeEntryBaseAccessor) entryBase;
-                            entryBaseAccessor.getChildren().forEach(child -> {
-                                if (child instanceof LootItem lootItem) {
-                                    LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
-                                    loot.add(SlotContent.of(new ItemStack(lootItemAccessor.getItem())));
-                                }
-                            });
-                        }
-                    }
+                if (entityType.equals(EntityType.CHICKEN)) {
+                    addLoot(getLootTable(BuiltInLootTables.CHICKEN_LAY), loot, "view.rrv.type.entity.egg_lay");
                 }
 
                 loot.addAll(ItemViewRecipes.MOB_DROPS.get(entityType));
@@ -395,6 +366,52 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         });
 
         ItemView.addServerRecipeProvider(BuiltInReliableRecipeViewerIntegration::addRepairRecipes);
+    }
+
+    private static LootTable getLootTable(ResourceKey<LootTable> key) {
+        return ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().getLootTable(key);
+    }
+
+    private static void addLoot(LootTable lootTable, List<SlotContent> loot, @Nullable String withLore) {
+        var accessor = (LootTableAccessor) lootTable;
+        for (LootPool pool : accessor.getPools()) {
+            LootPoolAccessor lootPoolAccessor = (LootPoolAccessor) pool;
+
+            for (LootPoolEntryContainer container : lootPoolAccessor.entries()) {
+                if (container instanceof LootItem lootItem) {
+                    LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
+                    LootPoolSingletonContainerAccessor containerAccessor = (LootPoolSingletonContainerAccessor) lootItemAccessor;
+
+                    ItemStack stack = new ItemStack(lootItemAccessor.getItem().value());
+
+                    containerAccessor.getFunctions().forEach(function -> {
+
+                        if (function instanceof SetPotionFunction setPotionFunction)
+                            stack.set(DataComponents.POTION_CONTENTS, stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).withPotion(((SetPotionFunctionAccessor) setPotionFunction).getPotion()));
+
+                    });
+
+                    for (LootItemCondition condition : lootPoolAccessor.conditions()) {
+                        if (condition instanceof LootItemKilledByPlayerCondition)
+                            stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.player_kill").withStyle(ChatFormatting.GRAY)));
+                    }
+
+                    loot.add(SlotContent.of(stack));
+                }
+                if (container instanceof CompositeEntryBase entryBase) {
+                    CompositeEntryBaseAccessor entryBaseAccessor = (CompositeEntryBaseAccessor) entryBase;
+                    entryBaseAccessor.getChildren().forEach(child -> {
+                        if (child instanceof LootItem lootItem) {
+                            LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
+                            ItemStack stack = new ItemStack(lootItemAccessor.getItem());
+                            if (withLore != null)
+                                stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable(withLore).withStyle(ChatFormatting.GRAY)));
+                            loot.add(SlotContent.of(stack));
+                        }
+                    });
+                }
+            }
+        }
     }
 
     private static void addRepairRecipes(List<ReliableServerRecipe> recipeList) {
