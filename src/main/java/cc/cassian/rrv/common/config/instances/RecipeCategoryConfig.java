@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 
 public class RecipeCategoryConfig extends AbstractRrvConfig {
 
@@ -22,6 +23,7 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 	}
 
 	public void addNewCategories() {
+		// build list of recipe categories
 		ArrayList<Identifier> ids = new ArrayList<>();
 		for (ReliableClientRecipe reliableClientRecipe : ClientRecipeCache.INSTANCE.getRecipes()) {
 			Identifier id = reliableClientRecipe.getViewType().getId();
@@ -29,12 +31,13 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 				ids.add(id);
 			}
 		}
-		ids.sort((id1, id2) -> CharSequence.compare(id1.toString(), id2.toString()));
+		// sort
+		ids.sort(Identifier::compareTo);
 		int i = 0;
         for (Identifier id : ids) {
             addNewCategory(id, i++*10);
         }
-
+		// save
         saveCategories();
 
 	}
@@ -42,6 +45,21 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
     public void saveCategories() {
 		save();
 
+    }
+
+    public int compareTo(Identifier id1, Identifier id2) {
+        var priority1 = getPriority(id1);
+		var priority2 = getPriority(id2);
+		if (priority1 == 0 && priority2 == 0) {
+			return id1.compareTo(id2);
+		} else {
+			return Integer.compare(priority1, priority2);
+		}
+    }
+
+	public int getPriority(Identifier id) {
+		var category = Optional.ofNullable(CATEGORIES.get(id.toString()));
+        return category.map(RecipeCategory::priority).orElse(0);
     }
 
 	public record RecipeCategory(Identifier id, int priority, boolean enabled) {

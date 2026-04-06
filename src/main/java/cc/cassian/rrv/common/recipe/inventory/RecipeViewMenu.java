@@ -5,6 +5,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
@@ -15,6 +16,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -100,14 +102,13 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         //Sorting recipe types
         this.viewTypeOrder = new ArrayList<>();
         List<ReliableClientRecipeType> unsortedTypes = this.sortedByType.keySet().stream().toList();
-        HashMap<String, ReliableClientRecipeType> byId = new HashMap<>();
+        HashMap<Identifier, ReliableClientRecipeType> byId = new HashMap<>();
         unsortedTypes.forEach(recipeType -> {
-            byId.put(recipeType.getId().toString(), recipeType);
+            byId.put(recipeType.getId(), recipeType);
         });
 
-        List<String> ids = new ArrayList<>(byId.keySet());
-        //TODO customizable recipe type sorting
-        ids.sort(String::compareTo);
+        List<Identifier> ids = new ArrayList<>(byId.keySet());
+        ids.sort(Configs.CATEGORIES::compareTo);
 
         ids.forEach(id -> {
             this.viewTypeOrder.add(byId.get(id));
