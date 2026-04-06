@@ -8,14 +8,17 @@ import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.Identifier;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class RecipeCategoryConfig extends AbstractRrvConfig {
 
 	public final LinkedHashMap<String, RecipeCategory> CATEGORIES = new LinkedHashMap<>();
+	boolean newCategories = false;
 
 	public void addNewCategory(Identifier id, Integer priority) {
 		CATEGORIES.putIfAbsent(id.toString(), new RecipeCategory(id, priority, true));
+		newCategories = true;
 	}
 
 	public void addNewCategories() {
@@ -28,6 +31,11 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 		save();
 
 	}
+
+    public void saveCategories() {
+		save();
+
+    }
 
 	public record RecipeCategory(Identifier id, int priority, boolean enabled) {
 

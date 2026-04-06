@@ -183,6 +183,7 @@ public class ClientRecipeCache {
                     });
                 });
             }
+            Configs.CATEGORIES.saveCategories();
         }
     }
 
