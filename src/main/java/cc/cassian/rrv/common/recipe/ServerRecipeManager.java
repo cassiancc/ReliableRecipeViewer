@@ -150,12 +150,12 @@ public class ServerRecipeManager {
             serverRecipes.addAll(recipes);
         });
 
-        serverRecipes.forEach(iRrvServerModRecipe -> {
+        serverRecipes.forEach(serverRecipe -> {
 
-            Identifier typeId = iRrvServerModRecipe.getRecipeType().getId();
-            List<ServerRecipeEntry> list = PRESENT_RECIPES.getOrDefault(iRrvServerModRecipe.getRecipeType(), new ArrayList<>());
-            list.add(new ServerRecipeEntry(Identifier.fromNamespaceAndPath(typeId.getNamespace(), typeId.getPath() + "/" + UUID.randomUUID()), iRrvServerModRecipe));
-            PRESENT_RECIPES.put(iRrvServerModRecipe.getRecipeType(), list);
+            Identifier typeId = serverRecipe.getRecipeType().getId();
+            List<ServerRecipeEntry> list = PRESENT_RECIPES.getOrDefault(serverRecipe.getRecipeType(), new ArrayList<>());
+            list.add(new ServerRecipeEntry(Identifier.fromNamespaceAndPath(typeId.getNamespace(), typeId.getPath() + "/" + UUID.randomUUID()), serverRecipe));
+            PRESENT_RECIPES.put(serverRecipe.getRecipeType(), list);
         });
     }
 

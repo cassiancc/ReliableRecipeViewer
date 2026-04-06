@@ -9,6 +9,7 @@ import cc.cassian.rrv.common.builtin.interaction.WorldInteractionServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.item.ItemTagServerRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagServerRecipe;
 import cc.cassian.rrv.common.mixin.world.item.crafting.DyeRecipeAccessor;
+import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
@@ -121,6 +122,15 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                     }
                 }
             });
+
+            ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.INSTRUMENT).asHolderIdMap().iterator().forEachRemaining(instrument->{
+                if (instrument.is(InstrumentTags.GOAT_HORNS)) {
+                    ItemStack stack = InstrumentItem.create(Items.GOAT_HORN, instrument);
+                    stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.goat_horn").setStyle(Style.EMPTY.applyFormat(ChatFormatting.GRAY))));
+                    ItemView.addMobDrops(EntityType.GOAT, SlotContent.of(stack));
+                }
+            });
+            ItemView.addMobDrops(EntityType.WITHER, SlotContent.of(Items.NETHER_STAR));
         });
 
         //providers
@@ -176,18 +186,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                     }
                 }
 
-                if (entityType == EntityType.WITHER)
-                    loot.add(SlotContent.of(Items.NETHER_STAR));
-
-                if (entityType == EntityType.GOAT) {
-                    ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.INSTRUMENT).asHolderIdMap().iterator().forEachRemaining(instrument->{
-                        if (instrument.is(InstrumentTags.GOAT_HORNS)) {
-                            ItemStack stack = InstrumentItem.create(Items.GOAT_HORN, instrument);
-                            stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.goat_horn").setStyle(Style.EMPTY.applyFormat(ChatFormatting.GRAY))));
-                            loot.add(SlotContent.of(stack));
-                        }
-                    });
-                }
+                loot.addAll(ItemViewRecipes.MOB_DROPS.get(entityType));
 
                 if (!loot.isEmpty())
                     recipeList.add(new EntityServerRecipe(entityType, loot));

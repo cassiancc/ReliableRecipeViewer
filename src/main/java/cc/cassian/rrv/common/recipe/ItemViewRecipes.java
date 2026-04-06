@@ -7,7 +7,9 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import com.google.common.collect.LinkedHashMultimap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -175,6 +177,10 @@ public class ItemViewRecipes {
         }) && stackEnchantments.size() == enchantments.size();
     }
 
+    /**
+     * A list of mob drops to be added to the index.
+     */
+    public static final LinkedHashMultimap<EntityType<?>, SlotContent> MOB_DROPS = LinkedHashMultimap.create();
     /**
      * A list of world interaction recipes to be added to the index.
      */

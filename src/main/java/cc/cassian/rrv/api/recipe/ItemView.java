@@ -7,12 +7,14 @@ import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
@@ -23,8 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static cc.cassian.rrv.common.recipe.ItemViewRecipes.INFO_RECIPES;
-import static cc.cassian.rrv.common.recipe.ItemViewRecipes.WORLD_INTERACTION_RECIPES;
+import static cc.cassian.rrv.common.recipe.ItemViewRecipes.*;
 
 /**
  * Main API class used to register RRV compat for other mods
@@ -291,6 +292,14 @@ public class ItemView {
      */
     public static void addWorldInteractionRecipe(WorldInteractionClientRecipe recipe) {
         WORLD_INTERACTION_RECIPES.add(recipe);
+    }
+
+    /**
+     * Mods can add hardcoded mob drops (e.g. Nether Stars, Goat Horns) to an entity type's Mob Drops page. via the API.
+     * Run this via {@link ItemView#addServerReloadCallback(ReloadCallback)} to ensure it's registered on time.
+     */
+    public static void addMobDrops(EntityType<?> type, SlotContent drop) {
+        MOB_DROPS.put(type, drop);
     }
 
     /**
