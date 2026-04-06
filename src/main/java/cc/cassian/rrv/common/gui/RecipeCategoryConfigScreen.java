@@ -8,11 +8,13 @@ import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
-public class RecipeCategoryConfigScreen extends Screen {
+public class RecipeCategoryConfigScreen extends ClientConfigScreen {
 
     private static final Component TITLE = Component.translatable("rrv.category_settings");
     private static final Component ENABLED = Component.translatable("rrv.category_settings.enabled").withStyle(ChatFormatting.GREEN);
@@ -23,7 +25,7 @@ public class RecipeCategoryConfigScreen extends Screen {
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
 
     public RecipeCategoryConfigScreen(Screen lastScreen) {
-        super(TITLE);
+        super(TITLE, lastScreen);
 
         this.lastScreen = lastScreen;
     }
@@ -40,18 +42,26 @@ public class RecipeCategoryConfigScreen extends Screen {
         GridLayout general = createGridLayout();
         GridLayout.RowHelper helper = general.createRowHelper(3);
 
-        helper.addChild(new StringWidget(Component.translatable("rrv.category_settings.category"), font));
-        helper.addChild(new StringWidget(Component.translatable("rrv.category_settings.enabled"), font));
-        helper.addChild(new StringWidget(Component.translatable("rrv.category_settings.priority"), font));
+        int column1 = (int) (this.width / 2.5);
+        int column2 = 100;
 
-        Configs.CATEGORIES.CATEGORIES.forEach((identifier, category) -> {
-            helper.addChild(new StringWidget(Component.literal(identifier.toString()), font));
-            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, category.enabled()).create(0, 0, (int) (this.width / 2.5), 20, Component.literal(identifier.toString()), (_, value) -> Configs.CATEGORIES.setEnabled(identifier, value));
+        helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatable("rrv.category_settings.category").withStyle(ChatFormatting.UNDERLINE), font));
+        helper.addChild(new StringWidget(column2, font.lineHeight, Component.translatable("rrv.category_settings.enabled").withStyle(ChatFormatting.UNDERLINE), font));
+        helper.addChild(new StringWidget(column2, font.lineHeight, Component.translatable("rrv.category_settings.priority").withStyle(ChatFormatting.UNDERLINE), font));
+
+        helper.addChild(new SpacerElement(5, 5));
+        helper.addChild(new SpacerElement(5, 5));
+        helper.addChild(new SpacerElement(5, 5));
+
+        Configs.CATEGORIES.CATEGORIES.values().forEach((category) -> {
+            Identifier id = category.id();
+            helper.addChild(new StringWidget(column1, font.lineHeight, Component.literal(id.toString()), font));
+            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, category.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id.toString()), (_, value) -> Configs.CATEGORIES.setEnabled(id, value));
             helper.addChild(button1);
-            IntegerEditBox widget = new IntegerEditBox(font, 0, 0, 100, 20, null);
+            IntegerEditBox widget = new IntegerEditBox(font, 0, 0, column2, 20, null);
             widget.setResponder(newPriority->{
                 try {
-                    Configs.CATEGORIES.setPriority(identifier, Integer.valueOf(newPriority));
+                    Configs.CATEGORIES.setPriority(id, Integer.valueOf(newPriority));
                 } catch (NumberFormatException ignored) {}
             });
             widget.setValue(String.valueOf(category.priority()));
@@ -62,15 +72,7 @@ public class RecipeCategoryConfigScreen extends Screen {
 
         // done
 
-        this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, _ -> this.onClose()).size(100, 20).build()));
-
-        // finalize
-
-        ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
-        scrollableLayout.arrangeElements();
-
-        scrollableLayout.visitWidgets(this::addRenderableWidget);
-        this.layout.arrangeElements();
+        finalizeLayout(linearLayout, layout, this);
     }
 
     private GridLayout createGridLayout() {

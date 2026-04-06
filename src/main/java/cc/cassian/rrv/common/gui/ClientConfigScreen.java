@@ -30,7 +30,11 @@ public class ClientConfigScreen extends Screen {
     private int buttonWidth;
 
     public ClientConfigScreen(Screen lastScreen) {
-        super(TITLE);
+        this(TITLE, lastScreen);
+    }
+
+    public ClientConfigScreen(Component title, Screen lastScreen) {
+        super(title);
 
         this.lastScreen = lastScreen;
     }
@@ -101,11 +105,17 @@ public class ClientConfigScreen extends Screen {
 
         // finalize
 
-        ScrollableLayout scrollableLayout = this.layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
+        finalizeLayout(linearLayout, layout, this);
+    }
+
+    static void finalizeLayout(LinearLayout linearLayout, HeaderAndFooterLayout layout, ClientConfigScreen screen) {
+        screen.addRenderableWidget(layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, _ -> screen.onClose()).size(100, 20).build()));
+
+        ScrollableLayout scrollableLayout = layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
         scrollableLayout.arrangeElements();
 
-        scrollableLayout.visitWidgets(this::addRenderableWidget);
-        this.layout.arrangeElements();
+        scrollableLayout.visitWidgets(screen::addRenderableWidget);
+        layout.arrangeElements();
     }
 
     private GridLayout createGridLayout() {
