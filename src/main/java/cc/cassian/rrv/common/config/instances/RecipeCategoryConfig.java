@@ -22,13 +22,20 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 	}
 
 	public void addNewCategories() {
-		int i = 0;
+		ArrayList<Identifier> ids = new ArrayList<>();
 		for (ReliableClientRecipe reliableClientRecipe : ClientRecipeCache.INSTANCE.getRecipes()) {
 			Identifier id = reliableClientRecipe.getViewType().getId();
-			addNewCategory(id, i++);
+			if (!ids.contains(id)) {
+				ids.add(id);
+			}
 		}
+		ids.sort((id1, id2) -> CharSequence.compare(id1.toString(), id2.toString()));
+		int i = 0;
+        for (Identifier id : ids) {
+            addNewCategory(id, i++*10);
+        }
 
-		save();
+        saveCategories();
 
 	}
 

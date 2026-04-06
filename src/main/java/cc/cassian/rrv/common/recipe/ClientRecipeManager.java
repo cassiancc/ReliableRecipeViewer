@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe;
 
 import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import com.mojang.serialization.DynamicOps;
@@ -77,6 +78,7 @@ public class ClientRecipeManager {
 		boolean success = LowEndRecipeCache.INSTANCE.processRecipes();
 
 		LowEndRecipeCache.INSTANCE.clear();
+		Configs.CATEGORIES.addNewCategories();
 
 
 		if (!success)

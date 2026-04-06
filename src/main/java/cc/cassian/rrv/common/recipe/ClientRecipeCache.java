@@ -149,8 +149,6 @@ public class ClientRecipeCache {
 
                 this.recipeMap.put(uniqueId, wrapped);
 
-                Configs.CATEGORIES.addNewCategory(wrapped.getViewType().getId(), 0);
-
                 wrapped.getIngredients().forEach(ingredient -> {
                     ingredient.getValidContents().forEach(stack -> {
 
@@ -183,7 +181,6 @@ public class ClientRecipeCache {
                     });
                 });
             }
-            Configs.CATEGORIES.saveCategories();
         }
     }
 
