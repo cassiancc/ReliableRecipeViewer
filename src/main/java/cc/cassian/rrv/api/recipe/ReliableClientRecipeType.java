@@ -83,6 +83,13 @@ public interface ReliableClientRecipeType {
     @Nullable Identifier getGuiTexture();
 
     /**
+     * @return The priority of this recipe type (The higher the priority, the earlier a recipe type is displayed in the view)
+     */
+    default int getPriority() {
+        return 0;
+    }
+
+    /**
      *
      * @return The number of slots <b>one</b> recipe requires for display
      */

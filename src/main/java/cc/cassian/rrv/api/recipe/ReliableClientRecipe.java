@@ -105,7 +105,7 @@ public interface ReliableClientRecipe {
 
 
     /**
-     * @return A list of {@link AnimationTicker}s; Usefull for rendering animations
+     * @return A list of {@link AnimationTicker}s; Useful for rendering animations
      */
     default List<AnimationTicker> getAnimationTickers() {
         return List.of();

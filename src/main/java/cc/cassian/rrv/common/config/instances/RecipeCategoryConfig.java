@@ -1,24 +1,25 @@
 package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
-import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
 public class RecipeCategoryConfig extends AbstractRrvConfig {
 
-	public final LinkedHashMap<String, RecipeCategory> CATEGORIES = new LinkedHashMap<>();
+	public final LinkedHashMap<Identifier, RecipeCategory> CATEGORIES = new LinkedHashMap<>();
 	boolean newCategories = false;
 
 	public void addNewCategory(Identifier id, Integer priority) {
-		CATEGORIES.putIfAbsent(id.toString(), new RecipeCategory(id, priority, true));
+		CATEGORIES.putIfAbsent(id, new RecipeCategory(id, priority, true));
 		newCategories = true;
 	}
 
@@ -26,13 +27,17 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 		// build list of recipe categories
 		ArrayList<Identifier> ids = new ArrayList<>();
 		for (ReliableClientRecipe reliableClientRecipe : ClientRecipeCache.INSTANCE.getRecipes()) {
-			Identifier id = reliableClientRecipe.getViewType().getId();
-			if (!ids.contains(id)) {
-				ids.add(id);
+			Identifier categoryId = reliableClientRecipe.getViewType().getId();
+			if (reliableClientRecipe.getViewType().getPriority() == 0) {
+				if (!ids.contains(categoryId)) {
+					ids.add(categoryId);
+				}
+			} else if (!CATEGORIES.containsKey(categoryId)) {
+				addNewCategory(categoryId, reliableClientRecipe.getPriority());
 			}
 		}
 		// sort
-		ids.sort(Identifier::compareTo);
+		ids.sort(Comparator.comparing(Identifier::toString));
 		int i = 0;
         for (Identifier id : ids) {
             addNewCategory(id, i++*10);
@@ -58,8 +63,15 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
     }
 
 	public int getPriority(Identifier id) {
-		var category = Optional.ofNullable(CATEGORIES.get(id.toString()));
+		var category = Optional.ofNullable(CATEGORIES.get(id));
         return category.map(RecipeCategory::priority).orElse(0);
+    }
+
+    public boolean enabled(ReliableClientRecipeType reliableClientRecipeType) {
+		if (CATEGORIES.containsKey(reliableClientRecipeType.getId()))
+        	return CATEGORIES.get(reliableClientRecipeType.getId()).enabled();
+		ReliableRecipeViewer.LOGGER.error("Category %s is not in configuration!".formatted(reliableClientRecipeType.getId()));
+	    return true; // this shouldn't ever be the case, but safer to allow it
     }
 
 	public record RecipeCategory(Identifier id, int priority, boolean enabled) {
@@ -74,13 +86,15 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 	protected void loadData() {
 
 		if (this.data().has("categories")) {
-			this.data().getAsJsonObject("recipeCategories").asMap().forEach((key, element) -> {
+			this.data().getAsJsonObject("categories").asMap().forEach((key, element) -> {
+				System.out.println("Loading category" + key);
 				JsonObject encodedItem = element.getAsJsonObject();
 				var priority = encodedItem.get("priority").getAsInt();
 				var enabled = encodedItem.get("enabled").getAsBoolean();
 
 				try {
-					CATEGORIES.put(key, new RecipeCategory(Identifier.parse(key), priority, enabled));
+					Identifier id = Identifier.parse(key);
+					CATEGORIES.put(id, new RecipeCategory(id, priority, enabled));
 				} catch (Exception e) {
 					ReliableRecipeViewer.LOGGER.error("Failed to load recipe category from json: {}", encodedItem);
 				}
@@ -103,13 +117,5 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 
 		this.data().add("categories", itemList);
 
-	}
-
-
-	public int getPriority(String string) {
-		if (CATEGORIES.containsKey(string)) {
-			return CATEGORIES.get(string).priority();
-		}
-		return 0;
 	}
 }

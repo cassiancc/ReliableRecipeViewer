@@ -43,6 +43,11 @@ public class PolydexClientRecipeType implements ReliableClientRecipeType {
 	}
 
 	@Override
+	public int getPriority() {
+		return 1000;
+	}
+
+	@Override
 	public Identifier getId() {
 		return Identifier.fromNamespaceAndPath("polydex", "bridge");
 	}

@@ -101,7 +101,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
         //Sorting recipe types
         this.viewTypeOrder = new ArrayList<>();
-        List<ReliableClientRecipeType> unsortedTypes = this.sortedByType.keySet().stream().toList();
+        List<ReliableClientRecipeType> unsortedTypes = this.sortedByType.keySet().stream().filter(Configs.CATEGORIES::enabled).toList();
         HashMap<Identifier, ReliableClientRecipeType> byId = new HashMap<>();
         unsortedTypes.forEach(recipeType -> {
             byId.put(recipeType.getId(), recipeType);
