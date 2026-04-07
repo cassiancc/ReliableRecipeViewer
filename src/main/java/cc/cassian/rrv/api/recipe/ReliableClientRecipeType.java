@@ -1,5 +1,6 @@
 package cc.cassian.rrv.api.recipe;
 
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -83,10 +84,17 @@ public interface ReliableClientRecipeType {
     @Nullable Identifier getGuiTexture();
 
     /**
-     * @return The priority of this recipe type (The higher the priority, the earlier a recipe type is displayed in the view)
+     * @return The default priority of this recipe type (The higher the priority, the earlier a recipe type is displayed in the view)
      */
     default int getPriority() {
         return 0;
+    }
+
+    /**
+     * @return Whether this recipe type is enabled in the view by default
+     */
+    default boolean enabled() {
+        return true;
     }
 
     /**

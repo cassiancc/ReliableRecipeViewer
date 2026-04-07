@@ -15,42 +15,35 @@ import java.util.Optional;
 
 public class RecipeCategoryConfig extends AbstractRrvConfig {
 
-	public final LinkedHashMap<Identifier, RecipeCategory> CATEGORIES = new LinkedHashMap<>();
-	boolean newCategories = false;
+	public final LinkedHashMap<Identifier, ConfiguredRecipeCategory> CATEGORIES = new LinkedHashMap<>();
 
-	public void addNewCategory(Identifier id, Integer priority) {
-		CATEGORIES.putIfAbsent(id, new RecipeCategory(id, priority, true));
-		newCategories = true;
+	public void addNewCategory(Identifier id, Integer priority, boolean enabled) {
+		CATEGORIES.putIfAbsent(id, new ConfiguredRecipeCategory(id, priority, enabled));
 	}
 
 	public void addNewCategories() {
 		// build list of recipe categories
 		ArrayList<Identifier> ids = new ArrayList<>();
 		for (ReliableClientRecipe reliableClientRecipe : ClientRecipeCache.INSTANCE.getRecipes()) {
-			Identifier categoryId = reliableClientRecipe.getViewType().getId();
-			if (reliableClientRecipe.getViewType().getPriority() == 0) {
+			ReliableClientRecipeType recipeTypes = reliableClientRecipe.getViewType();
+			Identifier categoryId = recipeTypes.getId();
+			if (recipeTypes.getPriority() == 0) {
 				if (!ids.contains(categoryId)) {
 					ids.add(categoryId);
 				}
 			} else if (!CATEGORIES.containsKey(categoryId)) {
-				addNewCategory(categoryId, reliableClientRecipe.getPriority());
+				addNewCategory(categoryId, recipeTypes.getPriority(), recipeTypes.enabled());
 			}
 		}
 		// sort
 		ids.sort(Comparator.comparing(Identifier::toString));
 		int i = 0;
         for (Identifier id : ids) {
-            addNewCategory(id, i++*10);
+            addNewCategory(id, i++,true);
         }
-		// save
-        saveCategories();
+        save();
 
 	}
-
-    public void saveCategories() {
-		save();
-
-    }
 
     public int compareTo(Identifier id1, Identifier id2) {
         var priority1 = getPriority(id1);
@@ -64,7 +57,7 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 
 	public int getPriority(Identifier id) {
 		var category = Optional.ofNullable(CATEGORIES.get(id));
-        return category.map(RecipeCategory::priority).orElse(0);
+        return category.map(ConfiguredRecipeCategory::priority).orElse(0);
     }
 
     public boolean enabled(ReliableClientRecipeType reliableClientRecipeType) {
@@ -75,14 +68,14 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
     }
 
     public void setPriority(Identifier identifier, Integer newPriority) {
-        CATEGORIES.computeIfPresent(identifier, (k, oldCategory) -> new RecipeCategory(oldCategory.id, newPriority, oldCategory.enabled));
+        CATEGORIES.computeIfPresent(identifier, (k, oldCategory) -> new ConfiguredRecipeCategory(oldCategory.id, newPriority, oldCategory.enabled));
     }
 
     public void setEnabled(Identifier identifier, Boolean newState) {
-		CATEGORIES.computeIfPresent(identifier, (k, oldCategory) -> new RecipeCategory(oldCategory.id, oldCategory.priority, newState));
+		CATEGORIES.computeIfPresent(identifier, (k, oldCategory) -> new ConfiguredRecipeCategory(oldCategory.id, oldCategory.priority, newState));
     }
 
-	public record RecipeCategory(Identifier id, int priority, boolean enabled) {
+	public record ConfiguredRecipeCategory(Identifier id, int priority, boolean enabled) {
 
 	}
 
@@ -95,14 +88,13 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 
 		if (this.data().has("categories")) {
 			this.data().getAsJsonObject("categories").asMap().forEach((key, element) -> {
-				System.out.println("Loading category" + key);
 				JsonObject encodedItem = element.getAsJsonObject();
 				var priority = encodedItem.get("priority").getAsInt();
 				var enabled = encodedItem.get("enabled").getAsBoolean();
 
 				try {
 					Identifier id = Identifier.parse(key);
-					CATEGORIES.put(id, new RecipeCategory(id, priority, enabled));
+					CATEGORIES.put(id, new ConfiguredRecipeCategory(id, priority, enabled));
 				} catch (Exception e) {
 					ReliableRecipeViewer.LOGGER.error("Failed to load recipe category from json: {}", encodedItem);
 				}

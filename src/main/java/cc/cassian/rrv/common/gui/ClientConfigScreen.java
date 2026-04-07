@@ -7,14 +7,12 @@ import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.client.gui.components.ScrollableLayout;
-import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -27,7 +25,7 @@ public class ClientConfigScreen extends Screen {
     private final Screen lastScreen;
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
-    private int buttonWidth;
+    public int buttonWidth;
 
     public ClientConfigScreen(Screen lastScreen) {
         this(TITLE, lastScreen);
@@ -89,13 +87,22 @@ public class ClientConfigScreen extends Screen {
         GridLayout.RowHelper advancedHelper = advanced.createRowHelper(2);
         linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
 
-        advancedHelper.addChild(Button.builder(Component.translatable("rrv.category_settings"), (_)-> Minecraft.getInstance().setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build());
+        Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (_) -> Minecraft.getInstance().setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
+        if (Configs.CATEGORIES.CATEGORIES.isEmpty()) {
+            recipeCategorySettings.active = false;
+            recipeCategorySettings.setTooltip(Tooltip.create(Component.translatable("rrv.category_settings.needs_initial_load")));
+        }
+        advancedHelper.addChild(recipeCategorySettings);
 
         addChild(advancedHelper, "append_namespace", "show", "hide", configs.isAppendModNamespace(), (_, b) -> configs.setAppendModNamespace(b));
         addChild(advancedHelper, "fluid_unit", "droplets", "mb", configs.isFluidUnitDroplets(), (_, b) -> configs.setFluidUnitDroplets(b));
 
-        if (Minecraft.getInstance().level != null)
-            advancedHelper.addChild(Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(buttonWidth, 20).build());
+        Button exportItemViewButton = Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(buttonWidth, 20).build();
+        if (Minecraft.getInstance().level == null) {
+            exportItemViewButton.active = false;
+            exportItemViewButton.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.export_item_view.needs_world")));
+        }
+        advancedHelper.addChild(exportItemViewButton);
 
         linearLayout.addChild(advanced);
 
@@ -129,15 +136,26 @@ public class ClientConfigScreen extends Screen {
 	}
 
     private <T extends StringRepresentable> void addChild(GridLayout.RowHelper linearLayout, String key, T initialValue, T[] values, CycleButton.OnValueChange<T> newValueSetter) {
-        linearLayout.addChild(
-            CycleButton.builder((value)-> clientSetting(key+"."+value.getSerializedName()), initialValue)
+        CycleButton<T> widget = CycleButton.builder((value) -> clientSetting(key + "." + value.getSerializedName()), initialValue)
                 .withValues(values)
-                .create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter)
+                .create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter);
+        addOptionalTooltip(key, widget);
+        linearLayout.addChild(
+                widget
         );
 	}
 
     private void addChild(GridLayout.RowHelper linearLayout, String key, String enabled, String disabled, boolean currentValue, CycleButton.OnValueChange<Boolean> newValueSetter) {
-        linearLayout.addChild(CycleButton.booleanBuilder(clientSetting("%s.%s".formatted(key, enabled)), clientSetting("%s.%s".formatted(key, disabled)), currentValue).create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter));
+        CycleButton<Boolean> widget = CycleButton.booleanBuilder(clientSetting("%s.%s".formatted(key, enabled)), clientSetting("%s.%s".formatted(key, disabled)), currentValue).create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter);
+        addOptionalTooltip(key, widget);
+        linearLayout.addChild(widget);
+    }
+
+    private static void addOptionalTooltip(String key, CycleButton<?> widget) {
+        var tooltipKey = "rrv.client_settings.%s.tooltip".formatted(key);
+        if (I18n.exists(tooltipKey)) {
+            widget.setTooltip(Tooltip.create(Component.translatable(tooltipKey)));
+        }
     }
 
     @Override

@@ -10,5 +10,7 @@
 - Fixes have been made to fluid units.
   - Fluid units can now be configured to show as droplets, Fabric's preferred unit.
   - Fluid units now include commas.
+- The block tag recipe type is no longer enabled by default.
+- The configuration screen has been overhauled and now includes additional descriptions for included options.
 - Recipe screen position can now be set to vertically centered.
 - Villager server recipes have been updated to be closer to upstream EIV, fixing some performance issues with the current implementation.

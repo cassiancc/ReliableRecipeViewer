@@ -59,4 +59,9 @@ public class ItemTagClientRecipeType implements ReliableClientRecipeType {
     public ItemStack getIcon() {
         return new ItemStack(Items.NAME_TAG);
     }
+
+    @Override
+    public int getPriority() {
+        return 20;
+    }
 }

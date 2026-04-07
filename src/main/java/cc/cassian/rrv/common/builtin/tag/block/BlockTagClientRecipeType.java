@@ -51,6 +51,16 @@ public class BlockTagClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
+    public int getPriority() {
+        return 21;
+    }
+
+    @Override
+    public boolean enabled() {
+        return false;
+    }
+
+    @Override
     public Identifier getId() {
         return ReliableRecipeViewer.of("block_tag");
     }
