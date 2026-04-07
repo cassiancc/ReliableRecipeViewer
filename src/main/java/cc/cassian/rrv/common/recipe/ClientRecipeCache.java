@@ -61,25 +61,19 @@ public class ClientRecipeCache {
 
 
     public void updateType(ReliableServerRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
-        this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> {
-            this.multiRecipeMap.getOrDefault(entry.modRecipeId(), new ArrayList<>()).forEach(id -> {
-                this.recipeMap.remove(id);
+        this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> this.multiRecipeMap.getOrDefault(entry.modRecipeId(), new ArrayList<>()).forEach(id -> {
+            this.recipeMap.remove(id);
 
-                this.byItemIngredient.forEach((item, identifiers) -> {
-                    identifiers.remove(id);
-                });
+            this.byItemIngredient.forEach((item, identifiers) -> identifiers.remove(id));
 
-                this.byItemResult.forEach((item, identifiers) -> {
-                    identifiers.remove(id);
-                });
-            });
-        });
+            this.byItemResult.forEach((item, identifiers) -> identifiers.remove(id));
+        }));
 
         this.serverEntryMap.put(type, recipes);
     }
 
     public List<ReliableClientRecipe> getRecipes() {
-        return List.copyOf(recipeMap.values());
+        return List.copyOf(recipeMap.values()).stream().filter(this::enabled).toList();
     }
 
 
@@ -88,14 +82,21 @@ public class ClientRecipeCache {
             inputStack = ClientPolymerItemUtils.getServerItem(inputStack);
         }
         List<ReliableClientRecipe> recipes = new ArrayList<>();
-        this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> {
-            recipes.add(getRecipe(Identifier));
-        });
+        this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
 
         ItemStack finalInputStack = inputStack;
-        recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsIngredient(finalInputStack) && (viewRecipe.getViewType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == finalInputStack.getItem()) || !viewRecipe.getViewType().getCraftReferenceCondition().matches(finalInputStack, viewRecipe)));
+        recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsIngredient(finalInputStack) && (clientRecipe.getViewType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == finalInputStack.getItem()) || !clientRecipe.getViewType().getCraftReferenceCondition().matches(finalInputStack, clientRecipe)));
+        recipes.removeIf(this::disabled);
 
         return recipes;
+    }
+
+    private boolean disabled(ReliableClientRecipe clientRecipe) {
+        return !enabled(clientRecipe);
+    }
+
+    private boolean enabled(ReliableClientRecipe clientRecipe) {
+        return Configs.CATEGORIES.enabled(clientRecipe.getViewType());
     }
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
@@ -105,12 +106,11 @@ public class ClientRecipeCache {
 
 
         List<ReliableClientRecipe> recipes = new ArrayList<>();
-        this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> {
-            recipes.add(getRecipe(Identifier));
-        });
+        this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
 
         ItemStack finalOutputStack = outputStack;
         recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsResult(finalOutputStack));
+        recipes.removeIf(this::disabled);
 
         return recipes;
     }
@@ -149,15 +149,13 @@ public class ClientRecipeCache {
 
                 this.recipeMap.put(uniqueId, wrapped);
 
-                wrapped.getIngredients().forEach(ingredient -> {
-                    ingredient.getValidContents().forEach(stack -> {
+                wrapped.getIngredients().forEach(ingredient -> ingredient.getValidContents().forEach(stack -> {
 
-                        List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(stack.getItem(), new ArrayList<>());
-                        byIngredient.remove(uniqueId);
-                        byIngredient.add(uniqueId);
-                        this.byItemIngredient.put(stack.getItem(), byIngredient);
-                    });
-                });
+                    List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(stack.getItem(), new ArrayList<>());
+                    byIngredient.remove(uniqueId);
+                    byIngredient.add(uniqueId);
+                    this.byItemIngredient.put(stack.getItem(), byIngredient);
+                }));
 
                 var craftReferences = wrapped.getViewType().getCraftReferences();
 
@@ -172,14 +170,12 @@ public class ClientRecipeCache {
                     this.byItemIngredient.put(reference.getItem(), byIngredient);
                 });
 
-                wrapped.getResults().forEach(result -> {
-                    result.getValidContents().forEach(stack -> {
-                        List<Identifier> byResult = this.byItemResult.getOrDefault(stack.getItem(), new ArrayList<>());
-                        byResult.remove(uniqueId);
-                        byResult.add(uniqueId);
-                        this.byItemResult.put(stack.getItem(), byResult);
-                    });
-                });
+                wrapped.getResults().forEach(result -> result.getValidContents().forEach(stack -> {
+                    List<Identifier> byResult = this.byItemResult.getOrDefault(stack.getItem(), new ArrayList<>());
+                    byResult.remove(uniqueId);
+                    byResult.add(uniqueId);
+                    this.byItemResult.put(stack.getItem(), byResult);
+                }));
             }
         }
     }

@@ -18,9 +18,11 @@ public abstract class MixinMinecraft {
     }
 
 
+    //? <26.1 {
 
-    @Inject(method = "setScreen", at = @At("HEAD"))
+    /*@Inject(method = "setScreen", at = @At("HEAD"))
     private void clearBlockings(Screen screen, CallbackInfo ci){
         OverlayManager.INSTANCE.allGuiBlockings().clear();
     }
+    *///?}
 }
