@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.gui;
 
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.instances.RecipeCategoryConfig;
 import cc.cassian.rrv.common.config.widgets.IntegerEditBox;
@@ -103,6 +104,6 @@ public class RecipeCategoryConfigScreen extends ClientConfigScreen {
     @Override
     public void onClose() {
         Configs.CATEGORIES.save();
-        this.minecraft.setScreen(this.lastScreen);
+        RRVClientUtil.setScreen(this.lastScreen);
     }
 }

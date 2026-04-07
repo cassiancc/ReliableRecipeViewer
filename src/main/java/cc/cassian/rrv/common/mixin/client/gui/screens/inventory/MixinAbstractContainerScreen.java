@@ -1,17 +1,16 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
-import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
@@ -173,7 +172,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
                 this.onStopHovering(this.hoveredSlot);
             }
 
-            Minecraft.getInstance().setScreen(viewScreen.getMenu().getParentScreen());
+            RRVClientUtil.setScreen(viewScreen.getMenu().getParentScreen());
             ci.cancel();
         }
     }

@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.overlay.itemlist.panel;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -15,7 +16,6 @@ import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.ClientRecipeCache;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -28,7 +28,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
@@ -133,7 +132,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 return;
             }
 			this.inventory = player.getInventory().getNonEquipmentItems();
-            var screen = client.screen;
+            var screen = RRVClientUtil.currentScreen();
             if (!(screen instanceof CreativeModeInventoryScreen))
                 inventory.forEach(inventoryItem -> {
                 ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
@@ -153,7 +152,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     void updateRecipes(ReliableClientRecipe recipe, NonNullList<ItemStack> inventory, boolean b) {
         if (recipe.isVisualOnly() || !Configs.CATEGORIES.enabled(recipe.getViewType())) return;
         Minecraft client = Minecraft.getInstance();
-        if (b && !RrvUtil.matchesAnyTransferClass(recipe, client.screen)) return;
+        if (b && !RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())) return;
         AtomicInteger foundIngredientCount = new AtomicInteger();
         int requiredIngredientCount = recipe.getIngredients().size();
         recipe.getIngredients().forEach(ingredient -> {

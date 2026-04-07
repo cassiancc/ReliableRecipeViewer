@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
@@ -163,7 +164,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     public boolean goBack() {
         if (this.viewScreen != null && this.viewHistory.indexOf(this.viewScreen) > 0) {
-            Minecraft.getInstance().setScreen(this.viewHistory.get(this.viewHistory.indexOf(this.viewScreen) - 1));
+            RRVClientUtil.setScreen(this.viewHistory.get(this.viewHistory.indexOf(this.viewScreen) - 1));
             return true;
         }
 
@@ -172,7 +173,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     public boolean goForward() {
         if (this.viewScreen != null && this.viewHistory.size() - 1 > this.viewHistory.indexOf(this.viewScreen)) {
-            Minecraft.getInstance().setScreen(this.viewHistory.get(this.viewHistory.indexOf(this.viewScreen) + 1));
+            RRVClientUtil.setScreen(this.viewHistory.get(this.viewHistory.indexOf(this.viewScreen) + 1));
             return true;
         }
 

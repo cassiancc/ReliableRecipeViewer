@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -11,7 +12,6 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -229,16 +229,16 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                         if (!currentView.supportsItemTransfer())
                             return;
 
-                        Minecraft.getInstance().setScreen(this.getMenu().getParentScreen());
+                        RRVClientUtil.setScreen(this.getMenu().getParentScreen());
                         LocalPlayer player = Minecraft.getInstance().player;
 
-                        if (player != null && RrvUtil.matchesAnyTransferClass(currentView, Minecraft.getInstance().screen)) {
+                        if (player != null && RRVClientUtil.matchesAnyTransferClass(currentView, RRVClientUtil.currentScreen())) {
 
-                            if (!currentView.canTransferToScreen((AbstractContainerScreen<?>) Minecraft.getInstance().screen))
+                            if (!currentView.canTransferToScreen((AbstractContainerScreen<?>) RRVClientUtil.currentScreen()))
                                 return;
 
                             ReliableClientRecipe.RecipeTransferMap map = new ReliableClientRecipe.RecipeTransferMap();
-                            currentView.mapRecipeItems(map, (AbstractContainerScreen<?>) Minecraft.getInstance().screen);
+                            currentView.mapRecipeItems(map, (AbstractContainerScreen<?>) RRVClientUtil.currentScreen());
 
 
                             RecipeTransferData transferData = this.getMenu().getTransferData().get(finalI);
@@ -255,7 +255,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                     .build();
 
             RecipeTransferData data = this.getMenu().getTransferData().get(i);
-            button.active = data.isSuccess() && currentView.supportsItemTransfer() && RrvUtil.matchesAnyTransferClass(currentView, this.getMenu().getParentScreen()) && currentView.canTransferToScreen((AbstractContainerScreen<?>) this.getMenu().getParentScreen());
+            button.active = data.isSuccess() && currentView.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentView, this.getMenu().getParentScreen()) && currentView.canTransferToScreen((AbstractContainerScreen<?>) this.getMenu().getParentScreen());
             button.visible = currentView.supportsItemTransfer();
 
             this.addRenderableWidget(button);

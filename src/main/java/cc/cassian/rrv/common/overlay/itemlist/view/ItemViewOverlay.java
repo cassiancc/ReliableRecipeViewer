@@ -2,6 +2,8 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.client.util.RRVClientUtil;
+import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -11,6 +13,8 @@ import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
+import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
+import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
@@ -103,7 +107,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                         Component.translatable("rrv.client_settings.btn"),
                         14,
                         SETTINGS_WHEEL,
-                        button -> Minecraft.getInstance().setScreen(new ClientConfigScreen(info.screen()))
+                        button -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
         );
 
         int position = 0;
@@ -350,7 +354,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 		};
 
         if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack))) {
-            Screen parent = Minecraft.getInstance().screen;
+            Screen parent = RRVClientUtil.currentScreen();
 
             ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
 
@@ -361,7 +365,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
 
-            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType, viewHistory), clientPlayer.getInventory(), Component.empty()));
+            RRVClientUtil.setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType, viewHistory), clientPlayer.getInventory(), Component.empty()));
         }
     }
 
@@ -372,15 +376,15 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
 
         //? fabric {
-        /*if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
+        if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
             RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
         }
-        *///?}
+        //?}
 
         List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();
 
         if (!foundRecipes.isEmpty()) {
-            Screen parent = Minecraft.getInstance().screen;
+            Screen parent = RRVClientUtil.currentScreen();
 
             ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
 
@@ -391,7 +395,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
 
-            Minecraft.getInstance().setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, ActionType.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
+            RRVClientUtil.setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, ActionType.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
         }
     }
 

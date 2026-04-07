@@ -1,15 +1,11 @@
 package cc.cassian.rrv.common.recipe.util;
 
-import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.ClientAsset;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -17,30 +13,22 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
+import static net.minecraft.server.permissions.Permissions.*;
 
 @ApiStatus.Internal
 public class RrvUtil {
 
-
-    public static boolean matchesAnyTransferClass(ReliableClientRecipe viewRecipe, Screen playerScreen) {
-        if (playerScreen == null)
-            return false;
-
-        return viewRecipe.getTransferClasses().stream().anyMatch(screenClass -> screenClass.isInstance(playerScreen));
-    }
-
     public static boolean hasPermission(Player sender) {
-        return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
+        return sender.permissions().hasPermission(COMMANDS_GAMEMASTER);
     }
 
     public static boolean hasPermission(CommandSourceStack sender) {
-        return sender.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
+        return sender.permissions().hasPermission(COMMANDS_GAMEMASTER);
     }
 
     public static SlotContent readSlotContent(String key, String type, Identifier identifier, JsonObject parsedRecipe) {
@@ -84,4 +72,5 @@ public class RrvUtil {
         }
         return ItemStack.EMPTY;
     }
+
 }

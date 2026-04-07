@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.gui;
 
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
@@ -88,7 +89,7 @@ public class ClientConfigScreen extends Screen {
         GridLayout.RowHelper advancedHelper = advanced.createRowHelper(2);
         linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
 
-        Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (_) -> Minecraft.getInstance().setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
+        Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (_) -> RRVClientUtil.setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
         if (Configs.CATEGORIES.CATEGORIES.isEmpty()) {
             recipeCategorySettings.active = false;
             recipeCategorySettings.setTooltip(Tooltip.create(Component.translatable("rrv.category_settings.needs_initial_load")));
@@ -166,6 +167,6 @@ public class ClientConfigScreen extends Screen {
     @Override
     public void onClose() {
         Configs.CLIENT_SETTINGS.save();
-        this.minecraft.setScreen(this.lastScreen);
+        RRVClientUtil.setScreen(this.lastScreen);
     }
 }
