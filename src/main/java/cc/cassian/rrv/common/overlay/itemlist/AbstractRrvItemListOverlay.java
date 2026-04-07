@@ -190,20 +190,20 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return maxPageIndex;
     }
 
-    protected void drawProgressBar(GuiGraphicsExtractor guiGraphics) {
+    protected void drawProgressBar(GuiGraphicsExtractor guiGraphics, boolean rightIndex) {
         if (Configs.CLIENT_SETTINGS.isShowProgressBar()) {
             double scrollPage = this.getPage();
             if (scrollPage == 0) {
                 scrollPage = .5;
             }
             guiGraphics.fill(checkedX(), checkedY() + 24, checkedX() + checkedWidth(), checkedY() + 28, new Color(255, 255, 255, 32).getRGB());
-            guiGraphics.fill(checkedX(), checkedY() + 24, getWidth(checkedX(), checkedWidth(), scrollPage), checkedY() + 28, new Color(255, 255, 255, 255).getRGB());
+            guiGraphics.fill(checkedX(), checkedY() + 24, getWidth(checkedX(), checkedWidth(), scrollPage, rightIndex), checkedY() + 28, new Color(255, 255, 255, 255).getRGB());
         }
     }
 
-    private int getWidth(double x, int width, double scrollPage) {
+    private int getWidth(double x, int width, double scrollPage, boolean rightIndex) {
         int i = (int) (x + (((double) width / getMaxPageIndex()) * scrollPage));
-        if (i > width && !Configs.CLIENT_SETTINGS.isRightIndex()) return width;
+        if (i > width && rightIndex) return width;
         return i;
     }
 

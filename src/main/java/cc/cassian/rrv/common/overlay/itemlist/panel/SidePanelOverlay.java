@@ -259,7 +259,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
 
-        drawProgressBar(guiGraphics);
+        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex());
 
     }
 

@@ -1,19 +1,2 @@
-### Added
-- The client can now configure what recipe types they wish to see in the index and in which order.
-  - Categories are automatically saved to the `.minecraft/rrv/recipe_categories.json` file. A category can have an `enabled` value setting whether it should be visible, and a `priority` value for where to place in the index. When a new category is loaded, it will automatically be sorted by alphabetical priority.
-  - Configuration can also be done in-game from the config screen, under Advanced.
-  - Client recipe types can now override `getPriority` to ignore alphabetical sorting and place themselves manually.
-  - By default, recipe types are sorted alphabetically, with Minecraft recipe types sorted before modded ones.
-- The "Entity Fighting"  recipe type has been renamed to the Mob Drops recipe type.
-  - Mob drops can be added via `ItemView.addMobDrops()`.
-  - Goat horn drops are now included.
-  - Chicken egg drops are now included.
-- Fixes have been made to fluid units.
-  - Fluid units can now be configured to show as droplets, Fabric's preferred unit.
-  - Fluid units now include commas.
-- The progress bar can now be hidden.
-- The block tag recipe type is no longer enabled by default.
-- The configuration screen has been overhauled and now includes additional descriptions for included options.
-- Recipe screen position can now be set to vertically centered.
-- Villager server recipes have been updated to be closer to upstream EIV, fixing some performance issues with the current implementation.
-- SlotContent now has a codec, which is used for serialization and deserialization.
+### Fixed
+- Overflowing progress bar.

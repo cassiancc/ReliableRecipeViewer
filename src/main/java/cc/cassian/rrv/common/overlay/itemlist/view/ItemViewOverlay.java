@@ -254,7 +254,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
 
 
-        drawProgressBar(guiGraphics);
+        drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex());
 
     }
 
