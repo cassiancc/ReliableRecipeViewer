@@ -91,6 +91,8 @@ public class ClientConfigScreen extends Screen {
         if (Configs.CATEGORIES.CATEGORIES.isEmpty()) {
             recipeCategorySettings.active = false;
             recipeCategorySettings.setTooltip(Tooltip.create(Component.translatable("rrv.category_settings.needs_initial_load")));
+        } else {
+            recipeCategorySettings.setTooltip(Tooltip.create(Component.translatable("rrv.category_settings.tooltip")));
         }
         advancedHelper.addChild(recipeCategorySettings);
 
@@ -101,6 +103,8 @@ public class ClientConfigScreen extends Screen {
         if (Minecraft.getInstance().level == null) {
             exportItemViewButton.active = false;
             exportItemViewButton.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.export_item_view.needs_world")));
+        } else {
+            exportItemViewButton.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.export_item_view.tooltip")));
         }
         advancedHelper.addChild(exportItemViewButton);
 
