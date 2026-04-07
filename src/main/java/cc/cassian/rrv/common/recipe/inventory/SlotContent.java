@@ -7,8 +7,8 @@ import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import com.mojang.serialization.Codec;
-//? fabric {
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+//? fabric {
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
 import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;

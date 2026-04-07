@@ -6,7 +6,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
-import cc.cassian.rrv.common.gui.RrvClientSettingsScreen;
+import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.Registries;
@@ -54,7 +54,7 @@ public class NeoForgeClientEntrypoint {
 				ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration: {}", optional.get());
 			}
 		});
-        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new RrvClientSettingsScreen(screen));
+        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new ClientConfigScreen(screen));
     }
 
     @SubscribeEvent
