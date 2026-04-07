@@ -77,6 +77,7 @@ public class ClientConfigScreen extends Screen {
         addChild(styleHelper, "resize_mode", "wrap", "cut", configs.isItemWrapMode(), (_, b) -> configs.setItemWrapMode(b));
         addChild(styleHelper, "center_search", "centered", "with_index", configs.isCenterSearch(), (_, b) -> configs.setCenterSearch(b));
         addChild(styleHelper, "show_buttons", "show", "hide", configs.isShowButtons(), (_, b) -> configs.setShowButtons(b));
+        addChild(styleHelper, "show_progress_bar", "show", "hide", configs.isShowProgressBar(), (_, b) -> configs.setShowProgressBar(b));
         addChild(styleHelper, "right_index", "right", "left", configs.isRightIndex(), (_, b) -> configs.setRightIndex(b));
         addChild(styleHelper, "recipe_screen_position", "centered", "top", configs.isCenterRecipeScreen(), (_, b) -> configs.setCenterRecipeScreen(b));
 

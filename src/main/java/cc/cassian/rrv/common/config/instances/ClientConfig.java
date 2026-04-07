@@ -9,10 +9,11 @@ import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
 
-	private OverlayDisplay showItemView = OverlayDisplay.ENABLED;
+    private OverlayDisplay showItemView = OverlayDisplay.ENABLED;
 	private OverlayDisplay showSidePanel = OverlayDisplay.WITH_ITEM_VIEW;
 	private SidePanel sidePanel = SidePanel.DISABLED;
 	private boolean background = true;
+	private boolean showProgressBar = true;
 	private boolean itemWrapMode = true;
 	private WrapScrolling wrapScrolling = WrapScrolling.ON_BUTTONS;
 	private boolean appendModNamespace = true;
@@ -108,6 +109,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.rightIndex = this.data().get("rightIndex").getAsBoolean();
 		this.centerSearch = this.data().get("centerSearch").getAsBoolean();
 		this.showButtons = this.data().get("showButtons").getAsBoolean();
+		this.showProgressBar = this.data().get("showProgressBar").getAsBoolean();
 		this.fluidUnitDroplets = this.data().get("fluidUnitDroplets").getAsBoolean();
 		this.centerRecipeScreen = this.data().get("centerRecipeScreen").getAsBoolean();
 		this.wrapScrolling = WrapScrolling.CODEC.decode(JsonOps.INSTANCE, this.data().get("wrapScrolling")).mapOrElse(Pair::getFirst, (e)->WrapScrolling.ON_BUTTONS);
@@ -124,6 +126,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.data().addProperty("rightIndex", this.rightIndex);
 		this.data().addProperty("centerSearch", this.centerSearch);
 		this.data().addProperty("showButtons", this.showButtons);
+		this.data().addProperty("showProgressBar", this.showProgressBar);
 		this.data().addProperty("fluidUnitDroplets", this.fluidUnitDroplets);
 		this.data().addProperty("centerRecipeScreen", this.centerRecipeScreen);
 		this.data().add("wrapScrolling", WrapScrolling.CODEC.encodeStart(JsonOps.INSTANCE, this.wrapScrolling).getOrThrow());
@@ -153,5 +156,13 @@ public class ClientConfig extends AbstractRrvConfig {
 
     public void setFluidUnitDroplets(boolean fluidUnitDroplets) {
         this.fluidUnitDroplets = fluidUnitDroplets;
+    }
+
+    public boolean isShowProgressBar() {
+        return showProgressBar;
+    }
+
+    public void setShowProgressBar(boolean showProgressBar) {
+        this.showProgressBar = showProgressBar;
     }
 }

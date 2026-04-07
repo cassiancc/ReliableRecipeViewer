@@ -249,20 +249,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
 
-        double scrollPage = this.getPage();
-        if (scrollPage == 0) {
-            scrollPage = .5;
-        }
 
-        guiGraphics.fill(checkedX(), checkedY() + 24, checkedX() + checkedWidth(), checkedY() + 28, new Color(255, 255, 255, 32).getRGB());
-        guiGraphics.fill(checkedX(), checkedY() + 24, getWidth(checkedX(), checkedWidth(), scrollPage), checkedY() + 28, new Color(255, 255, 255, 255).getRGB());
+        drawProgressBar(guiGraphics);
 
-    }
-
-    private int getWidth(double x, int width, double scrollPage) {
-        int i = (int) (x + (((double) width / getMaxPageIndex()) * scrollPage));
-        if (i > width && !Configs.CLIENT_SETTINGS.isRightIndex()) return width;
-        return i;
     }
 
 

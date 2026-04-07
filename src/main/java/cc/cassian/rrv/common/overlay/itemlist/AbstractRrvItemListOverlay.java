@@ -2,7 +2,6 @@ package cc.cassian.rrv.common.overlay.itemlist;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import net.minecraft.client.gui.Font;
@@ -12,6 +11,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,6 +188,23 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
             maxPageIndex++;
 
         return maxPageIndex;
+    }
+
+    protected void drawProgressBar(GuiGraphicsExtractor guiGraphics) {
+        if (Configs.CLIENT_SETTINGS.isShowProgressBar()) {
+            double scrollPage = this.getPage();
+            if (scrollPage == 0) {
+                scrollPage = .5;
+            }
+            guiGraphics.fill(checkedX(), checkedY() + 24, checkedX() + checkedWidth(), checkedY() + 28, new Color(255, 255, 255, 32).getRGB());
+            guiGraphics.fill(checkedX(), checkedY() + 24, getWidth(checkedX(), checkedWidth(), scrollPage), checkedY() + 28, new Color(255, 255, 255, 255).getRGB());
+        }
+    }
+
+    private int getWidth(double x, int width, double scrollPage) {
+        int i = (int) (x + (((double) width / getMaxPageIndex()) * scrollPage));
+        if (i > width && !Configs.CLIENT_SETTINGS.isRightIndex()) return width;
+        return i;
     }
 
     public List<ItemStack> availableItems() {
