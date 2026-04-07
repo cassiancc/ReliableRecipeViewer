@@ -62,6 +62,6 @@ public class ItemTagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getPriority() {
-        return 20;
+        return 100;
     }
 }

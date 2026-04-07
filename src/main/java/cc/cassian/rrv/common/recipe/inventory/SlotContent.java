@@ -1,7 +1,6 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -9,6 +8,7 @@ import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import com.mojang.serialization.Codec;
 //? fabric {
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
 import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
@@ -23,6 +23,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -41,7 +42,14 @@ import java.util.Optional;
 
 public class SlotContent {
 
-    public static final Codec<List<ItemStack>> CODEC = ItemStack.CODEC.listOf();
+    public static final Codec<SlotContent> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                            ItemStack.CODEC.listOf().fieldOf("id").forGetter(SlotContent::getValidContents),
+                            TagKey.codec(Registries.ITEM).optionalFieldOf("item_tag").forGetter(SlotContent::itemTag),
+                            TagKey.codec(Registries.BLOCK).optionalFieldOf("block_tag").forGetter(SlotContent::blockTag)
+                    )
+                    .apply(instance, SlotContent::new)
+    );
     private final List<ItemStack> content;
     private int current;
 
@@ -65,6 +73,12 @@ public class SlotContent {
         this.originType = ActionType.ANY;
 
         this.type = ActionType.INPUT;
+    }
+
+    private SlotContent(List<ItemStack> content, Optional<TagKey<Item>> tagKey, Optional<TagKey<Block>> blockTagKey) {
+        this(content);
+        tagKey.ifPresent(itemTagKey -> this.itemTag = itemTagKey);
+        blockTagKey.ifPresent(blockTag -> this.blockTag = blockTag);
     }
 
     public void setType(ActionType type) {
@@ -99,7 +113,7 @@ public class SlotContent {
         return this;
     }
 
-    public Optional<TagKey<Block>> getBlockTag() {
+    public Optional<TagKey<Block>> blockTag() {
         return Optional.ofNullable(this.blockTag);
     }
 

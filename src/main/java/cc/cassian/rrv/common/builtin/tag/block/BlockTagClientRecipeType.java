@@ -52,7 +52,7 @@ public class BlockTagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getPriority() {
-        return 21;
+        return 101;
     }
 
     @Override

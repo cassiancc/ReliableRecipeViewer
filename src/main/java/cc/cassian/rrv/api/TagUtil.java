@@ -3,6 +3,7 @@ package cc.cassian.rrv.api;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -274,17 +275,11 @@ public class TagUtil {
     }
 
 	public static CompoundTag writeSlotContent(SlotContent slotContent) {
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put("stacks", TagUtil.writeList(slotContent.getValidContents(), (stack, tag)->TagUtil.encodeItemStackOnServer(stack)));
-        slotContent.getItemTag().ifPresent(itemTagKey -> compoundTag.store("tag", TagKey.codec(Registries.ITEM), itemTagKey));
-        return compoundTag;
+        return (CompoundTag) SlotContent.CODEC.encodeStart(ServerRecipeManager.INSTANCE.createSerializationContext(), slotContent).result().orElse(new CompoundTag());
 	}
 
     public static SlotContent readSlotContent(CompoundTag tag) {
-        SlotContent slotContent = SlotContent.of(TagUtil.readList(tag, "stacks", TagUtil::decodeItemStackOnClient));
-        Optional<TagKey<Item>> tagKey = tag.read("tag", TagKey.codec(Registries.ITEM));
-		tagKey.ifPresent(slotContent::bindItemTag);
-        return slotContent;
+        return SlotContent.CODEC.decode(ClientRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(new Pair<>(SlotContent.of(), new CompoundTag())).getFirst();
     }
 
     //----------------- Custom object builder/reconstructor -----------------

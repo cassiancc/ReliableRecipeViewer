@@ -15,3 +15,4 @@
 - The configuration screen has been overhauled and now includes additional descriptions for included options.
 - Recipe screen position can now be set to vertically centered.
 - Villager server recipes have been updated to be closer to upstream EIV, fixing some performance issues with the current implementation.
+- SlotContent now has a codec, which is used for serialization and deserialization.
