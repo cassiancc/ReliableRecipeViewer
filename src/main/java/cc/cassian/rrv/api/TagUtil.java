@@ -25,6 +25,7 @@ import java.util.Optional;
 /**
  * Helper class for network encoding based on CompoundTags
  */
+@SuppressWarnings("unused")
 public class TagUtil {
 
 
@@ -53,7 +54,7 @@ public class TagUtil {
      * @param tag The tag to decode
      * @return The decoded stack
      */
-    public static ItemStackTemplate decodeItemStackTemplateOnClient(CompoundTag tag) {
+    public static @Nullable ItemStackTemplate decodeItemStackTemplateOnClient(CompoundTag tag) {
         return ItemStackTemplate.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(null);
     }
 
@@ -122,7 +123,7 @@ public class TagUtil {
     //----------------- Item, Block, Fluid -----------------
 
     /**
-     * Pre defined method for encoding item lists
+     * Pre-defined method for encoding item lists
      * @param items The items to encode
      * @return The encoded item list as ListTag
      */
@@ -132,7 +133,7 @@ public class TagUtil {
 
 
     /**
-     * Pre defined method for decoding item lists
+     * Pre-defined method for decoding item lists
      * @param srcTag The parent tag containing the list
      * @param key They key referring to the list
      * @return The decoded item list
@@ -142,7 +143,7 @@ public class TagUtil {
     }
 
     /**
-     * Pre defined method for encoding block lists
+     * Pre-defined method for encoding block lists
      * @param blocks The blocks to encode
      * @return The encoded block list as ListTag
      */
@@ -151,7 +152,7 @@ public class TagUtil {
     }
 
     /**
-     * Pre defined method for decoding block lists
+     * Pre-defined method for decoding block lists
      * @param srcTag The parent tag containing the list
      * @param key They key referring to the list
      * @return The decoded block list
@@ -161,7 +162,7 @@ public class TagUtil {
     }
 
     /**
-     * Pre defined method for encoding fluid lists
+     * Pre-defined method for encoding fluid lists
      * @param fluids The fluids to encode
      * @return The encoded fluid list as ListTag
      */
@@ -171,7 +172,7 @@ public class TagUtil {
 
 
     /**
-     * Pre defined method for decoding fluid lists
+     * Pre-defined method for decoding fluid lists
      * @param srcTag The parent tag containing the list
      * @param key They key referring to the list
      * @return The decoded fluid list
@@ -216,7 +217,7 @@ public class TagUtil {
         return registry.getKey(object).toString();
     }
 
-    private static <T> T stringToRegistry(String string, DefaultedRegistry<T> registry) {
+    private static @Nullable <T> T stringToRegistry(String string, DefaultedRegistry<T> registry) {
         if (string.isEmpty())
             return null;
 
@@ -235,7 +236,7 @@ public class TagUtil {
      * @param s The resource location as a string
      * @return The item corresponding to the given resource location
      */
-    public static Item itemFromString(String s) {
+    public static @Nullable Item itemFromString(String s) {
         return stringToRegistry(s, BuiltInRegistries.ITEM);
     }
 
@@ -252,7 +253,7 @@ public class TagUtil {
      * @param s The resource location as a string
      * @return The block corresponding to the given resource location
      */
-    public static Block blockFromString(String s) {
+    public static @Nullable Block blockFromString(String s) {
         return stringToRegistry(s, BuiltInRegistries.BLOCK);
     }
 
@@ -270,7 +271,7 @@ public class TagUtil {
      * @param s The resource location as a string
      * @return The fluid corresponding to the given resource location
      */
-    public static Fluid fluidFromString(String s) {
+    public static @Nullable Fluid fluidFromString(String s) {
         return stringToRegistry(s, BuiltInRegistries.FLUID);
     }
 

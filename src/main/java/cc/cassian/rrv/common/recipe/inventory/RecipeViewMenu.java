@@ -109,11 +109,9 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         });
 
         List<Identifier> ids = new ArrayList<>(byId.keySet());
-        ids.sort(Configs.CATEGORIES::compareTo);
+        ids.sort(Configs.CATEGORIES::compareAndCheckPriority);
 
-        ids.forEach(id -> {
-            this.viewTypeOrder.add(byId.get(id));
-        });
+        ids.forEach(id -> this.viewTypeOrder.add(byId.get(id)));
 
         // manually placed a clicked recipe type first
         if (!clientRecipeType.equals(ReliableClientRecipeType.NONE)) {

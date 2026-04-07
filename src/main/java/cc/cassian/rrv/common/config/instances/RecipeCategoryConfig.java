@@ -36,7 +36,7 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 			}
 		}
 		// sort
-		ids.sort(Comparator.comparing(Identifier::toString));
+		ids.sort(this::compareIdentifiers);
 		int i = 0;
         for (Identifier id : ids) {
             addNewCategory(id, i++,true);
@@ -45,15 +45,24 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 
 	}
 
-    public int compareTo(Identifier id1, Identifier id2) {
+    public int compareAndCheckPriority(Identifier id1, Identifier id2) {
         var priority1 = getPriority(id1);
 		var priority2 = getPriority(id2);
 		if (priority1 == 0 && priority2 == 0) {
-			return id1.compareTo(id2);
+			return compareIdentifiers(id1, id2);
 		} else {
 			return Integer.compare(priority1, priority2);
 		}
     }
+
+	public int compareIdentifiers(Identifier id1, Identifier id2) {
+		boolean id1IsVanilla = id1.getNamespace().equals("minecraft");
+		boolean id2IsVanilla = id2.getNamespace().equals("minecraft");
+		if (id1IsVanilla && id2IsVanilla) return id1.compareTo(id2);
+		if (id1IsVanilla) return -1;
+		else if (id2IsVanilla) return 1;
+		return id1.toString().compareTo(id2.toString());
+	}
 
 	public int getPriority(Identifier id) {
 		var category = Optional.ofNullable(CATEGORIES.get(id));
