@@ -1,3 +1,8 @@
+## [7.1.1]
+
+### Fixed
+- Overflowing progress bar.
+
 ## [7.1.0]
 
 ### Added

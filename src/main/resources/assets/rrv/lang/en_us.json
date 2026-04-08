@@ -61,7 +61,7 @@
   "key.category.rrv.rrv_admin": "Reliable Recipe Viewer - Admin",
   "key.rrv.cheatmode": "Use Cheatmode",
 
-  "recipe_sync.rrv.denied": "RRV cannot request recipes from a server without RVV installed! Please install RVV on the server for accurate recipes.",
+  "recipe_sync.rrv.denied": "RRV cannot request recipes from a server without RRV installed! Please install RRV on the server for accurate recipes.",
   "cheatmode.rrv.cheated": "Cheated x%s %s",
   "cheatmode.rrv.taking": "Taking x%s",
   "cheatmode.rrv.denied": "You do not have permission to use the cheatmode",
