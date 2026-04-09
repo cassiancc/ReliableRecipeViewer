@@ -32,6 +32,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -138,9 +139,11 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
             });
             if (this.availableItems.isEmpty()) {
+                try {
                 inventory.forEach(inventoryItem -> {
                     ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
                 });
+                } catch (ConcurrentModificationException ignored) {}
             }
         } else {
             this.availableItems.addAll(BookmarkManager.INSTANCE.availableItems());

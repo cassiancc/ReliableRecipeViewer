@@ -400,7 +400,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     }
 
 
-    public EditBox getSearchbar() {
+    public SearchBar getSearchbar() {
         return this.searchbar;
     }
 

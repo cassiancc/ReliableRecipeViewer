@@ -56,4 +56,8 @@ public class SearchBar extends EditBox {
         }
         return super.mouseClicked(event, doubleClick);
     }
+
+    public void clear() {
+        setValue("");
+    }
 }
