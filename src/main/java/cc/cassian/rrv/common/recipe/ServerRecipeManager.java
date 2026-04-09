@@ -10,6 +10,9 @@ import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPaylo
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
+import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
+import net.fabricmc.fabric.api.recipe.v1.sync.SynchronizedRecipes;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -41,6 +44,10 @@ public class ServerRecipeManager {
 
     }
 
+    public static void synchronizeRecipeSerializer(RecipeSerializer<?> serializer) {
+        RecipeSynchronization.synchronizeRecipeSerializer(serializer);
+    }
+
     public void setServer(MinecraftServer server) {
         this.server = server;
         this.reload();
@@ -61,6 +68,10 @@ public class ServerRecipeManager {
     //Helper functionality
     public <T extends Recipe<?>> List<T> getRecipesForType(RecipeType<T> recipeType) {
         return (List<T>) this.recipeManager.getRecipes().stream().filter(holder -> holder.value().getType().equals(recipeType)).map(RecipeHolder::value).toList();
+    }
+
+    public  <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getAllOfType(RecipeType<T> type) {
+        return this.recipeManager.getAllOfType(type);
     }
 
     public RegistryOps<Tag> createSerializationContext() {

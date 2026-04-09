@@ -6,6 +6,8 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
 
 import java.util.List;
 
@@ -14,9 +16,9 @@ public class StonecutterClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
 
-    public StonecutterClientRecipe(StonecutterServerRecipe stonecutterRecipe) {
-        this.input = stonecutterRecipe.getInput();
-        this.result =stonecutterRecipe.getResult();
+    public StonecutterClientRecipe(RecipeHolder<StonecutterRecipe> stonecutterRecipe) {
+        this.input = SlotContent.of(stonecutterRecipe.value().input());
+        this.result = SlotContent.of(stonecutterRecipe.value().result);
     }
 
     @Override

@@ -81,6 +81,11 @@ public class SlotContent {
         blockTagKey.ifPresent(blockTag -> this.blockTag = blockTag);
     }
 
+    public static SlotContent of(@Nullable HolderSet<Item> items) {
+        if (items == null) return SlotContent.of();
+        return SlotContent.of(Ingredient.of(items));
+    }
+
     public void setType(ActionType type) {
         this.type = type;
     }

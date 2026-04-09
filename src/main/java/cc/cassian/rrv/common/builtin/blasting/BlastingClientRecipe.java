@@ -12,6 +12,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.BlastingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 
@@ -20,10 +23,10 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
     private final SlotContent input, result;
     private final AnimationTicker blastingTicker;
 
-    public BlastingClientRecipe(BlastingServerRecipe blastingRecipe) {
+    public BlastingClientRecipe(RecipeHolder<BlastingRecipe> blastingRecipe) {
 
-        this.input = blastingRecipe.getInput();
-        this.result = blastingRecipe.getResult();
+        this.input = SlotContent.of(blastingRecipe.value().input());
+        this.result = SlotContent.of(blastingRecipe.value().result);
 
         this.blastingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("blasting_ticker"), 100);
     }

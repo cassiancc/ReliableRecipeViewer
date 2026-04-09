@@ -10,6 +10,8 @@ import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
 
@@ -23,14 +25,12 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
 
     private final AnimationTicker brewProgressTicker;
 
-    public BrewingClientRecipe(BrewingServerRecipe brewingServerRecipe) {
-
-        this.bottle1 = brewingServerRecipe.getBottleIngredient();
-        this.bottle2 = brewingServerRecipe.getBottleIngredient();
-        this.bottle3 = brewingServerRecipe.getBottleIngredient();
-
-        this.result = brewingServerRecipe.getResult();
-        this.magicIngredient = brewingServerRecipe.getMagicIngredient();
+    public BrewingClientRecipe(ItemStack result, Ingredient magicIngredient, ItemStack bottleIngredient) {
+        this.result = SlotContent.of(result);
+        this.magicIngredient = SlotContent.of(magicIngredient);
+        this.bottle1 = SlotContent.of(bottleIngredient);
+        this.bottle2 = SlotContent.of(bottleIngredient);
+        this.bottle3 = SlotContent.of(bottleIngredient);
 
         this.brewProgressTicker = AnimationTicker.create(Identifier.withDefaultNamespace("brew_progress_tick"), 400);
     }

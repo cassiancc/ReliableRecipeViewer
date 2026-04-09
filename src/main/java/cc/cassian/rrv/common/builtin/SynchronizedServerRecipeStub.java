@@ -1,21 +1,18 @@
-package cc.cassian.rrv.common.builtin.anvil;
+package cc.cassian.rrv.common.builtin;
 
-import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
-public class ResourceDrivenAnvilCombiningServerRecipe implements ReliableServerRecipe {
+public class SynchronizedServerRecipeStub implements ReliableServerRecipe {
 
-    public static final ReliableServerRecipeType<ResourceDrivenAnvilCombiningServerRecipe> TYPE = ReliableServerRecipeType.register(
+    public static final ReliableServerRecipeType<SynchronizedServerRecipeStub> TYPE = ReliableServerRecipeType.register(
             Identifier.fromNamespaceAndPath("rrv", "resource_driven_anvil_combining"),
-            () -> new ResourceDrivenAnvilCombiningServerRecipe()
+            () -> new SynchronizedServerRecipeStub()
     );
 
-    public ResourceDrivenAnvilCombiningServerRecipe() {
+    public SynchronizedServerRecipeStub() {
     }
 
     @Override

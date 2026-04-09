@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 
 import java.util.List;
 
@@ -23,12 +24,11 @@ public class BurningClientRecipe implements ReliableClientRecipe {
 
     private final AnimationTicker ticker;
 
-    public BurningClientRecipe(BurningServerRecipe recipe) {
-        this.fuel = SlotContent.of(recipe.getFuel());
-        this.burnTime = recipe.getBurnTime();
+    public BurningClientRecipe(Item item, int i) {
+        this.fuel = SlotContent.of(item);
+        this.burnTime = i;
 
         this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), this.burnTime);
-
     }
 
     @Override

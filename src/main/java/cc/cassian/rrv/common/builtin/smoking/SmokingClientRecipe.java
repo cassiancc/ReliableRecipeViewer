@@ -12,6 +12,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SmokingRecipe;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 
@@ -20,10 +23,10 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
     private final SlotContent input, result;
     private final AnimationTicker smokingTicker;
 
-    public SmokingClientRecipe(SmokingServerRecipe smokingRecipe) {
+    public SmokingClientRecipe(RecipeHolder<SmokingRecipe> smokingRecipe) {
 
-        this.input = smokingRecipe.getInput();
-        this.result = smokingRecipe.getResult();
+        this.input = SlotContent.of(smokingRecipe.value().input());
+        this.result = SlotContent.of(smokingRecipe.value().result);
 
         this.smokingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("smoking_ticker"), 100);
     }

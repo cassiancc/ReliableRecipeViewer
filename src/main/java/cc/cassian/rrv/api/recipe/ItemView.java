@@ -2,6 +2,7 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.common.builtin.SynchronizedServerRecipeStub;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -20,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,14 +71,6 @@ public class ItemView {
     }
 
     /**
-     * Deprecated in favor of {@link ItemView#addServerRecipeProvider(ItemViewRecipes.ServerRecipeProvider)}
-     */
-    @Deprecated(since = "6.0.0")
-    public static void addRecipeProvider(ItemViewRecipes.ServerRecipeProvider provider) {
-        addServerRecipeProvider(provider);
-    }
-
-    /**
      * ClientRecipeWrappers convert an incoming server recipe into a displayable client recipe later shown in the recipe view.
      * <br>
      * <br>
@@ -92,20 +84,8 @@ public class ItemView {
         ItemViewRecipes.INSTANCE.registerRecipeWrapper(recipeType, wrapper);
     }
 
-    /**
-     * Deprecated in favor of {@link ItemView#addClientRecipeWrapper(ReliableServerRecipeType, ItemViewRecipes.ClientRecipeWrapper)}
-     */
-    @Deprecated(since = "6.1.0")
-    public static <T extends ReliableServerRecipe> void registerClientRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
-        addClientRecipeWrapper(recipeType, wrapper);
-    }
-
-    /**
-     * Deprecated in favor of {@link ItemView#addClientRecipeWrapper(ReliableServerRecipeType, ItemViewRecipes.ClientRecipeWrapper)}
-     */
-    @Deprecated(since = "6.0.0")
-    public static <T extends ReliableServerRecipe> void registerRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
-        addClientRecipeWrapper(recipeType, wrapper);
+    public static void addClientRecipeWrapper(ItemViewRecipes.ClientRecipeWrapper<SynchronizedServerRecipeStub> wrapper) {
+        addClientRecipeWrapper(SynchronizedServerRecipeStub.TYPE, wrapper);
     }
 
 
@@ -366,8 +346,6 @@ public class ItemView {
     public static boolean isExcludedEnchantment(Holder<Enchantment> enchantmentHolder) {
         return enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) || EXCLUDED_ENCHANTMENTS.contains(enchantmentHolder.unwrapKey().orElseThrow());
     }
-
-
 
 
     public interface ReloadCallback {
