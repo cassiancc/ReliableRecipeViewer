@@ -109,7 +109,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
 
         ItemView.addServerRecipeProvider(recipeList -> {
-            recipeList.add(new SynchronizedServerRecipeStub());
 
             BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
                 if (entityType.getDefaultLootTable().isEmpty())

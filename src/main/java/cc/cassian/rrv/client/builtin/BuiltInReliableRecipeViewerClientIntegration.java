@@ -4,7 +4,6 @@ import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.common.builtin.SynchronizedServerRecipeStub;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
 import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
 import cc.cassian.rrv.common.builtin.burning.BurningClientRecipe;
@@ -28,7 +27,6 @@ import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.TransmuteRecipeAccessor;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
-import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.SynchronizedRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.mojang.datafixers.util.Either;
@@ -76,10 +74,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         //Wrapper
         ItemView.addClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> unwrapped.getClientOffers().stream().map(VillagerClientRecipe::new).toList());
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
-        //FIXME - proper API
-        ItemView.addClientRecipeWrapper(SynchronizedServerRecipeStub.TYPE, modRecipe -> {
-
-            ArrayList<ReliableClientRecipe> recipeList = new ArrayList<>();
+        ItemView.addClientRecipeProvider(recipeList -> {
 
             // Crafting
             addCraftingRecipes(recipeList);
@@ -131,12 +126,10 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     }
                 }
             });
-
-            return recipeList;
         });
     }
 
-    private static void addCraftingRecipes(ArrayList<ReliableClientRecipe> recipeList) {
+    private static void addCraftingRecipes(List<ReliableClientRecipe> recipeList) {
         SynchronizedRecipeManager.getAllOfType(RecipeType.CRAFTING).forEach(craftingRecipeHolder -> {
             var id = craftingRecipeHolder.id().identifier();
             var recipe = craftingRecipeHolder.value();
@@ -217,8 +210,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
     }
 
-    private static void addTippedArrowRecipes(ArrayList<ReliableClientRecipe> recipeList) {
-        Registry<Potion> potionRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION);
+    private static void addTippedArrowRecipes(List<ReliableClientRecipe> recipeList) {
+        Registry<Potion> potionRegistry = Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.POTION);
         potionRegistry.forEach(potion -> {
             Holder<Potion> potionHolder = potionRegistry.wrapAsHolder(potion);
             ItemStack potionStack = PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder);
@@ -237,7 +230,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
     }
 
-    private static void addFuelRecipes(ArrayList<ReliableClientRecipe> recipeList) {
+    private static void addFuelRecipes(List<ReliableClientRecipe> recipeList) {
         FuelValues fuelValues = Minecraft.getInstance().level.fuelValues();
         fuelValues.fuelItems().forEach(item -> {
             //? fabric
@@ -247,7 +240,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
     }
 
-    private static void addSmithingRecipes(ArrayList<ReliableClientRecipe> recipeList) {
+    private static void addSmithingRecipes(List<ReliableClientRecipe> recipeList) {
         SynchronizedRecipeManager.getAllOfType(RecipeType.SMITHING).forEach(smithingRecipeRecipeHolder -> {
             var smithingRecipe = smithingRecipeRecipeHolder.value();
 
@@ -261,8 +254,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
     }
 
-    private static void addBrewingRecipes(ArrayList<ReliableClientRecipe> recipeList) {
-        PotionBrewing potionBrewing = ServerRecipeManager.INSTANCE.getServer().potionBrewing();
+    private static void addBrewingRecipes(List<ReliableClientRecipe> recipeList) {
+        PotionBrewing potionBrewing = Minecraft.getInstance().level.potionBrewing();
         List<PotionBrewing.Mix<Potion>> potionMixes = ((PotionBrewingAccessor) potionBrewing).getPotionMixes();
         List<PotionBrewing.Mix<Item>> containerMixes = ((PotionBrewingAccessor) potionBrewing).getContainerMixes();
 
@@ -278,7 +271,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
     }
 
-    private static void addRepairingRecipes(ArrayList<ReliableClientRecipe> recipeList) {
+    private static void addRepairingRecipes(List<ReliableClientRecipe> recipeList) {
         BuiltInRegistries.ITEM.forEach(item -> {
             var stack = item.getDefaultInstance();
             if (stack.has(DataComponents.REPAIRABLE)) {

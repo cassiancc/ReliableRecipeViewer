@@ -116,6 +116,17 @@ public class ClientRecipeCache {
     }
 
     public void sortModType(ReliableServerRecipeType<?> type) {
+        int id;
+        for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {
+            List<ReliableClientRecipe> recipes = new ArrayList<>();
+            clientRecipeProvider.provide(recipes);
+            for (id = 0; id < recipes.size(); id++) {
+                ReliableClientRecipe wrapped = recipes.get(id);
+                handleClientRecipe(Objects.requireNonNullElse(wrapped.getId(), wrapped.getViewType().getId().withSuffix("/"+id)), wrapped, id);
+            }
+        }
+
+
         ItemViewRecipes.ClientRecipeWrapper<?> wrapper = ItemViewRecipes.INSTANCE.wrapperMap().getOrDefault(type, null);
 
         if (wrapper == null || !this.serverEntryMap.containsKey(type))
@@ -139,50 +150,54 @@ public class ClientRecipeCache {
             if (wrappedRecipes.isEmpty())
                 continue;
 
-            for (int id = 0; id < wrappedRecipes.size(); id++) {
+            for (id = 0; id < wrappedRecipes.size(); id++) {
                 ReliableClientRecipe wrapped = wrappedRecipes.get(id);
-
-                Identifier uniqueId = this.getUniqueId(modEntry, id);
-                List<Identifier> summarized = this.multiRecipeMap.getOrDefault(modEntry.modRecipeId(), new ArrayList<>());
-                summarized.add(uniqueId);
-                this.multiRecipeMap.put(modEntry.modRecipeId(), summarized);
-
-                this.recipeMap.put(uniqueId, wrapped);
-
-                wrapped.getIngredients().forEach(ingredient -> ingredient.getValidContents().forEach(stack -> {
-
-                    List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(stack.getItem(), new ArrayList<>());
-                    byIngredient.remove(uniqueId);
-                    byIngredient.add(uniqueId);
-                    this.byItemIngredient.put(stack.getItem(), byIngredient);
-                }));
-
-                var craftReferences = wrapped.getViewType().getCraftReferences();
-
-                craftReferences.forEach(reference -> {
-
-                    if(!wrapped.getViewType().getCraftReferenceCondition().matches(reference, wrapped))
-                        return;
-
-                    List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(reference.getItem(), new ArrayList<>());
-                    byIngredient.remove(uniqueId);
-                    byIngredient.add(uniqueId);
-                    this.byItemIngredient.put(reference.getItem(), byIngredient);
-                });
-
-                wrapped.getResults().forEach(result -> result.getValidContents().forEach(stack -> {
-                    List<Identifier> byResult = this.byItemResult.getOrDefault(stack.getItem(), new ArrayList<>());
-                    byResult.remove(uniqueId);
-                    byResult.add(uniqueId);
-                    this.byItemResult.put(stack.getItem(), byResult);
-                }));
+                handleClientRecipe(modEntry.modRecipeId(), wrapped, id);
             }
         }
     }
 
+    private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id) {
 
-    private Identifier getUniqueId(ServerRecipeManager.ServerRecipeEntry modEntry, int index) {
-        return Identifier.fromNamespaceAndPath(modEntry.modRecipeId().getNamespace(), modEntry.modRecipeId().getPath() + "/" + index);
+        Identifier uniqueId = this.getUniqueId(modEntryId, id);
+        List<Identifier> summarized = this.multiRecipeMap.getOrDefault(modEntryId, new ArrayList<>());
+        summarized.add(uniqueId);
+        this.multiRecipeMap.put(modEntryId, summarized);
+
+        this.recipeMap.put(uniqueId, wrapped);
+
+        wrapped.getIngredients().forEach(ingredient -> ingredient.getValidContents().forEach(stack -> {
+
+            List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(stack.getItem(), new ArrayList<>());
+            byIngredient.remove(uniqueId);
+            byIngredient.add(uniqueId);
+            this.byItemIngredient.put(stack.getItem(), byIngredient);
+        }));
+
+        var craftReferences = wrapped.getViewType().getCraftReferences();
+
+        craftReferences.forEach(reference -> {
+
+            if(!wrapped.getViewType().getCraftReferenceCondition().matches(reference, wrapped))
+                return;
+
+            List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(reference.getItem(), new ArrayList<>());
+            byIngredient.remove(uniqueId);
+            byIngredient.add(uniqueId);
+            this.byItemIngredient.put(reference.getItem(), byIngredient);
+        });
+
+        wrapped.getResults().forEach(result -> result.getValidContents().forEach(stack -> {
+            List<Identifier> byResult = this.byItemResult.getOrDefault(stack.getItem(), new ArrayList<>());
+            byResult.remove(uniqueId);
+            byResult.add(uniqueId);
+            this.byItemResult.put(stack.getItem(), byResult);
+        }));
+    }
+
+
+    private Identifier getUniqueId(Identifier modEntry, int index) {
+        return Identifier.fromNamespaceAndPath(modEntry.getNamespace(), modEntry.getPath() + "/" + index);
     }
 
 

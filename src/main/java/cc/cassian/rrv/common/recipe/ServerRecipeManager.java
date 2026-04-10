@@ -11,8 +11,6 @@ import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensiti
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
-import net.fabricmc.fabric.api.recipe.v1.sync.SynchronizedRecipes;
-import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -26,7 +24,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
@@ -155,7 +152,7 @@ public class ServerRecipeManager {
         PRESENT_RECIPES.clear();
 
         List<ReliableServerRecipe> serverRecipes = new ArrayList<>();
-        ItemViewRecipes.INSTANCE.getRecipeProviders().forEach(serverModRecipeProvider -> {
+        ItemViewRecipes.INSTANCE.getServerRecipeProviders().forEach(serverModRecipeProvider -> {
             List<ReliableServerRecipe> recipes = new ArrayList<>();
             serverModRecipeProvider.provide(recipes);
             serverRecipes.addAll(recipes);

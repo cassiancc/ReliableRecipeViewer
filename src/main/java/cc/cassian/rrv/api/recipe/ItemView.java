@@ -2,7 +2,6 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ActionType;
-import cc.cassian.rrv.common.builtin.SynchronizedServerRecipeStub;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -67,7 +66,16 @@ public class ItemView {
      * @param provider The recipe provider
      */
     public static void addServerRecipeProvider(ItemViewRecipes.ServerRecipeProvider provider) {
-        ItemViewRecipes.INSTANCE.addRecipeProvider(provider);
+        ItemViewRecipes.INSTANCE.addServerRecipeProvider(provider);
+    }
+
+    /**
+     * ClientRecipeProviders offer a recipe list where mods can easily add their own client recipes
+     *
+     * @param provider The recipe provider
+     */
+    public static void addClientRecipeProvider(ItemViewRecipes.ClientRecipeProvider provider) {
+        ItemViewRecipes.INSTANCE.addClientRecipeProvider(provider);
     }
 
     /**
@@ -83,11 +91,6 @@ public class ItemView {
     public static <T extends ReliableServerRecipe> void addClientRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
         ItemViewRecipes.INSTANCE.registerRecipeWrapper(recipeType, wrapper);
     }
-
-    public static void addClientRecipeWrapper(ItemViewRecipes.ClientRecipeWrapper<SynchronizedServerRecipeStub> wrapper) {
-        addClientRecipeWrapper(SynchronizedServerRecipeStub.TYPE, wrapper);
-    }
-
 
     /**
      * A method used to exclude an item from the ItemView index. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
@@ -233,14 +236,6 @@ public class ItemView {
      */
     public static void openForStackResult(ItemStack stack) {
         ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.RESULT);
-    }
-
-    /**
-     * Deprecated in favor of the more specific {@link ItemView#addServerReloadCallback(ReloadCallback)}
-     */
-    @Deprecated(since = "6.1.0")
-    public static void addReloadCallback(ReloadCallback callback) {
-        addServerReloadCallback(callback);
     }
 
     /**
