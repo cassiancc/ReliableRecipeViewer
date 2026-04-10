@@ -137,10 +137,11 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addCraftingRecipes(ArrayList<ReliableClientRecipe> recipeList) {
-        SynchronizedRecipeManager.getAllOfType(RecipeType.CRAFTING).forEach(smokingRecipeRecipeHolder -> {
-            var recipe = smokingRecipeRecipeHolder.value();
+        SynchronizedRecipeManager.getAllOfType(RecipeType.CRAFTING).forEach(craftingRecipeHolder -> {
+            var id = craftingRecipeHolder.id().identifier();
+            var recipe = craftingRecipeHolder.value();
             if (recipe instanceof ShapelessRecipe shapelessRecipe)
-                recipeList.add(new CraftingClientRecipe(shapelessRecipe.ingredients, shapelessRecipe.result));
+                recipeList.add(new CraftingClientRecipe(id, shapelessRecipe.ingredients, shapelessRecipe.result));
 
 
             if (recipe instanceof ShapedRecipe shapedRecipe) {
@@ -162,7 +163,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     }
                 }
 
-                recipeList.add(new CraftingClientRecipe(shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, SlotContent.of(shapedRecipe.result)));
+                recipeList.add(new CraftingClientRecipe(id, shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, SlotContent.of(shapedRecipe.result)));
             }
 
             if (recipe instanceof TransmuteRecipe) {
@@ -188,7 +189,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 });
 
                 if (!ingredients.isEmpty() && !results.isEmpty())
-                    recipeList.add(new CraftingClientRecipe(accessor.getInput(), accessor.getMaterial(), results));
+                    recipeList.add(new CraftingClientRecipe(id, accessor.getInput(), accessor.getMaterial(), results));
 
             }
             if (recipe instanceof DyeRecipe) {
@@ -211,7 +212,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                         results.add(ItemStackTemplate.fromNonEmptyStack(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor))));
                     }
                 }
-                recipeList.add(new CraftingClientRecipe(accessor.getTarget(), accessor.getDye(), results, 1));
+                recipeList.add(new CraftingClientRecipe(id, accessor.getTarget(), accessor.getDye(), results, 1));
             }
         });
     }
@@ -231,7 +232,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
             ItemStack result = new ItemStack(Items.TIPPED_ARROW, 8);
             result.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
-            recipeList.add(new CraftingClientRecipe(3, 3, ingredients, SlotContent.of(result)));
+//            var id = potionHolder.unwrapKey().orElseThrow().identifier().withSuffix("_tipped_arrow_crafting");
+            recipeList.add(new CraftingClientRecipe(null, 3, 3, ingredients, SlotContent.of(result)));
         });
     }
 
@@ -250,10 +252,10 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             var smithingRecipe = smithingRecipeRecipeHolder.value();
 
             if (smithingRecipe instanceof SmithingTrimRecipe trimRecipe)
-                recipeList.add(new SmithingClientRecipe(true, trimRecipe.baseIngredient(), trimRecipe.templateIngredient().orElse(null), trimRecipe.additionIngredient().orElse(null), trimRecipe.pattern.value(), null));
+                recipeList.add(new SmithingClientRecipe(smithingRecipeRecipeHolder.id().identifier(), true, trimRecipe.baseIngredient(), trimRecipe.templateIngredient().orElse(null), trimRecipe.additionIngredient().orElse(null), trimRecipe.pattern.value(), null));
 
             if (smithingRecipe instanceof SmithingTransformRecipe transformRecipe) {
-                recipeList.add(new SmithingClientRecipe(false, transformRecipe.baseIngredient(), transformRecipe.templateIngredient().orElse(null), transformRecipe.additionIngredient().orElse(null), null, transformRecipe.result));
+                recipeList.add(new SmithingClientRecipe(smithingRecipeRecipeHolder.id().identifier(), false, transformRecipe.baseIngredient(), transformRecipe.templateIngredient().orElse(null), transformRecipe.additionIngredient().orElse(null), null, transformRecipe.result));
             }
 
         });

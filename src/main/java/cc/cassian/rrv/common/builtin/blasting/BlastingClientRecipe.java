@@ -22,9 +22,11 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
     private final AnimationTicker blastingTicker;
+    private final Identifier id;
 
     public BlastingClientRecipe(RecipeHolder<BlastingRecipe> blastingRecipe) {
 
+        this.id = blastingRecipe.id().identifier();
         this.input = SlotContent.of(blastingRecipe.value().input());
         this.result = SlotContent.of(blastingRecipe.value().result);
 
@@ -50,6 +52,11 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
     @Override
     public List<SlotContent> getResults() {
         return List.of(this.result);
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override

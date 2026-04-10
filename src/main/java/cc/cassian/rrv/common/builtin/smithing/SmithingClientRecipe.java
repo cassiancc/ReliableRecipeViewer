@@ -7,6 +7,7 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.*;
@@ -24,10 +25,12 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
 
     private final boolean isTrimType;
     private final SlotContent upgradeResult;
+    private final Identifier id;
 
 
-    public SmithingClientRecipe(boolean isTrimType, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern, SlotContent upgradeResult) {
+    public SmithingClientRecipe(Identifier id, boolean isTrimType, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern, SlotContent upgradeResult) {
         this.isTrimType = isTrimType;
+        this.id = id;
 
         this.template = template;
         this.base = base;
@@ -50,8 +53,8 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
 
     }
 
-    public SmithingClientRecipe(boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable ItemStackTemplate upgradeResult) {
-        this(isTrim, SlotContent.of(addition), SlotContent.of(base), SlotContent.of(template), pattern, SlotContent.of(upgradeResult));
+    public SmithingClientRecipe(Identifier identifier, boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable ItemStackTemplate upgradeResult) {
+        this(identifier, isTrim, SlotContent.of(addition), SlotContent.of(base), SlotContent.of(template), pattern, SlotContent.of(upgradeResult));
     }
 
     @Override
@@ -82,6 +85,11 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     @Override
     public int getPriority() {
         return this.isTrimType ? 1 : 0;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override

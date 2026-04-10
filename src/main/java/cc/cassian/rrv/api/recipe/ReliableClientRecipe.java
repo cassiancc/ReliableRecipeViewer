@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +104,12 @@ public interface ReliableClientRecipe {
         return 0;
     }
 
+    /**
+     * The identifier of this recipe.
+     */
+    default Identifier getId() {
+        return null;
+    }
 
     /**
      * @return A list of {@link AnimationTicker}s; Useful for rendering animations

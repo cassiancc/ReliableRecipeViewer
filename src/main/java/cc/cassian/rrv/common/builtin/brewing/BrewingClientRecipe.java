@@ -9,11 +9,17 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BrewingClientRecipe implements ReliableClientRecipe {
 
@@ -24,8 +30,11 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
     private final SlotContent result, magicIngredient;
 
     private final AnimationTicker brewProgressTicker;
+    private final Identifier id = null;
 
     public BrewingClientRecipe(ItemStack result, Ingredient magicIngredient, ItemStack bottleIngredient) {
+//        ResourceKey<Potion> potion = result.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion().map(Holder::unwrapKey).orElseThrow().orElseThrow();
+//        this.id = potion.identifier().withSuffix("_brewing_"+result.getItem().builtInRegistryHolder().key().identifier().getPath());
         this.result = SlotContent.of(result);
         this.magicIngredient = SlotContent.of(magicIngredient);
         this.bottle1 = SlotContent.of(bottleIngredient);
@@ -52,8 +61,6 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
 
     }
 
-
-
     @Override
     public List<SlotContent> getIngredients() {
         return List.of(this.bottle1, this.bottle2, this.bottle3, this.magicIngredient);
@@ -64,6 +71,10 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
         return List.of(this.result);
     }
 
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public List<AnimationTicker> getAnimationTickers() {

@@ -22,9 +22,11 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
     private final AnimationTicker smokingTicker;
+    private final Identifier id;
 
     public SmokingClientRecipe(RecipeHolder<SmokingRecipe> smokingRecipe) {
 
+        this.id = smokingRecipe.id().identifier();
         this.input = SlotContent.of(smokingRecipe.value().input());
         this.result = SlotContent.of(smokingRecipe.value().result);
 
@@ -51,6 +53,11 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
     @Override
     public List<SlotContent> getResults() {
         return List.of(this.result);
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override

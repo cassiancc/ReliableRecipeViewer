@@ -21,13 +21,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CraftingClientRecipe implements ReliableClientRecipe {
 
+    private final Identifier id;
     private HashMap<Integer, SlotContent> ingredients = new HashMap<>();
     private final SlotContent result;
     private final int width, height;
     private final boolean shapeless;
 	private int dependentIndex = -1;
 
-    public CraftingClientRecipe(int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result) {
+    public CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result) {
+        this.id = id;
         this.width = width;
         this.height = height;
         this.ingredients = ingredients;
@@ -35,7 +37,8 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.shapeless = false;
     }
 
-    public CraftingClientRecipe(List<Ingredient> ingredients, ItemStackTemplate result) {
+    public CraftingClientRecipe(Identifier id, List<Ingredient> ingredients, ItemStackTemplate result) {
+        this.id = id;
         this.shapeless = true;
         var size = ingredients.size();
         switch (size) {
@@ -74,7 +77,8 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.result = SlotContent.of(result);
     }
 
-    public CraftingClientRecipe(Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
+    public CraftingClientRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
+        this.id = id;
         this.width = 2;
         this.height = 1;
         this.shapeless = true;
@@ -84,13 +88,14 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.result = SlotContent.ofTemplates(results);
     }
 
-    public CraftingClientRecipe(Ingredient target, Ingredient dye, List<ItemStackTemplate> results, int i) {
+    public CraftingClientRecipe(Identifier id, Ingredient target, Ingredient dye, List<ItemStackTemplate> results, int dependentIndex) {
+        this.id = id;
         this.width = 2;
         this.height = 1;
         this.shapeless = true;
         this.ingredients.put(0, SlotContent.of(target));
         this.ingredients.put(1, SlotContent.of(dye));
-        this.dependentIndex = i;
+        this.dependentIndex = dependentIndex;
 
         this.result = SlotContent.ofTemplates(results);
     }
@@ -129,6 +134,11 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     @Override
     public List<SlotContent> getResults() {
         return List.of(this.result);
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override

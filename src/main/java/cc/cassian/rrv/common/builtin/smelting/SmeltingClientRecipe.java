@@ -20,9 +20,11 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
     private final AnimationTicker smeltingTicker;
+    private final Identifier id;
 
     public SmeltingClientRecipe(RecipeHolder<SmeltingRecipe> recipe) {
 
+        this.id = recipe.id().identifier();
         this.input = SlotContent.of(recipe.value().input());
         this.result = SlotContent.of(recipe.value().result);
 
@@ -50,6 +52,10 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
         return List.of(this.result);
     }
 
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public List<AnimationTicker> getAnimationTickers() {

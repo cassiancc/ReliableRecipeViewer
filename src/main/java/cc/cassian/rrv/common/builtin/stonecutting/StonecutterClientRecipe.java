@@ -6,8 +6,10 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -15,8 +17,10 @@ public class StonecutterClientRecipe implements ReliableClientRecipe {
 
 
     private final SlotContent input, result;
+    private final Identifier id;
 
     public StonecutterClientRecipe(RecipeHolder<StonecutterRecipe> stonecutterRecipe) {
+        this.id = stonecutterRecipe.id().identifier();
         this.input = SlotContent.of(stonecutterRecipe.value().input());
         this.result = SlotContent.of(stonecutterRecipe.value().result);
     }
@@ -40,6 +44,11 @@ public class StonecutterClientRecipe implements ReliableClientRecipe {
     @Override
     public List<SlotContent> getResults() {
         return List.of(this.result);
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override
