@@ -84,7 +84,7 @@ public class ResourceRecipeManager {
 		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
 			var slots = readCombinationRecipe("anvil_combining", entry);
 			if (slots != null)
-				anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(slots.left, slots.right, slots.result, slots.priority));
+				anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(entry.getKey(), slots.left, slots.right, slots.result, slots.priority));
 		}
 		return anvilCombiningRecipes;
 	}

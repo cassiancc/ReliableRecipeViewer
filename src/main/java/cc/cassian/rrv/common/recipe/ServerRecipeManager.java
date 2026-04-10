@@ -10,6 +10,9 @@ import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPaylo
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
+//? neoforge
+//import cc.cassian.rrv.neoforge.NeoForgeEntrypoint;
+//? fabric
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -41,8 +44,13 @@ public class ServerRecipeManager {
 
     }
 
-    public static void synchronizeRecipeSerializer(RecipeSerializer<?> serializer) {
+    public static void synchronizeRecipeType(RecipeSerializer<?> serializer, RecipeType<?> type) {
+        //? fabric
         RecipeSynchronization.synchronizeRecipeSerializer(serializer);
+        //? neoforge {
+        /*if (!NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.contains(type))
+            NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.add(type);
+        *///?}
     }
 
     public void setServer(MinecraftServer server) {
@@ -65,10 +73,6 @@ public class ServerRecipeManager {
     //Helper functionality
     public <T extends Recipe<?>> List<T> getRecipesForType(RecipeType<T> recipeType) {
         return (List<T>) this.recipeManager.getRecipes().stream().filter(holder -> holder.value().getType().equals(recipeType)).map(RecipeHolder::value).toList();
-    }
-
-    public  <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getAllOfType(RecipeType<T> type) {
-        return this.recipeManager.getAllOfType(type);
     }
 
     public RegistryOps<Tag> createSerializationContext() {

@@ -132,17 +132,17 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
 
-        ServerRecipeManager.synchronizeRecipeSerializer(SmeltingRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(BlastingRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(CampfireCookingRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(SmokingRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(ShapelessRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(ShapedRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(DyeRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(TransmuteRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(SmithingTrimRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(SmithingTransformRecipe.SERIALIZER);
-        ServerRecipeManager.synchronizeRecipeSerializer(StonecutterRecipe.SERIALIZER);
+        ServerRecipeManager.synchronizeRecipeType(SmeltingRecipe.SERIALIZER, RecipeType.SMELTING);
+        ServerRecipeManager.synchronizeRecipeType(BlastingRecipe.SERIALIZER, RecipeType.BLASTING);
+        ServerRecipeManager.synchronizeRecipeType(CampfireCookingRecipe.SERIALIZER, RecipeType.CAMPFIRE_COOKING);
+        ServerRecipeManager.synchronizeRecipeType(SmokingRecipe.SERIALIZER, RecipeType.SMOKING);
+        ServerRecipeManager.synchronizeRecipeType(ShapelessRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.synchronizeRecipeType(ShapedRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.synchronizeRecipeType(DyeRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.synchronizeRecipeType(TransmuteRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.synchronizeRecipeType(SmithingTrimRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.synchronizeRecipeType(SmithingTransformRecipe.SERIALIZER, RecipeType.SMITHING);
+        ServerRecipeManager.synchronizeRecipeType(StonecutterRecipe.SERIALIZER, RecipeType.SMITHING);
 
         //Trading
         VillagerServerRecipe.registerDefaultProcessors();

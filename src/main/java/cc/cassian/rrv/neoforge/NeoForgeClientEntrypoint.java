@@ -8,21 +8,17 @@ import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -34,7 +30,9 @@ import java.util.Optional;
 @EventBusSubscriber(modid = ReliableRecipeViewer.MOD_ID, value = Dist.CLIENT)
 public class NeoForgeClientEntrypoint {
 
-	@SubscribeEvent
+    public static RecipeMap SYNCHRONIZED_RECIPES;
+
+    @SubscribeEvent
 	private static void setupIntegrations(FMLClientSetupEvent event) {
         ReliableRecipeViewer.LOGGER.info("RRV: Scanning for client integrations...");
 		ModList.get().getMods().forEach(modInfo -> {
@@ -88,6 +86,11 @@ public class NeoForgeClientEntrypoint {
     @SubscribeEvent
     public static void onPayloadRegistry(RegisterClientPayloadHandlersEvent event) {
         RrvClientNetworkManager.registerPayloads(event);
+    }
+
+    @SubscribeEvent
+    public static void receiveRecipes(RecipesReceivedEvent event) {
+        SYNCHRONIZED_RECIPES = event.getRecipeMap();
     }
 
 }

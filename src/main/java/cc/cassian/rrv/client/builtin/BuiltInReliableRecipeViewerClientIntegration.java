@@ -26,8 +26,8 @@ import cc.cassian.rrv.common.mixin.world.item.crafting.DyeRecipeAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.TransmuteRecipeAccessor;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
-import cc.cassian.rrv.common.recipe.SynchronizedRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
@@ -37,6 +37,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
@@ -82,20 +83,20 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             //Tipped arrows
             addTippedArrowRecipes(recipeList);
             // Smelting
-            SynchronizedRecipeManager.getAllOfType(RecipeType.SMELTING).forEach(smeltingRecipeRecipeHolder -> recipeList.add(new SmeltingClientRecipe(smeltingRecipeRecipeHolder)));
+            ClientRecipeManager.getRecipesForType(RecipeType.SMELTING).forEach(smeltingRecipeRecipeHolder -> recipeList.add(new SmeltingClientRecipe(smeltingRecipeRecipeHolder)));
             // Blasting
-            SynchronizedRecipeManager.getAllOfType(RecipeType.BLASTING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new BlastingClientRecipe(smokingRecipeRecipeHolder)));
+            ClientRecipeManager.getRecipesForType(RecipeType.BLASTING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new BlastingClientRecipe(smokingRecipeRecipeHolder)));
             // Smoking
-            SynchronizedRecipeManager.getAllOfType(RecipeType.SMOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new SmokingClientRecipe(smokingRecipeRecipeHolder)));
+            ClientRecipeManager.getRecipesForType(RecipeType.SMOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new SmokingClientRecipe(smokingRecipeRecipeHolder)));
             // Campfire
-            SynchronizedRecipeManager.getAllOfType(RecipeType.CAMPFIRE_COOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new CampfireClientRecipe(smokingRecipeRecipeHolder)));
+            ClientRecipeManager.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new CampfireClientRecipe(smokingRecipeRecipeHolder)));
             // Fuel
             addFuelRecipes(recipeList);
 
             // Smithing
             addSmithingRecipes(recipeList);
 
-            SynchronizedRecipeManager.getAllOfType(RecipeType.STONECUTTING).forEach(stonecutterRecipeRecipeHolder -> recipeList.add(new StonecutterClientRecipe(stonecutterRecipeRecipeHolder)));
+            ClientRecipeManager.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipeRecipeHolder -> recipeList.add(new StonecutterClientRecipe(stonecutterRecipeRecipeHolder)));
 
             // Anvil Combining
             recipeList.addAll(addAnvilCombiningRecipes());
@@ -130,7 +131,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addCraftingRecipes(List<ReliableClientRecipe> recipeList) {
-        SynchronizedRecipeManager.getAllOfType(RecipeType.CRAFTING).forEach(craftingRecipeHolder -> {
+        ClientRecipeManager.getRecipesForType(RecipeType.CRAFTING).forEach(craftingRecipeHolder -> {
             var id = craftingRecipeHolder.id().identifier();
             var recipe = craftingRecipeHolder.value();
             if (recipe instanceof ShapelessRecipe shapelessRecipe)
@@ -241,7 +242,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addSmithingRecipes(List<ReliableClientRecipe> recipeList) {
-        SynchronizedRecipeManager.getAllOfType(RecipeType.SMITHING).forEach(smithingRecipeRecipeHolder -> {
+        ClientRecipeManager.getRecipesForType(RecipeType.SMITHING).forEach(smithingRecipeRecipeHolder -> {
             var smithingRecipe = smithingRecipeRecipeHolder.value();
 
             if (smithingRecipe instanceof SmithingTrimRecipe trimRecipe)
@@ -272,14 +273,15 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addRepairingRecipes(List<ReliableClientRecipe> recipeList) {
-        BuiltInRegistries.ITEM.forEach(item -> {
+        BuiltInRegistries.ITEM.entrySet().forEach((entry) -> {
+            var item = entry.getValue();
             var stack = item.getDefaultInstance();
             if (stack.has(DataComponents.REPAIRABLE)) {
                 Repairable repairable = stack.get(DataComponents.REPAIRABLE);
                 var damagedStack = stack.copy();
                 damagedStack.setDamageValue(stack.getMaxDamage() / 2);
                 assert repairable != null;
-                recipeList.add(new AnvilCombiningClientRecipe(SlotContent.of(damagedStack), SlotContent.of(repairable.items()), SlotContent.of(stack)));
+                recipeList.add(new AnvilCombiningClientRecipe(entry.getKey().identifier().withPrefix("repairing/"), SlotContent.of(damagedStack), SlotContent.of(repairable.items()), SlotContent.of(stack), -10));
             }
         });
     }
@@ -291,16 +293,18 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         var axes = SlotContent.of(ItemTags.AXES);
         var shovels = SlotContent.of(ItemTags.SHOVELS);
-        BuiltInRegistries.BLOCK.stream().forEach((block -> {
+        BuiltInRegistries.BLOCK.entrySet().forEach((entry -> {
+            var block = entry.getValue();
+            var id = entry.getKey().identifier();
             if (block instanceof WeatheringCopper weatheringCopper) {
                 Optional<Block> next = WeatheringCopper.getNext(block);
-                next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), WorldInteractionClientRecipe.TIME, SlotContent.of(value.asItem()))));
+                next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("world_interaction/").withSuffix("_oxidizing"), SlotContent.of(block), WorldInteractionClientRecipe.TIME, SlotContent.of(value.asItem()))));
 
                 Optional<Block> previous = WeatheringCopper.getPrevious(block);
                 previous.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(value.asItem()))));
             }
             if (block instanceof TallFlowerBlock || block instanceof FlowerBedBlock) {
-                worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
+                worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("world_interaction/").withSuffix("_bone_meal"), SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
             }
             //? neoforge {
                 /*if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES) != null) {
@@ -315,25 +319,25 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         // honeycomb
         //? fabric {
-        HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())))));
-        HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block2.asItem())))));
-        AxeItem.STRIPPABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(state)))));
+        HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/waxable_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())))));
+        HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/wax_off_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), axes, SlotContent.of(block2.asItem())))));
+        AxeItem.STRIPPABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/strippable_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), axes, SlotContent.of(state)))));
         //?}
 
         // flattenables
         ShovelItem.FLATTENABLES.forEach(((block, state) -> {
-            worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), shovels, SlotContent.of(state.getBlock())));
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/shovel_path"), SlotContent.of(block), shovels, SlotContent.of(state.getBlock())));
         }));
 
         // hoes
         var hoes = SlotContent.of(ItemTags.HOES);
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH)), hoes, SlotContent.of(Items.FARMLAND)));
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.DIRT)));
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.HANGING_ROOTS)));
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/hoe_farmland"), SlotContent.of(Ingredient.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH)), hoes, SlotContent.of(Items.FARMLAND)));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/hoe_dirt"),SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.DIRT)));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/hoe_hanging_roots"),SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.HANGING_ROOTS)));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/shearing_bee_nest"), SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/glass_bottle_bee_nest"), SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
 
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(Blocks.WATER), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("world_interaction/water_filling"), SlotContent.of(Blocks.WATER), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
 
 
         return worldInteractionRecipes;

@@ -5,22 +5,25 @@ import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.command.RrvCommand;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Mod(ReliableRecipeViewer.MOD_ID)
 @EventBusSubscriber
 public class NeoForgeEntrypoint {
+
+    public static final ArrayList<RecipeType<?>> SYNCHRONIZED_RECIPES = new ArrayList<>();
 
     public NeoForgeEntrypoint(IEventBus eventBus) {
     }
@@ -55,6 +58,11 @@ public class NeoForgeEntrypoint {
     @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
         RrvNetworkManager.INSTANCE.registerPayloads(event);
+    }
+
+    @SubscribeEvent
+    public static void registerPayloads(OnDatapackSyncEvent event) {
+        SYNCHRONIZED_RECIPES.forEach(event::sendRecipes);
     }
 }
 *///?}
