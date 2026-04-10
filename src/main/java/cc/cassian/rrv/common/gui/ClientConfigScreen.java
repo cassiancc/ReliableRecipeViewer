@@ -99,6 +99,7 @@ public class ClientConfigScreen extends Screen {
         advancedHelper.addChild(recipeCategorySettings);
 
         addChild(advancedHelper, "append_namespace", "show", "hide", configs.isAppendModNamespace(), (_, b) -> configs.setAppendModNamespace(b));
+        addChild(advancedHelper, "show_recipe_id", "show", "hide", configs.isShowRecipeId(), (_, b) -> configs.setShowRecipeId(b));
         addChild(advancedHelper, "fluid_unit", "droplets", "mb", configs.isFluidUnitDroplets(), (_, b) -> configs.setFluidUnitDroplets(b));
 
         Button exportItemViewButton = Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(buttonWidth, 20).build();

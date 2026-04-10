@@ -95,12 +95,20 @@ public class SlotContent {
     }
 
     /**
-	 * Internal method to bind an item tag to a `SlotContent`.
+	 * Internal method to bind an item tag to a {@code SlotContent}.
      * The preferred option is usually {@link SlotContent#of(TagKey)}.
 	 */
     public SlotContent bindItemTag(TagKey<Item> tag) {
         this.itemTag = tag;
         this.setDataComponent("itemTag", tag.location());
+        return this;
+    }
+
+    /**
+     * Internal method to bind a result to a {@code SlotContent}.
+     */
+    public SlotContent bindResult(Identifier id) {
+        this.setDataComponent("result", id);
         return this;
     }
 

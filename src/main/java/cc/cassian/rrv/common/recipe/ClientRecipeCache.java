@@ -117,16 +117,18 @@ public class ClientRecipeCache {
 
     public void sortModType(ReliableServerRecipeType<?> type) {
         int id;
+        // synchronized recipes
         for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {
             List<ReliableClientRecipe> recipes = new ArrayList<>();
             clientRecipeProvider.provide(recipes);
             for (id = 0; id < recipes.size(); id++) {
                 ReliableClientRecipe wrapped = recipes.get(id);
-                handleClientRecipe(Objects.requireNonNullElse(wrapped.getId(), wrapped.getViewType().getId().withSuffix("/"+id)), wrapped, id);
+                handleClientRecipe(wrapped.entryId(), wrapped, id);
             }
         }
 
 
+        // wrapped recipes
         ItemViewRecipes.ClientRecipeWrapper<?> wrapper = ItemViewRecipes.INSTANCE.wrapperMap().getOrDefault(type, null);
 
         if (wrapper == null || !this.serverEntryMap.containsKey(type))
@@ -152,7 +154,7 @@ public class ClientRecipeCache {
 
             for (id = 0; id < wrappedRecipes.size(); id++) {
                 ReliableClientRecipe wrapped = wrappedRecipes.get(id);
-                handleClientRecipe(modEntry.modRecipeId(), wrapped, id);
+                handleClientRecipe(Objects.requireNonNullElse(wrapped.getId(), modEntry.modRecipeId()), wrapped, id);
             }
         }
     }

@@ -309,7 +309,10 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             recipe.getResults().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
 
             recipe.getIngredients().forEach(slotContent -> slotContent.setType(ActionType.INPUT));
-            recipe.getResults().forEach(slotContent -> slotContent.setType(ActionType.RESULT));
+            recipe.getResults().forEach(slotContent -> {
+                slotContent.setType(ActionType.RESULT);
+                slotContent.bindResult(recipe.entryId());
+            });
 
             SlotDefinition slotDefinition = new SlotDefinition();
             this.clientRecipeType.placeSlots(slotDefinition);

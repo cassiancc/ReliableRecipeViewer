@@ -17,6 +17,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean itemWrapMode = true;
 	private WrapScrolling wrapScrolling = WrapScrolling.ON_BUTTONS;
 	private boolean appendModNamespace = true;
+	private boolean showRecipeId = true;
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
 	private boolean centerRecipeScreen = false;
@@ -112,6 +113,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.showProgressBar = this.data().get("showProgressBar").getAsBoolean();
 		this.fluidUnitDroplets = this.data().get("fluidUnitDroplets").getAsBoolean();
 		this.centerRecipeScreen = this.data().get("centerRecipeScreen").getAsBoolean();
+		this.showRecipeId = this.data().get("showRecipeId").getAsBoolean();
 		this.wrapScrolling = WrapScrolling.CODEC.decode(JsonOps.INSTANCE, this.data().get("wrapScrolling")).mapOrElse(Pair::getFirst, (e)->WrapScrolling.ON_BUTTONS);
 		this.sidePanel = SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)-> SidePanel.BOOKMARKS);
 	}
@@ -129,6 +131,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.data().addProperty("showProgressBar", this.showProgressBar);
 		this.data().addProperty("fluidUnitDroplets", this.fluidUnitDroplets);
 		this.data().addProperty("centerRecipeScreen", this.centerRecipeScreen);
+		this.data().addProperty("showRecipeId", this.showRecipeId);
 		this.data().add("wrapScrolling", WrapScrolling.CODEC.encodeStart(JsonOps.INSTANCE, this.wrapScrolling).getOrThrow());
 		this.data().add("sidePanel", SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
 
@@ -164,5 +167,13 @@ public class ClientConfig extends AbstractRrvConfig {
 
     public void setShowProgressBar(boolean showProgressBar) {
         this.showProgressBar = showProgressBar;
+    }
+
+    public boolean isShowRecipeId() {
+        return showRecipeId;
+    }
+
+    public void setShowRecipeId(boolean showRecipeId) {
+        this.showRecipeId = showRecipeId;
     }
 }

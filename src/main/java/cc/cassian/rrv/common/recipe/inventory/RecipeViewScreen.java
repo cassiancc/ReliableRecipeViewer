@@ -154,7 +154,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         for (int i = 0; i < this.getMenu().getViewTypeOrder().size(); i++) {
             int tempId = i % 5;
 
-            int xPos = this.width / 2 - (5 * size / 2 + 4 * 2 / 2) + tempId * size + tempId * 2;
+            int xPos = this.width / 2 - (64) + tempId * size + tempId * 2;
             int yPos = this.getTopPos() - size - 1;
 
             this.recipeTypeButtons.add(new RecipeTypeButton(this, xPos, yPos, size, size, this.getMenu().getViewTypeOrder().get(i), i));
@@ -317,6 +317,11 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
         else if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_blockTag")) {
             replaceTooltipWithTagDetails(tooltip, tagTag, "_blockTag", "tag.block.");
+        }
+
+        if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_result")) {
+            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_result", "Error");
+            tooltip.add(Component.literal(tagKeyString).withStyle(ChatFormatting.GRAY));
         }
 
         if (this.hoveredSlot != null && this.hoveredSlot.hasItem())

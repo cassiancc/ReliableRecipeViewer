@@ -14,6 +14,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public interface ReliableClientRecipe {
@@ -195,6 +196,15 @@ public interface ReliableClientRecipe {
      * @param screen      The current containerScreen, the items should be transferred to
      */
     default void mapRecipeItems(RecipeTransferMap transferMap, AbstractContainerScreen<?> screen) {
+    }
+
+
+    /**
+     * All recipes added after RRV 8.0.0 should not provide null as an ID.
+     */
+    @Deprecated
+    default Identifier entryId() {
+        return Objects.requireNonNullElse(getId(), getViewType().getId().withSuffix("/" + getResults().hashCode()));
     }
 
 
