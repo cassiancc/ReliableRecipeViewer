@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
@@ -79,6 +80,10 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         return this.drops;
     }
 
+    @Override
+    public Identifier getId() {
+        return this.entityType.builtInRegistryHolder().key().identifier();
+    }
 
     @Override
     public void tick() {

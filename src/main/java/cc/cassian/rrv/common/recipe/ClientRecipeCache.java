@@ -119,7 +119,12 @@ public class ClientRecipeCache {
         // synchronized recipes
         for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {
             List<ReliableClientRecipe> recipes = new ArrayList<>();
-            clientRecipeProvider.provide(recipes);
+            try {
+                clientRecipeProvider.provide(recipes);
+            } catch (Exception e) {
+                ReliableRecipeViewer.LOGGER.error("Failed to add client recipes {}, skipping it...", e.getMessage());
+                continue;
+            }
             for (id = 0; id < recipes.size(); id++) {
                 ReliableClientRecipe clientRecipe = recipes.get(id);
                 handleClientRecipe(clientRecipe.entryId(), clientRecipe, id);

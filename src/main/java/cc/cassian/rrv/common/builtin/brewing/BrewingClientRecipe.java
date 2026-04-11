@@ -33,8 +33,9 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
     private final Identifier id = null;
 
     public BrewingClientRecipe(ItemStack result, Ingredient magicIngredient, ItemStack bottleIngredient) {
+//        FIXME
 //        ResourceKey<Potion> potion = result.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion().map(Holder::unwrapKey).orElseThrow().orElseThrow();
-//        this.id = potion.identifier().withSuffix("_brewing_"+result.getItem().builtInRegistryHolder().key().identifier().getPath());
+//        this.id = potion.identifier().withPrefix("/").withSuffix("_brewing_"+result.getItem().builtInRegistryHolder().key().identifier().getPath());
         this.result = SlotContent.of(result);
         this.magicIngredient = SlotContent.of(magicIngredient);
         this.bottle1 = SlotContent.of(bottleIngredient);

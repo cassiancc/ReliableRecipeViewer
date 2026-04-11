@@ -32,6 +32,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
 
 
     private final SlotContent offer, cost1, cost2;
+    private final Identifier id;
 
     protected VillagerServerRecipe.VillagerOffer villagerOffer;
 
@@ -43,6 +44,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
 
     public VillagerClientRecipe(VillagerServerRecipe.VillagerOffer villagerOffer) {
 
+        this.id = villagerOffer.id();
         this.offer = SlotContent.of(villagerOffer.offerStacks());
         this.cost1 = SlotContent.of(villagerOffer.cost1());
         this.cost2 = SlotContent.of(villagerOffer.cost2());
@@ -80,6 +82,10 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         return List.of(this.offer);
     }
 
+    @Override
+    public Identifier getId() {
+        return this.id;
+    }
 
     @Override
     public void tick() {

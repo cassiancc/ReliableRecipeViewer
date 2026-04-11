@@ -573,7 +573,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 return;
 
 			ArrayList<Component> tooltip = new ArrayList<>(Collections.singleton(this.recipeType.getDisplayName()));
-            if (Minecraft.getInstance().options.advancedItemTooltips) {
+            if (Minecraft.getInstance().options.advancedItemTooltips || Configs.CLIENT_SETTINGS.isShowRecipeId()) {
                 tooltip.add(Component.literal(this.recipeType.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
             }
             tooltip.add(Component.literal(Platform.INSTANCE.getModNameForNamespace(this.recipeType.getId().getNamespace())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));

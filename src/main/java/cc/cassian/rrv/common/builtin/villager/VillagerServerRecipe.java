@@ -32,7 +32,6 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -63,7 +62,6 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.trading.TradeCost;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.*;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.*;
@@ -77,11 +75,12 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 	public static final ReliableServerRecipeType<VillagerServerRecipe> TYPE = ReliableServerRecipeType.register(
 			Identifier.withDefaultNamespace("villager_trading"),
-			() -> new VillagerServerRecipe(null, 0, null)
+			() -> new VillagerServerRecipe(null, 0, null, null)
 	);
 
 	private static final HashMap<Class<? extends LootItemFunction>, GivenItemFunctionProcessor<?>> FUNCTION_PROCESSORS = new HashMap<>();
 	private static final HashMap<Class<? extends LootItemFunction>, SubTradePostProcessor<?>> POST_PROCESSORS = new HashMap<>();
+	private Identifier id;
 
 
 	public static <T extends LootItemFunction> void registerFunctionProcessor(Class<T> clazz, GivenItemFunctionProcessor<T> processor) {
@@ -103,12 +102,13 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 	private HolderSet<Enchantment> doubleTradePriceEnchantments;
 
-	public VillagerServerRecipe(ResourceKey<VillagerProfession> profession, int professionLevel, VillagerTrade trade) {
+	public VillagerServerRecipe(ResourceKey<VillagerProfession> profession, int professionLevel, VillagerTrade trade, Identifier identifier) {
 		this.profession = profession;
 		this.professionLevel = professionLevel;
 
 		this.subTradeGroups = new ArrayList<>();
 		this.modifiers = new ArrayList<>();
+		this.id = identifier;
 
 
 		//If Client side
@@ -202,6 +202,9 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		this.modifiers.forEach(modifier -> {
 			modifiersTag.add(LootItemFunctions.ROOT_CODEC.encode(modifier, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).getOrThrow());
 		});
+		if (this.id != null) {
+			tag.store("id", Identifier.CODEC, id);
+		}
 
 		tag.put("modifiers", modifiersTag);
 
@@ -241,6 +244,8 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 			this.subTradeGroups = newGroups;
 
 		}
+
+		this.id = tag.read("id", Identifier.CODEC).orElse(null);
 	}
 
 	public List<VillagerOffer> getClientOffers() {
@@ -248,6 +253,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 		this.subTradeGroups.forEach(group -> {
 			offers.add(new VillagerOffer(
+					this.id,
 					this.profession,
 					this.professionLevel,
 					this.requiredType,
@@ -492,7 +498,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	}
 
 
-	public record VillagerOffer(ResourceKey<VillagerProfession> profession, int professionLevel,
+	public record VillagerOffer(Identifier id, ResourceKey<VillagerProfession> profession, int professionLevel,
 	                            @Nullable ResourceKey<VillagerType> requiredType, List<ItemStack> offerStacks,
 	                            List<ItemStack> cost1, List<ItemStack> cost2, int villagerXp, int maxUses) {
 
