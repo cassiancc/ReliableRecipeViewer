@@ -3,8 +3,10 @@ package cc.cassian.rrv.common.recipe;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,14 +17,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
 public class ResourceRecipeManager {
+	public static final LinkedHashMultimap<Identifier, Identifier> HIDDEN_RECIPES = LinkedHashMultimap.create();
 	public static final ArrayList<Identifier> HIDDEN_ITEM_TAGS = new ArrayList<>();
 	public static final ArrayList<Identifier> HIDDEN_BLOCK_TAGS = new ArrayList<>();
 
@@ -35,6 +35,15 @@ public class ResourceRecipeManager {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
 				if (parsedRecipe.get("type").getAsString().equals("rrv:exclusions")) {
+					parsedRecipe.entrySet().forEach(entry -> {
+						if (entry.getKey().contains(":")) {
+							var key = Identifier.parse(entry.getKey());
+							if (Configs.CATEGORIES.CATEGORIES.containsKey(key)) {
+								entry.getValue().getAsJsonArray().forEach(jsonElement -> HIDDEN_RECIPES.put(key, Identifier.parse(jsonElement.getAsString())));
+							}
+						}
+					});
+
 					var itemTags = parsedRecipe.get("item").getAsJsonArray();
 					itemTags.forEach(item -> {
 						HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString()));

@@ -121,8 +121,8 @@ public class ClientRecipeCache {
             List<ReliableClientRecipe> recipes = new ArrayList<>();
             clientRecipeProvider.provide(recipes);
             for (id = 0; id < recipes.size(); id++) {
-                ReliableClientRecipe wrapped = recipes.get(id);
-                handleClientRecipe(wrapped.entryId(), wrapped, id);
+                ReliableClientRecipe clientRecipe = recipes.get(id);
+                handleClientRecipe(clientRecipe.entryId(), clientRecipe, id);
             }
         }
 
@@ -159,6 +159,11 @@ public class ClientRecipeCache {
     }
 
     private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id) {
+        if (ResourceRecipeManager.HIDDEN_RECIPES.containsKey(wrapped.getViewType().getId())) {
+            if (ResourceRecipeManager.HIDDEN_RECIPES.get(wrapped.getViewType().getId()).contains(modEntryId)) {
+                return;
+            }
+        }
 
         Identifier uniqueId = this.getUniqueId(modEntryId, id);
         List<Identifier> summarized = this.multiRecipeMap.getOrDefault(modEntryId, new ArrayList<>());
