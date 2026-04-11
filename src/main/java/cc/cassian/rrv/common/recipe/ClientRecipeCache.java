@@ -78,7 +78,7 @@ public class ClientRecipeCache {
 
 
     public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
-        if (ModCompat.POLYDEX && ClientPolymerItemUtils.isPolyItem(inputStack)) {
+        if (ModCompat.POLYMER && ClientPolymerItemUtils.isPolyItem(inputStack)) {
             inputStack = ClientPolymerItemUtils.getServerItem(inputStack);
         }
         List<ReliableClientRecipe> recipes = new ArrayList<>();
@@ -103,7 +103,6 @@ public class ClientRecipeCache {
         if (ClientPolymerItemUtils.isPolyItem(outputStack)) {
             outputStack = ClientPolymerItemUtils.getServerItem(outputStack);
         }
-
 
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
@@ -169,7 +168,6 @@ public class ClientRecipeCache {
         this.recipeMap.put(uniqueId, wrapped);
 
         wrapped.getIngredients().forEach(ingredient -> ingredient.getValidContents().forEach(stack -> {
-
             List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(stack.getItem(), new ArrayList<>());
             byIngredient.remove(uniqueId);
             byIngredient.add(uniqueId);
@@ -179,7 +177,6 @@ public class ClientRecipeCache {
         var craftReferences = wrapped.getViewType().getCraftReferences();
 
         craftReferences.forEach(reference -> {
-
             if(!wrapped.getViewType().getCraftReferenceCondition().matches(reference, wrapped))
                 return;
 
@@ -190,10 +187,11 @@ public class ClientRecipeCache {
         });
 
         wrapped.getResults().forEach(result -> result.getValidContents().forEach(stack -> {
-            List<Identifier> byResult = this.byItemResult.getOrDefault(stack.getItem(), new ArrayList<>());
+            Item item = stack.getItem();
+            List<Identifier> byResult = this.byItemResult.getOrDefault(item, new ArrayList<>());
             byResult.remove(uniqueId);
             byResult.add(uniqueId);
-            this.byItemResult.put(stack.getItem(), byResult);
+            this.byItemResult.put(item, byResult);
         }));
     }
 

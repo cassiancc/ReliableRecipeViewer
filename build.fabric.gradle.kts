@@ -117,10 +117,11 @@ dependencies {
     if (stonecutter.eval(mcVersion, "=26.1")) {
         localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
         localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}")
-        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
+//        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
+        localRuntime("eu.pb4:polymer-virtual-entity:0.16.2+26.1.1")
     }
 
 

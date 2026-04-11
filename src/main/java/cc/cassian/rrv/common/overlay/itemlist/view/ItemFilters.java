@@ -257,7 +257,7 @@ public class ItemFilters {
             results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
         });
 
-        if (ModCompat.POLYDEX)
+        if (ModCompat.POLYMER)
             PolymerHelpers.polymerFilter(results);
 
         ResourceRecipeManager.replaceIndex(results);

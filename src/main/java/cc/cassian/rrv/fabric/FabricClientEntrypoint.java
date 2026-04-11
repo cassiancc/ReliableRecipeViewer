@@ -7,7 +7,7 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.integration.ModCompat;
-import cc.cassian.rrv.common.integration.polymer.client.PolydexClientIntegration;
+import cc.cassian.rrv.common.integration.polymer.client.PolymerClientIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -41,8 +41,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
         ReliableRecipeViewerClient.loadConfigs();
 
-        if (ModCompat.POLYDEX) {
-            PolydexClientIntegration.onInitializeClient();
+        if (ModCompat.POLYMER) {
+            PolymerClientIntegration.onInitializeClient();
         }
     }
 

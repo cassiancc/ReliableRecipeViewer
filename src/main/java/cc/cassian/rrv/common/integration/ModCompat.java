@@ -4,4 +4,5 @@ import cc.cassian.rrv.common.Platform;
 
 public class ModCompat {
 	public static final boolean POLYDEX = Platform.INSTANCE.isModLoaded("polydex");
+	public static final boolean POLYMER = Platform.INSTANCE.isModLoaded("polymer-common");
 }

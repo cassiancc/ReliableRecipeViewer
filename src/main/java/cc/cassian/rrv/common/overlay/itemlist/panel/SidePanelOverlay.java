@@ -129,7 +129,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (showCraftables()) {
             Minecraft client = Minecraft.getInstance();
             LocalPlayer player = client.player;
-            if (player == null || (ModCompat.POLYDEX && PolymerHelpers.isPolymerScreenOpen(player))) {
+            if (player == null) {
                 return;
             }
 			this.inventory = player.getInventory().getNonEquipmentItems();
