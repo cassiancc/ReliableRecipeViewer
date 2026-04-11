@@ -17,7 +17,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean itemWrapMode = true;
 	private WrapScrolling wrapScrolling = WrapScrolling.ON_BUTTONS;
 	private boolean appendModNamespace = true;
-	private boolean showRecipeId = true;
+	private boolean showRecipeId = false;
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
 	private boolean centerRecipeScreen = false;
