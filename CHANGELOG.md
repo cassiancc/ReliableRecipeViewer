@@ -1,3 +1,8 @@
+## [7.1.3]
+
+### Fixed
+- Error from search bar clearing being run too late.
+
 ## [7.1.2]
 
 ### Fixed

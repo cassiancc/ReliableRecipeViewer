@@ -1,2 +1,2 @@
 ### Fixed
-- Error from search bar clearing being run too late.
+- Effect blockers not being cleared correctly.
