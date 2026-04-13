@@ -1,12 +1,8 @@
 package cc.cassian.rrv.common.mixin.client;
 
-import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
-import cc.cassian.rrv.common.overlay.itemlist.view.SearchBar;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,10 +16,12 @@ public abstract class MixinMinecraft {
         ReliableRecipeViewerClient.saveConfigs();
     }
 
-    @Inject(method = "disconnectFromWorld", at = @At("RETURN"))
+    @Inject(method = "disconnectFromWorld", at = @At("HEAD"))
     private void cleanup(CallbackInfo ci) {
-        ItemViewOverlay.INSTANCE.getSearchbar().clear();
-        ItemViewOverlay.INSTANCE.getSearchbar().setFocused(false);
+        if (ItemViewOverlay.INSTANCE.getSearchbar() != null) {
+            ItemViewOverlay.INSTANCE.getSearchbar().clear();
+            ItemViewOverlay.INSTANCE.getSearchbar().setFocused(false);
+        }
     }
 
 
