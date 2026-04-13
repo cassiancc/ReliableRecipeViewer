@@ -35,8 +35,8 @@ public abstract class MixinEffectsInInventory {
     @Final
     private AbstractContainerScreen<?> screen;
 
-    @Inject(method = "extractEffects", at = @At("HEAD"))
-    private void injectBlocking$0(GuiGraphicsExtractor guiGraphics, final Collection<MobEffectInstance> activeEffects, final int x0, final int yStep, final int mouseX, final int mouseY, final int maxWidth, CallbackInfo ci){
+    @Inject(method = "extractRenderState", at = @At("HEAD"))
+    private void injectBlocking$0(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci){
 
         List<Identifier> effectsToRemove = new ArrayList<>();
         for(BlockingGuiComponent guiBlock : OverlayManager.INSTANCE.allGuiBlockings()){
