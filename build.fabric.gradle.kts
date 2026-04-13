@@ -108,7 +108,10 @@ dependencies {
         exclude(group = "maven.modrinth")
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
-    compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}")
+    compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+        exclude(group = "mcp.mobius.waila")
+        exclude(group = "lol.bai")
+    }
 
     compileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
     compileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
@@ -116,7 +119,10 @@ dependencies {
 
     if (stonecutter.eval(mcVersion, "=26.1")) {
         localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
-        localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}")
+        localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+            exclude(group = "mcp.mobius.waila")
+            exclude(group = "lol.bai")
+        }
 //        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
