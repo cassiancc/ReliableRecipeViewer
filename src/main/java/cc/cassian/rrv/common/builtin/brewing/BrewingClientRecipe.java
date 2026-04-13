@@ -9,38 +9,34 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
-import java.util.Optional;
 
 public class BrewingClientRecipe implements ReliableClientRecipe {
 
-    private static final int[] BUBBLELENGTHS = new int[]{29, 24, 20, 16, 11, 6, 0};
+    private static final int[] BUBBLE_LENGTHS = new int[]{29, 24, 20, 16, 11, 6, 0};
 
 
     private final SlotContent bottle1, bottle2, bottle3;
-    private final SlotContent result, magicIngredient;
+    private final SlotContent result, reagent;
 
     private final AnimationTicker brewProgressTicker;
-    private final Identifier id = null;
+    private final Identifier id;
 
-    public BrewingClientRecipe(ItemStack result, Ingredient magicIngredient, ItemStack bottleIngredient) {
-//        FIXME
-//        ResourceKey<Potion> potion = result.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion().map(Holder::unwrapKey).orElseThrow().orElseThrow();
-//        this.id = potion.identifier().withPrefix("/").withSuffix("_brewing_"+result.getItem().builtInRegistryHolder().key().identifier().getPath());
+    public BrewingClientRecipe(Identifier id, ItemStack result, Ingredient reagent, ItemStack bottles) {
+        this(id, SlotContent.of(result), SlotContent.of(reagent), SlotContent.of(bottles));
+    }
+
+    public BrewingClientRecipe(Identifier id, SlotContent result, SlotContent reagent, SlotContent bottles) {
+        this.id = id;
         this.result = SlotContent.of(result);
-        this.magicIngredient = SlotContent.of(magicIngredient);
-        this.bottle1 = SlotContent.of(bottleIngredient);
-        this.bottle2 = SlotContent.of(bottleIngredient);
-        this.bottle3 = SlotContent.of(bottleIngredient);
+        this.reagent = SlotContent.of(reagent);
+        this.bottle1 = SlotContent.of(bottles);
+        this.bottle2 = SlotContent.of(bottles);
+        this.bottle3 = SlotContent.of(bottles);
 
         this.brewProgressTicker = AnimationTicker.create(Identifier.withDefaultNamespace("brew_progress_tick"), 400);
     }
@@ -54,7 +50,7 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 
         slotFillContext.bindSlot(0, this.result);
-        slotFillContext.bindSlot(1, this.magicIngredient);
+        slotFillContext.bindSlot(1, this.reagent);
 
         slotFillContext.bindSlot(2, this.bottle1);
         slotFillContext.bindSlot(3, this.bottle2);
@@ -64,7 +60,7 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
 
     @Override
     public List<SlotContent> getIngredients() {
-        return List.of(this.bottle1, this.bottle2, this.bottle3, this.magicIngredient);
+        return List.of(this.bottle1, this.bottle2, this.bottle3, this.reagent);
     }
 
     @Override
@@ -90,7 +86,7 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
         int brewProgress = Math.round(this.brewProgressTicker.getProgress() * 28);
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 76, 2, 56, 0, 9, brewProgress, 128, 128);
 
-        int bubbleProgress = 29 - BUBBLELENGTHS[this.brewProgressTicker.getTick() / 2 % 7];
+        int bubbleProgress = 29 - BUBBLE_LENGTHS[this.brewProgressTicker.getTick() / 2 % 7];
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 42, 29 - bubbleProgress, 64, 29 - bubbleProgress, 13, bubbleProgress, 128, 128);
     }
 }

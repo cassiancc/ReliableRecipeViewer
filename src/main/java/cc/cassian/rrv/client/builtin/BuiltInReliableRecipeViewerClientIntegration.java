@@ -28,6 +28,7 @@ import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
@@ -38,6 +39,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
@@ -295,12 +297,13 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         List<PotionBrewing.Mix<Potion>> potionMixes = ((PotionBrewingAccessor) potionBrewing).getPotionMixes();
         List<PotionBrewing.Mix<Item>> containerMixes = ((PotionBrewingAccessor) potionBrewing).getContainerMixes();
 
-        containerMixes.forEach(itemMix -> recipeList.add(new BrewingClientRecipe(new ItemStack(itemMix.to().value()), itemMix.ingredient(), new ItemStack(itemMix.from().value()))));
+        containerMixes.forEach(itemMix -> recipeList.add(new BrewingClientRecipe(itemMix.to().unwrapKey().map(ResourceKey::identifier).orElse(Identifier.withDefaultNamespace(UUID.randomUUID().toString())).withPrefix("/brewing/").withSuffix(RrvUtil.ingredientSuffix(itemMix.ingredient())), new ItemStack(itemMix.to().value()), itemMix.ingredient(), new ItemStack(itemMix.from().value()))));
 
         potionMixes.forEach(potionMix -> {
-            recipeList.add(new BrewingClientRecipe(PotionContents.createItemStack(Items.POTION, potionMix.to()), potionMix.ingredient(), PotionContents.createItemStack(Items.POTION, potionMix.from())));
-            recipeList.add(new BrewingClientRecipe(PotionContents.createItemStack(Items.SPLASH_POTION, potionMix.to()), potionMix.ingredient(), PotionContents.createItemStack(Items.SPLASH_POTION, potionMix.from())));
-            recipeList.add(new BrewingClientRecipe(PotionContents.createItemStack(Items.LINGERING_POTION, potionMix.to()), potionMix.ingredient(), PotionContents.createItemStack(Items.LINGERING_POTION, potionMix.from())));
+            var id = potionMix.to().unwrapKey().map(ResourceKey::identifier).orElse(Identifier.withDefaultNamespace(UUID.randomUUID().toString())).withPrefix("/brewing/");
+            recipeList.add(new BrewingClientRecipe(id.withSuffix("_potion"+RrvUtil.ingredientSuffix(potionMix.ingredient())), PotionContents.createItemStack(Items.POTION, potionMix.to()), potionMix.ingredient(), PotionContents.createItemStack(Items.POTION, potionMix.from())));
+            recipeList.add(new BrewingClientRecipe(id.withSuffix("_awkward_potion"+RrvUtil.ingredientSuffix(potionMix.ingredient())),PotionContents.createItemStack(Items.SPLASH_POTION, potionMix.to()), potionMix.ingredient(), PotionContents.createItemStack(Items.SPLASH_POTION, potionMix.from())));
+            recipeList.add(new BrewingClientRecipe(id.withSuffix("_lingering_potion"+RrvUtil.ingredientSuffix(potionMix.ingredient())), PotionContents.createItemStack(Items.LINGERING_POTION, potionMix.to()), potionMix.ingredient(), PotionContents.createItemStack(Items.LINGERING_POTION, potionMix.from())));
 
         });
     }

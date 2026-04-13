@@ -91,4 +91,9 @@ public class RrvUtil {
         return ingredients;
     }
 
+    public static String ingredientSuffix(Ingredient ingredient) {
+        List<Item> itemsFromIngredient = getItemsFromIngredient(ingredient);
+        if (itemsFromIngredient.isEmpty()) return "";
+        return "_from_" + itemsFromIngredient.getFirst().builtInRegistryHolder().key().identifier().getPath();
+    }
 }
