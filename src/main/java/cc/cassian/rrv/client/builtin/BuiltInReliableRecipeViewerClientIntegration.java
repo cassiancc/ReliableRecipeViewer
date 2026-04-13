@@ -193,13 +193,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 potionRegistry.forEach(potion -> {
                     Holder<Potion> potionHolder = potionRegistry.wrapAsHolder(potion);
                     var items = getItemsFromIngredient(accessor.getSource()).stream().map(item->PotionContents.createItemStack(item, potionHolder)).toList();
-                    HashMap<Integer, SlotContent> ingredients = new HashMap<>();
-                    for (int i = 0; i < 9; i++){
-                        if (i == 4)
-                            ingredients.put(i, SlotContent.of(items));
-                        else
-                            ingredients.put(i, SlotContent.of(accessor.getMaterial()));
-                    }
+                    HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(items), SlotContent.of(accessor.getMaterial()));
 
                     ItemStack result = accessor.getResult().create().copyWithCount(8);
                     result.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
@@ -228,7 +222,23 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 BookCloningRecipeAccessor accessor = (BookCloningRecipeAccessor) recipe;
                 recipeList.add(new CraftingClientRecipe(id, accessor.getSource(), accessor.getMaterial(), accessor.getResult().withCount(2)));
             }
+            else if (recipe instanceof MapExtendingRecipe) {
+                MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) recipe;
+                HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(accessor.getMap()), SlotContent.of(accessor.getMaterial()));
+                recipeList.add(new CraftingClientRecipe(id, 3, 3, ingredients, SlotContent.of(accessor.getResult())));
+            }
         });
+    }
+
+    private static HashMap<Integer, SlotContent> fillCraftingGrid(SlotContent middleItem, SlotContent surroundingItems) {
+        HashMap<Integer, SlotContent> ingredients = new HashMap<>();
+        for (int i = 0; i < 9; i++){
+            if (i == 4)
+                ingredients.put(i, middleItem);
+            else
+                ingredients.put(i, surroundingItems);
+        }
+        return ingredients;
     }
 
     private static void addFuelRecipes(List<ReliableClientRecipe> recipeList) {
