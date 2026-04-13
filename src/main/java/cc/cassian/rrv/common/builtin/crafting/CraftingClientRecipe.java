@@ -15,6 +15,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,125 +23,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CraftingClientRecipe implements ReliableClientRecipe {
 
     private final Identifier id;
-    private HashMap<Integer, SlotContent> ingredients = new HashMap<>();
+    private final int priority;
+    private final HashMap<Integer, SlotContent> ingredients;
     private final SlotContent result;
     private final int width, height;
     private final boolean shapeless;
-	private int dependentIndex = -1;
+	private final int dependentIndex;
 
     /**
-     * Constructor for shaped recipes, currently used for decorated pots.
+     * Implement via the builder - {@link CraftingClientRecipe.Builder}.
      */
-    public CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result, int dependentIndex) {
+    private CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result, int dependentIndex, int priority, boolean shapeless) {
         this.id = id;
         this.width = width;
         this.height = height;
         this.ingredients = ingredients;
         this.result = result;
-        this.shapeless = false;
+        this.shapeless = shapeless;
         this.dependentIndex = dependentIndex;
-    }
-
-    /**
-     * Constructor for shapeless recipes.
-     */
-    public CraftingClientRecipe(Identifier id, List<SlotContent> ingredients, SlotContent result) {
-        this.id = id;
-        this.shapeless = true;
-        var size = ingredients.size();
-        switch (size) {
-            case 1 -> {
-                this.width = 1;
-                this.height = 1;
-            }
-            case 2 -> {
-                this.width = 2;
-                this.height = 1;
-            }
-            case 3 -> {
-                this.width = 3;
-                this.height = 1;
-            }
-            case 4 -> {
-                this.width = 2;
-                this.height = 2;
-            }
-            case 5, 6 -> {
-                this.width = 3;
-                this.height = 2;
-            }
-            default -> {
-                this.width = 3;
-                this.height = 3;
-            }
-        }
-
-
-        AtomicInteger i = new AtomicInteger();
-        ingredients.forEach((ingredient) -> {
-            this.ingredients.put(i.getAndIncrement(), (ingredient));
-        });
-
-        this.result = result;
-    }
-
-    /**
-     * Constructor for dye recipes.
-     */
-    public CraftingClientRecipe(Identifier id, Ingredient target, Ingredient dye, List<ItemStackTemplate> results, int dependentIndex) {
-        this.id = id;
-        this.width = 2;
-        this.height = 1;
-        this.shapeless = true;
-        this.ingredients.put(0, SlotContent.of(target));
-        this.ingredients.put(1, SlotContent.of(dye));
-        this.dependentIndex = dependentIndex;
-
-        this.result = SlotContent.ofTemplates(results);
-    }
-
-
-    /**
-     * Constructor for book cloning recipes.
-     */
-    public CraftingClientRecipe(Identifier id, Ingredient target, Ingredient dye, ItemStackTemplate results, int dependentIndex) {
-        this.id = id;
-        this.width = 2;
-        this.height = 1;
-        this.shapeless = true;
-        this.ingredients.put(0, SlotContent.of(target));
-        this.ingredients.put(1, SlotContent.of(dye));
-        this.dependentIndex = dependentIndex;
-
-        this.result = SlotContent.of(results);
-    }
-
-    /**
-     * Constructor for shapeless transmutation recipes.
-     */
-    public CraftingClientRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
-        this(id, input, material, results, -1);
-    }
-
-    /**
-     * Constructor for shapeless transmutation recipes.
-     */
-    public CraftingClientRecipe(Identifier id, Ingredient input, Ingredient material, ItemStackTemplate results) {
-        this(id, input, material, results, -1);
-    }
-
-    /**
-     * Constructor for shapeless recipes.
-     */
-    public CraftingClientRecipe(Identifier id, List<Ingredient> ingredients, ItemStackTemplate result) {
-        this(id, ingredients.stream().map(SlotContent::of).toList(), SlotContent.of(result));
-    }
-
-    /**
-     * Constructor for shaped recipes.
-     */
-    public CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result) {
-        this(id, width, height, ingredients, result, -1);
+        this.priority = priority;
     }
 
     @Override
@@ -167,6 +68,11 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
             }
         }
 
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
     }
 
     @Override
@@ -222,5 +128,98 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         }
 
 
+    }
+
+    public static class Builder {
+        private final Identifier id;
+        private int width = 3;
+        private int height = 3;
+        private HashMap<Integer, SlotContent> ingredients = new HashMap<>();
+        private boolean shapeless = false;
+        private SlotContent result;
+        private int dependentIndex = -1;
+        private Integer priority = null;
+
+        /**
+         * General constructor.
+         */
+        public Builder(Identifier id) {
+            this.id = id;
+        }
+
+        /**
+         * Constructor for shapeless recipes.
+         */
+        public Builder(Identifier id, List<SlotContent> ingredients) {
+            this(id);
+            var size = ingredients.size();
+            switch (size) {
+                case 1 -> setSize(1, 1);
+                case 2 -> setSize(2, 1);
+                case 3 -> setSize(3,1);
+                case 4 -> setSize(2,2);
+                case 5, 6 -> setSize(3,2);
+                default -> setSize(3, 3);
+            }
+
+            AtomicInteger i = new AtomicInteger();
+            ingredients.forEach((ingredient) -> this.ingredients.put(i.getAndIncrement(), (ingredient)));
+            this.shapeless = true;
+        }
+
+        /**
+         * Constructor for shapeless recipes.
+         */
+        public Builder(Identifier id, Ingredient... ingredients) {
+            this(id, Arrays.stream(ingredients).map(SlotContent::of).toList());
+        }
+
+        /**
+         * Constructor for shaped recipes.
+         */
+        public Builder(Identifier id, HashMap<Integer, SlotContent> ingredients) {
+            this(id);
+            this.ingredients = ingredients;
+        }
+
+        /**
+         * Set the size of the recipe grid. If this is a shapeless recipe, this is set automatically.
+         */
+        public Builder setSize(int width, int height) {
+            this.width = width;
+            this.height = height;
+            return this;
+        }
+
+        public Builder setResult(SlotContent result) {
+            this.result = result;
+            return this;
+        }
+
+        public Builder setResult(ItemStackTemplate result) {
+            return setResult(SlotContent.of(result));
+        }
+
+        public Builder setResult(List<ItemStackTemplate> result) {
+            return setResult(SlotContent.ofTemplates(result));
+        }
+
+        public Builder setDependentIndex(int dependentIndex) {
+            this.dependentIndex = dependentIndex;
+            return this;
+        }
+
+        public Builder setPriority(int priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        public CraftingClientRecipe build() {
+            if (priority == null) {
+                if (shapeless) setPriority(1);
+                else setPriority(0);
+            }
+            return new CraftingClientRecipe(id, width, height, ingredients, result, dependentIndex, priority, shapeless);
+        }
     }
 }

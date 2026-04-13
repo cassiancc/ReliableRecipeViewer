@@ -8,8 +8,12 @@
   - Client recipes can now be hidden by their ID via the `rrv:exclusions` resource pack file, see the docs for more information.
 - Support for imbuing, book cloning, map extending, firework rocket, and decorated pot recipes.
 
+### Changed
+- Shaped recipes are now sorted before shapeless recipes.
+- Crafting client recipes now make use of a builder.
 
 # TODO
 - Add back 7.0.0 vanilla server recipe backwards compatibility for Farmer's Delight and anything else on 26.1.
 - 8.0.0 docs.
 - Add IDs for brewing recipes.
+- Add support for all remaining special crafting recipes.

@@ -87,7 +87,7 @@ public class RrvUtil {
         }
 
         if (ingredientContent.right().isPresent())
-            ingredients.addAll(ingredientContent.right().get().stream().map(Holder::value).toList());
+            ingredients.addAll(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList());
         return ingredients;
     }
 

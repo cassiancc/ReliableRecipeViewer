@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -334,7 +335,7 @@ public class SlotContent {
         }
         *///?}
 
-        return SlotContent.ofItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList());
+        return SlotContent.ofItemList(RrvUtil.getItemsFromIngredient(ingredient));
 
     }
 
