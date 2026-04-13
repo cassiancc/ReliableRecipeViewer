@@ -138,7 +138,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ServerRecipeManager.synchronizeRecipeType(ImbueRecipe.SERIALIZER, RecipeType.CRAFTING);
         ServerRecipeManager.synchronizeRecipeType(TransmuteRecipe.SERIALIZER, RecipeType.CRAFTING);
         ServerRecipeManager.synchronizeRecipeType(DecoratedPotRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(BookCloningRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
+        ServerRecipeManager.synchronizeRecipeType(BookCloningRecipe.SERIALIZER, RecipeType.CRAFTING);
         ServerRecipeManager.synchronizeRecipeType(MapExtendingRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
         ServerRecipeManager.synchronizeRecipeType(FireworkRocketRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
         ServerRecipeManager.synchronizeRecipeType(FireworkStarRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO

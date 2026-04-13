@@ -29,7 +29,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
 	private int dependentIndex = -1;
 
     /**
-     * Constructor for decorated pot recipes.
+     * Constructor for shaped recipes, currently used for decorated pots.
      */
     public CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result, int dependentIndex) {
         this.id = id;
@@ -99,10 +99,33 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.result = SlotContent.ofTemplates(results);
     }
 
+
+    /**
+     * Constructor for book cloning recipes.
+     */
+    public CraftingClientRecipe(Identifier id, Ingredient target, Ingredient dye, ItemStackTemplate results, int dependentIndex) {
+        this.id = id;
+        this.width = 2;
+        this.height = 1;
+        this.shapeless = true;
+        this.ingredients.put(0, SlotContent.of(target));
+        this.ingredients.put(1, SlotContent.of(dye));
+        this.dependentIndex = dependentIndex;
+
+        this.result = SlotContent.of(results);
+    }
+
     /**
      * Constructor for shapeless transmutation recipes.
      */
     public CraftingClientRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
+        this(id, input, material, results, -1);
+    }
+
+    /**
+     * Constructor for shapeless transmutation recipes.
+     */
+    public CraftingClientRecipe(Identifier id, Ingredient input, Ingredient material, ItemStackTemplate results) {
         this(id, input, material, results, -1);
     }
 

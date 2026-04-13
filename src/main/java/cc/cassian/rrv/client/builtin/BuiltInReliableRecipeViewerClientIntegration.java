@@ -224,6 +224,10 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
                 recipeList.add(new CraftingClientRecipe(id, 3, 3, ingredients, SlotContent.of(results), 7));
             }
+            else if (recipe instanceof BookCloningRecipe) {
+                BookCloningRecipeAccessor accessor = (BookCloningRecipeAccessor) recipe;
+                recipeList.add(new CraftingClientRecipe(id, accessor.getSource(), accessor.getMaterial(), accessor.getResult().withCount(2)));
+            }
         });
     }
 
