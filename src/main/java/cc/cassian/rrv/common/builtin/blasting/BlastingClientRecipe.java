@@ -34,7 +34,7 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return BlastingClientRecipeType.INSTANCE;
     }
 

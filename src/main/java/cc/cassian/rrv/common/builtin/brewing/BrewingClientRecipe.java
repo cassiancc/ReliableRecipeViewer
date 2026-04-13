@@ -46,7 +46,7 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return BrewingClientRecipeType.INSTANCE;
     }
 

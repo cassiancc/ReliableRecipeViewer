@@ -32,7 +32,7 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public SmeltingClientRecipeType getViewType() {
+    public SmeltingClientRecipeType getType() {
         return SmeltingClientRecipeType.INSTANCE;
     }
 

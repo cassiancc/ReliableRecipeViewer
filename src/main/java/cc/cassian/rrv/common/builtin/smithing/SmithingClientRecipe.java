@@ -58,7 +58,7 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return SmithingClientRecipeType.INSTANCE;
     }
 

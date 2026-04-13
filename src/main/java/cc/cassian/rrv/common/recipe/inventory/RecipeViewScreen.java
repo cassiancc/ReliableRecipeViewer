@@ -251,7 +251,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
                     })
                     .size(12, 12)
-                    .pos(guiLeft + currentView.getViewType().getDisplayWidth() + 4, guiTop + currentView.getViewType().getDisplayHeight() / 2 - 6)
+                    .pos(guiLeft + currentView.getType().getDisplayWidth() + 4, guiTop + currentView.getType().getDisplayHeight() / 2 - 6)
                     .build();
 
             RecipeTransferData data = this.getMenu().getTransferData().get(i);
@@ -537,7 +537,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             if (data.getSlotResults().get(slotId))
                 continue;
 
-            int actualSlotId = slotId + (displayId * current.getViewType().getSlotCount());
+            int actualSlotId = slotId + (displayId * current.getType().getSlotCount());
             Slot invSlot = this.getMenu().getSlot(actualSlotId);
 
             int x = invSlot.x;

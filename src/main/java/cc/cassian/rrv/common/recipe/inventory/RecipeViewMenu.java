@@ -87,11 +87,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         HashMap<ReliableClientRecipeType, HashMap<Integer, List<ReliableClientRecipe>>> prioOrder = new HashMap<>();
 
         recipes.forEach(recipe -> {
-            List<ReliableClientRecipe> list = prioOrder.getOrDefault(recipe.getViewType(), new HashMap<>()).getOrDefault(recipe.getPriority(), new ArrayList<>());
+            List<ReliableClientRecipe> list = prioOrder.getOrDefault(recipe.getType(), new HashMap<>()).getOrDefault(recipe.getPriority(), new ArrayList<>());
             list.add(recipe);
-            HashMap<Integer, List<ReliableClientRecipe>> map = prioOrder.getOrDefault(recipe.getViewType(), new HashMap<>());
+            HashMap<Integer, List<ReliableClientRecipe>> map = prioOrder.getOrDefault(recipe.getType(), new HashMap<>());
             map.put(recipe.getPriority(), list);
-            prioOrder.put(recipe.getViewType(), map);
+            prioOrder.put(recipe.getType(), map);
         });
 
         prioOrder.forEach((viewType, map) -> {
@@ -648,7 +648,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         Optional<? extends ReliableClientRecipe> optional = recipes.stream().findFirst();
 
         if (optional.isPresent()) {
-            this.clientRecipeType = optional.get().getViewType();
+            this.clientRecipeType = optional.get().getType();
             this.maxPossiblePerPage = this.calculateRecipesPerPage();
 
             if (maxPossiblePerPage != 0) {

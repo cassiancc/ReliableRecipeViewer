@@ -33,7 +33,7 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public ReliableClientRecipeType getViewType() {
+	public ReliableClientRecipeType getType() {
 		return InfoClientRecipeType.INSTANCE;
 	}
 

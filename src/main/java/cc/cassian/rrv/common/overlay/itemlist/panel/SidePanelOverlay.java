@@ -153,7 +153,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     void updateRecipes(ReliableClientRecipe recipe, NonNullList<ItemStack> inventory, boolean b) {
-        if (recipe.isVisualOnly() || !Configs.CATEGORIES.enabled(recipe.getViewType())) return;
+        if (recipe.isVisualOnly() || !Configs.CATEGORIES.enabled(recipe.getType())) return;
         Minecraft client = Minecraft.getInstance();
         if (b && !RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())) return;
         AtomicInteger foundIngredientCount = new AtomicInteger();

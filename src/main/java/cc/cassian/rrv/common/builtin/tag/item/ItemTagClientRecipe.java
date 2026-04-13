@@ -41,14 +41,14 @@ public class ItemTagClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public ReliableClientRecipeType getViewType() {
+	public ReliableClientRecipeType getType() {
 		return ItemTagClientRecipeType.INSTANCE;
 	}
 
 	@Override
 	public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 		slotFillContext.bindSlot(0, this.tagKeyContent);
-		for (int i = 0; i < Math.min(this.getViewType().getSlotCount()-1, this.items.size()); i++) {
+		for (int i = 0; i < Math.min(this.getType().getSlotCount()-1, this.items.size()); i++) {
 			if (i < 9)
 				slotFillContext.bindSlot(i+1, this.items.get(i));
 			else

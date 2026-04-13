@@ -39,7 +39,7 @@ public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return AnvilCombiningClientRecipeType.INSTANCE;
     }
 

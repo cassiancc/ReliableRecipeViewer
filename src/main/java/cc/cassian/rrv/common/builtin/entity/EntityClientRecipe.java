@@ -14,8 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.phys.AABB;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -39,7 +37,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         List<SlotContent> drops = serverRecipe.getDrops();
         List<SlotContent> dropContents = new ArrayList<>();
 
-        for (int i = 0; i < this.getViewType().getSlotCount(); i++) {
+        for (int i = 0; i < this.getType().getSlotCount(); i++) {
             if (drops.size() > i)
                 dropContents.add(drops.get(i));
             else
@@ -54,7 +52,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return EntityClientRecipeType.INSTANCE;
     }
 

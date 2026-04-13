@@ -10,21 +10,18 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 public interface ReliableClientRecipe {
 
     List<ReliableClientRecipe> PLACEHOLDER = List.of(
             new ReliableClientRecipe() {
 
-
                 @Override
-                public ReliableClientRecipeType getViewType() {
+                public ReliableClientRecipeType getType() {
                     return CraftingClientRecipeType.INSTANCE;
                 }
 
@@ -46,9 +43,21 @@ public interface ReliableClientRecipe {
     );
 
     /**
+     * Renamed to {@link ReliableClientRecipe#getType()} in 8.0.0
      * @return The client recipe type of this recipe
      */
-    ReliableClientRecipeType getViewType();
+    @Deprecated(since = "8.0.0")
+    default ReliableClientRecipeType getViewType() {
+        return getType();
+    }
+
+    /**
+     * Provides the {@link ReliableClientRecipeType} of this client recipe.
+     * @return The client recipe type of this recipe
+     */
+    default ReliableClientRecipeType getType() {
+        return getViewType();
+    }
 
     /**
      * Bind the SlotContents of the recipe to the according slots
@@ -206,7 +215,7 @@ public interface ReliableClientRecipe {
      */
     @Deprecated
     default Identifier entryId() {
-        return Objects.requireNonNullElse(getId(), getViewType().getId().withSuffix("/" + getResults().hashCode()));
+        return Objects.requireNonNullElse(getId(), getType().getId().withSuffix("/" + getResults().hashCode()));
     }
 
 

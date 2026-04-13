@@ -36,10 +36,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class SlotContent {
 
@@ -225,9 +222,19 @@ public class SlotContent {
         return new SlotContent(List.of(new ItemStack(item)));
     }
 
+    public static SlotContent of(Item... items) {
+        if (items == null) return SlotContent.of();
+        return new SlotContent(Arrays.stream(items).map(ItemStack::new).toList());
+    }
+
     public static SlotContent of(Block item) {
         if (item == null) return SlotContent.of();
         return new SlotContent(List.of(new ItemStack(item)));
+    }
+
+    public static SlotContent of(Block... blocks) {
+        if (blocks == null) return SlotContent.of();
+        return new SlotContent(Arrays.stream(blocks).map(ItemStack::new).toList());
     }
 
     public static SlotContent ofItemList(List<Item> items) {

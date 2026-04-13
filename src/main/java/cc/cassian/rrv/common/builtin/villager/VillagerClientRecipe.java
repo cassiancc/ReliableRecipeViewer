@@ -58,7 +58,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return VillagerClientRecipeType.INSTANCE;
     }
 

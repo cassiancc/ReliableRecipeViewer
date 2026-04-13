@@ -35,7 +35,7 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
 
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return SmokingClientRecipeRecipeType.INSTANCE;
     }
 

@@ -28,7 +28,7 @@ public class PolydexClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public ReliableClientRecipeType getViewType() {
+	public ReliableClientRecipeType getType() {
 		return PolydexClientRecipeType.INSTANCE;
 	}
 

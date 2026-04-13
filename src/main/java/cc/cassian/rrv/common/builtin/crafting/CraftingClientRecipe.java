@@ -45,7 +45,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return CraftingClientRecipeType.INSTANCE;
     }
 
@@ -172,6 +172,13 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
          */
         public Builder(Identifier id, Ingredient... ingredients) {
             this(id, Arrays.stream(ingredients).map(SlotContent::of).toList());
+        }
+
+        /**
+         * Constructor for shapeless recipes.
+         */
+        public Builder(Identifier id, SlotContent... ingredients) {
+            this(id, Arrays.stream(ingredients).toList());
         }
 
         /**

@@ -21,6 +21,7 @@ import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
+import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.*;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
@@ -70,7 +71,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             BuiltInRegistries.ITEM.get(CommonTags.EXCLUDED_ITEMS).ifPresent(items -> items.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(ItemView::excludeItem));
             BuiltInRegistries.FLUID.get(CommonTags.EXCLUDED_FLUIDS).ifPresent(fluids -> fluids.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(fluid -> ItemView.excludeItem(fluid.defaultFluidState().createLegacyBlock().getBlock().asItem())));
             ItemFilters.buildTagCache();
-            getHiddenTags();
+            hideRecipes();
         });
 
         //Wrapper
@@ -104,9 +105,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             recipeList.addAll(addAnvilCombiningRecipes());
             recipeList.addAll(addInfoRecipes());
             recipeList.addAll(addWorldInteractionRecipes());
-
-            //Repairing
-            addRepairingRecipes(recipeList);
 
             //Brewing
             addBrewingRecipes(recipeList, level);
@@ -240,6 +238,20 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 ingredients.addFirst(SlotContent.of(accessor.getFuel()));
                 recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(3, List.of())).build()))).setPriority(20).build());
             }
+            else if (recipe instanceof ShieldDecorationRecipe) {
+                ShieldDecorationRecipeAccessor accessor = (ShieldDecorationRecipeAccessor) recipe;
+                ArrayList<ItemStack> results = new ArrayList<>();
+                for (Item item : getItemsFromIngredient(accessor.getBanner())) {
+                    if (item instanceof BannerItem bannerItem) {
+                        var dyeColor = bannerItem.getColor();
+                        results.add(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.BASE_COLOR, dyeColor).build()));
+                    }
+                }
+                recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getBanner()).setResult(SlotContent.of(results)).setDependentIndex(1).build());
+            } else if (recipe instanceof RepairItemRecipe) {
+                //Repairing
+                addRepairingRecipes(recipeList);
+            }
         });
     }
 
@@ -303,6 +315,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 damagedStack.setDamageValue(stack.getMaxDamage() / 2);
                 assert repairable != null;
                 recipeList.add(new AnvilCombiningClientRecipe(entry.getKey().identifier().withPrefix("/repairing/"), SlotContent.of(damagedStack), SlotContent.of(repairable.items()), SlotContent.of(stack), -10));
+                recipeList.add(new CraftingClientRecipe.Builder(entry.getKey().identifier().withPrefix("/repairing/"), SlotContent.of(damagedStack), SlotContent.of(damagedStack)).setResult(SlotContent.of(stack)).setPriority(-10).build());
             }
         });
     }
@@ -340,8 +353,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         // honeycomb
         //? fabric {
-        HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/waxable_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2.asItem())))));
-        HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/wax_off_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), axes, SlotContent.of(block2.asItem())))));
+        HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/waxable_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2)))));
+        HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/wax_off_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), axes, SlotContent.of(block2)))));
         AxeItem.STRIPPABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/strippable_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), axes, SlotContent.of(state)))));
         //?}
 
@@ -350,14 +363,18 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         // hoes
         var hoes = SlotContent.of(ItemTags.HOES);
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_farmland"), SlotContent.of(Ingredient.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH)), hoes, SlotContent.of(Items.FARMLAND)));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_farmland"), SlotContent.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH), hoes, SlotContent.of(Items.FARMLAND)));
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_dirt"),SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.DIRT)));
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_hanging_roots"),SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.HANGING_ROOTS)));
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/shearing_bee_nest"), SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/glass_bottle_bee_nest"), SlotContent.of(Ingredient.of(Blocks.BEEHIVE, Blocks.BEE_NEST)), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/shearing_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/glass_bottle_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
 
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/water_filling"), SlotContent.of(Blocks.WATER), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
 
+        BuiltInRegistries.FLUID.entrySet().forEach(fluidEntry -> {
+            Item bucket = fluidEntry.getValue().getBucket();
+            worldInteractionRecipes.add(new WorldInteractionClientRecipe(fluidEntry.getKey().identifier().withPath("/world_interaction/%s_bucketing"::formatted), SlotContent.of(new FluidStack(fluidEntry.getValue())), SlotContent.of(Optional.ofNullable(bucket.getCraftingRemainder()).orElse(new ItemStackTemplate(Items.BUCKET))), SlotContent.of(bucket)));
+        });
 
         return worldInteractionRecipes;
     }

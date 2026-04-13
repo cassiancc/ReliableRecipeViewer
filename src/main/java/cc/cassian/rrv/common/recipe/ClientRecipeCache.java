@@ -85,7 +85,7 @@ public class ClientRecipeCache {
         this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
 
         ItemStack finalInputStack = inputStack;
-        recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsIngredient(finalInputStack) && (clientRecipe.getViewType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == finalInputStack.getItem()) || !clientRecipe.getViewType().getCraftReferenceCondition().matches(finalInputStack, clientRecipe)));
+        recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsIngredient(finalInputStack) && (clientRecipe.getType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == finalInputStack.getItem()) || !clientRecipe.getType().getCraftReferenceCondition().matches(finalInputStack, clientRecipe)));
         recipes.removeIf(this::disabled);
 
         return recipes;
@@ -96,7 +96,7 @@ public class ClientRecipeCache {
     }
 
     private boolean enabled(ReliableClientRecipe clientRecipe) {
-        return Configs.CATEGORIES.enabled(clientRecipe.getViewType());
+        return Configs.CATEGORIES.enabled(clientRecipe.getType());
     }
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
@@ -164,8 +164,8 @@ public class ClientRecipeCache {
     }
 
     private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id) {
-        if (ResourceRecipeManager.HIDDEN_RECIPES.containsKey(wrapped.getViewType().getId())) {
-            if (ResourceRecipeManager.HIDDEN_RECIPES.get(wrapped.getViewType().getId()).contains(modEntryId)) {
+        if (ResourceRecipeManager.HIDDEN_RECIPES.containsKey(wrapped.getType().getId())) {
+            if (ResourceRecipeManager.HIDDEN_RECIPES.get(wrapped.getType().getId()).contains(modEntryId)) {
                 return;
             }
         }
@@ -184,10 +184,10 @@ public class ClientRecipeCache {
             this.byItemIngredient.put(stack.getItem(), byIngredient);
         }));
 
-        var craftReferences = wrapped.getViewType().getCraftReferences();
+        var craftReferences = wrapped.getType().getCraftReferences();
 
         craftReferences.forEach(reference -> {
-            if(!wrapped.getViewType().getCraftReferenceCondition().matches(reference, wrapped))
+            if(!wrapped.getType().getCraftReferenceCondition().matches(reference, wrapped))
                 return;
 
             List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(reference.getItem(), new ArrayList<>());

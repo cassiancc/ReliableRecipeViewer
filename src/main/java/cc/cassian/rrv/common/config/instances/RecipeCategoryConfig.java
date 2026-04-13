@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
@@ -25,7 +24,7 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 		// build list of recipe categories
 		ArrayList<Identifier> ids = new ArrayList<>();
 		for (ReliableClientRecipe reliableClientRecipe : ClientRecipeCache.INSTANCE.getRecipes()) {
-			ReliableClientRecipeType recipeTypes = reliableClientRecipe.getViewType();
+			ReliableClientRecipeType recipeTypes = reliableClientRecipe.getType();
 			Identifier categoryId = recipeTypes.getId();
 			if (recipeTypes.getPriority() == 0) {
 				if (!ids.contains(categoryId)) {

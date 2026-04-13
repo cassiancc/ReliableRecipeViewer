@@ -34,7 +34,7 @@ public class CampfireClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return CampfireClientRecipeType.INSTANCE;
     }
 

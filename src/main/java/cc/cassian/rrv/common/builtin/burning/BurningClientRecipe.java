@@ -35,7 +35,7 @@ public class BurningClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return BurningClientRecipeType.INSTANCE;
     }
 

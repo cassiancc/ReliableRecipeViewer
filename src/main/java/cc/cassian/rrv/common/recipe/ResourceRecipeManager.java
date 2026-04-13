@@ -30,7 +30,7 @@ public class ResourceRecipeManager {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
 	}
 
-	public static void getHiddenTags() {
+	public static void hideRecipes() {
 		getIdentifierResourceMap("rrv/exclusions").forEach((identifier, resource) -> {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
@@ -82,7 +82,7 @@ public class ResourceRecipeManager {
 		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
 			var slots = readCombinationRecipe("world_interaction", entry);
 			if (slots != null) {
-				worldInteractionRecipes.add(new WorldInteractionClientRecipe(slots.left, slots.right, slots.result, slots.priority));
+				worldInteractionRecipes.add(new WorldInteractionClientRecipe(entry.getKey().withPath(path->path.replace(".json", "")), slots.left, slots.right, slots.result, slots.priority));
 				LOGGER.debug("RRV: Loaded world interaction recipe {}", entry.getKey());
 			}
 		}

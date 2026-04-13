@@ -6,11 +6,13 @@
 - Client recipes are now expected to provide a valid `Identifier` by overriding `ClientRecipe#getId`.
   - Recipe ids can be seen by hovering over the result with the "Show Recipe ID" config enabled.
   - Client recipes can now be hidden by their ID via the `rrv:exclusions` resource pack file, see the docs for more information.
-- Support for imbuing, book cloning, map extending, firework rocket, and decorated pot recipes.
+- Support for imbuing, book cloning, map extending, firework rocket, shield decoration, repairing, and decorated pot recipes.
+- Fluid bucketing is now visible in RRV.
 
 ### Changed
 - Shaped recipes are now sorted before shapeless recipes.
 - Crafting client recipes now make use of a builder.
+- `ReliableClientRecipe#getViewType` was renamed to `ReliableClientRecipe#getType`, backwards compatible.
 
 # TODO
 - Add back 7.0.0 vanilla server recipe backwards compatibility for Farmer's Delight and anything else on 26.1.
