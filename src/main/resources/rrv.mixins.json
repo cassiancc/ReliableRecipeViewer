@@ -12,6 +12,7 @@
     "world.item.crafting.BookCloningRecipeAccessor",
     "world.item.crafting.DecoratedPotRecipeAccessor",
     "world.item.crafting.DyeRecipeAccessor",
+    "world.item.crafting.FireworkRocketRecipeAccessor",
     "world.item.crafting.ImbueRecipeAccessor",
     "world.item.crafting.IngredientAccessor",
     "world.item.crafting.MapExtendingRecipeAccessor",

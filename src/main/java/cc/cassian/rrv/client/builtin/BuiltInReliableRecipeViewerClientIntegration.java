@@ -43,6 +43,7 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.level.block.*;
@@ -226,6 +227,15 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) recipe;
                 HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(accessor.getMap()), SlotContent.of(accessor.getMaterial()));
                 recipeList.add(new CraftingClientRecipe(id, 3, 3, ingredients, SlotContent.of(accessor.getResult())));
+            }
+            else if (recipe instanceof FireworkRocketRecipe) {
+                FireworkRocketRecipeAccessor accessor = (FireworkRocketRecipeAccessor) recipe;
+                List<SlotContent> ingredients = new ArrayList<>(List.of(SlotContent.of(accessor.getFuel()), SlotContent.of(accessor.getShell()), SlotContent.of(accessor.getStar())));
+                recipeList.add(new CraftingClientRecipe(id, ingredients, SlotContent.of(accessor.getResult())));
+                ingredients.addFirst(SlotContent.of(accessor.getFuel()));
+                recipeList.add(new CraftingClientRecipe(id, ingredients, SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(2, List.of())).build()))));
+                ingredients.addFirst(SlotContent.of(accessor.getFuel()));
+                recipeList.add(new CraftingClientRecipe(id, ingredients, SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(3, List.of())).build()))));
             }
         });
     }
