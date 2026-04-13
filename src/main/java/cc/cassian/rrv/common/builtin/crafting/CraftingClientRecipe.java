@@ -38,8 +38,12 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     }
 
     public CraftingClientRecipe(Identifier id, List<Ingredient> ingredients, ItemStackTemplate result) {
+        this(id, ingredients.stream().map(SlotContent::of).toList(), SlotContent.of(result));
+    }
+
+    public CraftingClientRecipe(Identifier id, List<SlotContent> ingredients, SlotContent result) {
         this.id = id;
-        this.shapeless = true;
+        this.shapeless = false;
         var size = ingredients.size();
         switch (size) {
             case 1 -> {
@@ -71,10 +75,10 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
 
         AtomicInteger i = new AtomicInteger();
         ingredients.forEach((ingredient) -> {
-            this.ingredients.put(i.getAndIncrement(), SlotContent.of((ingredient)));
+            this.ingredients.put(i.getAndIncrement(), (ingredient));
         });
 
-        this.result = SlotContent.of(result);
+        this.result = result;
     }
 
     public CraftingClientRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results) {

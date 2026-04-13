@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.mixin.advancements.critereon;
+package cc.cassian.rrv.common.mixin.advancements.criterion;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;

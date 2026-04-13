@@ -23,13 +23,13 @@ import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.DyeRecipeAccessor;
+import cc.cassian.rrv.common.mixin.world.item.crafting.ImbueRecipeAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.TransmuteRecipeAccessor;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
-import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -39,7 +39,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -56,6 +55,7 @@ import net.minecraft.world.level.block.entity.FuelValues;
 import java.util.*;
 
 import static cc.cassian.rrv.common.recipe.ResourceRecipeManager.*;
+import static cc.cassian.rrv.common.recipe.util.RrvUtil.getItemsFromIngredient;
 
 public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {
 
@@ -81,7 +81,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             addCraftingRecipes(recipeList);
 
             //Tipped arrows
-            addTippedArrowRecipes(recipeList);
+//            addTippedArrowRecipes(recipeList);
             // Smelting
             ClientRecipeManager.getRecipesForType(RecipeType.SMELTING).forEach(smeltingRecipeRecipeHolder -> recipeList.add(new SmeltingClientRecipe(smeltingRecipeRecipeHolder)));
             // Blasting
@@ -165,22 +165,9 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
                 List<ItemStackTemplate> results = new ArrayList<>();
 
-                Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) accessor.getInput()).getValues().unwrap();
+                var ingredients = getItemsFromIngredient(accessor.getInput());
 
-                List<Item> ingredients = new ArrayList<>();
-
-                if (ingredientContent.left().isPresent()) {
-                    SlotContent.getItemsFromTag(ingredientContent.left().get()).ifPresent(holders -> {
-                        holders.forEach(holder -> ingredients.add(holder.value()));
-                    });
-                }
-                if (ingredientContent.right().isPresent())
-                    ingredients.addAll(ingredientContent.right().get().stream().map(Holder::value).toList());
-
-
-                ingredients.forEach(ingredient -> {
-                    results.add(accessor.getResult());
-                });
+                ingredients.forEach(ingredient -> results.add(accessor.getResult()));
 
                 if (!ingredients.isEmpty() && !results.isEmpty())
                     recipeList.add(new CraftingClientRecipe(id, accessor.getInput(), accessor.getMaterial(), results));
@@ -190,44 +177,36 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
                 List<ItemStackTemplate> results = new ArrayList<>();
 
-                Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) accessor.getTarget()).getValues().unwrap();
+                List<Item> ingredients = getItemsFromIngredient(accessor.getTarget());
 
-                List<Item> ingredients = new ArrayList<>();
-                if (ingredientContent.left().isPresent()) {
-                    SlotContent.getItemsFromTag(ingredientContent.left().get()).ifPresent(holders -> {
-                        holders.forEach(holder -> ingredients.add(holder.value()));
-                    });
-                }
-
-                if (ingredientContent.right().isPresent())
-                    ingredients.addAll(ingredientContent.right().get().stream().map(Holder::value).toList());
                 for (Item ingredient : ingredients) {
                     for (DyeColor dyeColor : DyeColor.values()) {
                         results.add(ItemStackTemplate.fromNonEmptyStack(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor))));
                     }
                 }
+
                 recipeList.add(new CraftingClientRecipe(id, accessor.getTarget(), accessor.getDye(), results, 1));
             }
-        });
-    }
+            if (recipe instanceof ImbueRecipe) {
+                ImbueRecipeAccessor accessor = (ImbueRecipeAccessor) recipe;
 
-    private static void addTippedArrowRecipes(List<ReliableClientRecipe> recipeList) {
-        Registry<Potion> potionRegistry = Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.POTION);
-        potionRegistry.forEach(potion -> {
-            Holder<Potion> potionHolder = potionRegistry.wrapAsHolder(potion);
-            ItemStack potionStack = PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder);
-            HashMap<Integer, SlotContent> ingredients = new HashMap<>();
-            for (int i = 0; i < 9; i++){
-                if (i == 4)
-                    ingredients.put(i, SlotContent.of(potionStack));
-                else
-                    ingredients.put(i, SlotContent.of(Items.ARROW));
+                Registry<Potion> potionRegistry = Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.POTION);
+                potionRegistry.forEach(potion -> {
+                    Holder<Potion> potionHolder = potionRegistry.wrapAsHolder(potion);
+                    var items = getItemsFromIngredient(accessor.getSource()).stream().map(item->PotionContents.createItemStack(item, potionHolder)).toList();
+                    HashMap<Integer, SlotContent> ingredients = new HashMap<>();
+                    for (int i = 0; i < 9; i++){
+                        if (i == 4)
+                            ingredients.put(i, SlotContent.of(items));
+                        else
+                            ingredients.put(i, SlotContent.of(accessor.getMaterial()));
+                    }
+
+                    ItemStack result = accessor.getResult().create().copyWithCount(8);
+                    result.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
+                    recipeList.add(new CraftingClientRecipe(id, 3, 3, ingredients, SlotContent.of(result)));
+                });
             }
-
-            ItemStack result = new ItemStack(Items.TIPPED_ARROW, 8);
-            result.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
-            var id = potionHolder.unwrapKey().orElseThrow().identifier().withSuffix("_tipped_arrow_crafting").withPrefix("/");
-            recipeList.add(new CraftingClientRecipe(id, 3, 3, ingredients, SlotContent.of(result)));
         });
     }
 

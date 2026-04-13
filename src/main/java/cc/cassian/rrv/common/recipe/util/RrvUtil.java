@@ -1,11 +1,13 @@
 package cc.cassian.rrv.common.recipe.util;
 
+import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -13,9 +15,11 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 import static net.minecraft.server.permissions.Permissions.*;
@@ -71,6 +75,20 @@ public class RrvUtil {
             return BuiltInRegistries.ITEM.getValue(Identifier.parse(keyElement.getAsString())).getDefaultInstance();
         }
         return ItemStack.EMPTY;
+    }
+
+    public static List<Item> getItemsFromIngredient(Ingredient ingredient) {
+        var ingredientContent = ((IngredientAccessor) (Object) ingredient).getValues().unwrap();
+        List<Item> ingredients = new ArrayList<>();
+        if (ingredientContent.left().isPresent()) {
+            SlotContent.getItemsFromTag(ingredientContent.left().get()).ifPresent(holders -> {
+                holders.forEach(holder -> ingredients.add(holder.value()));
+            });
+        }
+
+        if (ingredientContent.right().isPresent())
+            ingredients.addAll(ingredientContent.right().get().stream().map(Holder::value).toList());
+        return ingredients;
     }
 
 }
