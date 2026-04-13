@@ -28,22 +28,25 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     private final boolean shapeless;
 	private int dependentIndex = -1;
 
-    public CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result) {
+    /**
+     * Constructor for decorated pot recipes.
+     */
+    public CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result, int dependentIndex) {
         this.id = id;
         this.width = width;
         this.height = height;
         this.ingredients = ingredients;
         this.result = result;
         this.shapeless = false;
+        this.dependentIndex = dependentIndex;
     }
 
-    public CraftingClientRecipe(Identifier id, List<Ingredient> ingredients, ItemStackTemplate result) {
-        this(id, ingredients.stream().map(SlotContent::of).toList(), SlotContent.of(result));
-    }
-
+    /**
+     * Constructor for shapeless recipes.
+     */
     public CraftingClientRecipe(Identifier id, List<SlotContent> ingredients, SlotContent result) {
         this.id = id;
-        this.shapeless = false;
+        this.shapeless = true;
         var size = ingredients.size();
         switch (size) {
             case 1 -> {
@@ -81,17 +84,9 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.result = result;
     }
 
-    public CraftingClientRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
-        this.id = id;
-        this.width = 2;
-        this.height = 1;
-        this.shapeless = true;
-        this.ingredients.put(0, SlotContent.of(input));
-        this.ingredients.put(1, SlotContent.of(material));
-
-        this.result = SlotContent.ofTemplates(results);
-    }
-
+    /**
+     * Constructor for dye recipes.
+     */
     public CraftingClientRecipe(Identifier id, Ingredient target, Ingredient dye, List<ItemStackTemplate> results, int dependentIndex) {
         this.id = id;
         this.width = 2;
@@ -102,6 +97,27 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         this.dependentIndex = dependentIndex;
 
         this.result = SlotContent.ofTemplates(results);
+    }
+
+    /**
+     * Constructor for shapeless transmutation recipes.
+     */
+    public CraftingClientRecipe(Identifier id, Ingredient input, Ingredient material, List<ItemStackTemplate> results) {
+        this(id, input, material, results, -1);
+    }
+
+    /**
+     * Constructor for shapeless recipes.
+     */
+    public CraftingClientRecipe(Identifier id, List<Ingredient> ingredients, ItemStackTemplate result) {
+        this(id, ingredients.stream().map(SlotContent::of).toList(), SlotContent.of(result));
+    }
+
+    /**
+     * Constructor for shaped recipes.
+     */
+    public CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result) {
+        this(id, width, height, ingredients, result, -1);
     }
 
     @Override

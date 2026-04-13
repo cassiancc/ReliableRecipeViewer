@@ -9,6 +9,7 @@
     "server.MixinMinecraftServer",
     "world.entity.npc.VillagerTradeAccessor",
     "world.item.alchemy.PotionBrewingAccessor",
+    "world.item.crafting.DecoratedPotRecipeAccessor",
     "world.item.crafting.DyeRecipeAccessor",
     "world.item.crafting.ImbueRecipeAccessor",
     "world.item.crafting.IngredientAccessor",

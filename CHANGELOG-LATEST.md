@@ -6,10 +6,10 @@
 - Client recipes are now expected to provide a valid `Identifier` by overriding `ClientRecipe#getId`.
   - Recipe ids can be seen by hovering over the result with the "Show Recipe ID" config enabled.
   - Client recipes can now be hidden by their ID via the `rrv:exclusions` resource pack file, see the docs for more information.
-- Support for imbuing recipes.
+- Support for imbuing and decorated pot recipes.
 
 
 # TODO
-- Add back 7.0.0 server recipe backwards compatibility for Farmer's Delight and anything else on 26.1.
+- Add back 7.0.0 vanilla server recipe backwards compatibility for Farmer's Delight and anything else on 26.1.
 - 8.0.0 docs.
 - Add IDs for brewing recipes.

@@ -22,10 +22,7 @@ import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
-import cc.cassian.rrv.common.mixin.world.item.crafting.DyeRecipeAccessor;
-import cc.cassian.rrv.common.mixin.world.item.crafting.ImbueRecipeAccessor;
-import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
-import cc.cassian.rrv.common.mixin.world.item.crafting.TransmuteRecipeAccessor;
+import cc.cassian.rrv.common.mixin.world.item.crafting.*;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
@@ -34,6 +31,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -49,6 +47,7 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.FuelValues;
+import net.minecraft.world.level.block.entity.PotDecorations;
 //? neoforge
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
@@ -160,7 +159,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 recipeList.add(new CraftingClientRecipe(id, shapedRecipe.getWidth(), shapedRecipe.getHeight(), ingredients, SlotContent.of(shapedRecipe.result)));
             }
 
-            if (recipe instanceof TransmuteRecipe) {
+            else if (recipe instanceof TransmuteRecipe) {
                 TransmuteRecipeAccessor accessor = (TransmuteRecipeAccessor) recipe;
 
                 List<ItemStackTemplate> results = new ArrayList<>();
@@ -173,12 +172,12 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     recipeList.add(new CraftingClientRecipe(id, accessor.getInput(), accessor.getMaterial(), results));
 
             }
-            if (recipe instanceof DyeRecipe) {
+            else if (recipe instanceof DyeRecipe) {
                 DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
-                List<ItemStackTemplate> results = new ArrayList<>();
 
                 List<Item> ingredients = getItemsFromIngredient(accessor.getTarget());
 
+                List<ItemStackTemplate> results = new ArrayList<>();
                 for (Item ingredient : ingredients) {
                     for (DyeColor dyeColor : DyeColor.values()) {
                         results.add(ItemStackTemplate.fromNonEmptyStack(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor))));
@@ -187,7 +186,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
                 recipeList.add(new CraftingClientRecipe(id, accessor.getTarget(), accessor.getDye(), results, 1));
             }
-            if (recipe instanceof ImbueRecipe) {
+            else if (recipe instanceof ImbueRecipe) {
                 ImbueRecipeAccessor accessor = (ImbueRecipeAccessor) recipe;
 
                 Registry<Potion> potionRegistry = Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.POTION);
@@ -206,6 +205,24 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     result.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
                     recipeList.add(new CraftingClientRecipe(id, 3, 3, ingredients, SlotContent.of(result)));
                 });
+            }
+            else if (recipe instanceof DecoratedPotRecipe) {
+                DecoratedPotRecipeAccessor accessor = (DecoratedPotRecipeAccessor) recipe;
+
+                HashMap<Integer, SlotContent> ingredients = new HashMap<>();
+                ingredients.put(1, SlotContent.of(accessor.getLeftPattern()));
+                ingredients.put(3, SlotContent.of(accessor.getRightPattern()));
+                ingredients.put(5, SlotContent.of(accessor.getBackPattern()));
+                ingredients.put(7, SlotContent.of(accessor.getFrontPattern()));
+
+                List<ItemStack> results = new ArrayList<>();
+                for (Item ingredient : getItemsFromIngredient(accessor.getFrontPattern())) {
+                    PotDecorations decorations = new PotDecorations(ingredient, ingredient, ingredient, ingredient);
+                    DataComponentPatch components = DataComponentPatch.builder().set(DataComponents.POT_DECORATIONS, decorations).build();
+                    results.add(accessor.getResult().apply(components));
+                }
+
+                recipeList.add(new CraftingClientRecipe(id, 3, 3, ingredients, SlotContent.of(results), 7));
             }
         });
     }
