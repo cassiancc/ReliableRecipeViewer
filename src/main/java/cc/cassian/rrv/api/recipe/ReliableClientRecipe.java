@@ -106,7 +106,8 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * The identifier of this recipe.
+     * The identifier of this recipe, used for clientside operations like recipe hiding.<br>
+     * If this recipe does not have a file associated with it, prefix the path with {@code '} e.g. {@code minecraft:/code_driven_recipe} so that users do not look for a nonexistent file.
      */
     default Identifier getId() {
         return null;
@@ -200,7 +201,8 @@ public interface ReliableClientRecipe {
 
 
     /**
-     * All recipes added after RRV 8.0.0 should not provide null as an ID.
+     * Provides a recipe ID that is guaranteed to not be null.<br><br>
+     * Added for backwards compatibility: All client recipes added after RRV 8.0.0 should not provide null as an ID.
      */
     @Deprecated
     default Identifier entryId() {
