@@ -50,6 +50,7 @@ repositories {
             includeGroupAndSubgroups("org.quiltmc.parsers")
         }
     }
+    mavenCentral()
     maven {
         name = "Quilt Maven"
         url = uri("https://maven.quiltmc.org/repository/release/")
