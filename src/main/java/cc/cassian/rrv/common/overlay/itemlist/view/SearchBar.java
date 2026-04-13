@@ -43,7 +43,7 @@ public class SearchBar extends EditBox {
         if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
             this.setFocused(true);
             OverlayManager.INSTANCE.currentInfo().screen().setFocused(this);
-            this.setValue("");
+            this.clear();
             return true;
         }
 
