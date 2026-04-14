@@ -93,6 +93,14 @@ public class ItemView {
     }
 
     /**
+     * Replace with {@link ItemView#addClientRecipeWrapper}.
+     */
+    @Deprecated(forRemoval = true, since = "6.1.0")
+    public static <T extends ReliableServerRecipe> void registerClientRecipeWrapper(ReliableServerRecipeType<T> recipeType, ItemViewRecipes.ClientRecipeWrapper<T> wrapper) {
+        ItemViewRecipes.INSTANCE.registerRecipeWrapper(recipeType, wrapper);
+    }
+
+    /**
      * A method used to exclude an item from the ItemView index. Note that RRV also supports the standardized <code>c:hidden_from_recipe_viewers</code> tag.
      * <br>
      * <br>

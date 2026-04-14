@@ -34,7 +34,7 @@ For more details, see the original Modrinth page for [Extended Item View](https:
 - How do I get started adding compatibility with RRV?
   - Please see the docs on the [Modded Minecraft Wiki](https://moddedmc.wiki/en/project/rrv/latest/docs)!
 - What mods are compatible with RRV?
-  - Please see the [Modrinth Collection](https://modrinth.com/collection/divCExF5), which lists every mod that I know has RRV integration.
+  - Please see the [Modrinth Collection](https://modrinth.com/collection/divCExF5), which lists every mod that I know has RRV integration. If you are a developer, and you've added support for RRV, please reach out in the Discord and I'll add your mod!
 - Where can I ask questions about RRV?
   - I am happy to answer RRV related questions in my [Discord](https://discord.cassian.cc/).
 

@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
+import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
@@ -153,7 +154,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ServerRecipeManager.synchronizeRecipeType(StonecutterRecipe.SERIALIZER, RecipeType.SMITHING);
         ServerRecipeManager.synchronizeRecipeType(SmithingTrimRecipe.SERIALIZER, RecipeType.SMITHING);
         ServerRecipeManager.synchronizeRecipeType(SmithingTransformRecipe.SERIALIZER, RecipeType.SMITHING);
-
 
         //Trading
         VillagerServerRecipe.registerDefaultProcessors();

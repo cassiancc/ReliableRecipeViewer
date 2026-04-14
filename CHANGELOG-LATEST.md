@@ -14,6 +14,3 @@
 - Shaped recipes are now sorted before shapeless recipes.
 - Crafting client recipes now make use of a builder.
 - `ReliableClientRecipe#getViewType` was renamed to `ReliableClientRecipe#getType`, backwards compatible.
-
-# TODO
-- Add back 7.0.0 vanilla server recipe backwards compatibility for Farmer's Delight and anything else on 26.1.

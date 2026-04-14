@@ -9,6 +9,7 @@ import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
 import cc.cassian.rrv.common.builtin.burning.BurningClientRecipe;
 import cc.cassian.rrv.common.builtin.campfire.CampfireClientRecipe;
 import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipe;
+import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityClientRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
@@ -79,6 +80,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         //Wrapper
         ItemView.addClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> unwrapped.getClientOffers().stream().map(VillagerClientRecipe::new).toList());
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe.Builder(null, unwrapped.getIngredients()).setResult(unwrapped.getResult()).build()));
         ItemView.addClientRecipeProvider(recipeList -> {
             ClientLevel level = Minecraft.getInstance().level;
             if (level == null) return;

@@ -275,7 +275,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.currentTypeIndex;
     }
 
-    protected List<ReliableClientRecipe> getCurrentDisplay() {
+    public List<ReliableClientRecipe> getCurrentDisplay() {
         return this.currentDisplay;
     }
 
@@ -683,13 +683,13 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     }
 
     /**
-	 * Returns how far the viewtype-specific texture is away from the border
+	 * Returns how far the client recipe type's specific texture is away from the border
 	 */
-    protected int guiOffsetLeft() {
+    public int guiOffsetLeft() {
         return (this.menuWidth - this.getClientRecipeType().getDisplayWidth()) / 2;
     }
 
-    protected int guiOffsetTop(int displayIndex) {
+    public int guiOffsetTop(int displayIndex) {
         return TOP_SPACE + (displayIndex * (this.getClientRecipeType().getDisplayHeight() + BUFFER_ZONE));
     }
 
