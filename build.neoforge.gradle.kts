@@ -124,6 +124,13 @@ tasks {
     }
 }
 
+stonecutter {
+    replacements.string {
+        direction = eval(current.version, ">26.1")
+        replace("EntityType.", "EntityTypes.")
+    }
+}
+
 java {
     withSourcesJar()
     val javaCompat = if (stonecutter.eval(stonecutter.current.version, ">=26")) {

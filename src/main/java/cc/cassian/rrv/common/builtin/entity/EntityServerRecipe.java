@@ -9,6 +9,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
+//? if >26.1 {
+/*import net.minecraft.world.entity.EntityTypes;
+*///?}
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;

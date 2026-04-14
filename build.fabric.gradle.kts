@@ -101,7 +101,6 @@ dependencies {
     minecraft("com.mojang:minecraft:${property("deps.minecraft")}")
 
     implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
-    implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     compileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
@@ -128,12 +127,20 @@ dependencies {
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-virtual-entity:0.16.2+26.1.1")
+        implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     }
 
 
-//    val modules = listOf("command-api-v2", "key-mapping-api-v1", "item-api-v1", "recipe-api-v1", "rendering-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
-//    for (it in modules) compileOnly(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
+    val modules = listOf("command-api-v2", "key-mapping-api-v1", "item-api-v1", "recipe-api-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
+    for (it in modules) implementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
 
+}
+
+stonecutter {
+    replacements.string {
+        direction = eval(current.version, ">26.1")
+        replace("EntityType.", "EntityTypes.")
+    }
 }
 
 tasks {

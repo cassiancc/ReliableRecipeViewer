@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "mixins": [
+    "EntityPredicateAccessor",
     "advancements.criterion.MixinInventoryChangeTrigger",
     "server.MixinMinecraftServer",
     "world.entity.npc.VillagerTradeAccessor",

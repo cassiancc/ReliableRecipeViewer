@@ -26,6 +26,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.InstrumentTags;
 import net.minecraft.world.entity.EntityType;
+//? if >26.1 {
+/*import net.minecraft.world.entity.EntityTypes;
+ *///?}
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.core.HolderLookup;

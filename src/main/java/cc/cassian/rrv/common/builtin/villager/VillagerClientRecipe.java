@@ -17,6 +17,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
+//? if >26.1 {
+/*import net.minecraft.world.entity.EntityTypes;
+*///?}
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
