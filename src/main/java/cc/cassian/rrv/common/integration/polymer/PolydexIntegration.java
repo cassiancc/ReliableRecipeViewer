@@ -1,3 +1,4 @@
+//? fabric {
 package cc.cassian.rrv.common.integration.polymer;
 
 import cc.cassian.rrv.api.ActionType;
@@ -37,3 +38,4 @@ public class PolydexIntegration {
         }
     }
 }
+//?}
