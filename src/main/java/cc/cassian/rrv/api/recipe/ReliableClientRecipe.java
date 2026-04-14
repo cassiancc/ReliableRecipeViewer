@@ -148,7 +148,7 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * Called when this recipe pop's up in the viewScreen
+     * Called when this recipe pop's up in the recipe screen
      * <br>
      * Useful for setting things up like entities for rendering etc...
      */
@@ -157,7 +157,7 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * Called when this recipe pop's out of the viewScreen
+     * Called when this recipe pop's out of the recipe screen
      * <br>
      * Useful for performance reasons, to remove entities etc...
      */
@@ -166,7 +166,7 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * @return Whether this recipe should support item-transfer
+     * @return Whether this recipe should support item transfer
      */
     default boolean supportsItemTransfer() {
         return false;
@@ -175,7 +175,7 @@ public interface ReliableClientRecipe {
     /**
      * Deprecated: Use <b>getTransferClasses();</b>
      *
-     * @return A class associated with the recipe to determine whether an item-transfer should be possible or not
+     * @return A class associated with the recipe to determine whether an item transfer should be possible or not
      */
     @Deprecated
     default Class<? extends AbstractContainerScreen<?>> getTransferClass() {
@@ -183,7 +183,7 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * @return A list of classes associated with the recipe to determine whether an item-transfer should be possible
+     * @return A list of classes associated with the recipe to determine whether an item transfer should be possible
      */
     default List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
         return this.getTransferClass() == null ? List.of() : List.of(this.getTransferClass());

@@ -1,0 +1,114 @@
+# Finalizing your plugins (7.x.x and below)
+
+<Callout variant='info'>
+This system has been reworked significantly in RRV 8.0.0. If you are using RRV 8.0.0 or above, please see [its documentation](../mods/finalizing-your-plugins).
+</Callout>
+
+For RRV to know how to handle your recipes, you have to create two RRV plugins for your mod, one on the clientside and one on the serverside.
+
+## Server Plugin
+
+For RRV to know how to convert your recipes into server recipes, you have to create a RRV plugin for your mod.
+This is done by creating a class implementing `ReliableRecipeViewerPlugin`:
+
+In your main plugin, you must call `ItemView.addServerRecipeProvider()` for each server recipe in your `onIntegrationInitialize()` method. Recipe providers registered by `ItemView.addServerRecipeProvider()` are used by the server recipe manager to maintain and update the recipe cache.
+
+```java
+public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
+
+    @Override
+    public void onIntegrationInitialize() {
+
+        //For the server
+        ItemView.addServerRecipeProvider(list -> {
+            //Here you can add all your server recipes. In this example, we're using the server recipe manager to register server recipes for all loaded recipes of our modded recipe type.
+            ServerRecipeManager.INSTANCE.getRecipesForType(ExampleModRecipes.RECIPE_TYPE).forEach(modRecipe -> {
+                recipeList.add(new ExampleModServerRecipe(modRecipe.input(), modRecipe.result()));
+            });
+        });
+
+    }
+
+}
+```
+
+Don't forget to add it as an entrypoint to your mod.
+
+### Fabric (fabric.mod.json)
+
+```json
+{
+...,
+	"entrypoints": {
+        ...,
+		"rrv": [
+			"com.example.mod.rrv.ExampleModRecipeViewerIntegration"
+		]
+	},
+...
+}
+```
+
+### NeoForge (neoforge.mods.toml)
+
+```toml
+[[mods]]
+modId = "example_mod"
+rrv = "com.example.mod.rrv.ExampleModRecipeViewerIntegration"
+```
+
+## Client Plugin
+
+<Callout variant='info'>
+Prior to RRV v6.1.0, a dedicated client plugin did not exist, and all clientside code was registered in the main plugin.
+</Callout>
+
+For RRV to know how to convert your server recipes into client recipes, you also have to create a RRV client plugin for your mod.
+This is done by creating a class implementing `ReliableRecipeViewerClientPlugin`:
+
+In your client plugin, you must call `ItemView.addClientRecipeWrapper()` for each server recipe. Whenever there is an update, the client is informed about the update and the mod recipe wrappers registered by `ItemView.addClientRecipeWrapper()` are used to convert incoming server recipes into displayable client recipes.
+
+```java
+public class ExampleModClientIntegration implements ReliableRecipeViewerClientPlugin {
+
+    @Override
+    public void onIntegrationInitialize() {
+
+        //For the client
+        ItemView.addClientRecipeWrapper(ExampleServerRecipe.TYPE, modRecipe -> {
+
+            //Here you tell RRV how to process incoming server recipes
+            //Requires you to return a list of client recipes (ReliableClientRecipe)
+
+            return List.of(new ExampleModClientRecipe(modRecipe.getInput(), modRecipe.getOutput()));
+        });
+
+    }
+
+}
+```
+
+Don't forget to add it as an entrypoint to your mod.
+
+### Fabric (fabric.mod.json)
+
+```json
+{
+...,
+	"entrypoints": {
+        ...,
+		"rrv_client": [
+			"com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
+		]
+	},
+...
+}
+```
+
+### NeoForge (neoforge.mods.toml)
+
+```toml
+[[mods]]
+modId = "example_mod"
+"rrv_client" = "com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
+```

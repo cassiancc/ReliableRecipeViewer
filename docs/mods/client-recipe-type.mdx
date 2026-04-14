@@ -1,11 +1,13 @@
 # Adding a Client Recipe Type
 
-Since you want to add a complete new way of crafting, you first need to create your client recipe type.
-Simply create a class implementing `ReliableClientRecipeType` and override the required methods:
+This documentation will be adding a new type of crafting based on the [Fabric Documentation for Custom Recipe Types](https://docs.fabricmc.net/develop/custom-recipe-types). If you are unfamiliar with how vanilla structures a recipe type, you will want to follow that tutorial first.
+
+To add a new way of crafting, we'll first create a client recipe type.
+To do this, create a class that implements `ReliableClientRecipeType` and override the required methods:
 
 ### Example
 ```java
-public class ExampleModClientRecipeType implements ReliableClientRecipeType {
+public class UpgradingClientRecipeType implements ReliableClientRecipeType {
 
     //Create an instance of your client recipe type here
     //Relevant for next steps
@@ -14,27 +16,27 @@ public class ExampleModClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Example Crafting"); //This is the name of your recipe type, displayed later in the recipe view
+        return Component.literal("Upgrading"); //This is the name of your recipe type, displayed later in the recipe view.
     }
 
     @Override
     public int getDisplayWidth() {
-        return 0; //The width of your type's gui texture
+        return 100; //The width of your type's gui texture
     }
 
     @Override
     public int getDisplayHeight() {
-        return 0; //The height of your type's gui texture
+        return 40; //The height of your type's gui texture
     }
 
     @Override
     public @Nullable Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath("example-mod", "path/to/your/texture"); // Your type's gui texture.
+        return Identifier.fromNamespaceAndPath("example-mod", "textures/gui/type/upgrading.png"); // The background texture of your recipe.
     }
 
     @Override
     public int getSlotCount() {
-        return 2; //The amount of slots one of your type's recipes requires (all slots including results)
+        return 3; //The amount of slots required to show a single recipe of this type - this includes two inputs and a result.
     }
 
     @Override
@@ -44,22 +46,23 @@ public class ExampleModClientRecipeType implements ReliableClientRecipeType {
 
         slotDefinition.addItemSlot(0, 10, 20);
         slotDefinition.addItemSlot(1, 40, 20);
+        slotDefinition.addItemSlot(2, 60, 20);
 
     }
 
     @Override
     public Identifier getId() {
-        return Identifier.fromNamespaceAndPath("example-mod", "your_type_id"); //A unique id for your viewtype
+        return Identifier.fromNamespaceAndPath("example-mod", "upgrading"); // The unique id of this recipe type
     }
 
     @Override
     public ItemStack getIcon() {
-        return ItemStack.EMPTY; //The icon displayed in the recipe-view
+        return ItemStack.EMPTY; //The icon displayed in the recipe view screen
     }
 
     @Override
     public List<ItemStack> getCraftReferences() {
-        return List.of(); //Return a list of blocks/items that can be used to process your recipes (e.g. for Smelting it would be the furnace)
+        return List.of(); //Return a list of blocks/items that can be used to process your recipes (e.g. for Smelting it would be the Furnace)
     }
 }
 ```
