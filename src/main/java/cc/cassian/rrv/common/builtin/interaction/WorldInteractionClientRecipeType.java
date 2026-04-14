@@ -23,7 +23,7 @@ public class WorldInteractionClientRecipeType implements ReliableClientRecipeTyp
 
 	@Override
 	public Identifier getId() {
-		return Identifier.fromNamespaceAndPath("rrv", "world_interaction");
+		return ReliableRecipeViewer.of("world_interaction");
 	}
 
 	@Override

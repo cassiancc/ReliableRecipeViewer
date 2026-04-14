@@ -28,6 +28,7 @@ import cc.cassian.rrv.common.mixin.world.item.crafting.*;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
@@ -86,9 +87,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             if (level == null) return;
             // Crafting
             addCraftingRecipes(recipeList, level);
-
-            //Tipped arrows
-//            addTippedArrowRecipes(recipeList);
             // Smelting
             ClientRecipeManager.getRecipesForType(RecipeType.SMELTING).forEach(smeltingRecipeRecipeHolder -> recipeList.add(new SmeltingClientRecipe(smeltingRecipeRecipeHolder)));
             // Blasting
@@ -99,21 +97,19 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             ClientRecipeManager.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new CampfireClientRecipe(smokingRecipeRecipeHolder)));
             // Fuel
             addFuelRecipes(recipeList, level);
-
             // Smithing
             addSmithingRecipes(recipeList);
-
+            // Stonecutting
             ClientRecipeManager.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipeRecipeHolder -> recipeList.add(new StonecutterClientRecipe(stonecutterRecipeRecipeHolder)));
-
             // Anvil Combining
             recipeList.addAll(addAnvilCombiningRecipes());
+            // Info
             recipeList.addAll(addInfoRecipes());
+            // World Interaction
             recipeList.addAll(addWorldInteractionRecipes());
-
-            //Brewing
+            // Brewing
             addBrewingRecipes(recipeList, level);
-
-            //Tags
+            // Item Tags
             BuiltInRegistries.ITEM.listTagIds().forEach((tag) -> {
                 if (!HIDDEN_ITEM_TAGS.contains(tag.location())) {
                     Optional<HolderSet.Named<Item>> tagContents = BuiltInRegistries.ITEM.get(tag);
@@ -122,7 +118,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     }
                 }
             });
-
+            // Block Tags
             BuiltInRegistries.BLOCK.listTagIds().forEach((tag) -> {
                 if (!HIDDEN_BLOCK_TAGS.contains(tag.location())) {
                     Optional<HolderSet.Named<Block>> tagContents = BuiltInRegistries.BLOCK.get(tag);
@@ -327,7 +323,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
     private Collection<? extends ReliableClientRecipe> addWorldInteractionRecipes() {
         ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes = new ArrayList<>();
-        addResourceDrivenWorldInteractionRecipes(worldInteractionRecipes);
+        ResourceRecipeManager.addWorldInteractionRecipes(worldInteractionRecipes);
         ItemViewRecipes.addAllWorldInteractionRecipes(worldInteractionRecipes);
 
         var axes = SlotContent.of(ItemTags.AXES);

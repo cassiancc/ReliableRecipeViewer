@@ -164,8 +164,8 @@ public class ClientRecipeCache {
     }
 
     private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id) {
-        if (ResourceRecipeManager.HIDDEN_RECIPES.containsKey(wrapped.getType().getId())) {
-            if (ResourceRecipeManager.HIDDEN_RECIPES.get(wrapped.getType().getId()).contains(modEntryId)) {
+        if (ItemView.getExcludedRecipes().containsKey(wrapped.getType().getId())) {
+            if (ItemView.getExcludedRecipes().get(wrapped.getType().getId()).contains(modEntryId)) {
                 return;
             }
         }

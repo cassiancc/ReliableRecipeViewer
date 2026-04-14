@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.builtin.crafting;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -30,9 +31,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     private final boolean shapeless;
 	private final int dependentIndex;
 
-    /**
-     * Implement via the builder - {@link CraftingClientRecipe.Builder}.
-     */
+    /// Implement via the builder - [CraftingClientRecipe.Builder].
     private CraftingClientRecipe(Identifier id, int width, int height, HashMap<Integer, SlotContent> ingredients, SlotContent result, int dependentIndex, int priority, boolean shapeless) {
         this.id = id;
         this.width = width;
@@ -62,7 +61,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         ReliableClientRecipe.super.renderRecipe(screen, recipePosition, guiGraphics, mouseX, mouseY, partialTicks);
         if (shapeless) {
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath("rrv", "crafting_shapeless"), 26, 14, 0, 0, 92, 0, 26, 14);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("crafting_shapeless"), 26, 14, 0, 0, 92, 0, 26, 14);
             if ((mouseX > 92 && mouseX < 122) && (mouseY>0 && mouseY < 14)) {
                 guiGraphics.setComponentTooltipForNextFrame(screen.getFont(), List.of(Component.translatable("view.rrv.type.crafting.shapeless")), mouseX+recipePosition.left(), mouseY+recipePosition.top());
             }
@@ -140,16 +139,12 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         private int dependentIndex = -1;
         private Integer priority = null;
 
-        /**
-         * General constructor.
-         */
+        /// General constructor.
         public Builder(Identifier id) {
             this.id = id;
         }
 
-        /**
-         * Constructor for shapeless recipes.
-         */
+        /// Constructor for shapeless recipes.
         public Builder(Identifier id, List<SlotContent> ingredients) {
             this(id);
             var size = ingredients.size();
@@ -167,31 +162,23 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
             this.shapeless = true;
         }
 
-        /**
-         * Constructor for shapeless recipes.
-         */
+        /// Constructor for shapeless recipes.
         public Builder(Identifier id, Ingredient... ingredients) {
             this(id, Arrays.stream(ingredients).map(SlotContent::of).toList());
         }
 
-        /**
-         * Constructor for shapeless recipes.
-         */
+        /// Constructor for shapeless recipes.
         public Builder(Identifier id, SlotContent... ingredients) {
             this(id, Arrays.stream(ingredients).toList());
         }
 
-        /**
-         * Constructor for shaped recipes.
-         */
+        /// Constructor for shaped recipes.
         public Builder(Identifier id, HashMap<Integer, SlotContent> ingredients) {
             this(id);
             this.ingredients = ingredients;
         }
 
-        /**
-         * Set the size of the recipe grid. If this is a shapeless recipe, this is set automatically.
-         */
+        /// Set the size of the recipe grid. If this is a shapeless recipe, this is set automatically.
         public Builder setSize(int width, int height) {
             this.width = width;
             this.height = height;

@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.anvil;
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -16,7 +17,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 public class AnvilCombiningServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<AnvilCombiningServerRecipe> TYPE = ReliableServerRecipeType.register(
-            Identifier.fromNamespaceAndPath("rrv", "anvil_combining"),
+            ReliableRecipeViewer.of("anvil_combining"),
             () -> new AnvilCombiningServerRecipe(null,null,null)
     );
 

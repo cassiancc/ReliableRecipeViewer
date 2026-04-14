@@ -1,12 +1,12 @@
 package cc.cassian.rrv.common.recipe;
 
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,7 +22,6 @@ import java.util.*;
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
 public class ResourceRecipeManager {
-	public static final LinkedHashMultimap<Identifier, Identifier> HIDDEN_RECIPES = LinkedHashMultimap.create();
 	public static final ArrayList<Identifier> HIDDEN_ITEM_TAGS = new ArrayList<>();
 	public static final ArrayList<Identifier> HIDDEN_BLOCK_TAGS = new ArrayList<>();
 
@@ -30,6 +29,7 @@ public class ResourceRecipeManager {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
 	}
 
+	/// Hides recipes from the recipe screen.
 	public static void hideRecipes() {
 		getIdentifierResourceMap("rrv/exclusions").forEach((identifier, resource) -> {
 			try {
@@ -39,19 +39,13 @@ public class ResourceRecipeManager {
 						if (entry.getKey().contains(":")) {
 							var key = Identifier.parse(entry.getKey());
 							if (Configs.CATEGORIES.CATEGORIES.containsKey(key)) {
-								entry.getValue().getAsJsonArray().forEach(jsonElement -> HIDDEN_RECIPES.put(key, Identifier.parse(jsonElement.getAsString())));
+								entry.getValue().getAsJsonArray().forEach(jsonElement -> ItemView.excludeRecipe(key, Identifier.parse(jsonElement.getAsString())));
 							}
 						}
 					});
 
-					var itemTags = parsedRecipe.get("item").getAsJsonArray();
-					itemTags.forEach(item -> {
-						HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString()));
-					});
-					var blockTags = parsedRecipe.get("block").getAsJsonArray();
-					blockTags.forEach(item -> {
-						HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString()));
-					});
+					parsedRecipe.get("item").getAsJsonArray().forEach(item -> HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString())));
+					parsedRecipe.get("block").getAsJsonArray().forEach(item -> HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString())));
 					LOGGER.debug("RRV: Loaded exclusion list {}", identifier);
 				}
 			} catch (IOException e) {
@@ -60,6 +54,7 @@ public class ResourceRecipeManager {
 		});
 	}
 
+	/// Adds info recipes from resource packs and the API ([ItemView#addInfoRecipe]).
 	public static ArrayList<InfoClientRecipe> addInfoRecipes() {
 		ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
 		getIdentifierResourceMap("rrv/recipe").forEach((identifier, resource) -> {
@@ -78,7 +73,8 @@ public class ResourceRecipeManager {
 		return infoRecipes;
 	}
 
-	public static void addResourceDrivenWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
+	/// Adds world interaction recipes from resource packs.
+	public static void addWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
 		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
 			var slots = readCombinationRecipe("world_interaction", entry);
 			if (slots != null) {
@@ -88,6 +84,7 @@ public class ResourceRecipeManager {
 		}
 	}
 
+	/// Adds anvil combining recipes from resource packs.
 	public static ArrayList<AnvilCombiningClientRecipe> addAnvilCombiningRecipes() {
 		ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
 		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
@@ -98,6 +95,7 @@ public class ResourceRecipeManager {
 		return anvilCombiningRecipes;
 	}
 
+	/// Reads data from combination recipes - world interaction, anvil combining, etc.
 	private static CombinationRecipeResult readCombinationRecipe(String type, Map.Entry<Identifier, Resource> entry) {
 		String typeSpaced = type.replace("_", " ");
 		Identifier identifier = entry.getKey();
@@ -119,6 +117,7 @@ public class ResourceRecipeManager {
 		return null;
 	}
 
+	/// Replaces or adds to the index based on data from a resource pack.
 	public static void replaceIndex(List<ItemStack> results) {
 		getIdentifierResourceMap("rrv/index").forEach((identifier, resource) -> {
 			try {

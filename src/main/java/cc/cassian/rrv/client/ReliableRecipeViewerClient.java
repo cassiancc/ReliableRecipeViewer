@@ -1,6 +1,7 @@
 package cc.cassian.rrv.client;
 
 import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -19,10 +20,10 @@ import static cc.cassian.rrv.common.ReliableRecipeViewer.MOD_ID;
 
 public class ReliableRecipeViewerClient {
 
-    public static final ModelLayerLocation FLUID_ITEM_MODEL_LAYER = new ModelLayerLocation(Identifier.fromNamespaceAndPath(MOD_ID, "fluiditem"), "inventory");
+    public static final ModelLayerLocation FLUID_ITEM_MODEL_LAYER = new ModelLayerLocation(ReliableRecipeViewer.of("fluiditem"), "inventory");
 
-    public static final KeyMapping.Category RRV_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "rrv"));
-    public static final KeyMapping.Category RRV_ADMIN_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "rrv_admin"));
+    public static final KeyMapping.Category RRV_CATEGORY = KeyMapping.Category.register(ReliableRecipeViewer.of("rrv"));
+    public static final KeyMapping.Category RRV_ADMIN_CATEGORY = KeyMapping.Category.register(ReliableRecipeViewer.of("rrv_admin"));
     
     public static final KeyMapping USAGE_KEYBIND = new KeyMapping("key.rrv.usage", GLFW.GLFW_KEY_U, RRV_CATEGORY);
 
@@ -39,16 +40,13 @@ public class ReliableRecipeViewerClient {
 
     public static final List<KeyMapping> RRV_KEY_MAPPINGS = List.of(USAGE_KEYBIND, RECIPE_KEYBIND, TOGGLE_OVERLAY_KEYBIND, ADD_BOOKMARK_KEYBIND, GO_BACK_RECIPE, GO_FORWARD_RECIPE, USE_CHEATMODE);
 
-    private static final Platform HELPER = Platform.INSTANCE;
-
-
     public static void bootstrap() {
         OverlayManager.registerOverlay(ItemViewOverlay.INSTANCE);
         OverlayManager.registerOverlay(SidePanelOverlay.INSTANCE);
     }
 
     public static Platform resolver() {
-        return HELPER;
+        return Platform.INSTANCE;
     }
 
 
