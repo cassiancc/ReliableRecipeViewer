@@ -44,6 +44,18 @@ public class ServerRecipeManager {
 
     }
 
+    /// Synchronize recipes from the server to the client via the Fabric/NeoForge recipe synchronization API.
+    /// ```java
+    /// public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
+    ///     @Override
+    ///     public void onIntegrationInitialize() {
+    ///         ServerRecipeManager.synchronizeRecipeType(ExampleModRecipes.UPGRADING_RECIPE_SERIALIZER, ExampleModRecipes.UPGRADING_RECIPE_TYPE);
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// Recipes can be retrieved in the client plugin via [ClientRecipeManager#getRecipesForType].
+    ///
     public static void synchronizeRecipeType(RecipeSerializer<?> serializer, RecipeType<?> type) {
         //? fabric
         RecipeSynchronization.synchronizeRecipeSerializer(serializer);

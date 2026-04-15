@@ -24,11 +24,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 
-@ApiStatus.Internal
 public class ClientRecipeManager {
 
+	@ApiStatus.Internal
 	private static final Logger LOGGER = LoggerFactory.getLogger("ClientRecipeManager");
 
+	@ApiStatus.Internal
 	public static final ClientRecipeManager INSTANCE = new ClientRecipeManager();
 
 	private volatile LinkedList<Runnable> queuedRecipeTasks = new LinkedList<>();
@@ -47,6 +48,7 @@ public class ClientRecipeManager {
 		this.queuedRecipeTasks.add(runnable);
 	}
 
+	@ApiStatus.Internal
 	public void runTasks(){
 		CompletableFuture.runAsync(() -> {
 			this.queuedRecipeTasks.forEach(Runnable::run);
@@ -55,6 +57,7 @@ public class ClientRecipeManager {
 
 	}
 
+	@ApiStatus.Internal
 	public void startUpdate() {
 		if (!this.status().isIdle())
 			return;
@@ -77,6 +80,7 @@ public class ClientRecipeManager {
 		}, "RRV-Network-Timeout-Handler Thread").start();
 	}
 
+	@ApiStatus.Internal
 	public void processRecipes() {
 
 		this.status.setStatusStep("Processing Recipes");
@@ -94,6 +98,7 @@ public class ClientRecipeManager {
 		this.status.setIdle(true);
 	}
 
+	@ApiStatus.Internal
 	public void requestServerRrvData() {
 		//TODO only send when not caching
 		if (this.status.isIdle()) {
@@ -106,10 +111,12 @@ public class ClientRecipeManager {
 
 	}
 
+	@ApiStatus.Internal
 	public RegistryOps<Tag> createSerializationContext() {
 		return createSerializationContext(NbtOps.INSTANCE);
 	}
 
+	@ApiStatus.Internal
 	public <T> RegistryOps<T> createSerializationContext(final DynamicOps<T> parent) {
 		return Minecraft.getInstance().level.registryAccess().createSerializationContext(parent);
 	}
@@ -119,6 +126,22 @@ public class ClientRecipeManager {
         return Minecraft.getInstance().level.recipeAccess().getSynchronizedRecipes();
     }
 
+	///
+	/// This method can be used to retrieve recipe synchronized via [ServerRecipeManager#synchronizeRecipeType], which uses the Fabric/NeoForge recipe synchronization APIs.
+	///
+	/// ```java
+	/// public class ExampleModClientIntegration implements ReliableRecipeViewerClientPlugin {
+	///     @Override
+	///     public void onIntegrationInitialize() {
+	///         ItemView.addClientRecipeProvider(recipeList -> {
+	///             ClientRecipeManager.getRecipesForType(ExampleModRecipes.UPGRADING_RECIPE_TYPE).forEach(upgradingRecipeHolder -> {
+	///                 recipeList.add(new UpgradingClientRecipe(upgradingRecipeHolder.value()));
+	///             });
+	///           });
+	///         }
+	///     }
+	/// }
+	/// ```
     public static <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
         return getSynchronizedRecipes().getAllOfType(type);
     }
@@ -132,6 +155,7 @@ public class ClientRecipeManager {
 	}
 	*///?}
 
+	@ApiStatus.Internal
 	public static class Status {
 
 		final String prefix;

@@ -70,8 +70,7 @@ public class ExampleModClientIntegration implements ReliableRecipeViewerClientPl
                 UpgradingRecipe recipe = upgradingRecipeHolder.value();
                 recipeList.add(new UpgradingClientRecipe(recipe.getBaseItem(), recipe.getUpgradeItem(), recipe.getResult()));
             });
-          });
-        }
+      });
     }
 }
 ```

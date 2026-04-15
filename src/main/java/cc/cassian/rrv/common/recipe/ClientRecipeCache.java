@@ -164,12 +164,17 @@ public class ClientRecipeCache {
     }
 
     private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id) {
+        // disabled categories
+        if (ItemView.getExcludedRecipeTypes().contains(wrapped.getType().getId()))
+            return;
+        // disabled recipes
         if (ItemView.getExcludedRecipes().containsKey(wrapped.getType().getId())) {
             if (ItemView.getExcludedRecipes().get(wrapped.getType().getId()).contains(modEntryId)) {
                 return;
             }
         }
 
+        // prevent people from locking up the world with duplicate recipes
         Identifier uniqueId = this.getUniqueId(modEntryId, id);
         List<Identifier> summarized = this.multiRecipeMap.getOrDefault(modEntryId, new ArrayList<>());
         summarized.add(uniqueId);
@@ -177,6 +182,7 @@ public class ClientRecipeCache {
 
         this.recipeMap.put(uniqueId, wrapped);
 
+        // populate ingredient map with ingredients and workstations
         wrapped.getIngredients().forEach(ingredient -> ingredient.getValidContents().forEach(stack -> {
             List<Identifier> byIngredient = this.byItemIngredient.getOrDefault(stack.getItem(), new ArrayList<>());
             byIngredient.remove(uniqueId);
@@ -185,7 +191,6 @@ public class ClientRecipeCache {
         }));
 
         var craftReferences = wrapped.getType().getCraftReferences();
-
         craftReferences.forEach(reference -> {
             if(!wrapped.getType().getCraftReferenceCondition().matches(reference, wrapped))
                 return;
@@ -196,6 +201,7 @@ public class ClientRecipeCache {
             this.byItemIngredient.put(reference.getItem(), byIngredient);
         });
 
+        // populate result map
         wrapped.getResults().forEach(result -> result.getValidContents().forEach(stack -> {
             Item item = stack.getItem();
             List<Identifier> byResult = this.byItemResult.getOrDefault(item, new ArrayList<>());

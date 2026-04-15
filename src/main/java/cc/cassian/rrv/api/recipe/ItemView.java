@@ -2,13 +2,13 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ActionType;
-import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
-import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.TagUtil;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.common.collect.HashMultimap;
 import net.minecraft.core.Holder;
@@ -48,6 +48,9 @@ public class ItemView {
     /// A list of client-side excluded recipes that won't show up in the ItemView overlay
     private static final HashMultimap<Identifier, Identifier> EXCLUDED_RECIPES = HashMultimap.create();
 
+    /// A list of client-side excluded recipe types that won't show up in the ItemView overlay
+    private static final List<Identifier> EXCLUDED_RECIPE_CATEGORIES = new ArrayList<>();
+
     /// Server-Side map of "item-variants", the client gets informed about on every server reload
     private static final HashMap<Item, List<StackSensitive>> STACK_SENSITIVE = new HashMap<>();
 
@@ -63,12 +66,17 @@ public class ItemView {
 
     /// ServerRecipeProviders offer a recipe list where mods can easily add their own server recipes
     ///
+    /// If you are using the Fabric/NeoForge recipe synchronization API, you can skip server recipes and recipe wrappers entirely and just use [ItemView#addClientRecipeProvider].
+    ///
     /// @param provider The recipe provider
     public static void addServerRecipeProvider(ItemViewRecipes.ServerRecipeProvider provider) {
         ItemViewRecipes.INSTANCE.addServerRecipeProvider(provider);
     }
 
-    /// ClientRecipeProviders offer a recipe list where mods can easily add their own client recipes
+    /// ClientRecipeProviders offer a recipe list where mods can easily add their own client recipes.
+    ///
+    /// This is best paired with the Fabric/NeoForge Recipe Synchronization API. Use [ServerRecipeManager#synchronizeRecipeType] on your recipe type and recipe serializer in the common plugin, and recipes will be accessible via [ClientRecipeManager#getRecipesForType] in your client plugin.
+    ///
     ///
     /// @param provider The recipe provider
     public static void addClientRecipeProvider(ItemViewRecipes.ClientRecipeProvider provider) {
@@ -76,6 +84,8 @@ public class ItemView {
     }
 
     /// ClientRecipeWrappers convert an incoming server recipe into a displayable client recipe later shown in the recipe view.
+    ///
+    /// If you are using the Fabric/NeoForge recipe synchronization API, you can skip server recipes and recipe wrappers entirely and just use [ItemView#addClientRecipeProvider].
     ///
     /// They can also split a server recipe up into multiple client recipes if desired, since they require a list to be returned
     ///
@@ -122,7 +132,7 @@ public class ItemView {
     }
 
 
-    /// A method used to exclude recipes from the recipe screen.
+    /// A method used to exclude recipe types from the recipe screen.
     ///
     /// **Example**:
     /// ```
@@ -136,6 +146,37 @@ public class ItemView {
     /// @param recipes The recipes to exclude.
     public static void excludeRecipes(Identifier recipeType, Identifier... recipes) {
         EXCLUDED_RECIPES.putAll(recipeType, Arrays.stream(recipes).toList());
+    }
+
+    /// A method used to exclude a recipe from the recipe screen.
+    ///
+    /// **Example**:
+    /// ```
+    /// ItemView.excludeRecipeCategory(Identifier.fromNamespaceAndPath("minecraft", "furnace_smelting"))
+    /// ```
+    ///
+    /// @param recipeType The recipe type to exclude recipes from.
+    public static void excludeRecipeCategory(Identifier recipeType) {
+        if (!EXCLUDED_RECIPE_CATEGORIES.contains(recipeType))
+            EXCLUDED_RECIPE_CATEGORIES.add(recipeType);
+    }
+
+
+    /// A method used to exclude recipe types from the recipe screen.
+    ///
+    /// **Example**:
+    /// ```
+    /// ItemView.excludeRecipes(
+    ///    Identifier.fromNamespaceAndPath("minecraft", "furnace_smelting"),
+    ///    Identifier.fromNamespaceAndPath("minecraft", "furnace_blasting"),
+    /// )
+    /// ```
+    ///
+    /// @param recipeTypes The recipe type to exclude recipes from.
+    public static void excludeRecipeTypes(Identifier... recipeTypes) {
+        for (Identifier recipeType : recipeTypes) {
+            excludeRecipeCategory(recipeType);
+        }
     }
 
     /// Register multiple items to exclude at once. Note that RRV also supports the standardized `c:hidden\_from\_recipe\_viewers` tag.
@@ -224,11 +265,15 @@ public class ItemView {
         return EXCLUDED_RECIPES;
     }
 
+    /// @return The list of currently excluded recipe types (client-side)
+    public static List<Identifier> getExcludedRecipeTypes() {
+        return EXCLUDED_RECIPE_CATEGORIES;
+    }
+
     /// @return The list of currently excluded enchantments (client-side)
     public static List<ResourceKey<Enchantment>> getExcludedEnchantments() {
         return EXCLUDED_ENCHANTMENTS;
     }
-
 
     /// @return The list of currently excluded potions (client-side)
     public static List<Holder<Potion>> getExcludedPotions() {
