@@ -97,18 +97,17 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
     }
 
 
-    public record Unbaked() implements SpecialModelRenderer.Unbaked {
+    public record Unbaked() implements SpecialModelRenderer.Unbaked<ItemStack> {
 
         public static final MapCodec<Unbaked> MAP_CODEC = MapCodec.unit(Unbaked::new);
-
         
         @Override
-        public SpecialModelRenderer<?> bake(BakingContext bakingContext) {
+        public SpecialModelRenderer<ItemStack> bake(BakingContext bakingContext) {
             return new FluidItemSpecialRenderer(new FluidItemModel(bakingContext.entityModelSet().bakeLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER)));
         }
 
         @Override
-        public MapCodec<? extends SpecialModelRenderer.Unbaked> type() {
+        public MapCodec<? extends SpecialModelRenderer.Unbaked<ItemStack>> type() {
             return MAP_CODEC;
         }
     }

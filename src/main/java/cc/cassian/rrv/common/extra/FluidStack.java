@@ -20,7 +20,7 @@ public record FluidStack(Fluid fluid, int amount) {
     public static final FluidStack EMPTY = new FluidStack(Fluids.EMPTY, 0);
 
     public FluidStack(final Fluid fluid) {
-        this(fluid, FluidStack.AMOUNT_FULL);
+        this(fluid, AMOUNT_FULL);
     }
 
     /**
@@ -58,27 +58,28 @@ public record FluidStack(Fluid fluid, int amount) {
 
 
     //? neoforge {
-    /*/^*
-     * Creates a FluidStack from a NeoForge FluidStack
-     * @param stack: A NeoForge Fluid Stack
-     * @return An RRV Fluid Stack
-     ^/
-    public static FluidStack fromLoaderFluidStack(net.neoforged.neoforge.fluids.FluidStack stack) {
+    /*/// Creates an RRV FluidStack from a NeoForge FluidStack
+    /// @param stack: A NeoForge Fluid Stack
+    /// @return A RRV Fluid Stack
+    public static FluidStack fromFluidStack(net.neoforged.neoforge.fluids.FluidStack stack) {
         return new FluidStack(stack.getFluid(), stack.getAmount());
     }
 
-    /^*
-     * Creates a NeoForge FluidStack from an RRV FluidStack
-     * @return An NeoForge Fluid Stack
-     ^/
+    /// Creates an RRV FluidStack from a NeoForge FluidStackTemplate
+    /// @param stack: A NeoForge Fluid Stack
+    /// @return A RRV Fluid Stack
+    public static FluidStack fromFluidStack(net.neoforged.neoforge.fluids.FluidStackTemplate stack) {
+        return FluidStack.fromFluidStack(stack.create());
+    }
+
+    /// Creates a NeoForge FluidStack from an RRV FluidStack
+    /// @return A NeoForge Fluid Stack
     public net.neoforged.neoforge.fluids.FluidStack toLoaderFluidStack() {
         return new net.neoforged.neoforge.fluids.FluidStack(this.fluid, this.amount);
     }
 
-    /^*
-     * Creates a NeoForge FluidStack from an RRV FluidStack
-     * @return An NeoForge Fluid Stack
-     ^/
+    /// Creates a NeoForge FluidStack from an RRV FluidStack
+    /// @return A NeoForge Fluid Stack
     public net.neoforged.neoforge.fluids.FluidStack toLoaderFluidStack(FluidStack stack) {
         return stack.toLoaderFluidStack();
     }

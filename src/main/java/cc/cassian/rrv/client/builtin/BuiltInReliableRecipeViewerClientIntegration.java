@@ -55,6 +55,7 @@ import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.entity.PotDecorations;
+import net.minecraft.world.level.material.Fluids;
 //? neoforge
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
@@ -370,7 +371,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/shearing_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/glass_bottle_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
 
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/water_filling"), SlotContent.of(Blocks.WATER), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/water_filling"), SlotContent.of(new FluidStack(Fluids.WATER, 333)), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
 
         BuiltInRegistries.FLUID.entrySet().forEach(fluidEntry -> {
             Item bucket = fluidEntry.getValue().getBucket();

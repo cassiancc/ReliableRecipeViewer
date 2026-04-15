@@ -24,13 +24,13 @@ public class WorldInteractionClientRecipe implements ReliableClientRecipe {
     private final Identifier id;
 
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public WorldInteractionClientRecipe(SlotContent left, SlotContent right, SlotContent result, int priority) {
         this(null, left, right, result, priority);
 
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public WorldInteractionClientRecipe(SlotContent left, SlotContent right, SlotContent result) {
         this(null, left, right, result, 0);
     }
