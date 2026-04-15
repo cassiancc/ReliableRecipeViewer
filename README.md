@@ -1,31 +1,41 @@
-<h1>Reliable Recipe Viewer</h1>
+# Reliable Recipe Viewer
 
-## Overview
+<a href='https://modrinth.com/mod/rrv/versions?l=fabric'><img alt="fabric" height="56" src="https://raw.githubusercontent.com/intergrav/devins-badges/refs/heads/v3/assets/cozy/supported/fabric_vector.svg"></a>
+<a href='https://modrinth.com/mod/rrv/versions?l=neoforge'><img alt="neoforge" height="56" src="https://raw.githubusercontent.com/cassiancc/Cassians-Badges/refs/heads/main/cozy/NeoForge.svg"></a>
 
-[Reliable Recipe Viewer](https://modrinth.com/mod/rrv) is a mod that provides recipe viewer functionality on modern Minecraft versions, from 1.21.8 to 26.1. It's based on [Extended Item View](https://modrinth.com/mod/eiv), which at the time I forked supported 1.21.4-1.21.10. As I needed a 26.1 recipe viewer and thought I could improve it, I took the opportunity to fork it and make some improvements.
+A recipe viewer for the latest versions of Minecraft, rebuilt from [EIV](https://modrinth.com/mod/eiv) and designed to be configured.
 
-Currently supported functions are:
+**NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
 
-- recipe viewing
-- bookmarking items
-- item-transfer (fast-move items in crafting gui)
-- hiding/showing overlay
-- item highlighting (double-click on searchbar)
-- cheatmode
+## Features
 
-In addition, this fork provides:
+* **Recipe Viewing:** See recipes for all vanilla recipe types, as well as [supported modded recipe types]((https://modrinth.com/collection/divCExF5)) as well!
+* **Powerful Configuration:** Reorder and disable recipe types, rearrange the item index, rearrange the overlays, and more config options to fit your needs.
+* **Bookmarking and Craftables Panel:** Bookmark items with the `A` key, or use the side panel to see what you can craft with the items in your inventory.
+* **Recipe Transfer:** Click the transfer button on supported recipes to quickly transfer items from your inventory to the workstation.
+
+Reliable Recipe Viewer is a fork of [Extended Item View](https://modrinth.com/mod/eiv). A summary of changes made from the original project can be found below.
+
+<details>
+
+<summary>Improvements over EIV</summary>
+
 - Support for 26.1.1 and 26.2 snapshots.
 - A reworked API designed around the recipe synchronization APIs present in Fabric and NeoForge, cutting down on redundant work and allowing some parts of RRV to function even when a different recipe viewer is present on the server.
+- New API options to hide recipes, recipe categories, enchantments, potions, and more.
+- Improved mod compatibility with [Reliable Remover](https://modrinth.com/mod/reliable-remover), [Polydex](https://modrinth.com/mod/polydex), [Controlify](https://modrinth.com/mod/controlify), and more.
 - An option to show craftable items from your inventory.
 - Additional configuration options, including switching the side of the item index, centering the search bar, reorganizing and hiding recipe categories, editing the index, and much much more.
 - Additional GUI improvements, like a scroll bar for the item index, a way to see all recipes by clicking on the recipe type, buttons to change the item index page, and more.
-- Additional recipe types for item tags, repairing, and resource pack-driven info and world interaction recipes.
+- Additional recipe types for item tags, repairing, and resource pack-driven info, world interaction, and anvil combining recipes.
 - Compatibility improvements, showing mod name translations, tag translations, support for component ingredients, and more.
 - Fixes for multiple bugs seen in the original project.
 
-For more details, see the original Modrinth page for [Extended Item View](https://modrinth.com/mod/eiv), as well as the changelog for a complete list of changes.
+</details>
 
-**NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
+## Documentation
+
+Developers wishing to integrate their mods with Reliable Recipe Viewer or configure it for their modpack can make use of RRV's easy to use API. You can find more info on the [Modded Minecraft Wiki](https://moddedmc.wiki/en/project/rrv/latest/docs). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
 
 ## FAQ
 
@@ -38,16 +48,11 @@ For more details, see the original Modrinth page for [Extended Item View](https:
 - Where can I ask questions about RRV?
   - I am happy to answer RRV related questions in my [Discord](https://discord.cassian.cc/).
 
-## Mod Compatibility
-
-Mods that use Extended Item View are not compatible with this fork, as I want to ensure I can make direct changes to the mod. For a list of currently compatible mods, please see the [Modrinth Collection](https://modrinth.com/collection/divCExF5).
-
-Developers wishing to use the mod can make use of RRV's easy to use API. You can find more info on the [Modded Minecraft Wiki](https://moddedmc.wiki/en/project/rrv/latest/docs). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
-
 ## License
-[![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](github.com/cassiancc/bygone-fortress)
+[![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](https://github.com/cassiancc/reliablerecipeviewer)
 
 Reliable Recipe Viewer is available under the open source MIT License, matching the original mod.
 
 ## Credits
-This began as a port of [Extended Item View](https://modrinth.com/mod/eiv) to Fabric 1.21.11 and beyond with the goal of improving the mod and making it available on newer versions. I was not able to make these changes to EIV directly, as the developer does not seem to respond to pull requests. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license).
+
+This began as a port of [Extended Item View](https://modrinth.com/mod/eiv) to Fabric 1.21.11 and beyond with the goal of improving the mod and making it available on newer versions. I was not able to make these changes to EIV directly, as the developer does not seem to respond to pull requests. EIV is available under [MIT License](https://github.com/liushmn/ExtendedItemView/blob/26.1/LICENSE).
