@@ -2,21 +2,24 @@ package cc.cassian.rrv.client;
 
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.config.options.NamespaceTooltip;
+import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.resources.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
-
-import static cc.cassian.rrv.common.ReliableRecipeViewer.MOD_ID;
 
 public class ReliableRecipeViewerClient {
 
@@ -66,4 +69,14 @@ public class ReliableRecipeViewerClient {
         return Minecraft.getInstance().player != null && RrvUtil.hasPermission(Minecraft.getInstance().player) && InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
     }
 
+    public static MutableComponent addNamespaceTooltip(ItemStack stack, List<Component> tooltip, boolean inItemView) {
+        if (!ModCompat.hasModNamespaceModsInstalled()) {
+            MutableComponent namespace = Component.literal(Platform.INSTANCE.getModNameForItem(stack)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC);
+            if (((inItemView && Configs.CLIENT_SETTINGS.showNamespaceTooltip().equals(NamespaceTooltip.IN_ITEM_VIEW)) || Configs.CLIENT_SETTINGS.showNamespaceTooltip().equals(NamespaceTooltip.SHOW)) && !tooltip.contains(namespace))
+                tooltip.addLast(namespace);
+            return namespace;
+        }
+        return null;
+
+    }
 }

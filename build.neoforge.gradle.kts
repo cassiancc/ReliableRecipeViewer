@@ -65,6 +65,13 @@ repositories {
             includeGroupAndSubgroups("cc.cassian")
         }
     }
+    maven {
+        name = "Sisby Maven"
+        url = uri("https://repo.sleeping.town/")
+        content {
+            includeGroupAndSubgroups("folk.sisby")
+        }
+    }
     mavenCentral()
 }
 
@@ -76,6 +83,7 @@ dependencies {
     compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
         isTransitive = false;
     }
+    compileOnly("folk.sisby:kaleido-config:0.3.3+1.3.2")
 }
 
 neoForge {

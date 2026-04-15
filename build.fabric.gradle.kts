@@ -112,6 +112,7 @@ dependencies {
         exclude(group = "mcp.mobius.waila")
         exclude(group = "lol.bai")
     }
+    compileOnly("folk.sisby:kaleido-config:0.3.3+1.3.2")
 
     compileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
     compileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")

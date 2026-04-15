@@ -1,9 +1,11 @@
 package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
+import cc.cassian.rrv.common.config.options.NamespaceTooltip;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
+import cc.cassian.rrv.common.integration.ModCompat;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 
@@ -16,7 +18,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean showProgressBar = true;
 	private boolean itemWrapMode = true;
 	private WrapScrolling wrapScrolling = WrapScrolling.ON_BUTTONS;
-	private boolean appendModNamespace = true;
+	private NamespaceTooltip namespaceTooltip = ModCompat.hasModNamespaceModsInstalled() ? NamespaceTooltip.HIDE : NamespaceTooltip.SHOW;
 	private boolean showRecipeId = false;
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
@@ -44,12 +46,12 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.itemWrapMode = itemWrapMode;
 	}
 
-	public boolean isAppendModNamespace() {
-		return appendModNamespace;
+	public NamespaceTooltip showNamespaceTooltip() {
+		return namespaceTooltip;
 	}
 	
-	public void setAppendModNamespace(boolean appendModNamespace) {
-		this.appendModNamespace = appendModNamespace;
+	public void setNamespaceTooltip(NamespaceTooltip namespaceTooltip) {
+		this.namespaceTooltip = namespaceTooltip;
 	}
 
 	public boolean isRightIndex() {
@@ -106,7 +108,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.showSidePanel = OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanelEnabled")).mapOrElse(Pair::getFirst, (e)-> OverlayDisplay.ENABLED);
 		this.background = this.data().get("background").getAsBoolean();
 		this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
-		this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
+		this.namespaceTooltip = NamespaceTooltip.CODEC.decode(JsonOps.INSTANCE, this.data().get("appendNamespaceTooltip")).mapOrElse(Pair::getFirst, (e)->this.namespaceTooltip);
 		this.rightIndex = this.data().get("rightIndex").getAsBoolean();
 		this.centerSearch = this.data().get("centerSearch").getAsBoolean();
 		this.showButtons = this.data().get("showButtons").getAsBoolean();
@@ -124,7 +126,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.data().add("sidePanelEnabled", OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showSidePanel).getOrThrow());
 		this.data().addProperty("background", this.background);
 		this.data().addProperty("itemWrapMode", this.itemWrapMode);
-		this.data().addProperty("appendModNamespace", this.appendModNamespace);
+		this.data().add("namespaceTooltip", NamespaceTooltip.CODEC.encodeStart(JsonOps.INSTANCE, this.namespaceTooltip).getOrThrow());
 		this.data().addProperty("rightIndex", this.rightIndex);
 		this.data().addProperty("centerSearch", this.centerSearch);
 		this.data().addProperty("showButtons", this.showButtons);

@@ -23,6 +23,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.Optional;
@@ -91,6 +92,12 @@ public class NeoForgeClientEntrypoint {
     @SubscribeEvent
     public static void receiveRecipes(RecipesReceivedEvent event) {
         SYNCHRONIZED_RECIPES = event.getRecipeMap();
+    }
+
+
+    @SubscribeEvent
+    public static void receiveRecipes(ItemTooltipEvent event) {
+        ReliableRecipeViewerClient.addNamespaceTooltip(event.getItemStack(), event.getToolTip(), false);
     }
 
 }

@@ -2,13 +2,16 @@
 package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.command.RrvCommand;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerIntegration;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
@@ -36,6 +39,8 @@ public class FabricEntrypoint implements ModInitializer {
 
         if (ModCompat.POLYMER)
             PolymerIntegration.onInitialize();
+
+        ItemTooltipCallback.EVENT.register((stack, _, _, tooltip) -> ReliableRecipeViewerClient.addNamespaceTooltip(stack, tooltip, false));
     }
 
 

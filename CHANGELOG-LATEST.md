@@ -9,8 +9,11 @@
   - Client recipes can now be hidden by their ID via the `rrv:exclusions` resource pack file and the API method `ItemView#excludeRecipe`, see the docs for more information.
 - Support for imbuing, book cloning, map extending, firework rocket, shield decoration, repairing, and decorated pot crafting recipes.
 - Fluid bucketing is now visible in RRV.
+- Namespace tooltips can now be shown in all contexts, instead of only in the Item View. This is configurable.
 
 ### Changed
 - Shaped recipes are now sorted before shapeless recipes.
 - Crafting client recipes now make use of a builder.
 - `ReliableClientRecipe#getViewType` was renamed to `ReliableClientRecipe#getType`, backwards compatible.
+- Minor config reorganization.
+- Namespaced tooltips will now default to being disabled if another mod is present that has the feature (WTHIT/Jade/Item Descriptions)

@@ -73,13 +73,12 @@ public class ItemSlot {
 
             tooltip.addAll(Screen.getTooltipFromItem(mc, this.stack));
 
+            ReliableRecipeViewerClient.addNamespaceTooltip(stack, tooltip, true);
+
             if (ReliableRecipeViewerClient.isCheatmodeActive()) {
                 MutableComponent count = Component.literal(String.valueOf(this.currentCheatmodeCount)).withStyle(ChatFormatting.GOLD);
                 tooltip.addLast(Component.translatable("cheatmode.rrv.taking", count).withStyle(ChatFormatting.GRAY));
             }
-
-            if (Configs.CLIENT_SETTINGS.isAppendModNamespace())
-                tooltip.addLast(Component.literal(ReliableRecipeViewerClient.resolver().getModNameForItem(this.stack)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
 
             guiGraphics.fill(this.x, this.y, this.x + 20, this.y + 20, new Color(255, 255, 255, 32).getRGB());
 
