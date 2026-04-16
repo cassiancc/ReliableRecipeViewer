@@ -22,3 +22,4 @@
 
 ### Fixed
 - Bug with overlay toggling.
+- Improvements to config handling.

@@ -19,7 +19,7 @@ public class BookmarkConfig extends AbstractRrvConfig {
     protected void loadData() {
         BookmarkManager.INSTANCE.availableItems().clear();
 
-        if(this.data().has("bookmarkedItems")) {
+        if (this.data().has("bookmarkedItems")) {
             this.data().getAsJsonArray("bookmarkedItems").forEach(element -> {
                JsonObject encodedItem = element.getAsJsonObject();
 
@@ -38,10 +38,9 @@ public class BookmarkConfig extends AbstractRrvConfig {
 
         JsonArray itemList = new JsonArray();
         BookmarkManager.INSTANCE.availableItems().forEach(itemStack -> {
-
             try {
                 itemList.add(ItemStack.CODEC.encode(itemStack, JsonOps.INSTANCE, new JsonObject()).getOrThrow().getAsJsonObject());
-            }catch (Exception e) {
+            } catch (Exception e) {
                 ReliableRecipeViewer.LOGGER.error("Could not save bookmarked item: {}", itemStack.toString());
             }
         });
