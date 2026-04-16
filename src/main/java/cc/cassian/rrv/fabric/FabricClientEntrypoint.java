@@ -10,6 +10,7 @@ import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.PolymerClientIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.fabricmc.loader.api.FabricLoader;
@@ -44,6 +45,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         if (ModCompat.POLYMER) {
             PolymerClientIntegration.onInitializeClient();
         }
+
+        ItemTooltipCallback.EVENT.register((stack, _, _, tooltip) -> ReliableRecipeViewerClient.addNamespaceTooltip(stack, tooltip, false));
     }
 
 
