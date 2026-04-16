@@ -24,3 +24,4 @@
 ### Fixed
 - Bug with overlay toggling.
 - Improvements to config handling.
+- Bug causing keybinds to remove bookmarks.

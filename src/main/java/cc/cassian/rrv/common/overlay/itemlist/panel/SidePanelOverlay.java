@@ -184,12 +184,13 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event) && showCraftables()) {
-                BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
-            } else {
-                BookmarkManager.INSTANCE.removeItem(slot.getStack());
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
+                if (showCraftables()) {
+                    BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
+                } else {
+                    BookmarkManager.INSTANCE.removeItem(slot.getStack());
+                }
             }
-
         }
 
         return false;
