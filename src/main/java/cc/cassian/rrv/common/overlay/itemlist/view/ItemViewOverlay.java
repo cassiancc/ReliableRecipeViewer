@@ -427,4 +427,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 	public boolean isSearching() {
 		return searchbar != null && searchbar.isVisible() && !searchbar.getValue().isEmpty();
 	}
+
+    public void setButtonVisibility(boolean b) {
+        searchbar.visible = b;
+        next.visible = b;
+        back.visible = b;
+    }
 }

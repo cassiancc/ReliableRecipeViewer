@@ -19,3 +19,6 @@
 - `ReliableClientRecipe#getViewType` was renamed to `ReliableClientRecipe#getType`, backwards compatible.
 - Minor config reorganization.
 - Namespaced tooltips will now default to being disabled if another mod is present that has the feature (WTHIT/Jade/Item Descriptions)
+
+### Fixed
+- Bug with overlay toggling.

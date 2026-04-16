@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens.inventory;
 
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
 import cc.cassian.rrv.common.overlay.OverlayManager;
@@ -47,6 +48,14 @@ public abstract class MixinAbstractRecipeBookScreen<T extends RecipeBookMenu> ex
         OverlayManager.INSTANCE.updateOverlaysAndWidgets();
         this.rrv$updateWidgets();
 
+    }
+
+    @Inject(method = "lambda$initButton$0", at = @At("HEAD"), cancellable = true)
+    private void injectButton(CallbackInfo ci) {
+        if (Configs.CLIENT_SETTINGS.isRecipeBookButton()) {
+            OverlayManager.toggleOverlays();
+            ci.cancel();
+        }
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)

@@ -11,6 +11,7 @@ import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
 
+	private boolean recipeBookButton;
     private OverlayDisplay showItemView = OverlayDisplay.ENABLED;
 	private OverlayDisplay showSidePanel = OverlayDisplay.WITH_ITEM_VIEW;
 	private SidePanel sidePanel = SidePanel.DISABLED;
@@ -28,7 +29,7 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public ClientConfig() {
 		super("client_settings");
-	}
+    }
 
 	public boolean drawBackground() {
 		return this.background;
@@ -116,6 +117,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.fluidUnitDroplets = this.data().get("fluidUnitDroplets").getAsBoolean();
 		this.centerRecipeScreen = this.data().get("centerRecipeScreen").getAsBoolean();
 		this.showRecipeId = this.data().get("showRecipeId").getAsBoolean();
+		this.recipeBookButton = this.data().get("recipeBookButton").getAsBoolean();
 		this.wrapScrolling = WrapScrolling.CODEC.decode(JsonOps.INSTANCE, this.data().get("wrapScrolling")).mapOrElse(Pair::getFirst, (e)->WrapScrolling.ON_BUTTONS);
 		this.sidePanel = SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)-> SidePanel.BOOKMARKS);
 	}
@@ -134,6 +136,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.data().addProperty("fluidUnitDroplets", this.fluidUnitDroplets);
 		this.data().addProperty("centerRecipeScreen", this.centerRecipeScreen);
 		this.data().addProperty("showRecipeId", this.showRecipeId);
+		this.data().addProperty("recipeBookButton", this.recipeBookButton);
 		this.data().add("wrapScrolling", WrapScrolling.CODEC.encodeStart(JsonOps.INSTANCE, this.wrapScrolling).getOrThrow());
 		this.data().add("sidePanel", SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
 
@@ -177,5 +180,13 @@ public class ClientConfig extends AbstractRrvConfig {
 
     public void setShowRecipeId(boolean showRecipeId) {
         this.showRecipeId = showRecipeId;
+    }
+
+    public boolean isRecipeBookButton() {
+        return recipeBookButton;
+    }
+
+    public void setRecipeBookButton(boolean recipeBookButton) {
+        this.recipeBookButton = recipeBookButton;
     }
 }

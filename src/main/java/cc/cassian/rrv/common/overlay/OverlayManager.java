@@ -134,13 +134,13 @@ public class OverlayManager {
     }
 
     public static void toggleOverlays() {
-        PRESENT_OVERLAYS.forEach(abstractRrvOverlay -> abstractRrvOverlay.setEnabled(!abstractRrvOverlay.isEnabled()));
-        Configs.CLIENT_SETTINGS.setShowItemView(checkOverlays());
+        if (ItemViewOverlay.INSTANCE.isEnabled()) setOverlays(OverlayDisplay.DISABLED);
+        else setOverlays(OverlayDisplay.ENABLED);
     }
 
     public static void setOverlays(OverlayDisplay enabled) {
         Configs.CLIENT_SETTINGS.setShowItemView(enabled);
-		ItemViewOverlay.INSTANCE.getSearchbar().visible = !enabled.equals(OverlayDisplay.DISABLED);
+        ItemViewOverlay.INSTANCE.setButtonVisibility(!enabled.equals(OverlayDisplay.DISABLED));
     }
 
     public static OverlayDisplay checkOverlays() {
