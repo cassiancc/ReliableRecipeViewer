@@ -30,6 +30,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.awt.*;
 import java.util.ConcurrentModificationException;
@@ -146,7 +147,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 } catch (ConcurrentModificationException ignored) {}
             }
         } else {
-            this.availableItems.addAll(BookmarkManager.INSTANCE.availableItems());
+            this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
         }
 
         this.updateSlots();

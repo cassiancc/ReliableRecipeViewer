@@ -31,6 +31,7 @@ public abstract class MixinAbstractRecipeBookScreen<T extends RecipeBookMenu> ex
         super(abstractContainerMenu, inventory, component);
     }
 
+    @SuppressWarnings("unchecked")
     @Inject(method = "init", at = @At("TAIL"))
     private void injectOverlay$0(CallbackInfo ci) {
 

@@ -10,7 +10,6 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
-import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
@@ -27,9 +26,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
@@ -109,7 +106,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                         Component.translatable("rrv.client_settings.btn"),
                         14,
                         SETTINGS_WHEEL,
-                        button -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
+                _ -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
         );
 
         int position = 0;
@@ -159,7 +156,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     /**
      * Handles searchbar changes => responsible for custom prefixes
      *
-     * @param newQuery
+     * @param newQuery The text that will be searched for.
      */
     private void updateQuery(String newQuery) {
         if (!newQuery.equals(this.currentQuery))
@@ -338,9 +335,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         updateButtons();
     }
 
+    /// Open a recipe view screen showing all recipes that either result in or create an itemstack - dependent on the supplied [ActionType].
     public void openRecipeView(ItemStack stack, ActionType openType) {
-        if (stack.isEmpty())
-            return;
+        if (stack.isEmpty()) return;
 
         //? fabric {
         if (ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack)) {
@@ -352,8 +349,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         //?}
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
-        if (clientPlayer == null)
-            return;
+        if (clientPlayer == null) return;
 
         List<ReliableClientRecipe> foundRecipes = switch (openType) {
 			case INPUT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
@@ -366,26 +362,15 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 		};
 
         if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack))) {
-            Screen parent = RRVClientUtil.currentScreen();
-
-            ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
-
-            if (parent instanceof RecipeViewScreen viewScreen) {
-                parent = viewScreen.getMenu().getParentScreen();
-                viewHistory = viewScreen.getMenu().getViewHistory();
-            }
-
-            int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
-
-            RRVClientUtil.setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType, viewHistory), clientPlayer.getInventory(), Component.empty()));
+            openRecipeView(stack, openType, clientPlayer, foundRecipes);
         }
     }
 
+    /// Open a recipe view screen showing all recipes of a specific type.
     public void openRecipeView(ReliableClientRecipeType clientRecipeType) {
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
-        if (clientPlayer == null)
-            return;
+        if (clientPlayer == null) return;
 
         //? fabric {
         if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
@@ -393,22 +378,31 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
         //?}
 
-        List<ReliableClientRecipe> foundRecipes = ClientRecipeCache.INSTANCE.getRecipes();
+        openRecipeView(ItemStack.EMPTY, ActionType.ANY, clientPlayer, ClientRecipeCache.INSTANCE.getRecipes());
+    }
 
-        if (!foundRecipes.isEmpty()) {
-            Screen parent = RRVClientUtil.currentScreen();
+    /// Open a recipe view screen showing all recipes with a specific id.
+    public void openRecipeView(Identifier recipeId) {
+        openRecipeView(ItemStack.EMPTY, ActionType.ANY, Minecraft.getInstance().player, ClientRecipeCache.INSTANCE.getRecipes(recipeId));
+    }
 
-            ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
+    //// Open a recipe view screen. Should be called from a specific scenario with a list of recipes.
+    private void openRecipeView(ItemStack stack, ActionType openType, LocalPlayer clientPlayer, List<ReliableClientRecipe> foundRecipes) {
+        if (clientPlayer == null) return;
+        if (foundRecipes.isEmpty()) return;
 
-            if (parent instanceof RecipeViewScreen viewScreen) {
-                parent = viewScreen.getMenu().getParentScreen();
-                viewHistory = viewScreen.getMenu().getViewHistory();
-            }
+        Screen parent = RRVClientUtil.currentScreen();
 
-            int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
+        ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
 
-            RRVClientUtil.setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, ItemStack.EMPTY, ActionType.ANY, viewHistory, clientRecipeType), clientPlayer.getInventory(), Component.empty()));
+        if (parent instanceof RecipeViewScreen viewScreen) {
+            parent = viewScreen.getMenu().getParentScreen();
+            viewHistory = viewScreen.getMenu().getViewHistory();
         }
+
+        int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
+
+        RRVClientUtil.setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType, viewHistory), clientPlayer.getInventory(), Component.empty()));
     }
 
 

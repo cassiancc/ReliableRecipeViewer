@@ -190,24 +190,4 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		save("sidePanel", this.sidePanel, SidePanel.CODEC);
 	}
-
-	private <T> void save(String key, T newValue, Codec<T> codec) {
-		this.data().add(key, codec.encodeStart(JsonOps.INSTANCE, newValue).getOrThrow());
-	}
-
-	private void save(String key, boolean newValue) {
-		this.data().addProperty(key, newValue);
-	}
-
-	private <T> T load(String key, T defaultValue, Codec<T> codec) {
-		if (this.data().has(key))
-			return codec.decode(JsonOps.INSTANCE, this.data().get(key)).mapOrElse(Pair::getFirst, (e)->defaultValue);
-		return defaultValue;
-	}
-
-	private boolean load(String key, boolean defaultValue) {
-		if (this.data().has(key))
-			return this.data().get(key).getAsBoolean();
-		return defaultValue;
-	}
 }

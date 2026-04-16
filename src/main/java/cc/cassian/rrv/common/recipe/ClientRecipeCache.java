@@ -59,6 +59,15 @@ public class ClientRecipeCache {
         return recipeMap.getOrDefault(recipeId, null);
     }
 
+    public List<ReliableClientRecipe> getRecipes(final Identifier recipeId) {
+        ArrayList<ReliableClientRecipe> clientRecipes = new ArrayList<>();
+        multiRecipeMap.get(recipeId).stream().map(recipeMap::get).forEach(recipe -> {
+            if (!clientRecipes.contains(recipe))
+                clientRecipes.add(recipe);
+        });
+        return clientRecipes;
+    }
+
 
     public void updateType(ReliableServerRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
         this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> this.multiRecipeMap.getOrDefault(entry.modRecipeId(), new ArrayList<>()).forEach(id -> {

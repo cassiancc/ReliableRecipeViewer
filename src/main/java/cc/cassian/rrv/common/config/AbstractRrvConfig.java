@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -52,7 +55,6 @@ public abstract class AbstractRrvConfig {
 
     public void save() {
         try {
-
             this.saveData();
             File configDirectory = ReliableRecipeViewer.CONFIG_PATH.toFile();
             File saveFile = ReliableRecipeViewer.CONFIG_PATH.resolve(this.fileName + ".json").toFile();
@@ -72,6 +74,26 @@ public abstract class AbstractRrvConfig {
             ReliableRecipeViewer.LOGGER.error("Failed to save config file: {}.json", this.fileName, e);
         }
 
+    }
+
+    protected <T> void save(String key, T newValue, Codec<T> codec) {
+        this.data().add(key, codec.encodeStart(JsonOps.INSTANCE, newValue).getOrThrow());
+    }
+
+    protected void save(String key, boolean newValue) {
+        this.data().addProperty(key, newValue);
+    }
+
+    protected <T> T load(String key, T defaultValue, Codec<T> codec) {
+        if (this.data().has(key))
+            return codec.decode(JsonOps.INSTANCE, this.data().get(key)).mapOrElse(Pair::getFirst, (e)->defaultValue);
+        return defaultValue;
+    }
+
+    protected boolean load(String key, boolean defaultValue) {
+        if (this.data().has(key))
+            return this.data().get(key).getAsBoolean();
+        return defaultValue;
     }
 
 }
