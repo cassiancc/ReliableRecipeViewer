@@ -10,6 +10,7 @@
 - Support for imbuing, book cloning, map extending, firework rocket, shield decoration, repairing, and decorated pot crafting recipes.
 - Fluid bucketing is now visible in RRV.
 - Namespace tooltips can now be shown in all contexts, instead of only in the Item View. This is configurable.
+- A new button on the overlay screen that allows switching the current side panel (thanks @lurkywho for sprite help).
 
 ### Changed
 - Shaped recipes are now sorted before shapeless recipes.

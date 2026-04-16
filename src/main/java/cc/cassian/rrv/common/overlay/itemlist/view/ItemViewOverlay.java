@@ -10,6 +10,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
+import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
@@ -103,7 +104,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         //---- Client Settings Button ----
-        ReliableSpriteIconButton btn = new ReliableSpriteIconButton(
+        ReliableSpriteIconButton settingsButton = new ReliableSpriteIconButton(
                         18,
                         Component.translatable("rrv.client_settings.btn"),
                         14,
@@ -116,9 +117,19 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             position = info.screenWidth() - 18;
         }
 
-        btn.setPosition(position, info.screenHeight() - 18);
+        settingsButton.setPosition(position, info.screenHeight() - 18);
 
-        ctx.addRenderable(btn);
+        ctx.addRenderable(settingsButton);
+        //---- Side Panel Settings Button ----
+        ReliableSpriteIconButton sidePanelButton = new SidePanelButton();
+
+        int sidePanelButtonPosition = position + 20;
+        if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
+            sidePanelButtonPosition = info.screenWidth() - 40;
+        }
+        sidePanelButton.setPosition(sidePanelButtonPosition, info.screenHeight() - 18);
+
+        ctx.addRenderable(sidePanelButton);
     }
 
     private void initForScreen(AbstractContainerScreen<? extends AbstractContainerMenu> screen, InventoryPositionInfo invInfo) {

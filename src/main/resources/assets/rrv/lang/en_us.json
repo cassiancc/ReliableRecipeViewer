@@ -68,6 +68,7 @@
   "cheatmode.rrv.denied": "You do not have permission to use the cheatmode",
   "rrv.client_settings.title": "RRV Client Settings",
   "rrv.client_settings.btn": "RRV Client Settings",
+  "rrv.side_panel.btn": "Side Panel: %s",
   "rrv.client_settings.background": "Background",
   "rrv.client_settings.background.tooltip": "Whether to draw a background behind the overlay panels.",
   "rrv.client_settings.background.enabled": "Draw",
