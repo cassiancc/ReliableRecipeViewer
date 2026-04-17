@@ -2,8 +2,8 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -19,7 +19,7 @@ import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
-import cc.cassian.rrv.common.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -398,7 +398,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         //? fabric {
         if (ModCompat.POLYDEX && clientRecipeType instanceof PolydexClientRecipeType) {
-            RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
+            ClientNetworkManager.sendPacketToServer(new StackActionPayload(ActionType.ANY, ""));
         }
         //?}
 

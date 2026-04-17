@@ -27,7 +27,7 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.common.mixin.world.entity.npc.VillagerTradeAccessor;
 import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.*;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

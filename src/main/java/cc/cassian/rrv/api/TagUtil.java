@@ -1,15 +1,13 @@
 package cc.cassian.rrv.api;
 
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -20,7 +18,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Helper class for network encoding based on CompoundTags

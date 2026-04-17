@@ -23,52 +23,45 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     private final SlotContent base, template;
     private final SlotContent result;
 
-    private final boolean isTrimType;
-    private final SlotContent upgradeResult;
+    private final int priority;
     private final Identifier id;
 
-    /// Smithing trim recipes
-    public SmithingClientRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern) {
-        this.isTrimType = true;
+    public SmithingClientRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, SlotContent result, int priority) {
+        this.priority = priority;
         this.id = id;
-
         this.template = template;
         this.base = base;
         this.additionIngredient = additionIngredient;
-        this.upgradeResult = null;
+        this.result = result;
+    }
 
+    /// Smithing trim recipes
+    public static SmithingClientRecipe trimRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern) {
+        return new SmithingClientRecipe(id, template, base, additionIngredient, getPossibleResults(additionIngredient, base, trimPattern), 1);
+    }
+
+    /// Smithing trim recipes
+    public static SmithingClientRecipe trimRecipe(Identifier id, Ingredient additionIngredient, Ingredient base, Ingredient template, TrimPattern trimPattern) {
+        return trimRecipe(id, SlotContent.of(additionIngredient), SlotContent.of(base), SlotContent.of(template), trimPattern);
+    }
+
+    /// Smithing transformation recipes
+    public static SmithingClientRecipe transformationRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, SlotContent upgradeResult) {
+        return new SmithingClientRecipe(id, additionIngredient, base, template, upgradeResult, 0);
+    }
+
+    /// Smithing transformation recipes
+    public static SmithingClientRecipe transformationRecipe(Identifier id, Ingredient additionIngredient, Ingredient base, Ingredient template, ItemStackTemplate upgradeResult) {
+        return transformationRecipe(id, SlotContent.of(additionIngredient), SlotContent.of(base), SlotContent.of(template), SlotContent.of(upgradeResult));
+    }
+
+    private static SlotContent getPossibleResults(SlotContent additionIngredient, SlotContent base, TrimPattern trimPattern) {
         List<ItemStack> possibleResults = new ArrayList<>();
 
-        this.additionIngredient.getValidContents().forEach(addition -> {
-            possibleResults.add(SmithingTrimRecipe.applyTrim(this.base.next(), addition, Holder.direct(trimPattern)));
+        additionIngredient.getValidContents().forEach(addition -> {
+            possibleResults.add(SmithingTrimRecipe.applyTrim(base.next(), addition, Holder.direct(trimPattern)));
         });
-
-        this.result = SlotContent.of(possibleResults);
-
-    }
-
-    /// Smithing trim recipes
-    public SmithingClientRecipe(Identifier id, Ingredient additionIngredient, Ingredient base, Ingredient template, TrimPattern trimPattern) {
-        this(id, SlotContent.of(additionIngredient), SlotContent.of(base), SlotContent.of(template), trimPattern);
-    }
-
-    /// Smithing transformation recipes
-    public SmithingClientRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, SlotContent upgradeResult) {
-        this.isTrimType = false;
-        this.id = id;
-
-        this.template = template;
-        this.base = base;
-        this.additionIngredient = additionIngredient;
-        this.upgradeResult = upgradeResult;
-
-        this.result = this.upgradeResult;
-
-    }
-
-    /// Smithing transformation recipes
-    public SmithingClientRecipe(Identifier id, Ingredient additionIngredient, Ingredient base, Ingredient template, ItemStackTemplate upgradeResult) {
-        this(id, SlotContent.of(additionIngredient), SlotContent.of(base), SlotContent.of(template), SlotContent.of(upgradeResult));
+        return SlotContent.of(possibleResults);
     }
 
     @Override
@@ -98,7 +91,7 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
 
     @Override
     public int getPriority() {
-        return this.isTrimType ? 1 : 0;
+        return priority;
     }
 
     @Override

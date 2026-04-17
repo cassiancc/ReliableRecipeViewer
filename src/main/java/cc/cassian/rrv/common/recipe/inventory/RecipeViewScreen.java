@@ -7,7 +7,7 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -246,7 +246,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
                             HashMap<Integer, HashMap<Integer, ItemStack>> usedPlayerSlots = Minecraft.getInstance().hasShiftDown() ? transferData.getStackedData().getUsedPlayerSlots() : transferData.getUsedPlayerSlots();
                             //TODO make component required in recipes
-                            RrvClientNetworkManager.sendPacketToServer(new ServerboundTransferPayload(map.getTransferMap(), usedPlayerSlots));
+                            ClientNetworkManager.sendPacketToServer(new ServerboundTransferPayload(map.getTransferMap(), usedPlayerSlots));
 
                         }
 

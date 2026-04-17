@@ -4,7 +4,7 @@ package cc.cassian.rrv.fabric;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.PolymerClientIntegration;
@@ -30,7 +30,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
         ReliableRecipeViewerClient.bootstrap();
 
-        RrvClientNetworkManager.registerPayloads();
+        ClientNetworkManager.registerPayloads();
 
         FabricLoader.getInstance().invokeEntrypoints("rrv_client", ReliableRecipeViewerClientPlugin.class, ReliableRecipeViewerClientPlugin::onIntegrationInitialize);
 

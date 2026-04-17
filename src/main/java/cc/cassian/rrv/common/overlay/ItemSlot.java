@@ -2,7 +2,7 @@ package cc.cassian.rrv.common.overlay;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -127,7 +127,7 @@ public class ItemSlot {
         }
 
         if (mouseButton == 0 && ReliableRecipeViewerClient.isCheatmodeActive()) {
-            RrvClientNetworkManager.sendPacketToServer(new ServerboundPickCheatmodeItemPayload(this.stack.copy(), this.currentCheatmodeCount));
+            ClientNetworkManager.sendPacketToServer(new ServerboundPickCheatmodeItemPayload(this.stack.copy(), this.currentCheatmodeCount));
             return;
         }
 

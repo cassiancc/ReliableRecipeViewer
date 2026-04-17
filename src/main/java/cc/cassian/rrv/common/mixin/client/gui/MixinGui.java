@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.mixin.client.gui;
 
 import cc.cassian.rrv.common.overlay.OverlayManager;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -26,9 +26,9 @@ public abstract class MixinGui {
     @Inject(method = "extractRenderState", at = @At("RETURN"))
     private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         Font font = this.getFont();
-        String statusMsg = ClientRecipeManager.INSTANCE.status().get();
+        String statusMsg = InternalRecipeManager.INSTANCE.status().get();
 
-        if(!ClientRecipeManager.INSTANCE.status().isIdle()) {
+        if(!InternalRecipeManager.INSTANCE.status().isIdle()) {
 			guiGraphics.text(font, statusMsg, guiGraphics.guiWidth() - font.width(statusMsg) - 2, 2, -1);
 		}
     }
@@ -47,9 +47,9 @@ public abstract class MixinGui {
 
     @Inject(method = "extractRenderState", at = @At("RETURN"))
     private void extractRenderStateRecipeProgress(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci, @Local GuiGraphicsExtractor guiGraphics) {
-        String statusMsg = ClientRecipeManager.INSTANCE.status().get();
+        String statusMsg = InternalRecipeManager.INSTANCE.status().get();
 
-        if(!ClientRecipeManager.INSTANCE.status().isIdle()) {
+        if(!InternalRecipeManager.INSTANCE.status().isIdle()) {
             Font font = this.minecraft.font;
             guiGraphics.text(font, statusMsg, guiGraphics.guiWidth() - font.width(statusMsg) - 2, 2, -1);
         }

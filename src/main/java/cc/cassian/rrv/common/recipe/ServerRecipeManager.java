@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.recipe;
 
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;

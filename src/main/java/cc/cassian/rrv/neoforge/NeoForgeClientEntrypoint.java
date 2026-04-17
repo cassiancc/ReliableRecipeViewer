@@ -4,7 +4,7 @@
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -86,7 +86,7 @@ public class NeoForgeClientEntrypoint {
 
     @SubscribeEvent
     public static void onPayloadRegistry(RegisterClientPayloadHandlersEvent event) {
-        RrvClientNetworkManager.registerPayloads(event);
+        ClientNetworkManager.registerPayloads(event);
     }
 
     @SubscribeEvent

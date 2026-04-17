@@ -3,7 +3,7 @@ package cc.cassian.rrv.common.integration.polymer.recipe;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -11,7 +11,6 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -52,7 +51,7 @@ public class PolydexClientRecipe implements ReliableClientRecipe {
 	}
 
 	public static void tryOpen(ActionType type, String stringId) {
-		RrvClientNetworkManager.sendPacketToServer(new StackActionPayload(type, stringId));
+		ClientNetworkManager.sendPacketToServer(new StackActionPayload(type, stringId));
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.recipe.util;
 
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

@@ -26,7 +26,7 @@ import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.*;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -282,10 +282,10 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             var smithingRecipe = smithingRecipeRecipeHolder.value();
 
             if (smithingRecipe instanceof SmithingTrimRecipe trimRecipe)
-                recipeList.add(new SmithingClientRecipe(smithingRecipeRecipeHolder.id().identifier(), trimRecipe.baseIngredient(), trimRecipe.templateIngredient().orElse(null), trimRecipe.additionIngredient().orElse(null), trimRecipe.pattern.value()));
+                recipeList.add(SmithingClientRecipe.trimRecipe(smithingRecipeRecipeHolder.id().identifier(), trimRecipe.baseIngredient(), trimRecipe.templateIngredient().orElse(null), trimRecipe.additionIngredient().orElse(null), trimRecipe.pattern.value()));
 
             if (smithingRecipe instanceof SmithingTransformRecipe transformRecipe) {
-                recipeList.add(new SmithingClientRecipe(smithingRecipeRecipeHolder.id().identifier(), transformRecipe.baseIngredient(), transformRecipe.templateIngredient().orElse(null), transformRecipe.additionIngredient().orElse(null), transformRecipe.result));
+                recipeList.add(SmithingClientRecipe.transformationRecipe(smithingRecipeRecipeHolder.id().identifier(), transformRecipe.baseIngredient(), transformRecipe.templateIngredient().orElse(null), transformRecipe.additionIngredient().orElse(null), transformRecipe.result));
             }
 
         });

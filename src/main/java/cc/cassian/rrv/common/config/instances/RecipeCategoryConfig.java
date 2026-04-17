@@ -4,7 +4,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
-import cc.cassian.rrv.common.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.Identifier;
 

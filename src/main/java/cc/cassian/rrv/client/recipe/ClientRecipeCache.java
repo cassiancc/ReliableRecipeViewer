@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.recipe;
+package cc.cassian.rrv.client.recipe;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -7,6 +7,8 @@ import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

@@ -6,13 +6,21 @@ import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public class FabricPlatformImpl implements Platform {
@@ -81,6 +89,13 @@ public class FabricPlatformImpl implements Platform {
     @Override
     public Path getDataDirectory() {
         return FabricLoader.getInstance().getGameDir().resolve("data");
+    }
+
+    @Override
+    public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return List.of();
+        return level.recipeAccess().getSynchronizedRecipes().getAllOfType(type);
     }
 
 

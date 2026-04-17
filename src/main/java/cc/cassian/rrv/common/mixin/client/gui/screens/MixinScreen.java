@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens;
 
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;

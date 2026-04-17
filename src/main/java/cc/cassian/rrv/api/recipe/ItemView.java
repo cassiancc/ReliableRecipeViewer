@@ -5,7 +5,7 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
