@@ -16,11 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
+import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
 public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
-
-
-    protected static final int ITEM_ENTRY_SIZE = 19;
 
     protected int itemStartX, itemStartY, itemEndX, itemEndY;
     protected int startIndex;

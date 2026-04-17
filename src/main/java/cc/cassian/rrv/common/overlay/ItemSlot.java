@@ -4,7 +4,6 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.ChatFormatting;
@@ -32,6 +31,7 @@ public class ItemSlot {
 
     private static final Identifier SLOT_HIGHLIGHT_BACK_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_back");
     private static final Identifier SLOT_HIGHLIGHT_FRONT_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_front");
+    public static final int ITEM_ENTRY_SIZE = 19;
 
     private final ItemStack stack;
     private final int x, y;
@@ -97,7 +97,7 @@ public class ItemSlot {
                 tooltip.addLast(Component.translatable("cheatmode.rrv.taking", count).withStyle(ChatFormatting.GRAY));
             }
 
-            guiGraphics.fill(this.x, this.y, this.x + 20, this.y + 20, new Color(255, 255, 255, 32).getRGB());
+            guiGraphics.fill(this.x, this.y, this.x + ITEM_ENTRY_SIZE, this.y + ITEM_ENTRY_SIZE, new Color(255, 255, 255, 32).getRGB());
 
         }
         guiGraphics.fakeItem(this.stack, this.x + 2, this.y + 2);
@@ -148,7 +148,7 @@ public class ItemSlot {
     }
 
     boolean isMouseOver(int mouseX, int mouseY) {
-        return mouseX >= this.x && mouseX < this.x + 20 && mouseY >= this.y && mouseY < this.y + 20;
+        return mouseX >= this.x && mouseX < this.x + ITEM_ENTRY_SIZE && mouseY >= this.y && mouseY < this.y + ITEM_ENTRY_SIZE;
     }
 
     public boolean isHovered() {

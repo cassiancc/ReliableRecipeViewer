@@ -41,6 +41,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
+
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public static final ItemViewOverlay INSTANCE = new ItemViewOverlay();
