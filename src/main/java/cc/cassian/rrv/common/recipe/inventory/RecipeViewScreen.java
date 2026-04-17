@@ -323,7 +323,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             replaceTooltipWithTagDetails(tooltip, tagTag, "_blockTag", "tag.block.", index);
         }
 
-        if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_result")) {
+        if (Configs.CLIENT_SETTINGS.isShowRecipeId() && tagTag.contains(ReliableRecipeViewer.MOD_ID + "_result")) {
             String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_result", "Error");
             MutableComponent tag = Component.literal(tagKeyString).withStyle(ChatFormatting.GRAY);
             tooltip.add(index, Component.translatable("view.rrv.recipe_id", tag).withStyle(ChatFormatting.GOLD));
