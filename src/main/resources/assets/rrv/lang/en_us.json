@@ -78,7 +78,7 @@
   "rrv.client_settings.resize_mode.wrap": "Wrap",
   "rrv.client_settings.resize_mode.cut": "Cut",
   "rrv.client_settings.append_namespace": "Namespace Tooltips",
-  "rrv.client_settings.append_namespace.tooltip": "Whether a mod's name should be shown in the tooltip.",
+  "rrv.client_settings.append_namespace.tooltip": "Whether a mod's name should be shown in the tooltip. Will be automatically disabled when using mods with similar functionality, including Jade, WTHIT, and Item Descriptions.",
   "rrv.client_settings.append_namespace.show": "Show",
   "rrv.client_settings.append_namespace.in_item_view": "In Item View",
   "rrv.client_settings.append_namespace.hide": "Hide",
