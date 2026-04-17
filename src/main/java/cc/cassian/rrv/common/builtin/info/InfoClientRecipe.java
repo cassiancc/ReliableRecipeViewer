@@ -7,11 +7,14 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
 
@@ -21,13 +24,13 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	private final Identifier id;
 
 	/// Please add an [Identifier].
-	@Deprecated
+	@Deprecated(since = "8.0.0")
 	public InfoClientRecipe(SlotContent key, String text) {
 		this(null, key, text);
 	}
 
 	/// Please add an [Identifier].
-	@Deprecated
+	@Deprecated(since = "8.0.0")
 	public InfoClientRecipe(SlotContent key, Component text) {
 		this(null, key, text);
 	}
@@ -52,6 +55,8 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 		return id;
 	}
 
+	boolean rendered = false;
+
 	@Override
 	public ReliableClientRecipeType getType() {
 		return InfoClientRecipeType.INSTANCE;
@@ -64,10 +69,23 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 
 	@Override
 	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
-		widget.setX(recipePosition.left() + 5);
-		widget.setY(recipePosition.top() + 20);
-		screen.addRecipeWidget(widget);
+		if (!rendered) {
+			MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
+			widget.setX(recipePosition.left() + 5);
+			widget.setY(recipePosition.top() + 20);
+			screen.addRecipeWidget(widget);
+			rendered = true;
+		}
+	}
+
+	@Override
+	public void initRecipe() {
+		rendered = false;
+	}
+
+	@Override
+	public void fadeRecipe() {
+		rendered = false;
 	}
 
 	@Override

@@ -26,3 +26,4 @@
 - Bug with overlay toggling.
 - Improvements to config handling.
 - Bug causing keybinds to remove bookmarks.
+- Info recipe rendering error with some resource packs.
