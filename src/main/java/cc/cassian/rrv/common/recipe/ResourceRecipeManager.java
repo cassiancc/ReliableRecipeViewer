@@ -62,7 +62,7 @@ public class ResourceRecipeManager {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
 				if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
 					var text = parsedRecipe.get("text").getAsString();
-					infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
+					infoRecipes.add(new InfoClientRecipe(identifier.withPath((path)->path.replace(".json", "")), RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
 					LOGGER.debug("RRV: Loaded info recipe {}", identifier);
 				}
 			} catch (IOException e) {

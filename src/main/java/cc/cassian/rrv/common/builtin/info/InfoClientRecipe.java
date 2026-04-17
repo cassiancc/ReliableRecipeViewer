@@ -5,31 +5,51 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
 public class InfoClientRecipe implements ReliableClientRecipe {
 	private final SlotContent key;
 	private final MutableComponent text;
+	private final Identifier id;
 
+	/// Please add an [Identifier].
+	@Deprecated
 	public InfoClientRecipe(SlotContent key, String text) {
+		this(null, key, text);
+	}
+
+	/// Please add an [Identifier].
+	@Deprecated
+	public InfoClientRecipe(SlotContent key, Component text) {
+		this(null, key, text);
+	}
+
+	public InfoClientRecipe(Identifier identifier, SlotContent key, String text) {
 		this.key = key;
+		this.id = identifier;
 		this.text = Component.translatableWithFallback(text, text).withColor(-16777216);
 	}
 
-	public InfoClientRecipe(SlotContent key, Component text) {
+	public InfoClientRecipe(Identifier identifier, SlotContent key, Component text) {
 		this.key = key;
+		this.id = identifier;
 		if (text.getStyle().isEmpty())
 			this.text = text.copy().withColor(-16777216);
 		else
 			this.text = text.copy();
+	}
+
+	@Override
+	public Identifier getId() {
+		return id;
 	}
 
 	@Override

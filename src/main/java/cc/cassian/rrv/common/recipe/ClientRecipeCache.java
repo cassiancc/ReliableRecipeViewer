@@ -61,7 +61,9 @@ public class ClientRecipeCache {
 
     public List<ReliableClientRecipe> getRecipes(final Identifier recipeId) {
         ArrayList<ReliableClientRecipe> clientRecipes = new ArrayList<>();
-        multiRecipeMap.get(recipeId).stream().map(recipeMap::get).forEach(recipe -> {
+        List<Identifier> identifiers = multiRecipeMap.get(recipeId);
+        if (identifiers == null) return clientRecipes;
+        identifiers.stream().map(recipeMap::get).forEach(recipe -> {
             if (!clientRecipes.contains(recipe))
                 clientRecipes.add(recipe);
         });

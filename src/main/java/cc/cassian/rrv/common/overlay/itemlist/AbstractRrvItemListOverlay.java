@@ -217,7 +217,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     protected int getWidth(double x, int width, double scrollPage, boolean rightIndex) {
         int i = (int) (x + (((double) width / getMaxPageIndex()) * scrollPage));
         if (i > width && rightIndex) return (int) (x+width);
-        return i;
+        return (int) Math.min(i, x+width);
     }
 
     public List<ItemStack> availableItems() {

@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -67,5 +68,10 @@ public class PolydexClientRecipe implements ReliableClientRecipe {
 	@Override
 	public boolean isVisualOnly() {
 		return true;
+	}
+
+	@Override
+	public Identifier getId() {
+		return Identifier.fromNamespaceAndPath("polydex", "bridge");
 	}
 }
