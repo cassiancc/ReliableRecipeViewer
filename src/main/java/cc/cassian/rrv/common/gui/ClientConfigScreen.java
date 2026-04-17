@@ -75,13 +75,18 @@ public class ClientConfigScreen extends Screen {
         GridLayout.RowHelper styleHelper = style.createRowHelper(2);
         linearLayout.addChild(new StringWidget(clientSetting("style"), this.font));
 
-        addChild(styleHelper, "append_namespace", configs.showNamespaceTooltip(), NamespaceTooltip.values(), (_, sidePanel)-> configs.setNamespaceTooltip(sidePanel));
+        addChild(styleHelper, "theme", "recipe_book", "classic", configs.isRecipeBookTheme(), (_, b) -> configs.setRecipeBookTheme(b));
         addChild(styleHelper, "center_search", "centered", "with_index", configs.isCenterSearch(), (_, b) -> configs.setCenterSearch(b));
+
+        addChild(styleHelper, "append_namespace", configs.showNamespaceTooltip(), NamespaceTooltip.values(), (_, sidePanel)-> configs.setNamespaceTooltip(sidePanel));
         addChild(styleHelper, "background", "enabled", "disabled", configs.drawBackground(), (_, b )-> configs.setDrawBackground(b));
-        addChild(styleHelper, "resize_mode", "wrap", "cut", configs.isItemWrapMode(), (_, b) -> configs.setItemWrapMode(b));
+
         addChild(styleHelper, "show_buttons", "show", "hide", configs.isShowButtons(), (_, b) -> configs.setShowButtons(b));
         addChild(styleHelper, "show_progress_bar", "show", "hide", configs.isShowProgressBar(), (_, b) -> configs.setShowProgressBar(b));
+
+        addChild(styleHelper, "resize_mode", "wrap", "cut", configs.isItemWrapMode(), (_, b) -> configs.setItemWrapMode(b));
         addChild(styleHelper, "right_index", "right", "left", configs.isRightIndex(), (_, b) -> configs.setRightIndex(b));
+
         addChild(styleHelper, "recipe_screen_position", "centered", "top", configs.isCenterRecipeScreen(), (_, b) -> configs.setCenterRecipeScreen(b));
 
         linearLayout.addChild(style);

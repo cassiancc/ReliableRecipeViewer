@@ -25,6 +25,7 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -117,6 +118,12 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
         this.itemEndX = this.x + this.width - 2;
         this.itemEndY = this.y + this.height - FOOTER_HEIGHT;
+
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+            this.itemStartX+=12;
+            this.itemStartY+=6;
+            this.itemEndY-=10;
+        }
     }
 
 
@@ -233,7 +240,10 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED))
             return;
 
-        guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme())
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX()+6, checkedY(), checkedWidth()-6, checkedY()+checkedHeight()-20, -1);
+        else
+            guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
     }
 
     @Override
@@ -255,7 +265,11 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
         if (this.fittingPerPage() > 0) {
-			this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, checkedY() + 10, colour);
+            int y1 = checkedY() + 10;
+            if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+                y1+=4;
+            }
+            this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, y1, colour);
 		}
 
 
@@ -264,7 +278,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
 
-        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex());
+        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
 
     }
 
@@ -280,8 +294,16 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
             this.updateSlots();
         }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
-        back.setPosition(SidePanelOverlay.INSTANCE.itemStartX+2, 3);
-        next.setPosition(SidePanelOverlay.INSTANCE.itemEndX-16, 3);
+
+        int buttonY = 5;
+        int buttonEnd = itemEndX - 16;
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+            buttonY+=5;
+            buttonEnd-=13;
+        }
+
+        back.setPosition(itemStartX+2, buttonY);
+        next.setPosition(buttonEnd, buttonY);
 
 
         next.visible = false;

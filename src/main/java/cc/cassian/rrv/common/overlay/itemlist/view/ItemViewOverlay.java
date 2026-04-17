@@ -30,12 +30,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import org.jspecify.annotations.Nullable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -151,6 +151,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         this.itemEndX = this.x + this.width - 2;
         this.itemEndY = this.y + this.height - FOOTER_HEIGHT;
+
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+            this.itemStartX+=8;
+            this.itemStartY+=6;
+            this.itemEndY-=10;
+        }
     }
 
 
@@ -238,7 +244,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (this.fittingPerPage() == 0)
             return;
 
-        guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme())
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX(), checkedY(), checkedWidth()-4, checkedY()+checkedHeight()-20, -1);
+        else
+            guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
     }
 
     @Override
@@ -252,7 +261,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         if (this.fittingPerPage() > 0) {
-            this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, checkedY() + 10, -1);
+            int y1 = checkedY() + 10;
+            if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+                y1+=4;
+            }
+            this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, y1, -1);
         }
 
 
@@ -264,7 +277,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
 
 
-        drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex());
+        drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex(), false);
 
     }
 
@@ -330,8 +343,16 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ReliableRecipeViewer.of("back"), this::prevPage);
         next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ReliableRecipeViewer.of("next"), this::nextPage);
-        back.setPosition(ItemViewOverlay.INSTANCE.itemStartX+2, 5);
-        next.setPosition(ItemViewOverlay.INSTANCE.itemEndX-16, 5);
+
+        int buttonY = 5;
+        int buttonEnd = itemEndX - 16;
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+            buttonY+=5;
+            buttonEnd-=13;
+        }
+
+        back.setPosition(itemStartX+2, buttonY);
+        next.setPosition(buttonEnd, buttonY);
 
         updateButtons();
     }

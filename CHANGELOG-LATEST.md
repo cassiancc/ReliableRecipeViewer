@@ -1,4 +1,5 @@
 ### Added
+- RRV's overlays have been given a fresh new theme, inspired by the Recipe Book. This can be reverted in the config to restore a more classic appearance. 
 - Vanilla recipes are now synchronized through the Fabric and NeoForge Recipe Synchronization APIs. This allows for using built-in codecs and stream codecs for synchronization, allows for some of RRV's features to function with another recipe viewer on the server (e.g. JEI), and deduplicates effort for synchronizing modded recipes.
   - In your server integration (or earlier), call `ServerRecipeManager.synchronizeRecipeType` with your recipe serializer and recipe type. This will automatically be supplied to NeoForge and Fabric's APIs when they request them.
   - In your client integration, call `ClientRecipeManager.getRecipesForType` to retrieve all synchronized recipes.

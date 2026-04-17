@@ -13,7 +13,7 @@ import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
 
-    private OverlayDisplay showItemView = OverlayDisplay.ENABLED;
+	private OverlayDisplay showItemView = OverlayDisplay.ENABLED;
 	private OverlayDisplay showSidePanel = OverlayDisplay.WITH_ITEM_VIEW;
 	private SidePanel sidePanel = SidePanel.DISABLED;
 	private boolean background = true;
@@ -28,6 +28,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean fluidUnitDroplets = false;
 	private boolean showButtons = true;
 	private boolean recipeBookButton = false;
+	private boolean recipeBookTheme = true;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -151,6 +152,14 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public void setRecipeBookButton(boolean recipeBookButton) {
 		this.recipeBookButton = recipeBookButton;
+	}
+
+	public boolean isRecipeBookTheme() {
+		return recipeBookTheme;
+	}
+
+	public void setRecipeBookTheme(boolean recipeBookTheme) {
+		this.recipeBookTheme = recipeBookTheme;
 	}
 
 	@Override

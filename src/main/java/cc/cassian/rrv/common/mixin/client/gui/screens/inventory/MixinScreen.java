@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Screen.class)
 public class MixinScreen {
 
-	@Inject(method = "extractBackground", at = @At("HEAD"))
+	@Inject(method = "extractBackground", at = @At("RETURN"))
 	private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		if ((Screen) (Object) this instanceof AbstractContainerScreen<?>)
 			OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);

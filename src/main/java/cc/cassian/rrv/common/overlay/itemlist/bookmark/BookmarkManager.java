@@ -17,9 +17,9 @@ public class BookmarkManager {
     protected List<ItemStackTemplate> availableItems = new ArrayList<>();
 
     public void bookmarkItem(ItemStack stack) {
-
-        if (!this.displayItems().contains(stack)) {
-            this.availableItems().add(ItemStackTemplate.fromNonEmptyStack(stack));
+        ItemStackTemplate template = ItemStackTemplate.fromNonEmptyStack(stack);
+        if (!this.availableItems.contains(template)) {
+            this.availableItems().add(template);
             if (!SidePanelOverlay.showBookmarks()) {
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
             }
