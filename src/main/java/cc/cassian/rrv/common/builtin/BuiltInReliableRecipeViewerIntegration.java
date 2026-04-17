@@ -136,27 +136,27 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
 
-        ServerRecipeManager.synchronizeRecipeType(ShapedRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(ShapelessRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(DyeRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(ImbueRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(TransmuteRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(DecoratedPotRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(BookCloningRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(MapExtendingRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(FireworkRocketRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(FireworkStarRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
-        ServerRecipeManager.synchronizeRecipeType(FireworkStarFadeRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
-        ServerRecipeManager.synchronizeRecipeType(BannerDuplicateRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
-        ServerRecipeManager.synchronizeRecipeType(ShieldDecorationRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(RepairItemRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.synchronizeRecipeType(SmeltingRecipe.SERIALIZER, RecipeType.SMELTING);
-        ServerRecipeManager.synchronizeRecipeType(BlastingRecipe.SERIALIZER, RecipeType.BLASTING);
-        ServerRecipeManager.synchronizeRecipeType(CampfireCookingRecipe.SERIALIZER, RecipeType.CAMPFIRE_COOKING);
-        ServerRecipeManager.synchronizeRecipeType(SmokingRecipe.SERIALIZER, RecipeType.SMOKING);
-        ServerRecipeManager.synchronizeRecipeType(StonecutterRecipe.SERIALIZER, RecipeType.SMITHING);
-        ServerRecipeManager.synchronizeRecipeType(SmithingTrimRecipe.SERIALIZER, RecipeType.SMITHING);
-        ServerRecipeManager.synchronizeRecipeType(SmithingTransformRecipe.SERIALIZER, RecipeType.SMITHING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ShapedRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ShapelessRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(DyeRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ImbueRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(TransmuteRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(DecoratedPotRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(BookCloningRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(MapExtendingRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(FireworkRocketRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(FireworkStarRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(FireworkStarFadeRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(BannerDuplicateRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ShieldDecorationRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(RepairItemRecipe.SERIALIZER, RecipeType.CRAFTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(SmeltingRecipe.SERIALIZER, RecipeType.SMELTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(BlastingRecipe.SERIALIZER, RecipeType.BLASTING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(CampfireCookingRecipe.SERIALIZER, RecipeType.CAMPFIRE_COOKING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(SmokingRecipe.SERIALIZER, RecipeType.SMOKING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(StonecutterRecipe.SERIALIZER, RecipeType.SMITHING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(SmithingTrimRecipe.SERIALIZER, RecipeType.SMITHING);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(SmithingTransformRecipe.SERIALIZER, RecipeType.SMITHING);
 
         //Trading
         VillagerServerRecipe.registerDefaultProcessors();

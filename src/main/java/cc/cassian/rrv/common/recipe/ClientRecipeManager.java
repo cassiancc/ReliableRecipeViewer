@@ -122,10 +122,6 @@ public class ClientRecipeManager {
 	}
 
 	//? fabric {
-    public static SynchronizedRecipes getSynchronizedRecipes() {
-        return Minecraft.getInstance().level.recipeAccess().getSynchronizedRecipes();
-    }
-
 	///
 	/// This method can be used to retrieve recipe synchronized via [ServerRecipeManager#synchronizeRecipeType], which uses the Fabric/NeoForge recipe synchronization APIs.
 	///
@@ -142,16 +138,13 @@ public class ClientRecipeManager {
 	///     }
 	/// }
 	/// ```
-    public static <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
-        return getSynchronizedRecipes().getAllOfType(type);
+    public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
+        return Minecraft.getInstance().level.recipeAccess().getSynchronizedRecipes().getAllOfType(type);
     }
     //?} else {
-	/*public static RecipeMap getSynchronizedRecipes() {
-		return NeoForgeClientEntrypoint.SYNCHRONIZED_RECIPES;
-	}
-
-	public static <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
-		return getSynchronizedRecipes().byType(type);
+	/*
+	public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
+		return NeoForgeClientEntrypoint.SYNCHRONIZED_RECIPES.byType(type);
 	}
 	*///?}
 

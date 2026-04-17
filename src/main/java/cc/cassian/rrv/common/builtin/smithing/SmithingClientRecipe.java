@@ -27,9 +27,34 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     private final SlotContent upgradeResult;
     private final Identifier id;
 
+    /// Smithing trim recipes
+    public SmithingClientRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern) {
+        this.isTrimType = true;
+        this.id = id;
 
-    public SmithingClientRecipe(Identifier id, boolean isTrimType, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern, SlotContent upgradeResult) {
-        this.isTrimType = isTrimType;
+        this.template = template;
+        this.base = base;
+        this.additionIngredient = additionIngredient;
+        this.upgradeResult = null;
+
+        List<ItemStack> possibleResults = new ArrayList<>();
+
+        this.additionIngredient.getValidContents().forEach(addition -> {
+            possibleResults.add(SmithingTrimRecipe.applyTrim(this.base.next(), addition, Holder.direct(trimPattern)));
+        });
+
+        this.result = SlotContent.of(possibleResults);
+
+    }
+
+    /// Smithing trim recipes
+    public SmithingClientRecipe(Identifier id, Ingredient additionIngredient, Ingredient base, Ingredient template, TrimPattern trimPattern) {
+        this(id, SlotContent.of(additionIngredient), SlotContent.of(base), SlotContent.of(template), trimPattern);
+    }
+
+    /// Smithing transformation recipes
+    public SmithingClientRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, SlotContent upgradeResult) {
+        this.isTrimType = false;
         this.id = id;
 
         this.template = template;
@@ -37,24 +62,13 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
         this.additionIngredient = additionIngredient;
         this.upgradeResult = upgradeResult;
 
-        if (this.isTrimType) {
-            List<ItemStack> possibleResults = new ArrayList<>();
-
-            this.additionIngredient.getValidContents().forEach(addition -> {
-                possibleResults.add(SmithingTrimRecipe.applyTrim(this.base.next(), addition, Holder.direct(trimPattern)));
-            });
-
-            this.result = SlotContent.of(possibleResults);
-
-            return;
-        }
-
         this.result = this.upgradeResult;
 
     }
 
-    public SmithingClientRecipe(Identifier identifier, boolean isTrim, Ingredient base, Ingredient template, Ingredient addition, TrimPattern pattern, @Nullable ItemStackTemplate upgradeResult) {
-        this(identifier, isTrim, SlotContent.of(addition), SlotContent.of(base), SlotContent.of(template), pattern, SlotContent.of(upgradeResult));
+    /// Smithing transformation recipes
+    public SmithingClientRecipe(Identifier id, Ingredient additionIngredient, Ingredient base, Ingredient template, ItemStackTemplate upgradeResult) {
+        this(id, SlotContent.of(additionIngredient), SlotContent.of(base), SlotContent.of(template), SlotContent.of(upgradeResult));
     }
 
     @Override

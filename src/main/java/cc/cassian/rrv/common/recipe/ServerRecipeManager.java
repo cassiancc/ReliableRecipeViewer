@@ -56,7 +56,7 @@ public class ServerRecipeManager {
     ///
     /// Recipes can be retrieved in the client plugin via [ClientRecipeManager#getRecipesForType].
     ///
-    public static void synchronizeRecipeType(RecipeSerializer<?> serializer, RecipeType<?> type) {
+    public void synchronizeRecipeType(RecipeSerializer<?> serializer, RecipeType<?> type) {
         //? fabric
         RecipeSynchronization.synchronizeRecipeSerializer(serializer);
         //? neoforge {

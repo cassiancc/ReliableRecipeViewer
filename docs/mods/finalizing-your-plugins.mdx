@@ -22,7 +22,7 @@ public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
     @Override
     public void onIntegrationInitialize() {
         // Here, you can tell the server to synchronize your mod's recipes to the client. In this example, we're using the server recipe manager to synchronize recipes for an example mod's upgrading recipe type.
-        ServerRecipeManager.synchronizeRecipeType(ExampleModRecipes.UPGRADING_RECIPE_SERIALIZER, ExampleModRecipes.UPGRADING_RECIPE_TYPE);
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ExampleModRecipes.UPGRADING_RECIPE_SERIALIZER, ExampleModRecipes.UPGRADING_RECIPE_TYPE);
     }
 }
 ```
@@ -66,7 +66,7 @@ public class ExampleModClientIntegration implements ReliableRecipeViewerClientPl
         //For the client
         ItemView.addClientRecipeProvider(recipeList -> { // provides a list of `ReliableClientRecipe`s to add to
             // Upgrading
-            ClientRecipeManager.getRecipesForType(ExampleModRecipes.UPGRADING_RECIPE_TYPE).forEach(upgradingRecipeHolder -> { // provides a list of `RecipeHolder<UpgradingRecipe>`s for you to convert
+            ClientRecipeManager.INSTANCE.getRecipesForType(ExampleModRecipes.UPGRADING_RECIPE_TYPE).forEach(upgradingRecipeHolder -> { // provides a list of `RecipeHolder<UpgradingRecipe>`s for you to convert
                 UpgradingRecipe recipe = upgradingRecipeHolder.value();
                 recipeList.add(new UpgradingClientRecipe(recipe.getBaseItem(), recipe.getUpgradeItem(), recipe.getResult()));
             });

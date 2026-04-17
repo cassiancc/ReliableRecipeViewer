@@ -89,19 +89,19 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             // Crafting
             addCraftingRecipes(recipeList, level);
             // Smelting
-            ClientRecipeManager.getRecipesForType(RecipeType.SMELTING).forEach(smeltingRecipeRecipeHolder -> recipeList.add(new SmeltingClientRecipe(smeltingRecipeRecipeHolder)));
+            ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMELTING).forEach(smeltingRecipeRecipeHolder -> recipeList.add(new SmeltingClientRecipe(smeltingRecipeRecipeHolder)));
             // Blasting
-            ClientRecipeManager.getRecipesForType(RecipeType.BLASTING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new BlastingClientRecipe(smokingRecipeRecipeHolder)));
+            ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.BLASTING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new BlastingClientRecipe(smokingRecipeRecipeHolder)));
             // Smoking
-            ClientRecipeManager.getRecipesForType(RecipeType.SMOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new SmokingClientRecipe(smokingRecipeRecipeHolder)));
+            ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new SmokingClientRecipe(smokingRecipeRecipeHolder)));
             // Campfire
-            ClientRecipeManager.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new CampfireClientRecipe(smokingRecipeRecipeHolder)));
+            ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new CampfireClientRecipe(smokingRecipeRecipeHolder)));
             // Fuel
             addFuelRecipes(recipeList, level);
             // Smithing
             addSmithingRecipes(recipeList);
             // Stonecutting
-            ClientRecipeManager.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipeRecipeHolder -> recipeList.add(new StonecutterClientRecipe(stonecutterRecipeRecipeHolder)));
+            ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipeRecipeHolder -> recipeList.add(new StonecutterClientRecipe(stonecutterRecipeRecipeHolder)));
             // Anvil Combining
             recipeList.addAll(addAnvilCombiningRecipes());
             // Info
@@ -132,7 +132,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addCraftingRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
-        ClientRecipeManager.getRecipesForType(RecipeType.CRAFTING).forEach(craftingRecipeHolder -> {
+        ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.CRAFTING).forEach(craftingRecipeHolder -> {
             var id = craftingRecipeHolder.id().identifier();
             var recipe = craftingRecipeHolder.value();
             if (recipe instanceof ShapelessRecipe shapelessRecipe)
@@ -278,14 +278,14 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addSmithingRecipes(List<ReliableClientRecipe> recipeList) {
-        ClientRecipeManager.getRecipesForType(RecipeType.SMITHING).forEach(smithingRecipeRecipeHolder -> {
+        ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.SMITHING).forEach(smithingRecipeRecipeHolder -> {
             var smithingRecipe = smithingRecipeRecipeHolder.value();
 
             if (smithingRecipe instanceof SmithingTrimRecipe trimRecipe)
-                recipeList.add(new SmithingClientRecipe(smithingRecipeRecipeHolder.id().identifier(), true, trimRecipe.baseIngredient(), trimRecipe.templateIngredient().orElse(null), trimRecipe.additionIngredient().orElse(null), trimRecipe.pattern.value(), null));
+                recipeList.add(new SmithingClientRecipe(smithingRecipeRecipeHolder.id().identifier(), trimRecipe.baseIngredient(), trimRecipe.templateIngredient().orElse(null), trimRecipe.additionIngredient().orElse(null), trimRecipe.pattern.value()));
 
             if (smithingRecipe instanceof SmithingTransformRecipe transformRecipe) {
-                recipeList.add(new SmithingClientRecipe(smithingRecipeRecipeHolder.id().identifier(), false, transformRecipe.baseIngredient(), transformRecipe.templateIngredient().orElse(null), transformRecipe.additionIngredient().orElse(null), null, transformRecipe.result));
+                recipeList.add(new SmithingClientRecipe(smithingRecipeRecipeHolder.id().identifier(), transformRecipe.baseIngredient(), transformRecipe.templateIngredient().orElse(null), transformRecipe.additionIngredient().orElse(null), transformRecipe.result));
             }
 
         });
