@@ -19,9 +19,7 @@ import java.util.List;
 
 public class SmithingClientRecipe implements ReliableClientRecipe {
 
-    private final SlotContent additionIngredient;
-    private final SlotContent base, template;
-    private final SlotContent result;
+    private final SlotContent additionIngredient, base, template, result;
 
     private final int priority;
     private final Identifier id;
@@ -37,7 +35,7 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
 
     /// Smithing trim recipes
     public static SmithingClientRecipe trimRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern) {
-        return new SmithingClientRecipe(id, template, base, additionIngredient, getPossibleResults(additionIngredient, base, trimPattern), 1);
+        return new SmithingClientRecipe(id, additionIngredient, base, template, getPossibleResults(additionIngredient, base, trimPattern), 1);
     }
 
     /// Smithing trim recipes
