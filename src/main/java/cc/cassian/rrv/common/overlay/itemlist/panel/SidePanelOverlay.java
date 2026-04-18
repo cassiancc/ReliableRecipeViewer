@@ -268,7 +268,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
                 y1+=4;
             }
-            this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, y1, colour);
+            this.drawScaledString(font, guiGraphics, page, (checkedX() + checkedWidth()) / 2, y1, colour);
 		}
 
 

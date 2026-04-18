@@ -1,5 +1,6 @@
 package cc.cassian.rrv.client.recipe;
 
+import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
@@ -9,9 +10,12 @@ import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
@@ -128,23 +132,6 @@ public class ClientRecipeCache {
     }
 
     public void sortModType(ReliableServerRecipeType<?> type) {
-        int id;
-        // synchronized recipes
-        for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {
-            List<ReliableClientRecipe> recipes = new ArrayList<>();
-            try {
-                clientRecipeProvider.provide(recipes);
-            } catch (Exception e) {
-                ReliableRecipeViewer.LOGGER.error("Failed to add client recipes {}, skipping it...", e.getMessage());
-                continue;
-            }
-            for (id = 0; id < recipes.size(); id++) {
-                ReliableClientRecipe clientRecipe = recipes.get(id);
-                handleClientRecipe(clientRecipe.entryId(), clientRecipe, id);
-            }
-        }
-
-
         // wrapped recipes
         ItemViewRecipes.ClientRecipeWrapper<?> wrapper = ItemViewRecipes.INSTANCE.wrapperMap().getOrDefault(type, null);
 
@@ -169,9 +156,27 @@ public class ClientRecipeCache {
             if (wrappedRecipes.isEmpty())
                 continue;
 
-            for (id = 0; id < wrappedRecipes.size(); id++) {
+            for (int id = 0; id < wrappedRecipes.size(); id++) {
                 ReliableClientRecipe wrapped = wrappedRecipes.get(id);
                 handleClientRecipe(Objects.requireNonNullElse(wrapped.getId(), modEntry.modRecipeId()), wrapped, id);
+            }
+        }
+    }
+
+    public void buildSynchronizedRecipeCache() {
+        if (!Platform.INSTANCE.getRecipesForType(RecipeType.CRAFTING).isEmpty()) InternalRecipeManager.INSTANCE.setSyncFailed(false);
+
+        for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {
+            List<ReliableClientRecipe> recipes = new ArrayList<>();
+            try {
+                clientRecipeProvider.provide(recipes);
+            } catch (Exception e) {
+                ReliableRecipeViewer.LOGGER.error("Failed to add client recipes {}, skipping it...", e.getMessage());
+                continue;
+            }
+            for (int id = 0; id < recipes.size(); id++) {
+                ReliableClientRecipe clientRecipe = recipes.get(id);
+                handleClientRecipe(clientRecipe.entryId(), clientRecipe, id);
             }
         }
     }

@@ -5,7 +5,7 @@
 
 A recipe viewer for the latest versions of Minecraft, rebuilt from [EIV](https://modrinth.com/mod/eiv) and designed to be configured.
 
-**NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
+**NOTE: Since 1.21.2, a compatible recipe viewer must be installed on both the client and server. [JustEnoughPaper](https://github.com/cassiancc/JustEnoughPaper/releases/tag/1.0-26.1-SNAPSHOT) can be used on Paper servers to allow clients using the Fabric version of the mod to see recipes.**
 
 ## Features
 

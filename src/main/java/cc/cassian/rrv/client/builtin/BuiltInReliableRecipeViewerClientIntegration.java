@@ -68,7 +68,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
     @Override
     public void onIntegrationInitialize() {
-
+        ItemView.excludeItem(Items.AIR); // required for vanilla/paper servers
 
         ItemView.addClientReloadCallback(() -> {
 

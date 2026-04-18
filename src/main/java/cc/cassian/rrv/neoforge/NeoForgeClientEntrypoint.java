@@ -2,6 +2,8 @@
 /*package cc.cassian.rrv.neoforge;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
@@ -92,6 +94,7 @@ public class NeoForgeClientEntrypoint {
     @SubscribeEvent
     public static void receiveRecipes(RecipesReceivedEvent event) {
         SYNCHRONIZED_RECIPES = event.getRecipeMap();
+        ClientRecipeCache.INSTANCE.buildSynchronizedRecipeCache();
     }
 
 

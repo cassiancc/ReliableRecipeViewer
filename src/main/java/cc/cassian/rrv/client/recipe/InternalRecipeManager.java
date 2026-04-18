@@ -27,6 +27,8 @@ public class InternalRecipeManager {
 
     private volatile LinkedList<Runnable> queuedRecipeTasks = new LinkedList<>();
 
+    private boolean syncFailed = true;
+
     public void queueTask(Runnable runnable) {
         this.queuedRecipeTasks.add(runnable);
     }
@@ -70,8 +72,9 @@ public class InternalRecipeManager {
         if (this.status.isIdle()) {
             if (ClientNetworkManager.canSend(ServerboundRequestRrvUpdate.TYPE)) {
                 ClientNetworkManager.sendPacketToServer(new ServerboundRequestRrvUpdate());
+                setSyncFailed(false);
             } else {
-                Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
+                setSyncFailed(true);
             }
         }
     }
@@ -92,6 +95,15 @@ public class InternalRecipeManager {
 
         this.status.setIdle(true);
     }
+
+    public boolean isSyncFailed() {
+        return syncFailed;
+    }
+
+    public void setSyncFailed(boolean syncFailed) {
+        this.syncFailed = syncFailed;
+    }
+
 
 
     public static class Status {

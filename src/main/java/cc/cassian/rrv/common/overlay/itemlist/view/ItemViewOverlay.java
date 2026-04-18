@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
@@ -362,6 +363,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     /// Open a recipe view screen showing all recipes that either result in or create an item stack - dependent on the supplied [ActionType].
     public void openRecipeView(ItemStack stack, ActionType openType) {
         if (stack.isEmpty()) return;
+
+        if (InternalRecipeManager.INSTANCE.isSyncFailed())
+            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
 
         //? fabric {
         if (ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack)) {
