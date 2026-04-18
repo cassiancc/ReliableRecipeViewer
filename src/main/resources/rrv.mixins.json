@@ -8,6 +8,7 @@
     "EntityPredicateAccessor",
     "advancements.criterion.MixinInventoryChangeTrigger",
     "server.MixinMinecraftServer",
+    "stats.ServerPlayerMixin",
     "world.entity.npc.VillagerTradeAccessor",
     "world.item.alchemy.PotionBrewingAccessor",
     "world.item.crafting.BookCloningRecipeAccessor",

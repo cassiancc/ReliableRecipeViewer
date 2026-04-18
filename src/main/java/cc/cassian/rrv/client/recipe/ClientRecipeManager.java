@@ -9,18 +9,27 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.crafting.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class ClientRecipeManager {
+
+	static ArrayList<Identifier> UNLOCKED_RECIPES = new ArrayList<>();
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("ClientRecipeManager");
 
 	public static final ClientRecipeManager INSTANCE = new ClientRecipeManager();
+
+    public static boolean unlocked(Identifier id) {
+        return UNLOCKED_RECIPES.contains(id);
+    }
 
 	public InternalRecipeManager.Status status() {
 		return InternalRecipeManager.INSTANCE.status();
@@ -58,4 +67,7 @@ public class ClientRecipeManager {
         return Platform.INSTANCE.getRecipesForType(type);
     }
 
+    public void addUnlockedRecipes(List<Identifier> recipes) {
+        UNLOCKED_RECIPES.addAll(recipes);
+    }
 }

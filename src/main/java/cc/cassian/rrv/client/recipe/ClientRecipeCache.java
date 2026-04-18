@@ -113,7 +113,7 @@ public class ClientRecipeCache {
     }
 
     private boolean enabled(ReliableClientRecipe clientRecipe) {
-        return Configs.CATEGORIES.enabled(clientRecipe.getType());
+        return Configs.CATEGORIES.enabled(clientRecipe.getType()) && ClientRecipeManager.unlocked(clientRecipe.getId());
     }
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
@@ -125,7 +125,7 @@ public class ClientRecipeCache {
         this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
 
         ItemStack finalOutputStack = outputStack;
-        recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsResult(finalOutputStack));
+        recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsResult(finalOutputStack));
         recipes.removeIf(this::disabled);
 
         return recipes;
