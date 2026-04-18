@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -10,9 +11,11 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
+import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.NonNullList;
@@ -368,6 +371,34 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         List<ItemStack> craftReferences = this.clientRecipeType.getCraftReferences();
         for (int i = this.currentCraftReference; i < Math.min(this.clientRecipeType.getCraftReferences().size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
             this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i));
+        }
+    }
+
+    public void quickCraft(ReliableClientRecipe currentRecipe, int index) {
+        if (!currentRecipe.supportsItemTransfer())
+            return;
+
+        RRVClientUtil.setScreen(this.getParentScreen());
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        Screen currentScreen = RRVClientUtil.currentScreen();
+        if (player != null && RRVClientUtil.matchesAnyTransferClass(currentRecipe, currentScreen)) {
+
+            AbstractContainerScreen<?> containerScreen = (AbstractContainerScreen<?>) currentScreen;
+
+            if (!currentRecipe.canTransferToScreen(containerScreen))
+                return;
+
+            ReliableClientRecipe.RecipeTransferMap map = new ReliableClientRecipe.RecipeTransferMap();
+            currentRecipe.mapRecipeItems(map, containerScreen);
+
+
+            RecipeTransferData transferData = this.getTransferData().get(index);
+
+            HashMap<Integer, HashMap<Integer, ItemStack>> usedPlayerSlots = Minecraft.getInstance().hasShiftDown() ? transferData.getStackedData().getUsedPlayerSlots() : transferData.getUsedPlayerSlots();
+            //TODO make component required in recipes
+            ClientNetworkManager.sendPacketToServer(new ServerboundTransferPayload(map.getTransferMap(), usedPlayerSlots));
+
         }
     }
 

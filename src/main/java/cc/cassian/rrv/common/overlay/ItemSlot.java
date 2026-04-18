@@ -135,7 +135,7 @@ public class ItemSlot {
             CompoundTag compoundTag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
             if (compoundTag.contains("rrv_result")) {
                 Identifier id = Identifier.parse(compoundTag.get("rrv_result").asString().get());
-                ItemViewOverlay.INSTANCE.openRecipeView(id);
+                ItemViewOverlay.INSTANCE.openRecipeView(id, Minecraft.getInstance().hasControlDown());
                 return;
             }
         }

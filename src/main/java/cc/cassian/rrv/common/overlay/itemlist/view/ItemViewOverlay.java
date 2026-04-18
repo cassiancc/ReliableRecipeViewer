@@ -391,7 +391,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 		};
 
         if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack))) {
-            openRecipeView(stack, openType, clientPlayer, foundRecipes, ReliableClientRecipeType.NONE);
+            openRecipeView(stack, openType, clientPlayer, foundRecipes, ReliableClientRecipeType.NONE, false);
         }
     }
 
@@ -407,16 +407,16 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
         //?}
 
-        openRecipeView(ItemStack.EMPTY, ActionType.ANY, clientPlayer, ClientRecipeCache.INSTANCE.getRecipes(), clientRecipeType);
+        openRecipeView(ItemStack.EMPTY, ActionType.ANY, clientPlayer, ClientRecipeCache.INSTANCE.getRecipes(), clientRecipeType, false);
     }
 
     /// Open a recipe view screen showing all recipes with a specific id.
-    public void openRecipeView(Identifier recipeId) {
-        openRecipeView(ItemStack.EMPTY, ActionType.ANY, Minecraft.getInstance().player, ClientRecipeCache.INSTANCE.getRecipes(recipeId), ReliableClientRecipeType.NONE);
+    public void openRecipeView(Identifier recipeId, boolean shouldAttemptQuickCraft) {
+        openRecipeView(ItemStack.EMPTY, ActionType.ANY, Minecraft.getInstance().player, ClientRecipeCache.INSTANCE.getRecipes(recipeId), ReliableClientRecipeType.NONE, shouldAttemptQuickCraft);
     }
 
     //// Open a recipe view screen. Should be called from a specific scenario with a list of recipes.
-    private void openRecipeView(ItemStack stack, ActionType openType, LocalPlayer clientPlayer, List<ReliableClientRecipe> foundRecipes, ReliableClientRecipeType reliableClientRecipeType) {
+    private void openRecipeView(ItemStack stack, ActionType openType, LocalPlayer clientPlayer, List<ReliableClientRecipe> foundRecipes, ReliableClientRecipeType reliableClientRecipeType, boolean shouldAttemptQuickCraft) {
         if (clientPlayer == null) return;
         if (foundRecipes.isEmpty()) return;
 
@@ -431,7 +431,14 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         int containerId = parent instanceof AbstractContainerScreen<? extends AbstractContainerMenu> containerScreen ? containerScreen.getMenu().containerId : 0;
 
-        RRVClientUtil.setScreen(new RecipeViewScreen(new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType, viewHistory, reliableClientRecipeType), clientPlayer.getInventory(), Component.empty()));
+        RecipeViewMenu recipeViewMenu = new RecipeViewMenu(parent, containerId, clientPlayer.getInventory(), foundRecipes, stack, openType, viewHistory, reliableClientRecipeType);
+
+        if (shouldAttemptQuickCraft && foundRecipes.size() == 1) {
+            recipeViewMenu.quickCraft(foundRecipes.getFirst(), 0);
+            return;
+        }
+
+        RRVClientUtil.setScreen(new RecipeViewScreen(recipeViewMenu, clientPlayer.getInventory(), Component.empty()));
     }
 
 
@@ -455,5 +462,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         searchbar.visible = b;
         next.visible = b;
         back.visible = b;
+    }
+
+    public void quickCraft(Identifier id) {
+        openRecipeView(id, Minecraft.getInstance().hasControlDown());
     }
 }

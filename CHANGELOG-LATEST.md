@@ -10,6 +10,7 @@
   - Client recipes can now be hidden by their ID via the `rrv:exclusions` resource pack file and the API method `ItemView#excludeRecipe`, see the docs for more information.
 - Pressing the Bookmark key while hovering over a recipe result will now bookmark that recipe. Clicking on that bookmark will open the recipe directly.
 - The craftables panel now shows results associated with recipes.
+- CTRL-Clicking on an item slot with an associated recipe will now attempt to quick craft it.
 - Support for imbuing, book cloning, map extending, firework rocket, shield decoration, repairing, and decorated pot crafting recipes.
 - Fluid bucketing is now visible in RRV.
 - Namespace tooltips can now be shown in all contexts, instead of only in the Item View. This is configurable.

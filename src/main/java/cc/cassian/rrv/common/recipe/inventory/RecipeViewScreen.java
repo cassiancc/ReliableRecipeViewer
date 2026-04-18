@@ -20,6 +20,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -186,14 +187,15 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     protected void checkGui() {
         this.clearRecipeWidgets();
 
-        this.prevRecipe.active = this.getMenu().hasPrevRecipe();
-        this.nextRecipe.active = this.getMenu().hasNextRecipe();
+        RecipeViewMenu menu = this.getMenu();
+        this.prevRecipe.active = menu.hasPrevRecipe();
+        this.nextRecipe.active = menu.hasNextRecipe();
 
         this.prevTypePage.visible = this.viewTypePage > 0;
-        this.nextTypePage.visible = this.viewTypePage < (this.getMenu().getViewTypeOrder().size() - 1) / 5;
+        this.nextTypePage.visible = this.viewTypePage < (menu.getViewTypeOrder().size() - 1) / 5;
 
-        this.imageHeight = this.getMenu().getHeight();
-        this.imageWidth = this.getMenu().getWidth();
+        this.imageHeight = menu.getHeight();
+        this.imageWidth = menu.getWidth();
 
         this.topPos = 32;
         if (Configs.CLIENT_SETTINGS.isCenterRecipeScreen())
@@ -205,7 +207,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.prevTypePage.setPosition(this.width / 2 - 64 - 2 - 12, getTopPos() - 19);
         this.nextTypePage.setPosition(this.width / 2 + 64 + 2, getTopPos() - 19);
 
-        this.guiTitle = this.getMenu().getClientRecipeType().getDisplayName();
+        this.guiTitle = menu.getClientRecipeType().getDisplayName();
         this.titleLabelX = this.imageWidth / 2 - this.font.width(this.guiTitle) / 2;
 
         this.page = this.createPageComponent();
@@ -218,46 +220,22 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.transferButtons.forEach(this::removeWidget);
         this.transferButtons.clear();
 
-        int guiLeft = this.leftPos + this.getMenu().guiOffsetLeft();
+        int guiLeft = this.leftPos + menu.guiOffsetLeft();
 
-        for (int i = 0; i < this.getMenu().getCurrentDisplay().size(); i++) {
-            final ReliableClientRecipe currentView = this.getMenu().getCurrentDisplay().get(i);
+        for (int i = 0; i < menu.getCurrentDisplay().size(); i++) {
+            final ReliableClientRecipe currentRecipe = menu.getCurrentDisplay().get(i);
 
-            int guiTop = getTopPos() + this.getMenu().guiOffsetTop(i);
+            int guiTop = getTopPos() + menu.guiOffsetTop(i);
 
             int finalI = i;
-            Button button = Button.builder(Component.literal("+"), button1 -> {
-                        if (!currentView.supportsItemTransfer())
-                            return;
-
-                        RRVClientUtil.setScreen(this.getMenu().getParentScreen());
-                        LocalPlayer player = Minecraft.getInstance().player;
-
-                        if (player != null && RRVClientUtil.matchesAnyTransferClass(currentView, RRVClientUtil.currentScreen())) {
-
-                            if (!currentView.canTransferToScreen((AbstractContainerScreen<?>) RRVClientUtil.currentScreen()))
-                                return;
-
-                            ReliableClientRecipe.RecipeTransferMap map = new ReliableClientRecipe.RecipeTransferMap();
-                            currentView.mapRecipeItems(map, (AbstractContainerScreen<?>) RRVClientUtil.currentScreen());
-
-
-                            RecipeTransferData transferData = this.getMenu().getTransferData().get(finalI);
-
-                            HashMap<Integer, HashMap<Integer, ItemStack>> usedPlayerSlots = Minecraft.getInstance().hasShiftDown() ? transferData.getStackedData().getUsedPlayerSlots() : transferData.getUsedPlayerSlots();
-                            //TODO make component required in recipes
-                            ClientNetworkManager.sendPacketToServer(new ServerboundTransferPayload(map.getTransferMap(), usedPlayerSlots));
-
-                        }
-
-                    })
+            Button button = Button.builder(Component.literal("+"), button1 -> menu.quickCraft(currentRecipe, finalI))
                     .size(12, 12)
-                    .pos(guiLeft + currentView.getType().getDisplayWidth() + 4, guiTop + currentView.getType().getDisplayHeight() / 2 - 6)
+                    .pos(guiLeft + currentRecipe.getType().getDisplayWidth() + 4, guiTop + currentRecipe.getType().getDisplayHeight() / 2 - 6)
                     .build();
 
-            RecipeTransferData data = this.getMenu().getTransferData().get(i);
-            button.active = data.isSuccess() && currentView.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentView, this.getMenu().getParentScreen()) && currentView.canTransferToScreen((AbstractContainerScreen<?>) this.getMenu().getParentScreen());
-            button.visible = currentView.supportsItemTransfer();
+            RecipeTransferData data = menu.getTransferData().get(i);
+            button.active = data.isSuccess() && currentRecipe.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentRecipe, menu.getParentScreen()) && currentRecipe.canTransferToScreen((AbstractContainerScreen<?>) menu.getParentScreen());
+            button.visible = currentRecipe.supportsItemTransfer();
 
             this.addRenderableWidget(button);
             this.transferButtons.add(button);
