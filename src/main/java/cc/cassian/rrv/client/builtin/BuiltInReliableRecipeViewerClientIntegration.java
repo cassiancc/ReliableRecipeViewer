@@ -62,6 +62,7 @@ import net.minecraft.world.level.material.Fluids;
 import java.util.*;
 
 import static cc.cassian.rrv.common.recipe.ResourceRecipeManager.*;
+import static cc.cassian.rrv.common.recipe.util.RrvUtil.blockName;
 import static cc.cassian.rrv.common.recipe.util.RrvUtil.getItemsFromIngredient;
 
 public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {
@@ -343,21 +344,23 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_bone_meal"), SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
             }
             //? neoforge {
-                /*if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES) != null) {
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES).waxed()), axes, SlotContent.of(block)));
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.WAXABLES).waxed())));
+                /*Holder.Reference<Block> blockReference = block.builtInRegistryHolder();
+                if (blockReference.getData(NeoForgeDataMaps.WAXABLES) != null) {
+                    SlotContent waxed = SlotContent.of(blockReference.getData(NeoForgeDataMaps.WAXABLES).waxed());
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_off_", block), waxed, axes, SlotContent.of(block)));
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_", block), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), waxed));
                 }
-                if (block.builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES) != null) {
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(SlotContent.of(block), axes, SlotContent.of(block.builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
+                if (blockReference.getData(NeoForgeDataMaps.STRIPPABLES) != null) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/strip_", block), SlotContent.of(block), axes, SlotContent.of(blockReference.getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
                 }
                 *///?}
         }));
 
         // honeycomb
         //? fabric {
-        HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/waxable_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2)))));
-        HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/wax_off_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), axes, SlotContent.of(block2)))));
-        AxeItem.STRIPPABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/strippable_"+block.builtInRegistryHolder().key().identifier().toString().replace(":", "_")), SlotContent.of(block), axes, SlotContent.of(state)))));
+        HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_", block), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2)))));
+        HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_off_",block), SlotContent.of(block), axes, SlotContent.of(block2)))));
+        AxeItem.STRIPPABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/strip_", block), SlotContent.of(block), axes, SlotContent.of(state)))));
         //?}
 
         // flattenables

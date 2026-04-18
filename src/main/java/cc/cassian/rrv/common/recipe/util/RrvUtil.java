@@ -11,15 +11,19 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 import static net.minecraft.server.permissions.Permissions.*;
@@ -95,5 +99,17 @@ public class RrvUtil {
         List<Item> itemsFromIngredient = getItemsFromIngredient(ingredient);
         if (itemsFromIngredient.isEmpty()) return "";
         return "_from_" + itemsFromIngredient.getFirst().builtInRegistryHolder().key().identifier().getPath();
+    }
+
+    public static String blockName(Block block) {
+        return getIdentifier(block).map(Identifier::toString).orElse("").replace(":", "_");
+    }
+
+    public static Identifier blockName(String prefix, Block block) {
+        return getIdentifier(block).orElseThrow().withPath(path-> "%s%s".formatted(prefix, path.replace(":", "_")));
+    }
+
+    private static @NonNull Optional<Identifier> getIdentifier(Block block) {
+        return BuiltInRegistries.BLOCK.getResourceKey(block).map(ResourceKey::identifier);
     }
 }
