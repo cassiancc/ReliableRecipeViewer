@@ -177,6 +177,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.centerRecipeScreen = load("centerRecipeScreen", this.centerRecipeScreen);
 		this.showRecipeId = load("showRecipeId", this.showRecipeId);
 		this.recipeBookButton = load("recipeBookButton", this.recipeBookButton);
+		this.recipeBookTheme = load("recipeBookTheme", this.recipeBookTheme);
 		this.wrapScrolling = load("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
 	}
@@ -196,6 +197,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("centerRecipeScreen", this.centerRecipeScreen);
 		save("showRecipeId", this.showRecipeId);
 		save("recipeBookButton", this.recipeBookButton);
+		save("recipeBookTheme", this.recipeBookTheme);
 		save("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		save("sidePanel", this.sidePanel, SidePanel.CODEC);
 	}
