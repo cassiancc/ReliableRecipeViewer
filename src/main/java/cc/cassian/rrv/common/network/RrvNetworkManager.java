@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
@@ -191,7 +192,7 @@ public class RrvNetworkManager {
             InternalRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.endCaching(payload.recipeType()));
         });
         registerClientbound(ClientboundUnlockedRecipesPayload.TYPE, ClientboundUnlockedRecipesPayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeManager.INSTANCE.addUnlockedRecipes(payload.recipes());
+            ClientRecipeCache.INSTANCE.addUnlockedRecipes(payload.recipes());
         });
 
 

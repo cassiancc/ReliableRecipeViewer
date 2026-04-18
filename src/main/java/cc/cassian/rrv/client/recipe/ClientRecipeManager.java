@@ -21,15 +21,9 @@ import java.util.List;
 
 public class ClientRecipeManager {
 
-	static ArrayList<Identifier> UNLOCKED_RECIPES = new ArrayList<>();
-
 	private static final Logger LOGGER = LoggerFactory.getLogger("ClientRecipeManager");
 
 	public static final ClientRecipeManager INSTANCE = new ClientRecipeManager();
-
-    public static boolean unlocked(Identifier id) {
-        return UNLOCKED_RECIPES.contains(id);
-    }
 
 	public InternalRecipeManager.Status status() {
 		return InternalRecipeManager.INSTANCE.status();
@@ -65,9 +59,5 @@ public class ClientRecipeManager {
 	/// ```
     public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
         return Platform.INSTANCE.getRecipesForType(type);
-    }
-
-    public void addUnlockedRecipes(List<Identifier> recipes) {
-        UNLOCKED_RECIPES.addAll(recipes);
     }
 }

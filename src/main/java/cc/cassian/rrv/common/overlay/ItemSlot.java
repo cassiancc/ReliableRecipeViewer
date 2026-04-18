@@ -34,7 +34,9 @@ public class ItemSlot {
     public static final int ITEM_ENTRY_SIZE = 19;
 
     private final ItemStack stack;
-    private final int x, y;
+    private final int x;
+    private final int y;
+    private final boolean showHighlight;
 
     private boolean hovered;
 
@@ -45,13 +47,14 @@ public class ItemSlot {
 
         this.x = x;
         this.y = y;
+        this.showHighlight = true;
     }
 
 
     public void changeCheatmodeCount(int change) {
         this.currentCheatmodeCount += change;
 
-        this.currentCheatmodeCount = Math.max(1, Math.min(this.currentCheatmodeCount, this.stack.getMaxStackSize()));
+        this.currentCheatmodeCount = Math.clamp(this.currentCheatmodeCount, 1, this.stack.getMaxStackSize());
     }
 
     /**
@@ -103,7 +106,8 @@ public class ItemSlot {
         guiGraphics.fakeItem(this.stack, this.x + 2, this.y + 2);
         if (recipe != null) {
             guiGraphics.itemDecorations(mc.font, this.stack, this.x+2, this.y+2);
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_stack_highlight"), this.x + 3, this.y + 2, 16, 16);
+            if (showHighlight)
+                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_stack_highlight"), this.x + 3, this.y + 2, 16, 16);
         }
 
         if (this.isHovered())

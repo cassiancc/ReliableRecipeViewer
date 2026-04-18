@@ -35,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 
 import java.awt.*;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -138,27 +139,45 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
         if (Platform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
         this.availableItems.clear();
-        if (showCraftables()) {
-            Minecraft client = Minecraft.getInstance();
-            LocalPlayer player = client.player;
-            if (player == null) {
-                return;
+        switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
+            case BOOKMARKS -> {
+                this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
             }
-			this.inventory = player.getInventory().getNonEquipmentItems();
+            case CRAFTABLES -> {
+                Minecraft client = Minecraft.getInstance();
+                LocalPlayer player = client.player;
+                if (player == null) {
+                    return;
+                }
+                this.inventory = player.getInventory().getNonEquipmentItems();
 
-            if (!(screen instanceof CreativeModeInventoryScreen))
-                inventory.forEach(inventoryItem -> {
-                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
-            });
-            if (this.availableItems.isEmpty()) {
-                try {
-                inventory.forEach(inventoryItem -> {
-                    ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
-                });
-                } catch (ConcurrentModificationException ignored) {}
+                if (!(screen instanceof CreativeModeInventoryScreen))
+                    inventory.forEach(inventoryItem -> {
+                        List<ReliableClientRecipe> recipesForCraftingInput = ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem);
+                        recipesForCraftingInput.forEach(recipe -> updateRecipes(recipe, inventory, true));
+                    });
+                if (this.availableItems.isEmpty()) {
+                    try {
+                        inventory.forEach(inventoryItem -> {
+                            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
+                        });
+                    } catch (ConcurrentModificationException ignored) {}
+                }
             }
-        } else {
-            this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
+            case UNLOCKED -> {
+                if (!(screen instanceof CreativeModeInventoryScreen))
+                    ClientRecipeCache.INSTANCE.getRecipes().stream().filter((recipe)-> RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())).sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
+                        ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
+                        setResultAndAdd(recipe, stack);
+                    });
+                if (this.availableItems.isEmpty()) {
+                    ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
+                        ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
+                        setResultAndAdd(recipe, stack);
+                    });
+                }
+            }
+            case DISABLED -> {}
         }
 
         this.updateSlots();
@@ -177,16 +196,21 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         });
         if (foundIngredientCount.get() == requiredIngredientCount) {
             recipe.getResults().forEach(result -> {
-                result.getValidContents().forEach(ingredient -> {
-                    CompoundTag compoundTag = new CompoundTag();
-                    compoundTag.putString("rrv_result", recipe.entryId().toString());
-                    ingredient.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag));
-                    if (!this.availableItems.contains(ingredient)) {
-                        this.availableItems.add(ingredient);
-                    }
-                });
+                result.getValidContents().forEach(ingredient -> setResultAndAdd(recipe, ingredient));
             });
         }
+    }
+
+    private void setResultAndAdd(ReliableClientRecipe recipe, ItemStack ingredient) {
+        CompoundTag compoundTag = new CompoundTag();
+        compoundTag.putString("rrv_result", recipe.entryId().toString());
+        ingredient.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag));
+        this.availableItems.stream().filter(ingredient1-> ItemStack.isSameItem(ingredient1, ingredient)).findFirst().ifPresentOrElse(stack->{
+            CompoundTag compoundTag1 = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+            compoundTag1.remove("rrv_result");
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag1));
+        }, ()-> this.availableItems.add(ingredient));
+
     }
 
 

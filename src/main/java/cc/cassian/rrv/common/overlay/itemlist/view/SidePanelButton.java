@@ -25,17 +25,9 @@ public class SidePanelButton extends ReliableSpriteIconButton {
 
     public static void nextSidePanel(Button button) {
         if (Minecraft.getInstance().hasShiftDown()) {
-            switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
-                case BOOKMARKS -> Configs.CLIENT_SETTINGS.setSidePanel(DISABLED);
-                case CRAFTABLES -> Configs.CLIENT_SETTINGS.setSidePanel(BOOKMARKS);
-                case DISABLED -> Configs.CLIENT_SETTINGS.setSidePanel(CRAFTABLES);
-            }
+            Configs.CLIENT_SETTINGS.getSidePanel().back();
         } else {
-            switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
-                case BOOKMARKS -> Configs.CLIENT_SETTINGS.setSidePanel(CRAFTABLES);
-                case CRAFTABLES -> Configs.CLIENT_SETTINGS.setSidePanel(DISABLED);
-                case DISABLED -> Configs.CLIENT_SETTINGS.setSidePanel(BOOKMARKS);
-            }
+            Configs.CLIENT_SETTINGS.getSidePanel().next();
         }
         if (!Configs.CLIENT_SETTINGS.getSidePanel().equals(DISABLED)) {
             SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.BUTTON);
