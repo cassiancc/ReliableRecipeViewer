@@ -264,11 +264,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
 
         if (this.fittingPerPage() > 0) {
-            int y1 = checkedY() + 10;
+            int titleX = checkedX() + checkedWidth() / 2;
+            int titleY = checkedY() + 10;
             if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-                y1+=4;
+                titleY+=6;
             }
-            this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, y1, -1);
+            this.drawScaledString(font, guiGraphics, page, titleX, titleY, -1);
         }
 
 

@@ -38,7 +38,7 @@ public class SidePanelButton extends ReliableSpriteIconButton {
             }
         }
         if (!Configs.CLIENT_SETTINGS.getSidePanel().equals(DISABLED)) {
-            SidePanelOverlay.INSTANCE.updateSidePanelIndex("switched via button");
+            SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.BUTTON);
         }
         button.setTooltip(Tooltip.create(getTooltip()));
     }

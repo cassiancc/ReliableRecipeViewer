@@ -23,10 +23,10 @@ public class BookmarkManager {
             if (!SidePanelOverlay.showBookmarks()) {
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
             }
-            updateIndex("a newly bookmarked item!");
+            updateIndex(SidePanelOverlay.Reason.BOOKMARK);
         }
     }
-    private static void updateIndex(String reason) {
+    private static void updateIndex(SidePanelOverlay.Reason reason) {
         Minecraft.getInstance().execute(() -> SidePanelOverlay.INSTANCE.updateSidePanelIndex(reason));
     }
 
@@ -46,7 +46,7 @@ public class BookmarkManager {
         if (this.availableItems().contains(stack)) {
             this.availableItems().remove(stack);
             if (SidePanelOverlay.showBookmarks())
-                updateIndex("a removed bookmarked item!");
+                updateIndex(SidePanelOverlay.Reason.BOOKMARK);
         }
     }
 }
