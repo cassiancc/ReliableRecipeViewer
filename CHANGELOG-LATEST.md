@@ -31,3 +31,4 @@
 - Improvements to config handling.
 - Bug causing keybinds to remove bookmarks.
 - Info recipe rendering error with some resource packs.
+- Improvements to fluid rendering and removal of hardcoded fluids.

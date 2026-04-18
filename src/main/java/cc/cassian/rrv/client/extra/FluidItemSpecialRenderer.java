@@ -6,27 +6,26 @@ import com.mojang.serialization.MapCodec;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
+//? fabric {
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-import static net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent;
+import static net.minecraft.client.renderer.rendertype.RenderTypes.itemTranslucent;
 
-/**
- * A special renderer used for rendering the fluid-item in the world
- */
+/// A special renderer used for rendering a [FluidItem] in the item index.
 public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack> {
 
     private final FluidItemModel model;
@@ -50,7 +49,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
         FluidModel fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
         TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
-        int color = getColor(fluid, fluidModel);
+        int color = getColor(fluidStack, fluid, fluidModel);
         RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
 
         float u0 = uvInfo.u0();
@@ -66,7 +65,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         poseStack.pushPose();
         poseStack.scale(1.0F, 1.0F, 1.0F);
         float finalHeight = height;
-		submitNodeCollector.submitCustomGeometry(poseStack, entityTranslucent(sprite.atlasLocation()), (pose, vertexConsumer) -> {
+		submitNodeCollector.submitCustomGeometry(poseStack, itemTranslucent(sprite.atlasLocation()), (pose, vertexConsumer) -> {
             vertexConsumer.addVertex(pose.pose(), 1.0F, 0, 0).setUv(u0 + width, v0).setOverlay(overlayCoords).setLight(lightCoords).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
             vertexConsumer.addVertex(pose.pose(), 1.0F, renderHeight, 0).setUv(u0 + width, v0 + finalHeight).setOverlay(overlayCoords).setLight(lightCoords).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
             vertexConsumer.addVertex(pose.pose(), 0, renderHeight, 0).setUv(u0, v0 + finalHeight).setOverlay(overlayCoords).setLight(lightCoords).setColor(color).setNormal(0.0F, 0.0F, 1.0F);
@@ -81,12 +80,22 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
     }
 
-    private static int getColor(Fluid fluid, FluidModel fluidModel) {
-        if (fluid == Fluids.WATER) return Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor();
+    private static int getColor(FluidStack fluidStack, Fluid fluid, FluidModel fluidModel) {
+        //? fabric {
+        var handler = FluidVariantRendering.getHandler(fluid);
+        if (handler != null) {
+            return handler.getColor(FluidVariant.of(fluid), null, null);
+        }
         BlockTintSource blockTintSource = fluidModel.tintSource();
         if (blockTintSource != null) {
             return blockTintSource.color(fluid.defaultFluidState().createLegacyBlock());
         }
+        //?} else {
+        /*var fluidTintSource = fluidModel.fluidTintSource();
+        if (fluidTintSource != null) {
+            return fluidTintSource.colorAsStack(fluidStack.toLoaderFluidStack());
+        }
+        *///?}
 		return -1;
 	}
 
