@@ -24,6 +24,7 @@
 - Minor config reorganization.
 - Namespaced tooltips will now default to being disabled if another mod is present that has the feature (WTHIT/Jade/Item Descriptions)
 - Decreased padding on item entries.
+- Incompatible server warning is now displayed when attempting to see recipes to ensure recipe synchronization has completed.
 
 ### Fixed
 - Bug with overlay toggling.

@@ -31,7 +31,6 @@ import net.minecraft.world.item.crafting.*;
 
 import java.util.*;
 
-//TODO block incoming requests while update sending
 public class ServerRecipeManager {
 
     public static final ServerRecipeManager INSTANCE = new ServerRecipeManager();
@@ -57,6 +56,8 @@ public class ServerRecipeManager {
     ///
     /// Recipes can be retrieved in the client plugin via [ClientRecipeManager#getRecipesForType].
     ///
+    /// @param serializer The recipe serializer used for Fabric recipe synchronization.
+    /// @param type The recipe type used for NeoForge recipe synchronization.
     public void synchronizeRecipeType(RecipeSerializer<?> serializer, RecipeType<?> type) {
         //? fabric
         RecipeSynchronization.synchronizeRecipeSerializer(serializer);
@@ -146,6 +147,7 @@ public class ServerRecipeManager {
 
 
     public void informAboutRecipes(ServerPlayer serverPlayer) {
+        //TODO block incoming requests while update sending
         if (PRESENT_RECIPES.isEmpty())
             return;
 
