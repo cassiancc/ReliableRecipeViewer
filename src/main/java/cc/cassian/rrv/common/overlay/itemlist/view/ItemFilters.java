@@ -26,6 +26,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -36,6 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ItemFilters {
 
     public static List<TagKey<Item>> TAGS;
+    private static final List<Item> EXCLUDED_ITEMS = List.of(Items.POTION, Items.TIPPED_ARROW, Items.ENCHANTED_BOOK);
 
     /// Filters just by the items display name and tooltip
     /// @param query The query
@@ -234,7 +236,8 @@ public class ItemFilters {
         List<ItemStack> results = new ArrayList<>();
 
         BuiltInRegistries.ITEM.forEach(item -> {
-            results.add(new ItemStack(item));
+            if (!EXCLUDED_ITEMS.contains(item))
+                results.add(new ItemStack(item));
             results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
         });
 
