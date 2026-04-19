@@ -10,11 +10,11 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
-//? fabric {
-import net.fabricmc.loader.api.FabricLoader;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
+//? fabric {
+import net.fabricmc.loader.api.FabricLoader;
 //?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;

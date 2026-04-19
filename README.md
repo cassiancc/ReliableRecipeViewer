@@ -50,7 +50,7 @@ Developers wishing to integrate their mods with Reliable Recipe Viewer or config
 - Where can I ask questions about RRV?
   - I am happy to answer RRV related questions in my [Discord](https://discord.cassian.cc/).
 - Can I use this on a vanilla server?
-  - On Fabric, parts of the mod will continue to work on vanilla server's, though if the server has modified recipes they will not be shown, and some features of the mod like quick crafting will not work.
+  - On Fabric, parts of the mod will continue to work on vanilla servers, though if the server has modified recipes they will not be shown, and some features of the mod like quick crafting will not work.
 
 ## License
 [![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](https://github.com/cassiancc/reliablerecipeviewer)

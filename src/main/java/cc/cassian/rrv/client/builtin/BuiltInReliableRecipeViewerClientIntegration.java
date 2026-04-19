@@ -23,6 +23,7 @@ import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.extra.FluidStack;
+import cc.cassian.rrv.common.mixin.recipe.ConcretePowderBlockAccessor;
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.*;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
@@ -370,6 +371,10 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/strip_", block), SlotContent.of(block), axes, SlotContent.of(blockReference.getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
                 }
                 *///?}
+
+            if (block instanceof ConcretePowderBlock concretePowderBlock) {
+                worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_solidify"), SlotContent.of(block), SlotContent.of(new FluidStack(Fluids.WATER)), SlotContent.of(((ConcretePowderBlockAccessor) concretePowderBlock).getConcrete())));
+            }
         }));
 
         // honeycomb
