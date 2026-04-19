@@ -16,6 +16,7 @@
 - Namespace tooltips can now be shown in all contexts, instead of only in the Item View. This is configurable.
 - A new button on the overlay screen that allows switching the current side panel (thanks @lurkywho for sprite help).
 - Item tag translations for 26.2-snapshot-3.
+- On Fabric, a partial client fallback mode is now used that pulls recipes from the client's recipe folder.
 
 ### Changed
 - Shaped recipes are now sorted before shapeless recipes.

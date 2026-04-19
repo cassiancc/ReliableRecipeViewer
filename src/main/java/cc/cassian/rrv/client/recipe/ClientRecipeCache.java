@@ -1,6 +1,5 @@
 package cc.cassian.rrv.client.recipe;
 
-import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
@@ -9,13 +8,11 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
@@ -33,6 +30,7 @@ public class ClientRecipeCache {
     private final HashMap<Item, List<Identifier>> byItemIngredient, byItemResult;
 
     private final HashMap<Item, List<ItemView.StackSensitive>> stackSensitives;
+    private boolean localCacheBuilt;
 
     private ClientRecipeCache() {
         this.serverEntryMap = new LinkedHashMap<>();
@@ -163,8 +161,17 @@ public class ClientRecipeCache {
         }
     }
 
-    public void buildSynchronizedRecipeCache() {
-        if (!Platform.INSTANCE.getRecipesForType(RecipeType.CRAFTING).isEmpty()) InternalRecipeManager.INSTANCE.setSyncFailed(false);
+    public void buildRecipeCache(boolean synchronizedSuccessfully) {
+        //? fabric
+        if (localCacheBuilt) return;
+        InternalRecipeManager.INSTANCE.setRecipesSynced(synchronizedSuccessfully);
+
+        //? fabric {
+        if (!synchronizedSuccessfully && !localCacheBuilt) {
+            ResourceRecipeManager.getLocalRecipes();
+            localCacheBuilt = true;
+        }
+        //?}
 
         for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {
             List<ReliableClientRecipe> recipes = new ArrayList<>();

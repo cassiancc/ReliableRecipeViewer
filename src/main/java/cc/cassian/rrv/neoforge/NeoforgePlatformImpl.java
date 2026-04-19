@@ -96,10 +96,5 @@ public class NeoforgePlatformImpl implements Platform {
         return FMLPaths.GAMEDIR.get().resolve("data");
     }
 
-    @Override
-    public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
-        return NeoForgeClientEntrypoint.SYNCHRONIZED_RECIPES.byType(type);
-    }
-
 }
 *///?}

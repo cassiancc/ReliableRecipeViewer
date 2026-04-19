@@ -30,7 +30,10 @@ import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
+//? fabric
+import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
@@ -43,6 +46,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -52,9 +56,11 @@ import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.Repairable;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.entity.PotDecorations;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 //? neoforge
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
@@ -67,15 +73,25 @@ import static cc.cassian.rrv.common.recipe.util.RrvUtil.getItemsFromIngredient;
 
 public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {
 
+    static <T> void excludeTag(Registry<T> registry, TagKey<T> tag) {
+        registry.get(tag).ifPresent(named -> named.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(t -> {
+            switch (t) {
+                case Item item -> ItemView.excludeItems(item);
+                case Block block -> ItemView.excludeItems(block.asItem());
+                case Fluid fluid -> ItemView.excludeItems(new FluidStack(fluid).createItemStack().getItem());
+                default -> {}
+            }
+        }));
+        //? fabric
+        ItemView.excludeItems(ClientTags.getOrCreateLocalTag(tag));
+    }
+
     @Override
     public void onIntegrationInitialize() {
-        ItemView.excludeItem(Items.AIR); // required for vanilla/paper servers
-
         ItemView.addClientReloadCallback(() -> {
-
-            BuiltInRegistries.BLOCK.get(CommonTags.EXCLUDED_BLOCKS).ifPresent(blocks -> blocks.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(block -> ItemView.excludeItem(block.asItem())));
-            BuiltInRegistries.ITEM.get(CommonTags.EXCLUDED_ITEMS).ifPresent(items -> items.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(ItemView::excludeItem));
-            BuiltInRegistries.FLUID.get(CommonTags.EXCLUDED_FLUIDS).ifPresent(fluids -> fluids.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(fluid -> ItemView.excludeItem(fluid.defaultFluidState().createLegacyBlock().getBlock().asItem())));
+            excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
+            excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
+            excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
             ItemFilters.buildTagCache();
             hideRecipes();
         });

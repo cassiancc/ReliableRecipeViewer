@@ -91,13 +91,5 @@ public class FabricPlatformImpl implements Platform {
         return FabricLoader.getInstance().getGameDir().resolve("data");
     }
 
-    @Override
-    public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) return List.of();
-        return level.recipeAccess().getSynchronizedRecipes().getAllOfType(type);
-    }
-
-
 }
 //?}

@@ -18,6 +18,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "disconnectFromWorld", at = @At("HEAD"))
     private void cleanup(CallbackInfo ci) {
+        ItemViewOverlay.INSTANCE.setWarned(false);
         if (ItemViewOverlay.INSTANCE.getSearchbar() != null) {
             ItemViewOverlay.INSTANCE.getSearchbar().clear();
             ItemViewOverlay.INSTANCE.getSearchbar().setFocused(false);

@@ -17,6 +17,7 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeMap;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class ReliableRecipeViewerClient {
     public static final KeyMapping USE_CHEATMODE = new KeyMapping("key.rrv.cheatmode", GLFW.GLFW_KEY_LEFT_ALT, RRV_ADMIN_CATEGORY);
 
     public static final List<KeyMapping> RRV_KEY_MAPPINGS = List.of(USAGE_KEYBIND, RECIPE_KEYBIND, TOGGLE_OVERLAY_KEYBIND, ADD_BOOKMARK_KEYBIND, GO_BACK_RECIPE, GO_FORWARD_RECIPE, USE_CHEATMODE);
+    public static RecipeMap LOCAL_RECIPES = RecipeMap.EMPTY;
 
     public static void bootstrap() {
         OverlayManager.registerOverlay(ItemViewOverlay.INSTANCE);

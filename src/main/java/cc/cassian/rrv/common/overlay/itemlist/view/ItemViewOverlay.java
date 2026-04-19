@@ -59,6 +59,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     private String currentQuery;
     boolean itemFilterMode;
+    private boolean warned = false;
 
     public ItemViewOverlay() {
         super(-1, -1, -1, -1);
@@ -365,8 +366,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void openRecipeView(ItemStack stack, ActionType openType) {
         if (stack.isEmpty()) return;
 
-        if (InternalRecipeManager.INSTANCE.isSyncFailed())
+        if (!InternalRecipeManager.INSTANCE.isRecipesSynced() && !warned) {
             Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
+            warned = true;
+        }
+
 
         //? fabric {
         if (ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack)) {
@@ -464,7 +468,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         back.visible = b;
     }
 
-    public void quickCraft(Identifier id) {
-        openRecipeView(id, Minecraft.getInstance().hasControlDown());
+    public void setWarned(boolean b) {
+        warned = b;
     }
 }

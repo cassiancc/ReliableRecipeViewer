@@ -13,6 +13,7 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.common.collect.HashMultimap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -386,6 +388,10 @@ public class ItemView {
 
     public static boolean isExcludedEnchantment(Holder<Enchantment> enchantmentHolder) {
         return enchantmentHolder.is(CommonTags.EXCLUDED_ENCHANTMENTS) || EXCLUDED_ENCHANTMENTS.contains(enchantmentHolder.unwrapKey().orElseThrow());
+    }
+
+    public static void excludeItems(Collection<Identifier> localTags) {
+        localTags.stream().map(BuiltInRegistries.ITEM::get).filter(Optional::isPresent).map(Optional::get).forEach(value -> ItemView.excludeItems(value.value()));
     }
 
 
