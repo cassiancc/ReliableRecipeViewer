@@ -8,6 +8,7 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
@@ -31,6 +32,11 @@ public class ClientRecipeCache {
     private final HashMap<Item, List<Identifier>> byItemIngredient, byItemResult;
 
     private final HashMap<Item, List<ItemView.StackSensitive>> stackSensitives;
+
+    public boolean localCacheBuilt() {
+        return localCacheBuilt;
+    }
+
     private boolean localCacheBuilt;
 
     private ClientRecipeCache() {
@@ -163,17 +169,21 @@ public class ClientRecipeCache {
         }
     }
 
-    public void buildRecipeCache(boolean synchronizedSuccessfully) {
-        //? fabric
-        if (localCacheBuilt) return;
-        InternalRecipeManager.INSTANCE.setRecipesSynced(synchronizedSuccessfully);
+    public void buildRecipeCache(boolean rebuildFromSynchronizedRecipes) {
+        ReliableRecipeViewer.LOGGER.info("RRV: Rebuilding client recipe cache {}", rebuildFromSynchronizedRecipes ? "from synchronized recipes." : "from client recipe folder.");
 
-        //? fabric {
-        if (!synchronizedSuccessfully && !localCacheBuilt) {
-//            ResourceRecipeManager.getLocalRecipes();
+        //? fabric
+        if (localCacheBuilt && !rebuildFromSynchronizedRecipes) return;
+
+        if (rebuildFromSynchronizedRecipes)
+            InternalRecipeManager.INSTANCE.setRecipesSynced(true);
+        else {
+            //? fabric {
+            ResourceRecipeManager.getLocalRecipes();
+            //?}
             localCacheBuilt = true;
         }
-        //?}
+
         ClientRecipeCache.INSTANCE.clear();
 
         for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {

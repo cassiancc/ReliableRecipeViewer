@@ -60,9 +60,9 @@ public class FabricClientEntrypoint implements ClientModInitializer {
             ClientRecipeCache.INSTANCE.buildRecipeCache(true);
         });
 
-//        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, recipes) -> {
-//            ClientRecipeCache.INSTANCE.buildRecipeCache(false);
-//        });
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, recipes) -> {
+            ClientRecipeCache.INSTANCE.buildRecipeCache(false);
+        });
     }
 
 
