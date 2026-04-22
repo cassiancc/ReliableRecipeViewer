@@ -9,7 +9,7 @@ For RRV to know how to handle your recipes, you have to create two RRV plugins f
 ## Server Plugin
 
 <Callout variant='info'>
-If you support other recipe viewers that require synchronizing your mod's recipes (e.g. JEI), you can skip this step and synchronize your recipes via standard [Fabric](https://docs.fabricmc.net/develop/custom-recipe-types#recipe-synchronization)/[NeoForge](https://github.com/neoforged/NeoForge/pull/2021) APIs which will allow your mod to work with both recipe viewers as long as one is on the server.
+If you support other recipe viewers that require synchronizing your mod's recipes (e.g. JEI), you can skip this step and synchronize your recipes via standard [Fabric](https://docs.fabricmc.net/develop/custom-recipe-types#recipe-synchronization)/[NeoForge](https://docs.neoforged.net/docs/resources/server/recipes/#client-side-recipes) APIs which will allow your mod to work with both recipe viewers as long as one is on the server.
 </Callout>
 
 For RRV to know how to synchronize your recipes from the server to the client, you have to synchronize your mod's recipes from the server to the client. This can be done at any point, but to guarantee things load at the right time you can do this in a serveride RRV plugin.
