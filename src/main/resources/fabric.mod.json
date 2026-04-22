@@ -39,7 +39,7 @@
   ],
   "accessWidener": "${accesswidener}",
   "depends": {
-    "fabric-api": ">=0.146.0",
+    "fabric-api": ">=0.146.1",
     "fabricloader": ">=0.17.0",
     "minecraft": "${minecraft_version_range}",
     "java": ">=21"

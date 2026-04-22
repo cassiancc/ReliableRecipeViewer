@@ -158,7 +158,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
             this.itemStartX+=8;
-            this.itemStartY+=6;
+            this.itemStartY+=26;
             this.itemEndY-=10;
         }
     }
@@ -249,7 +249,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
 
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme())
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX(), checkedY(), checkedWidth()-4, checkedY()+checkedHeight()-20, -1);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX(), checkedY()+20, checkedWidth()-4, checkedY()+checkedHeight()-40, -1);
         else
             guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
     }
@@ -268,7 +268,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             int titleX = checkedX() + checkedWidth() / 2;
             int titleY = checkedY() + 10;
             if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-                titleY+=6;
+                titleY+=26;
             }
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, -1);
         }
@@ -352,7 +352,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         int buttonY = 5;
         int buttonEnd = itemEndX - 16;
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-            buttonY+=5;
+            buttonY+=25;
             buttonEnd-=13;
         }
 
