@@ -103,8 +103,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     private void initForScreen(AbstractContainerScreen<? extends AbstractContainerMenu> screen, InventoryPositionInfo invInfo) {
 
         //-14 for cleaner appearance
-        this.width = invInfo.screenWidth() - ((invInfo.screenWidth() - 176) / 2 + 176) - 14;
+        this.width = screen.width - ((screen.width - 176) / 2 + 176) - 14 - 2 * ITEM_ENTRY_SIZE;
         this.width -= (this.width - 4) % ITEM_ENTRY_SIZE;
+        this.width = Math.max(this.width, Minecraft.getInstance().font.width(Component.translatable("rrv.craftables"))+30);
 
         this.height = screen.height;
 
