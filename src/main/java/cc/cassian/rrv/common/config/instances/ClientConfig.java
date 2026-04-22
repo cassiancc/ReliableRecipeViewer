@@ -6,10 +6,6 @@ import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.integration.ModCompat;
-import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 
 public class ClientConfig extends AbstractRrvConfig {
 
@@ -29,6 +25,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean showButtons = true;
 	private boolean recipeBookButton = false;
 	private boolean recipeBookTheme = true;
+	private boolean localFallback = true;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -162,6 +159,14 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.recipeBookTheme = recipeBookTheme;
 	}
 
+	public boolean localFallbackAllowed() {
+		return localFallback;
+	}
+
+	public void setLocalFallbackAllowed(boolean localFallback) {
+		this.localFallback = localFallback;
+	}
+
 	@Override
 	protected void loadData() {
 		this.showItemView = load("enabled", this.showItemView, OverlayDisplay.CODEC);
@@ -178,6 +183,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.showRecipeId = load("showRecipeId", this.showRecipeId);
 		this.recipeBookButton = load("recipeBookButton", this.recipeBookButton);
 		this.recipeBookTheme = load("recipeBookTheme", this.recipeBookTheme);
+		this.localFallback = load("localFallback", this.localFallback);
 		this.wrapScrolling = load("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
 	}
@@ -200,5 +206,6 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("recipeBookTheme", this.recipeBookTheme);
 		save("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		save("sidePanel", this.sidePanel, SidePanel.CODEC);
+		save("localFallback", this.recipeBookTheme);
 	}
 }

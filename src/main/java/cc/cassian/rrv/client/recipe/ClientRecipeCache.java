@@ -12,7 +12,6 @@ import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -177,7 +176,7 @@ public class ClientRecipeCache {
 
         if (rebuildFromSynchronizedRecipes)
             InternalRecipeManager.INSTANCE.setRecipesSynced(true);
-        else {
+        else if (Configs.CLIENT_SETTINGS.localFallbackAllowed()) {
             //? fabric {
             ResourceRecipeManager.getLocalRecipes();
             //?}

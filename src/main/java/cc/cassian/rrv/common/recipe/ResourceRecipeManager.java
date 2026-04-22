@@ -178,7 +178,7 @@ public class ResourceRecipeManager {
 	/// Client fallback for when a server did not provide recipes.
 	/// Fabric-exclusive, as Neo does not provide NIO paths for mods.
 	public static void getLocalRecipes() {
-		ArrayList<RecipeHolder<?>> objects = new ArrayList<>();
+		HashMap<Identifier, RecipeHolder<?>> objects = new HashMap<>();
 		//? fabric {
 		FabricLoader.getInstance().getAllMods().forEach(mod->{
 			var rootPath = mod.getRootPaths().getFirst();
@@ -186,10 +186,15 @@ public class ResourceRecipeManager {
 			getCachedRecipesFromMod(rootPath, modId, objects);
 		});
 		//?}
-		ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(objects);
+		try {
+			ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(objects.values());
+		} catch (Exception e) {
+			LOGGER.error("Could not get local recipes due to an exception: ", e);
+		}
+
 	}
 
-	private static void getCachedRecipesFromMod(Path rootPath, String modId, ArrayList<RecipeHolder<?>> objects) {
+	private static void getCachedRecipesFromMod(Path rootPath, String modId, Map<Identifier, RecipeHolder<?>> objects) {
 		var path = rootPath.resolve("data/%s/recipe".formatted(modId));
 		if (Files.exists(path)) {
 			try (Stream<Path> files = Files.walk(path)) {
@@ -201,7 +206,9 @@ public class ResourceRecipeManager {
 						JsonObject recipeObject = jsonElement.getAsJsonObject();
 						if (!recipeObject.has("type")) return;
 						Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
-						objects.add(new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, id)), recipe));
+						Identifier recipeId = Identifier.fromNamespaceAndPath(modId, id);
+						if (!objects.containsKey(recipeId))
+							objects.put(recipeId, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), recipe));
 					} catch (Exception e) {
 						LOGGER.error("Error loading local recipe: {}", recipePath);
 					}
