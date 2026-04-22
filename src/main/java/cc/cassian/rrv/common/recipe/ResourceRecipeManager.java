@@ -201,7 +201,7 @@ public class ResourceRecipeManager {
 						JsonObject recipeObject = jsonElement.getAsJsonObject();
 						if (!recipeObject.has("type")) return;
 						Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
-						objects.add(new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, Identifier.parse(id)), recipe));
+						objects.add(new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, id)), recipe));
 					} catch (Exception e) {
 						LOGGER.error("Error loading local recipe: {}", recipePath);
 					}
