@@ -49,8 +49,6 @@ Developers wishing to integrate their mods with Reliable Recipe Viewer or config
   - Please see the [Modrinth Collection](https://modrinth.com/collection/divCExF5), which lists every mod that I know has RRV integration. If you are a developer, and you've added support for RRV, please reach out in the Discord and I'll add your mod!
 - Where can I ask questions about RRV?
   - I am happy to answer RRV related questions in my [Discord](https://discord.cassian.cc/).
-- Can I use this on a vanilla server?
-  - On Fabric, parts of the mod will continue to work on vanilla servers, though if the server has modified recipes they will not be shown, and some features of the mod like quick crafting will not work.
 
 ## License
 [![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](https://github.com/cassiancc/reliablerecipeviewer)

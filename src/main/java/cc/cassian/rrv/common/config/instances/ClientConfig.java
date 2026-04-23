@@ -25,7 +25,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean showButtons = true;
 	private boolean recipeBookButton = false;
 	private boolean recipeBookTheme = true;
-	private boolean localFallback = true;
+	private boolean localFallback = false;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -206,6 +206,6 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("recipeBookTheme", this.recipeBookTheme);
 		save("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		save("sidePanel", this.sidePanel, SidePanel.CODEC);
-		save("localFallback", this.recipeBookTheme);
+		save("localFallback", this.localFallback);
 	}
 }
