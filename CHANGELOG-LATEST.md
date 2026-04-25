@@ -35,3 +35,5 @@
 - Bug causing keybinds to remove bookmarks.
 - Info recipe rendering error with some resource packs.
 - Improvements to fluid rendering and removal of hardcoded fluids.
+- Backgrounds not rendering on screens that do not call `extractBackground`.
+- Performance issues opening the inventory (thanks @Fox2Code)

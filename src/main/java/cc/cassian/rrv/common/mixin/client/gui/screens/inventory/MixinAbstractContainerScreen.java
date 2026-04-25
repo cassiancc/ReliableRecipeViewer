@@ -113,7 +113,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         if (OverlayManager.INSTANCE.hasQueuedWidgetUpdate())
             this.updateWidgets();
 
-
+        OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
         OverlayManager.INSTANCE.renderAll(guiGraphics, mouseX, mouseY, partialTicks);
 
     }
