@@ -74,11 +74,16 @@ public class ReliableRecipeViewerClient {
     public static MutableComponent addNamespaceTooltip(ItemStack stack, List<Component> tooltip, boolean inItemView) {
         if (!ModCompat.hasModNamespaceModsInstalled()) {
             MutableComponent namespace = Component.literal(Platform.INSTANCE.getModNameForItem(stack)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC);
-            if (((inItemView && Configs.CLIENT_SETTINGS.showNamespaceTooltip().equals(NamespaceTooltip.IN_ITEM_VIEW)) || Configs.CLIENT_SETTINGS.showNamespaceTooltip().equals(NamespaceTooltip.SHOW)) && !tooltip.contains(namespace))
-                tooltip.addLast(namespace);
-            return namespace;
+            if (((inItemView && Configs.CLIENT_SETTINGS.showNamespaceTooltip().equals(NamespaceTooltip.IN_ITEM_VIEW)) ||
+                    Configs.CLIENT_SETTINGS.showNamespaceTooltip().equals(NamespaceTooltip.SHOW))) {
+                if (!tooltip.contains(namespace)) {
+                    tooltip.addLast(namespace);
+                }
+                return namespace;
+            } else if (tooltip.contains(namespace)) {
+                return namespace;
+            }
         }
         return null;
-
     }
 }
