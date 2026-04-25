@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.panel;
 
+import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
@@ -33,6 +34,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import org.jspecify.annotations.NonNull;
 
 import java.awt.*;
 import java.util.ConcurrentModificationException;
@@ -193,7 +195,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected boolean keyPressed(KeyEvent event) {
-        super.keyPressed(event);
+        if (super.keyPressed(event)) {
+            return true;
+        }
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
@@ -205,6 +209,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 } else {
                     BookmarkManager.INSTANCE.removeItem(slot.getStack());
                 }
+                return true;
             }
         }
 
@@ -212,15 +217,26 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     @Override
+    protected @NonNull Identifier getReportedOverlayId() {
+        return switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
+            case BOOKMARKS -> OverlayView.BOOKMARKS;
+            case CRAFTABLES -> OverlayView.CRAFTABLES;
+            default -> OverlayView.UNKNOWN;
+        };
+    }
+
+    @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        boolean b = super.mouseClicked(event, doubleClick);
-        if (b) return true;
+        if (super.mouseClicked(event, doubleClick)) {
+            return true;
+        }
         if (isHoveringOverTitle(event.x(), event.y())) {
             if (showBookmarks())
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.CRAFTABLES);
             else
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
             updateSidePanelIndex(Reason.BUTTON);
+            return true;
         }
         return false;
     }
