@@ -19,6 +19,7 @@
 - Namespace tooltips can now be shown in all contexts, instead of only in the Item View. This is configurable.
 - A new button on the overlay screen that allows switching the current side panel (thanks @lurkywho for sprite help).
 - Item tag translations for 26.2-snapshot-3.
+- A new API for registering keybinds when hovering over item slots (thanks @Fox2Code)
 
 ### Changed
 - Shaped recipes are now sorted before shapeless recipes.
@@ -35,3 +36,4 @@
 - Bug causing keybinds to remove bookmarks.
 - Info recipe rendering error with some resource packs.
 - Improvements to fluid rendering and removal of hardcoded fluids.
+- Performance issues opening the inventory (thanks @Fox2Code)
