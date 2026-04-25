@@ -71,17 +71,21 @@ public class ReliableRecipeViewerClient {
         return Minecraft.getInstance().player != null && RrvUtil.hasPermission(Minecraft.getInstance().player) && InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
     }
 
-    public static MutableComponent addNamespaceTooltip(ItemStack stack, List<Component> tooltip, boolean inItemView) {
+    public static Component addNamespaceTooltip(ItemStack stack, List<Component> tooltip, boolean inItemView) {
+        String modName = Platform.INSTANCE.getModNameForItem(stack);
         if (!ModCompat.hasModNamespaceModsInstalled()) {
-            MutableComponent namespace = Component.literal(Platform.INSTANCE.getModNameForItem(stack)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC);
+            MutableComponent namespace = Component.literal(modName).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC);
             if (((inItemView && Configs.CLIENT_SETTINGS.showNamespaceTooltip().equals(NamespaceTooltip.IN_ITEM_VIEW)) ||
                     Configs.CLIENT_SETTINGS.showNamespaceTooltip().equals(NamespaceTooltip.SHOW))) {
                 if (!tooltip.contains(namespace)) {
                     tooltip.addLast(namespace);
+                    return namespace;
                 }
-                return namespace;
-            } else if (tooltip.contains(namespace)) {
-                return namespace;
+            }
+        }
+        for (Component component : tooltip) {
+            if (modName.equals(component.getString())) {
+                return component;
             }
         }
         return null;
