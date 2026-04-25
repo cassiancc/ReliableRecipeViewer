@@ -23,7 +23,7 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 
 	@Override
 	public Identifier getId() {
-		return Identifier.fromNamespaceAndPath("rrv", "anvil_combining");
+		return ReliableRecipeViewer.of("anvil_combining");
 	}
 
 	@Override

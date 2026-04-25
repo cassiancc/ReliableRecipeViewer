@@ -12,6 +12,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.BlastingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 
@@ -19,17 +22,19 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
     private final AnimationTicker blastingTicker;
+    private final Identifier id;
 
-    public BlastingClientRecipe(BlastingServerRecipe blastingRecipe) {
+    public BlastingClientRecipe(RecipeHolder<BlastingRecipe> blastingRecipe) {
 
-        this.input = blastingRecipe.getInput();
-        this.result = blastingRecipe.getResult();
+        this.id = blastingRecipe.id().identifier();
+        this.input = SlotContent.of(blastingRecipe.value().input());
+        this.result = SlotContent.of(blastingRecipe.value().result);
 
         this.blastingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("blasting_ticker"), 100);
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return BlastingClientRecipeType.INSTANCE;
     }
 
@@ -47,6 +52,11 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
     @Override
     public List<SlotContent> getResults() {
         return List.of(this.result);
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override

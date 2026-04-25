@@ -1,8 +1,14 @@
 # Adding Server Recipes
 
+<Callout variant='warning'>
+Note: This is only relevant when using RRV 7.1.4 or below, or if you need to synchronize server data by hand.
+
+RRV 8.0.0 and above synchronize recipes through the standard recipe synchronization APIs provided by Fabric and NeoForge.
+</Callout>
+
 Since recipes only exist on the server since 1.21.2, the client does not know which recipes exist.
 In order for RRV to be able to show recipes, we have to synchronize them between the server and client ourselves.
-For consistency, RRV requires a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
+For consistency, RRV required a serverside representation of all recipes regardless whether it's a mod or vanilla recipe.
 
 Creating a serverside representation of your mod recipes is quite easy, simply create a class that implements `ReliableServerRecipe` and override the methods:
 
@@ -14,8 +20,8 @@ public class ExampleServerRecipe implements ReliableServerRecipe {
     // SlotContent is used here as an abstraction over ever-changing Ingredients and ItemStacks.
     private SlotContent input, output;
 
-    //Create a server recipe type (the id does not have to match your client side viewtype id)
-    public static final ModRecipeType<YourServerRecipe> TYPE = ModRecipeType.register(
+    //Create a server recipe type (the id does not have to match your client side recipe type id)
+    public static final ModRecipeType<ExampleServerRecipe> TYPE = ModRecipeType.register(
             Identifier.fromNamespaceAndPath("example-mod", "your_recipe_id"),
             () -> new ExampleServerRecipe(null, null)
     );
@@ -59,4 +65,4 @@ public class ExampleServerRecipe implements ReliableServerRecipe {
 The API includes a `TagUtil` class that provides a lot of helper functions for encoding and decoding different objects, primarily `writeSlotContent` and `readSlotContent`.
 </Callout>
 
-With all your recipe classes created, you can move on to creating the [plugins](finalizing-your-recipes).
+With all your recipe classes created, you can move on to creating the [plugins](finalizing-your-plugins).

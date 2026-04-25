@@ -8,36 +8,44 @@ Note that [SlotContent](utilities#slotcontent) is used rather than displaying th
 ### Example
 
 ```java
-public class ExampleModClientRecipe implements ReliableClientRecipe {
+public class UpgradingClientRecipe implements ReliableClientRecipe {
 
-    private final SlotContent input, output;
+    private final Identifier id;
+    private final SlotContent baseItem, upgradeItem, output;
 
 
     //You can design your constructor to suit your needs
-    public YourCustomViewRecipe(ItemStack input, ItemStack output) {
-
+    public UpgradingClientRecipe(Identifier id, Ingredient baseItem, Ingredient upgradeItem, ItemStackTemplate resultItem) {
         //Define your inputs and outputs here
-
-        this.input = SlotContent.of(input);
-        this.output = SlotContent.of(output);
-
+        this.baseItem = SlotContent.of(baseItem);
+        this.upgradeItem = SlotContent.of(upgradeItem);
+        this.resultItem = SlotContent.of(resultItem);
+        this.id = id;
     }
 
+    // Prior to RRV 8.0.0, this was `getViewType`.
     @Override
-    public ReliableClientRecipeType getViewType() {
-        return YourCustomClientRecipeType.INSTANCE; //Here you need your client recipe type's instance you created before
+    public ReliableClientRecipeType getType() {
+        return ExampleModClientRecipeType.INSTANCE; //Here you need your client recipe type's instance you created before
+    }
+
+    // The identifier of this recipe, used for clientside operations like recipe hiding. Only available/required since v8.0.0.
+    // If this recipe does not have a file associated with it, prefix the path with ' e.g. `minecraft:/code_driven_recipe` so that users do not look for a nonexistent file.
+    public Identifier getId() {
+        return id;
     }
 
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 
         //Tell RRV which SlotContent belongs to which of your previously defined slots
-        slotFillContext.bindSlot(0, this.input);
-        slotFillContext.bindSlot(1, this.output);
+        slotFillContext.bindSlot(0, this.baseItem);
+        slotFillContext.bindSlot(1, this.upgradeItem);
+        slotFillContext.bindSlot(2, this.resultItem);
 
         // When you want to add custom information to some of your items simply add a stack modifier to the corresponding slots
-        slotFillContext.addAdditionalStackModifier(0, (stack, tooltip) -> {
-            tooltip.add(Component.literal("A cool item"));
+        slotFillContext.addAdditionalStackModifier(1, (stack, tooltip) -> {
+            tooltip.add(Component.literal("Used to upgrade an item!"));
         });
 
         // You can also bind a slot as "optional" and provide it with a valid SlotRenderer to ensure a slot
@@ -49,12 +57,12 @@ public class ExampleModClientRecipe implements ReliableClientRecipe {
 
     @Override
     public List<SlotContent> getIngredients() {
-        return List.of(this.input); //Return all of your inputs here
+        return List.of(this.baseItem, this.upgradeItem); //Return all of your inputs here
     }
 
     @Override
     public List<SlotContent> getResults() {
-        return List.of(this.output); //Return all of your outputs here
+        return List.of(this.resultItem); //Return all of your outputs here
     }
 
     // Recipes with more complicated displays can override `renderRecipe`.
@@ -69,7 +77,7 @@ public class ExampleModClientRecipe implements ReliableClientRecipe {
 
 ### Slot dependencies
 
-Slot that should not tick independently can be bound as a dependent slots in your client recipe.
+Slot that should not tick independently can be bound as a dependent slots in your client recipe. This can be used to keep recipe outputs that are dependent on the recipe inputs synchronized (e.g. dye recipes, decorated pot recipes).
 
 ```java
     @Override
@@ -98,30 +106,20 @@ To be able to shift items from the players inventory into the workstation's GUI,
 
     @Override
     public boolean supportsItemTransfer() {
-        return true; //Enable item transfer
+        return true; // Enable item transfer
     }
 
     @Override
     public List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
-        return List.of(CraftingScreen.class); //Tell which screen is the corresponding crafting gui
+        return List.of(UpgradingScreen.class); // Tell which screen is the corresponding crafting gui
     }
 
     @Override
     public void mapRecipeItems(RecipeTransferMap map) {
-
- //Link your recipe slots to the corresponding slots in the destination inventory (the crafting inventory)
-
+        //Link your recipe slots to the corresponding slots in the destination inventory (the crafting inventory)
         map.linkSlots(0, 1);
         map.linkSlots(1, 2);
-        map.linkSlots(2, 3);
-        map.linkSlots(3, 4);
-        map.linkSlots(4, 5);
-        map.linkSlots(5, 6);
-        map.linkSlots(6, 7);
-        map.linkSlots(7, 8);
-        map.linkSlots(8, 9);
-
     }
 ```
 
-With your client recipes created, you can move on to creating the [Server Recipes](server-recipes) that will supply them with data.
+With your client recipes created, you can move on to creating the [plugins](finalizing-your-plugins) that will be used to convert normal recipes into client recipes. On versions of RRV prior to 8.0.0, you'll also need [Server Recipes](server-recipes) that will supply them with data.

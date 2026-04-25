@@ -16,11 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
+import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
 public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
-
-
-    protected static final int ITEM_ENTRY_SIZE = 20;
 
     protected int itemStartX, itemStartY, itemEndX, itemEndY;
     protected int startIndex;
@@ -190,21 +188,34 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return maxPageIndex;
     }
 
-    protected void drawProgressBar(GuiGraphicsExtractor guiGraphics, boolean rightIndex) {
+    protected void drawProgressBar(GuiGraphicsExtractor guiGraphics, boolean rightIndex, boolean sidePanel) {
         if (Configs.CLIENT_SETTINGS.isShowProgressBar()) {
             double scrollPage = this.getPage();
             if (scrollPage == 0) {
                 scrollPage = .5;
             }
-            guiGraphics.fill(checkedX(), checkedY() + 24, checkedX() + checkedWidth(), checkedY() + 28, new Color(255, 255, 255, 32).getRGB());
-            guiGraphics.fill(checkedX(), checkedY() + 24, getWidth(checkedX(), checkedWidth(), scrollPage, rightIndex), checkedY() + 28, new Color(255, 255, 255, 255).getRGB());
+            int x = checkedX();
+            int y = checkedY() + 24;
+            int maxWidth = checkedWidth();
+            if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+                x+=10;
+                y+=24;
+                maxWidth-=24;
+                if (sidePanel) {
+                    x+=5;
+                }
+            }
+
+            guiGraphics.fill(x, y, x + maxWidth, y+4, new Color(255, 255, 255, 32).getRGB());
+
+            guiGraphics.fill(x, y, getWidth(x, maxWidth, scrollPage, rightIndex), y+4, new Color(255, 255, 255, 255).getRGB());
         }
     }
 
-    private int getWidth(double x, int width, double scrollPage, boolean rightIndex) {
+    protected int getWidth(double x, int width, double scrollPage, boolean rightIndex) {
         int i = (int) (x + (((double) width / getMaxPageIndex()) * scrollPage));
-        if (i > width && rightIndex) return width;
-        return i;
+        if (i > width && rightIndex) return (int) (x+width);
+        return (int) Math.min(i, x+width);
     }
 
     public List<ItemStack> availableItems() {

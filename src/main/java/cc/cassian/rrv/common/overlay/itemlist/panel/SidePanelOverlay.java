@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.panel;
 
+import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
@@ -8,14 +9,13 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
-import cc.cassian.rrv.common.integration.ModCompat;
-import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
-import cc.cassian.rrv.common.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -25,16 +25,23 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import org.jspecify.annotations.NonNull;
 
 import java.awt.*;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
 public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
@@ -84,7 +91,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     public void onScreenChanged(InventoryPositionInfo info) {
         this.initForScreen(info.screen(), info);
         super.onScreenChanged(info);
-        this.updateSidePanelIndex("a screen change!" + info.screen());
+        this.updateSidePanelIndex(Reason.SCREEN_CHANGE);
         this.createButtons(OverlayManager.INSTANCE.currentInfo());
     }
 
@@ -100,6 +107,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         //-14 for cleaner appearance
         this.width = screen.width - ((screen.width - 176) / 2 + 176) - 14 - 2 * ITEM_ENTRY_SIZE;
         this.width -= (this.width - 4) % ITEM_ENTRY_SIZE;
+        this.width = Math.max(this.width, Minecraft.getInstance().font.width(Component.translatable("rrv.craftables"))+30);
 
         this.height = screen.height;
 
@@ -116,24 +124,31 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
         this.itemEndX = this.x + this.width - 2;
         this.itemEndY = this.y + this.height - FOOTER_HEIGHT;
+
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+            this.itemStartX+=12;
+            this.itemStartY+=26;
+            this.itemEndY-=10;
+        }
     }
 
 
     /**
      * Updates the list of item slots
      */
-	public void updateSidePanelIndex(String reason) {
-        if (Platform.INSTANCE.isDevelopment())
-            ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
+	public void updateSidePanelIndex(Reason reason) {
+        var screen = RRVClientUtil.currentScreen();
+        if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
+        if (Platform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
         this.availableItems.clear();
         if (showCraftables()) {
             Minecraft client = Minecraft.getInstance();
             LocalPlayer player = client.player;
-            if (player == null || (ModCompat.POLYDEX && PolymerHelpers.isPolymerScreenOpen(player))) {
+            if (player == null) {
                 return;
             }
 			this.inventory = player.getInventory().getNonEquipmentItems();
-            var screen = RRVClientUtil.currentScreen();
+
             if (!(screen instanceof CreativeModeInventoryScreen))
                 inventory.forEach(inventoryItem -> {
                 ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
@@ -146,14 +161,14 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 } catch (ConcurrentModificationException ignored) {}
             }
         } else {
-            this.availableItems.addAll(BookmarkManager.INSTANCE.availableItems());
+            this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
         }
 
         this.updateSlots();
     }
 
     void updateRecipes(ReliableClientRecipe recipe, NonNullList<ItemStack> inventory, boolean b) {
-        if (recipe.isVisualOnly() || !Configs.CATEGORIES.enabled(recipe.getViewType())) return;
+        if (recipe.isVisualOnly() || !Configs.CATEGORIES.enabled(recipe.getType())) return;
         Minecraft client = Minecraft.getInstance();
         if (b && !RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())) return;
         AtomicInteger foundIngredientCount = new AtomicInteger();
@@ -166,6 +181,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (foundIngredientCount.get() == requiredIngredientCount) {
             recipe.getResults().forEach(result -> {
                 result.getValidContents().forEach(ingredient -> {
+                    CompoundTag compoundTag = new CompoundTag();
+                    compoundTag.putString("rrv_result", recipe.entryId().toString());
+                    ingredient.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag));
                     if (!this.availableItems.contains(ingredient)) {
                         this.availableItems.add(ingredient);
                     }
@@ -177,33 +195,48 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected boolean keyPressed(KeyEvent event) {
-        super.keyPressed(event);
+        if (super.keyPressed(event)) {
+            return true;
+        }
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event) && showCraftables()) {
-                BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
-            } else {
-                BookmarkManager.INSTANCE.removeItem(slot.getStack());
+            if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
+                if (showCraftables()) {
+                    BookmarkManager.INSTANCE.bookmarkItem(slot.getStack());
+                } else {
+                    BookmarkManager.INSTANCE.removeItem(slot.getStack());
+                }
+                return true;
             }
-
         }
 
         return false;
     }
 
     @Override
+    protected @NonNull Identifier getReportedOverlayId() {
+        return switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
+            case BOOKMARKS -> OverlayView.BOOKMARKS;
+            case CRAFTABLES -> OverlayView.CRAFTABLES;
+            default -> OverlayView.UNKNOWN;
+        };
+    }
+
+    @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        boolean b = super.mouseClicked(event, doubleClick);
-        if (b) return true;
+        if (super.mouseClicked(event, doubleClick)) {
+            return true;
+        }
         if (isHoveringOverTitle(event.x(), event.y())) {
             if (showBookmarks())
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.CRAFTABLES);
             else
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
-            updateSidePanelIndex("a mouse click on the title!");
+            updateSidePanelIndex(Reason.BUTTON);
+            return true;
         }
         return false;
     }
@@ -215,7 +248,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
         int xMin = left + this.width / 2 - 59;
         int xMax = left + this.width / 2 + 60;
-        return (mouseX > xMin && mouseX < xMax) && (mouseY >= 1 && mouseY <= 20);
+        return (mouseX > xMin && mouseX < xMax) && (mouseY >= 21 && mouseY <= 41);
     }
 
     public static boolean showBookmarks() {
@@ -231,7 +264,10 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED))
             return;
 
-        guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme())
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX()+6, checkedY()+20, checkedWidth()-6, checkedY()+checkedHeight()-40, -1);
+        else
+            guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
     }
 
     @Override
@@ -253,7 +289,13 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
         if (this.fittingPerPage() > 0) {
-			this.drawScaledString(font, guiGraphics, page, checkedX() + checkedWidth() / 2, checkedY() + 10, colour);
+            int titleX = (checkedX() + checkedWidth()) / 2;
+            int titleY = checkedY() + 10;
+            if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+                titleX+=3;
+                titleY+=25;
+            }
+            this.drawScaledString(font, guiGraphics, page, titleX, titleY, colour);
 		}
 
 
@@ -262,7 +304,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
 
-        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex());
+        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
 
     }
 
@@ -278,11 +320,23 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
             this.updateSlots();
         }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
-        back.setPosition(SidePanelOverlay.INSTANCE.itemStartX+2, 3);
-        next.setPosition(SidePanelOverlay.INSTANCE.itemEndX-16, 3);
+
+        int buttonY = 5;
+        int buttonEnd = itemEndX - 16;
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+            buttonY+=25;
+            buttonEnd-=13;
+        }
+
+        back.setPosition(itemStartX+2, buttonY);
+        next.setPosition(buttonEnd, buttonY);
 
 
         next.visible = false;
         back.visible = false;
+    }
+
+    public enum Reason {
+        BUTTON, INVENTORY_CHANGE, BOOKMARK, SCREEN_CHANGE, OTHER;
     }
 }

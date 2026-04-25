@@ -2,8 +2,8 @@ package cc.cassian.rrv.common.recipe.cache;
 
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
-import cc.cassian.rrv.common.recipe.ClientRecipeCache;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

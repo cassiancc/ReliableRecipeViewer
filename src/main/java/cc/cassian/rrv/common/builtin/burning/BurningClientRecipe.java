@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.builtin.burning;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 
 import java.util.List;
 
@@ -22,17 +24,18 @@ public class BurningClientRecipe implements ReliableClientRecipe {
     private final int burnTime;
 
     private final AnimationTicker ticker;
+    private final Identifier id;
 
-    public BurningClientRecipe(BurningServerRecipe recipe) {
-        this.fuel = SlotContent.of(recipe.getFuel());
-        this.burnTime = recipe.getBurnTime();
+    public BurningClientRecipe(Item item, int i) {
+        this.id = item.builtInRegistryHolder().key().identifier().withSuffix("_burning");
+        this.fuel = SlotContent.of(item);
+        this.burnTime = i;
 
         this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), this.burnTime);
-
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return BurningClientRecipeType.INSTANCE;
     }
 
@@ -51,6 +54,10 @@ public class BurningClientRecipe implements ReliableClientRecipe {
         return List.of();
     }
 
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public List<AnimationTicker> getAnimationTickers() {

@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.recipe;
 
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
@@ -10,6 +11,10 @@ import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPaylo
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
+//? neoforge
+//import cc.cassian.rrv.neoforge.NeoForgeEntrypoint;
+//? fabric
+import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -23,11 +28,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
-//TODO block incoming requests while update sending
 public class ServerRecipeManager {
 
     public static final ServerRecipeManager INSTANCE = new ServerRecipeManager();
@@ -39,6 +42,29 @@ public class ServerRecipeManager {
 
     private ServerRecipeManager() {
 
+    }
+
+    /// Synchronize recipes from the server to the client via the Fabric/NeoForge recipe synchronization API.
+    /// ```java
+    /// public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
+    ///     @Override
+    ///     public void onIntegrationInitialize() {
+    ///         ServerRecipeManager.synchronizeRecipeType(ExampleModRecipes.UPGRADING_RECIPE_SERIALIZER, ExampleModRecipes.UPGRADING_RECIPE_TYPE);
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// Recipes can be retrieved in the client plugin via [ClientRecipeManager#getRecipesForType].
+    ///
+    /// @param serializer The recipe serializer used for Fabric recipe synchronization.
+    /// @param type The recipe type used for NeoForge recipe synchronization.
+    public void synchronizeRecipeType(RecipeSerializer<?> serializer, RecipeType<?> type) {
+        //? fabric
+        RecipeSynchronization.synchronizeRecipeSerializer(serializer);
+        //? neoforge {
+        /*if (!NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.contains(type))
+            NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.add(type);
+        *///?}
     }
 
     public void setServer(MinecraftServer server) {
@@ -121,6 +147,7 @@ public class ServerRecipeManager {
 
 
     public void informAboutRecipes(ServerPlayer serverPlayer) {
+        //TODO block incoming requests while update sending
         if (PRESENT_RECIPES.isEmpty())
             return;
 
@@ -144,7 +171,7 @@ public class ServerRecipeManager {
         PRESENT_RECIPES.clear();
 
         List<ReliableServerRecipe> serverRecipes = new ArrayList<>();
-        ItemViewRecipes.INSTANCE.getRecipeProviders().forEach(serverModRecipeProvider -> {
+        ItemViewRecipes.INSTANCE.getServerRecipeProviders().forEach(serverModRecipeProvider -> {
             List<ReliableServerRecipe> recipes = new ArrayList<>();
             serverModRecipeProvider.provide(recipes);
             serverRecipes.addAll(recipes);

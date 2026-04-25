@@ -50,6 +50,7 @@ repositories {
             includeGroupAndSubgroups("org.quiltmc.parsers")
         }
     }
+    mavenCentral()
     maven {
         name = "Quilt Maven"
         url = uri("https://maven.quiltmc.org/repository/release/")
@@ -64,6 +65,20 @@ repositories {
             includeGroupAndSubgroups("cc.cassian")
         }
     }
+    maven {
+        name = "Sisby Maven"
+        url = uri("https://repo.sleeping.town/")
+        content {
+            includeGroupAndSubgroups("folk.sisby")
+        }
+    }
+    maven {
+        name = "Modrinth"
+        url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroupAndSubgroups("maven.modrinth")
+        }
+    }
     mavenCentral()
 }
 
@@ -73,6 +88,10 @@ dependencies {
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
     compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+        isTransitive = false;
+    }
+    compileOnly("folk.sisby:kaleido-config:0.3.3+1.3.2")
+    compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
         isTransitive = false;
     }
 }
@@ -120,6 +139,13 @@ tasks {
         from(jar.map { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
         dependsOn("build")
+    }
+}
+
+stonecutter {
+    replacements.string {
+        direction = eval(current.version, ">26.1")
+        replace("EntityType.", "EntityTypes.")
     }
 }
 

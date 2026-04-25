@@ -3,10 +3,13 @@ package cc.cassian.rrv.client.util;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class RRVClientUtil {
+    public static final Identifier CONTAINER = Identifier.withDefaultNamespace("container");
+
     public static void setScreen(Screen newScreen) {
         //? if >26.1 {
         /*Minecraft.getInstance().gui.setScreen(newScreen);
@@ -27,10 +30,10 @@ public class RRVClientUtil {
         return false;
     }
 
-    public static boolean matchesAnyTransferClass(ReliableClientRecipe viewRecipe, Screen playerScreen) {
+    public static boolean matchesAnyTransferClass(ReliableClientRecipe clientRecipe, Screen playerScreen) {
         if (playerScreen == null)
             return false;
 
-        return viewRecipe.getTransferClasses().stream().anyMatch(screenClass -> screenClass.isInstance(playerScreen));
+        return clientRecipe.getTransferClasses().stream().anyMatch(screenClass -> screenClass.isInstance(playerScreen));
     }
 }

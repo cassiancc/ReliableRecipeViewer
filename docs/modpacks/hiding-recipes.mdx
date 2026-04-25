@@ -1,0 +1,13 @@
+## Hiding Recipes
+
+If you do not wish for a recipe to be user visible, you can hide it from the index by creating a JSON file in `assets/<namespace>/rrv/exclusions`. Any recipe listed under its recipe type ID will be hidden. To find the recipe id, enable "Show Recipe ID" in the client config screen.
+
+```json
+{
+  "type": "rrv:exclusions",
+  "minecraft:furnace_smelting": [
+    "minecraft:stone",
+    "minecraft:deepslate"
+  ]
+}
+```

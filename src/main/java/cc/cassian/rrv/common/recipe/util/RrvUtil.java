@@ -1,21 +1,29 @@
 package cc.cassian.rrv.common.recipe.util;
 
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 import static net.minecraft.server.permissions.Permissions.*;
@@ -73,4 +81,35 @@ public class RrvUtil {
         return ItemStack.EMPTY;
     }
 
+    public static List<Item> getItemsFromIngredient(Ingredient ingredient) {
+        var ingredientContent = ((IngredientAccessor) (Object) ingredient).getValues().unwrap();
+        List<Item> ingredients = new ArrayList<>();
+        if (ingredientContent.left().isPresent()) {
+            SlotContent.getItemsFromTag(ingredientContent.left().get()).ifPresent(holders -> {
+                holders.forEach(holder -> ingredients.add(holder.value()));
+            });
+        }
+
+        if (ingredientContent.right().isPresent())
+            ingredients.addAll(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList());
+        return ingredients;
+    }
+
+    public static String ingredientSuffix(Ingredient ingredient) {
+        List<Item> itemsFromIngredient = getItemsFromIngredient(ingredient);
+        if (itemsFromIngredient.isEmpty()) return "";
+        return "_from_" + itemsFromIngredient.getFirst().builtInRegistryHolder().key().identifier().getPath();
+    }
+
+    public static String blockName(Block block) {
+        return getIdentifier(block).map(Identifier::toString).orElse("").replace(":", "_");
+    }
+
+    public static Identifier blockName(String prefix, Block block) {
+        return getIdentifier(block).orElseThrow().withPath(path-> "%s%s".formatted(prefix, path.replace(":", "_")));
+    }
+
+    private static @NonNull Optional<Identifier> getIdentifier(Block block) {
+        return BuiltInRegistries.BLOCK.getResourceKey(block).map(ResourceKey::identifier);
+    }
 }

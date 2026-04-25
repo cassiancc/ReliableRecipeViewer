@@ -7,8 +7,8 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
-import cc.cassian.rrv.common.recipe.ClientRecipeCache;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
@@ -21,10 +21,12 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -35,12 +37,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ItemFilters {
 
     public static List<TagKey<Item>> TAGS;
+    private static final List<Item> EXCLUDED_ITEMS = List.of(Items.POTION, Items.TIPPED_ARROW, Items.ENCHANTED_BOOK);
 
-    /**
-     * Filters just by the items display name and tooltip
-     * @param query The query
-     * @return A list of matching item stacks
-     */
+    /// Filters just by the items display name and tooltip
+    /// @param query The query
+    /// @return A list of matching item stacks
     protected static List<ItemStack> defaultFilter(String query) {
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
@@ -72,11 +73,9 @@ public class ItemFilters {
         return results;
     }
 
-    /**
-     * Filters by mod namespace
-     * @param query The query
-     * @return A list of matching item stacks
-     */
+    /// Filters by mod namespace
+    /// @param query The query
+    /// @return A list of matching item stacks
     protected static List<ItemStack> modNamespace(String query) {
 
         List<ItemStack> firstPrio = new ArrayList<>();
@@ -109,12 +108,10 @@ public class ItemFilters {
         }
     }
 
-    /**
-     * Filters by mod name
-     * @param stack The item stack
-     * @param query The query
-     * @return Whether the item stack matches the mod name
-     */
+    /// Filters by mod name
+    /// @param stack The item stack
+    /// @param query The query
+    /// @return Whether the item stack matches the mod name
     protected static boolean modNamespace(ItemStack stack, String query) {
         String modNamespace = ReliableRecipeViewerClient.resolver().getModNamespaceForItem(stack);
         if (modNamespace == null)
@@ -125,11 +122,9 @@ public class ItemFilters {
         return modNamespace.startsWith(query.toLowerCase()) || modNamespace.contains(query.toLowerCase());
     }
 
-    /**
-     * Filters by Identifier (item id)
-     * @param query The query
-     * @return A list of matching item stacks
-     */
+    /// Filters by Identifier (item id)
+    /// @param query The query
+    /// @return A list of matching item stacks
     protected static List<ItemStack> id(String query) {
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
@@ -149,22 +144,18 @@ public class ItemFilters {
         return results;
     }
 
-    /**
-     * Filters by Identifier (item id)
-     * @param stack The item stack
-     * @param query The query
-     * @return Whether the item stack matches the item id
-     */
+    /// Filters by [Identifier] (item id)
+    /// @param stack The item stack
+    /// @param query The query
+    /// @return Whether the item stack matches the item id
     protected static boolean id(ItemStack stack, String query) {
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase();
         return itemId.startsWith(query.toLowerCase()) || itemId.contains(query.toLowerCase());
     }
 
-    /**
-     * Filters by an items tags
-     * @param query The query
-     * @return A list of matching item stacks
-     */
+    /// Filters by an item's tags
+    /// @param query The query
+    /// @return A list of matching item stacks
     protected static List<ItemStack> tag(String query) {
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
@@ -193,12 +184,10 @@ public class ItemFilters {
         return results;
     }
 
-    /**
-     * Filters by an items tags
-     * @param stack The item stack
-     * @param query The query
-     * @return Whether the item stack matches the items tags
-     */
+    /// Filters by an item's tags
+    /// @param stack The item stack
+    /// @param query The query
+    /// @return Whether the item stack matches the items tags
     protected static boolean tag(ItemStack stack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
@@ -217,16 +206,13 @@ public class ItemFilters {
         return result.get();
     }
 
-    /**
-     * Returns the matching level of the itemstacks tooltip with the query
-     *
-     * @param stack The itemstack
-     * @param query The query
-     * @return 0 means no match; 1 means first prio; 2 means second prio
-     * <br>
-     * <br>
-     * Used for correct listing of itemstacks by match accuracy
-     */
+    /// Returns the matching level of the item stack's tooltip with the query
+    ///
+    /// @param stack The itemstack
+    /// @param query The query
+    /// @return 0 means no match; 1 means first priority; 2 means second priority
+    ///
+    /// Used for correct listing of item stacks by match accuracy
     private static int getTooltipMatch(ItemStack stack, String query) {
 
         List<Component> lore = Screen.getTooltipFromItem(Minecraft.getInstance(), stack);
@@ -243,21 +229,19 @@ public class ItemFilters {
         return 0;
     }
 
-    /**
-     * @return A list of all items that can be displayed in the ViewOverlay
-     * <br>
-     * <br>
-     * <b>Also includes all stack-sensitives</b>
-     */
+    /// @return A list of all items that can be displayed in the ViewOverlay
+    ///
+    /// **Also includes all stack-sensitives**
     private static List<ItemStack> fullStackList() {
         List<ItemStack> results = new ArrayList<>();
 
         BuiltInRegistries.ITEM.forEach(item -> {
-            results.add(new ItemStack(item));
+            if (!EXCLUDED_ITEMS.contains(item))
+                results.add(new ItemStack(item));
             results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
         });
 
-        if (ModCompat.POLYDEX)
+        if (ModCompat.POLYMER)
             PolymerHelpers.polymerFilter(results);
 
         ResourceRecipeManager.replaceIndex(results);

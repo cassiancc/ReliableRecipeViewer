@@ -2,31 +2,28 @@
 /*package cc.cassian.rrv.neoforge;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.Optional;
@@ -34,7 +31,7 @@ import java.util.Optional;
 @EventBusSubscriber(modid = ReliableRecipeViewer.MOD_ID, value = Dist.CLIENT)
 public class NeoForgeClientEntrypoint {
 
-	@SubscribeEvent
+    @SubscribeEvent
 	private static void setupIntegrations(FMLClientSetupEvent event) {
         ReliableRecipeViewer.LOGGER.info("RRV: Scanning for client integrations...");
 		ModList.get().getMods().forEach(modInfo -> {
@@ -87,7 +84,18 @@ public class NeoForgeClientEntrypoint {
 
     @SubscribeEvent
     public static void onPayloadRegistry(RegisterClientPayloadHandlersEvent event) {
-        RrvClientNetworkManager.registerPayloads(event);
+        ClientNetworkManager.registerPayloads(event);
+    }
+
+    @SubscribeEvent
+    public static void receiveRecipes(RecipesReceivedEvent event) {
+        ReliableRecipeViewerClient.LOCAL_RECIPES = event.getRecipeMap();
+        ClientRecipeCache.INSTANCE.buildRecipeCache(true);
+    }
+
+    @SubscribeEvent
+    public static void receiveRecipes(ItemTooltipEvent event) {
+        ReliableRecipeViewerClient.addNamespaceTooltip(event.getItemStack(), event.getToolTip(), false);
     }
 
 }

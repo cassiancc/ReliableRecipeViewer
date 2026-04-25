@@ -11,6 +11,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 
 import java.util.List;
 
@@ -18,17 +20,19 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
     private final AnimationTicker smeltingTicker;
+    private final Identifier id;
 
-    public SmeltingClientRecipe(SmeltingServerRecipe recipe) {
+    public SmeltingClientRecipe(RecipeHolder<SmeltingRecipe> recipe) {
 
-        this.input = recipe.getInput();
-        this.result = recipe.getResult();
+        this.id = recipe.id().identifier();
+        this.input = SlotContent.of(recipe.value().input());
+        this.result = SlotContent.of(recipe.value().result);
 
         this.smeltingTicker = AnimationTicker.create(Identifier.withDefaultNamespace("smelting_tick"), 200);
     }
 
     @Override
-    public SmeltingClientRecipeType getViewType() {
+    public SmeltingClientRecipeType getType() {
         return SmeltingClientRecipeType.INSTANCE;
     }
 
@@ -48,6 +52,10 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
         return List.of(this.result);
     }
 
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public List<AnimationTicker> getAnimationTickers() {

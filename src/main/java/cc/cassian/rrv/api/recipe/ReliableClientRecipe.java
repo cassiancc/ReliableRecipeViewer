@@ -13,16 +13,15 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 
 public interface ReliableClientRecipe {
 
     List<ReliableClientRecipe> PLACEHOLDER = List.of(
             new ReliableClientRecipe() {
 
-
                 @Override
-                public ReliableClientRecipeType getViewType() {
+                public ReliableClientRecipeType getType() {
                     return CraftingClientRecipeType.INSTANCE;
                 }
 
@@ -44,9 +43,21 @@ public interface ReliableClientRecipe {
     );
 
     /**
+     * Renamed to {@link ReliableClientRecipe#getType()} in 8.0.0
      * @return The client recipe type of this recipe
      */
-    ReliableClientRecipeType getViewType();
+    @Deprecated(since = "8.0.0")
+    default ReliableClientRecipeType getViewType() {
+        return getType();
+    }
+
+    /**
+     * Provides the {@link ReliableClientRecipeType} of this client recipe.
+     * @return The client recipe type of this recipe
+     */
+    default ReliableClientRecipeType getType() {
+        return getViewType();
+    }
 
     /**
      * Bind the SlotContents of the recipe to the according slots
@@ -103,6 +114,13 @@ public interface ReliableClientRecipe {
         return 0;
     }
 
+    /**
+     * The identifier of this recipe, used for clientside operations like recipe hiding and favoriting.<br>
+     * If this recipe does not have a file associated with it, prefix the path with {@code '} e.g. {@code minecraft:/code_driven_recipe} so that users do not look for a nonexistent file.
+     */
+    default Identifier getId() {
+        return null;
+    }
 
     /**
      * @return A list of {@link AnimationTicker}s; Useful for rendering animations
@@ -130,7 +148,7 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * Called when this recipe pop's up in the viewScreen
+     * Called when this recipe pop's up in the recipe screen
      * <br>
      * Useful for setting things up like entities for rendering etc...
      */
@@ -139,7 +157,7 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * Called when this recipe pop's out of the viewScreen
+     * Called when this recipe pop's out of the recipe screen
      * <br>
      * Useful for performance reasons, to remove entities etc...
      */
@@ -148,7 +166,7 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * @return Whether this recipe should support item-transfer
+     * @return Whether this recipe should support item transfer
      */
     default boolean supportsItemTransfer() {
         return false;
@@ -157,7 +175,7 @@ public interface ReliableClientRecipe {
     /**
      * Deprecated: Use <b>getTransferClasses();</b>
      *
-     * @return A class associated with the recipe to determine whether an item-transfer should be possible or not
+     * @return A class associated with the recipe to determine whether an item transfer should be possible or not
      */
     @Deprecated
     default Class<? extends AbstractContainerScreen<?>> getTransferClass() {
@@ -165,7 +183,7 @@ public interface ReliableClientRecipe {
     }
 
     /**
-     * @return A list of classes associated with the recipe to determine whether an item-transfer should be possible
+     * @return A list of classes associated with the recipe to determine whether an item transfer should be possible
      */
     default List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
         return this.getTransferClass() == null ? List.of() : List.of(this.getTransferClass());
@@ -188,6 +206,16 @@ public interface ReliableClientRecipe {
      * @param screen      The current containerScreen, the items should be transferred to
      */
     default void mapRecipeItems(RecipeTransferMap transferMap, AbstractContainerScreen<?> screen) {
+    }
+
+
+    /**
+     * Provides a recipe ID that is guaranteed to not be null.<br><br>
+     * Added for backwards compatibility: All client recipes added after RRV 8.0.0 should not provide null as an ID.
+     */
+    @Deprecated
+    default Identifier entryId() {
+        return Objects.requireNonNullElse(getId(), getType().getId().withSuffix("/" + getResults().hashCode()));
     }
 
 

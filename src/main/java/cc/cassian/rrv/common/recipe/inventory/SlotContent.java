@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -35,10 +36,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class SlotContent {
 
@@ -81,6 +79,11 @@ public class SlotContent {
         blockTagKey.ifPresent(blockTag -> this.blockTag = blockTag);
     }
 
+    public static SlotContent of(@Nullable HolderSet<Item> items) {
+        if (items == null) return SlotContent.of();
+        return SlotContent.of(Ingredient.of(items));
+    }
+
     public void setType(ActionType type) {
         this.type = type;
     }
@@ -90,12 +93,20 @@ public class SlotContent {
     }
 
     /**
-	 * Internal method to bind an item tag to a `SlotContent`.
+	 * Internal method to bind an item tag to a {@code SlotContent}.
      * The preferred option is usually {@link SlotContent#of(TagKey)}.
 	 */
     public SlotContent bindItemTag(TagKey<Item> tag) {
         this.itemTag = tag;
         this.setDataComponent("itemTag", tag.location());
+        return this;
+    }
+
+    /**
+     * Internal method to bind a result to a {@code SlotContent}.
+     */
+    public SlotContent bindResult(Identifier id) {
+        this.setDataComponent("result", id);
         return this;
     }
 
@@ -211,9 +222,19 @@ public class SlotContent {
         return new SlotContent(List.of(new ItemStack(item)));
     }
 
+    public static SlotContent of(Item... items) {
+        if (items == null) return SlotContent.of();
+        return new SlotContent(Arrays.stream(items).map(ItemStack::new).toList());
+    }
+
     public static SlotContent of(Block item) {
         if (item == null) return SlotContent.of();
         return new SlotContent(List.of(new ItemStack(item)));
+    }
+
+    public static SlotContent of(Block... blocks) {
+        if (blocks == null) return SlotContent.of();
+        return new SlotContent(Arrays.stream(blocks).map(ItemStack::new).toList());
     }
 
     public static SlotContent ofItemList(List<Item> items) {
@@ -321,7 +342,7 @@ public class SlotContent {
         }
         *///?}
 
-        return SlotContent.ofItemList(ingredientContent.right().get().stream().filter(Holder::isBound).map(Holder::value).toList());
+        return SlotContent.ofItemList(RrvUtil.getItemsFromIngredient(ingredient));
 
     }
 

@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -16,16 +17,10 @@ public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent left, right, result;
     private final int priority;
+    private final Identifier id;
 
-
-    public AnvilCombiningClientRecipe(SlotContent base, SlotContent repairIngredient, SlotContent result) {
-        this.left = base;
-        this.right = repairIngredient;
-        this.result = result;
-        this.priority = -10;
-    }
-
-    public AnvilCombiningClientRecipe(SlotContent left, SlotContent right, SlotContent result, int priority) {
+    public AnvilCombiningClientRecipe(Identifier id, SlotContent left, SlotContent right, SlotContent result, int priority) {
+        this.id = id;
         this.left = left;
         this.right = right;
         this.result = result;
@@ -39,7 +34,12 @@ public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public Identifier getId() {
+        return id;
+    }
+
+    @Override
+    public ReliableClientRecipeType getType() {
         return AnvilCombiningClientRecipeType.INSTANCE;
     }
 

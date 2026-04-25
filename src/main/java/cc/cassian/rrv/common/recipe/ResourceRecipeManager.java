@@ -1,25 +1,40 @@
 package cc.cassian.rrv.common.recipe;
 
+import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
+//? fabric {
+import net.fabricmc.loader.api.FabricLoader;
+//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.StrictJsonParser;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Stream;
 
+import static cc.cassian.rrv.common.ReliableRecipeViewer.GSON;
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
 public class ResourceRecipeManager {
@@ -30,19 +45,23 @@ public class ResourceRecipeManager {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
 	}
 
-	public static void getHiddenTags() {
+	/// Hides recipes from the recipe screen.
+	public static void hideRecipes() {
 		getIdentifierResourceMap("rrv/exclusions").forEach((identifier, resource) -> {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
 				if (parsedRecipe.get("type").getAsString().equals("rrv:exclusions")) {
-					var itemTags = parsedRecipe.get("item").getAsJsonArray();
-					itemTags.forEach(item -> {
-						HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString()));
+					parsedRecipe.entrySet().forEach(entry -> {
+						if (entry.getKey().contains(":")) {
+							var key = Identifier.parse(entry.getKey());
+							if (Configs.CATEGORIES.CATEGORIES.containsKey(key)) {
+								entry.getValue().getAsJsonArray().forEach(jsonElement -> ItemView.excludeRecipe(key, Identifier.parse(jsonElement.getAsString())));
+							}
+						}
 					});
-					var blockTags = parsedRecipe.get("block").getAsJsonArray();
-					blockTags.forEach(item -> {
-						HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString()));
-					});
+
+					parsedRecipe.get("item").getAsJsonArray().forEach(item -> HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString())));
+					parsedRecipe.get("block").getAsJsonArray().forEach(item -> HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString())));
 					LOGGER.debug("RRV: Loaded exclusion list {}", identifier);
 				}
 			} catch (IOException e) {
@@ -51,6 +70,7 @@ public class ResourceRecipeManager {
 		});
 	}
 
+	/// Adds info recipes from resource packs and the API ([ItemView#addInfoRecipe]).
 	public static ArrayList<InfoClientRecipe> addInfoRecipes() {
 		ArrayList<InfoClientRecipe> infoRecipes = new ArrayList<>();
 		getIdentifierResourceMap("rrv/recipe").forEach((identifier, resource) -> {
@@ -58,7 +78,7 @@ public class ResourceRecipeManager {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
 				if (parsedRecipe.get("type").getAsString().equals("rrv:info")) {
 					var text = parsedRecipe.get("text").getAsString();
-					infoRecipes.add(new InfoClientRecipe(RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
+					infoRecipes.add(new InfoClientRecipe(identifier.withPath((path)->path.replace(".json", "")), RrvUtil.readSlotContent("key", "info", identifier, parsedRecipe), text));
 					LOGGER.debug("RRV: Loaded info recipe {}", identifier);
 				}
 			} catch (IOException e) {
@@ -69,26 +89,29 @@ public class ResourceRecipeManager {
 		return infoRecipes;
 	}
 
-	public static void addResourceDrivenWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
+	/// Adds world interaction recipes from resource packs.
+	public static void addWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {
 		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
 			var slots = readCombinationRecipe("world_interaction", entry);
 			if (slots != null) {
-				worldInteractionRecipes.add(new WorldInteractionClientRecipe(slots.left, slots.right, slots.result, slots.priority));
+				worldInteractionRecipes.add(new WorldInteractionClientRecipe(entry.getKey().withPath(path->path.replace(".json", "")), slots.left, slots.right, slots.result, slots.priority));
 				LOGGER.debug("RRV: Loaded world interaction recipe {}", entry.getKey());
 			}
 		}
 	}
 
+	/// Adds anvil combining recipes from resource packs.
 	public static ArrayList<AnvilCombiningClientRecipe> addAnvilCombiningRecipes() {
 		ArrayList<AnvilCombiningClientRecipe> anvilCombiningRecipes = new ArrayList<>();
 		for (Map.Entry<Identifier, Resource> entry : getIdentifierResourceMap("rrv/recipe").entrySet()) {
 			var slots = readCombinationRecipe("anvil_combining", entry);
 			if (slots != null)
-				anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(slots.left, slots.right, slots.result, slots.priority));
+				anvilCombiningRecipes.add(new AnvilCombiningClientRecipe(entry.getKey(), slots.left, slots.right, slots.result, slots.priority));
 		}
 		return anvilCombiningRecipes;
 	}
 
+	/// Reads data from combination recipes - world interaction, anvil combining, etc.
 	private static CombinationRecipeResult readCombinationRecipe(String type, Map.Entry<Identifier, Resource> entry) {
 		String typeSpaced = type.replace("_", " ");
 		Identifier identifier = entry.getKey();
@@ -110,6 +133,7 @@ public class ResourceRecipeManager {
 		return null;
 	}
 
+	/// Replaces or adds to the index based on data from a resource pack.
 	public static void replaceIndex(List<ItemStack> results) {
 		getIdentifierResourceMap("rrv/index").forEach((identifier, resource) -> {
 			try {
@@ -149,6 +173,50 @@ public class ResourceRecipeManager {
 				LOGGER.error("Could not parse index modification {} due to an exception: ", identifier, e);
 			}
 		});
+	}
+
+	/// Client fallback for when a server did not provide recipes.
+	/// Fabric-exclusive, as Neo does not provide NIO paths for mods.
+	public static void getLocalRecipes() {
+		HashMap<Identifier, RecipeHolder<?>> objects = new HashMap<>();
+		//? fabric {
+		FabricLoader.getInstance().getAllMods().forEach(mod->{
+			var rootPath = mod.getRootPaths().getFirst();
+			String modId = mod.getMetadata().getId();
+			getCachedRecipesFromMod(rootPath, modId, objects);
+		});
+		//?}
+		try {
+			ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(objects.values());
+		} catch (Exception e) {
+			LOGGER.error("Could not get local recipes due to an exception: ", e);
+		}
+
+	}
+
+	private static void getCachedRecipesFromMod(Path rootPath, String modId, Map<Identifier, RecipeHolder<?>> objects) {
+		var path = rootPath.resolve("data/%s/recipe".formatted(modId));
+		if (Files.exists(path)) {
+			try (Stream<Path> files = Files.walk(path)) {
+				files.forEach(recipePath->{
+					if (Files.isDirectory(recipePath)) return;
+					try (BufferedReader tagReader = Files.newBufferedReader(recipePath)) {
+						String id = recipePath.getFileName().toString().replace(".json", "");
+						JsonElement jsonElement = GSON.fromJson(tagReader, JsonElement.class);
+						JsonObject recipeObject = jsonElement.getAsJsonObject();
+						if (!recipeObject.has("type")) return;
+						Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
+						Identifier recipeId = Identifier.fromNamespaceAndPath(modId, id);
+						if (!objects.containsKey(recipeId))
+							objects.put(recipeId, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), recipe));
+					} catch (Exception e) {
+						LOGGER.error("Error loading local recipe: {}", recipePath);
+					}
+				});
+			} catch (Exception e) {
+				LOGGER.error("Error loading local recipes from mod: {}", modId);
+			}
+		}
 	}
 
 	private static void findAndAddStack(List<ItemStack> results, JsonObject itemObject, String key, int offset) {

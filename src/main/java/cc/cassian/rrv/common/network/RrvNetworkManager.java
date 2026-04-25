@@ -1,8 +1,8 @@
 package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.Platform;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
@@ -13,17 +13,15 @@ import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayl
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 //?} else {
-/*import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.network.PacketDistributor;
+/*import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 *///?}
@@ -97,15 +95,15 @@ public class RrvNetworkManager {
      * @param codec         The codec for the packet
      * @param clientHandler The client payload handler
      */
-    public static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
+    public static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, ClientNetworkManager.PayloadHandler<ClientNetworkManager.ClientContext, T> clientHandler) {
         //? fabric {
         registerClientboundPayload(type, codec);
         if (Platform.INSTANCE.isClientSide()) {
-            RrvClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
+            ClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
         }
         //?} else {
         /*event.playToClient(type, codec, (payload, context) -> {
-           clientHandler.handle(new RrvClientNetworkManager.ClientContext(Optional.empty()), payload);
+           clientHandler.handle(new ClientNetworkManager.ClientContext(Optional.empty()), payload);
         });
         *///?}
     }
@@ -170,30 +168,30 @@ public class RrvNetworkManager {
          * Enclosing payloads (for update start and end)
          */
         registerClientbound(ClientboundStartUpdatesPayload.TYPE, ClientboundStartUpdatesPayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeManager.INSTANCE.queueTask(ClientRecipeManager.INSTANCE::startUpdate);
+            InternalRecipeManager.INSTANCE.queueTask(InternalRecipeManager.INSTANCE::startUpdate);
         });
 
         registerClientbound(ClientboundFinishUpdatesPayload.TYPE, ClientboundFinishUpdatesPayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeManager.INSTANCE.queueTask(ClientRecipeManager.INSTANCE::processRecipes);
-            ClientRecipeManager.INSTANCE.runTasks();
+            InternalRecipeManager.INSTANCE.queueTask(InternalRecipeManager.INSTANCE::processRecipes);
+            InternalRecipeManager.INSTANCE.runTasks();
         });
 
         //Recipes
         registerClientbound(ClientboundCacheStartPayload.TYPE, ClientboundCacheStartPayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheStartRecieved(payload.types()));
+            InternalRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheStartRecieved(payload.types()));
         });
         registerClientbound(ClientboundTypeUpdateStartPayload.TYPE, ClientboundTypeUpdateStartPayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.startCaching(payload.recipeType(), payload.amount()));
+            InternalRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.startCaching(payload.recipeType(), payload.amount()));
         });
         registerClientbound(ClientboundTypeUpdatePayload.TYPE, ClientboundTypeUpdatePayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheModRecipe(payload.entry()));
+            InternalRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheModRecipe(payload.entry()));
         });
         registerClientbound(ClientboundTypeUpdateEndPayload.TYPE, ClientboundTypeUpdateEndPayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.endCaching(payload.recipeType()));
+            InternalRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.endCaching(payload.recipeType()));
         });
 
 
-        registerClientbound(ClientboundUpdateTransferCachePayload.TYPE, ClientboundUpdateTransferCachePayload.STREAM_CODEC, RrvClientNetworkManager::handleClientboundUpdateTransferCachePayload);
+        registerClientbound(ClientboundUpdateTransferCachePayload.TYPE, ClientboundUpdateTransferCachePayload.STREAM_CODEC, ClientNetworkManager::handleClientboundUpdateTransferCachePayload);
 
         registerClientbound(ClientboundCompatPayload.TYPE, ClientboundCompatPayload.STREAM_CODEC, RrvPayloadConverter::convertFromCompat);
 

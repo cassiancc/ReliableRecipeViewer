@@ -1,10 +1,7 @@
 package cc.cassian.rrv.common.integration.polymer;
 
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
-import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
-import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,10 +43,10 @@ public class PolymerHelpers {
 		}
 		List<ItemStack> modifierStacks = ItemViewModifier.MODIFIER.invoker().get();
 		list.addAll(modifierStacks);
-		list.addAll(PolydexIntegration.ITEM_STACKS);
+		list.addAll(PolymerIntegration.ITEM_STACKS);
 
 		List<ItemStack> removeItemStacks = ItemViewRemoveModifier.ITEM_STACK_REMOVER.invoker().get();
-		removeItemStacks.addAll(PolydexIntegration.REMOVED_ITEM_STACKS);
+		removeItemStacks.addAll(PolymerIntegration.REMOVED_ITEM_STACKS);
 		Iterator<ItemStack> itemStackIterator = removeItemStacks.iterator();
 		while (itemStackIterator.hasNext()) {
 			ItemStack next = itemStackIterator.next();
@@ -75,12 +72,5 @@ public class PolymerHelpers {
 		 //?} else {
 		/*return ItemStack.EMPTY;
 		*///?}
-	}
-
-	public static boolean isPolymerScreenOpen(LocalPlayer player) {
-		//? if fabric && <26 {
-		/*return (Minecraft.getInstance().screen instanceof RecipeViewScreen recipeViewScreen && recipeViewScreen.getMenu().getClientRecipeType() instanceof PolydexClientRecipeType) || (player.containerMenu instanceof FakeScreenHandler);
-		*///?} else
-		return false;
 	}
 }

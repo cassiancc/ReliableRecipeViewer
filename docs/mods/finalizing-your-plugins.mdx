@@ -1,30 +1,29 @@
 # Finalizing your plugins
 
+<Callout variant='info'>
+This system has been reworked significantly in RRV 8.0.0. If you are using RRV 7.1.4 or below, please see [its documentation](../legacy/finalizing-your-plugins).
+</Callout>
+
 For RRV to know how to handle your recipes, you have to create two RRV plugins for your mod, one on the clientside and one on the serverside.
 
 ## Server Plugin
 
-For RRV to know how to convert your recipes into server recipes, you have to create a RRV plugin for your mod.
+<Callout variant='info'>
+If you support other recipe viewers that require synchronizing your mod's recipes (e.g. JEI), you can skip this step and synchronize your recipes via standard [Fabric](https://docs.fabricmc.net/develop/custom-recipe-types#recipe-synchronization)/[NeoForge](https://docs.neoforged.net/docs/resources/server/recipes/#client-side-recipes) APIs which will allow your mod to work with both recipe viewers as long as one is on the server.
+</Callout>
+
+For RRV to know how to synchronize your recipes from the server to the client, you have to synchronize your mod's recipes from the server to the client. This can be done at any point, but to guarantee things load at the right time you can do this in a serveride RRV plugin.
 This is done by creating a class implementing `ReliableRecipeViewerPlugin`:
 
-In your main plugin, you must call `ItemView.addServerRecipeProvider()` for each server recipe in your `onIntegrationInitialize()` method. Recipe providers registered by `ItemView.addServerRecipeProvider()` are used by the server recipe manager to maintain and update the recipe cache.
+In your main plugin, you must call `ServerRecipeManager.synchronizeRecipeType` with your recipe serializer and recipe type. This will automatically be supplied to NeoForge and Fabric's APIs when they request them.
 
 ```java
 public class ExampleModIntegration implements ReliableRecipeViewerPlugin {
-
     @Override
     public void onIntegrationInitialize() {
-
-        //For the server
-        ItemView.addServerRecipeProvider(list -> {
-            //Here you can add all your server recipes. In this example, we're using the server recipe manager to register server recipes for all loaded recipes of our modded recipe type.
-            ServerRecipeManager.INSTANCE.getRecipesForType(ExampleModRecipes.RECIPE_TYPE).forEach(modRecipe -> {
-                recipeList.add(new ExampleModServerRecipe(modRecipe.input(), modRecipe.result()));
-            });
-        });
-
+        // Here, you can tell the server to synchronize your mod's recipes to the client. In this example, we're using the server recipe manager to synchronize recipes for an example mod's upgrading recipe type.
+        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ExampleModRecipes.UPGRADING_RECIPE_SERIALIZER, ExampleModRecipes.UPGRADING_RECIPE_TYPE);
     }
-
 }
 ```
 
@@ -38,7 +37,7 @@ Don't forget to add it as an entrypoint to your mod.
 	"entrypoints": {
         ...,
 		"rrv": [
-			"com.example.mod.rrv.ExampleModRecipeViewerIntegration"
+			"com.example.docs.rrv.ExampleModRecipeViewerIntegration"
 		]
 	},
 ...
@@ -50,37 +49,29 @@ Don't forget to add it as an entrypoint to your mod.
 ```toml
 [[mods]]
 modId = "example_mod"
-rrv = "com.example.mod.rrv.ExampleModRecipeViewerIntegration"
+rrv = "com.example.docs.rrv.ExampleModRecipeViewerIntegration"
 ```
 
 ## Client Plugin
 
-<Callout variant='info'>
-Prior to RRV v6.1.0, a dedicated client plugin did not exist, and all clientside code was registered in the main plugin.
-</Callout>
-
-For RRV to know how to convert your server recipes into client recipes, you also have to create a RRV client plugin for your mod.
+For RRV to know how to convert your mod's recipes into client recipes, you also have to create a RRV client plugin for your mod.
 This is done by creating a class implementing `ReliableRecipeViewerClientPlugin`:
 
-In your client plugin, you must call `ItemView.addClientRecipeWrapper()` for each server recipe. Whenever there is an update, the client is informed about the update and the mod recipe wrappers registered by `ItemView.addClientRecipeWrapper()` are used to convert incoming server recipes into displayable client recipes.
+In your client plugin, you must call `ItemView.addClientRecipeProvider()` and provide a list of `ReliableClientRecipes` for the mod to show. To create a list from vanilla recipes, use `ClientRecipeManager.getRecipesForType` to query the synchronized recipes for your mod's recipe type. You can also add client recipes for vanilla recipe types (like hardcoded crafting recipes) via this event if needed.
 
 ```java
 public class ExampleModClientIntegration implements ReliableRecipeViewerClientPlugin {
-
     @Override
     public void onIntegrationInitialize() {
-
         //For the client
-        ItemView.addClientRecipeWrapper(ExampleServerRecipe.TYPE, modRecipe -> {
-
-            //Here you tell RRV how to process incoming server recipes
-            //Requires you to return a list of client recipes (ReliableClientRecipe)
-
-            return List.of(new ExampleModClientRecipe(modRecipe.getInput(), modRecipe.getOutput()));
-        });
-
+        ItemView.addClientRecipeProvider(recipeList -> { // provides a list of `ReliableClientRecipe`s to add to
+            // Upgrading
+            ClientRecipeManager.INSTANCE.getRecipesForType(ExampleModRecipes.UPGRADING_RECIPE_TYPE).forEach(upgradingRecipeHolder -> { // provides a list of `RecipeHolder<UpgradingRecipe>`s for you to convert
+                UpgradingRecipe recipe = upgradingRecipeHolder.value();
+                recipeList.add(new UpgradingClientRecipe(recipe.getBaseItem(), recipe.getUpgradeItem(), recipe.getResult()));
+            });
+      });
     }
-
 }
 ```
 
@@ -94,7 +85,7 @@ Don't forget to add it as an entrypoint to your mod.
 	"entrypoints": {
         ...,
 		"rrv_client": [
-			"com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
+			"com.example.docs.rrv.ExampleModRecipeViewerClientIntegration"
 		]
 	},
 ...
@@ -106,5 +97,5 @@ Don't forget to add it as an entrypoint to your mod.
 ```toml
 [[mods]]
 modId = "example_mod"
-"rrv_client" = "com.example.mod.rrv.ExampleModRecipeViewerClientIntegration"
+"rrv_client" = "com.example.docs.rrv.ExampleModRecipeViewerClientIntegration"
 ```

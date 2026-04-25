@@ -11,7 +11,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Server recipes for vanilla recipe types are unneeded post RRV 8.0.0.
+ */
+@Deprecated
 public class ShapelessServerRecipe implements ReliableServerRecipe {
 
     public static final ReliableServerRecipeType<ShapelessServerRecipe> TYPE = ReliableServerRecipeType.register(

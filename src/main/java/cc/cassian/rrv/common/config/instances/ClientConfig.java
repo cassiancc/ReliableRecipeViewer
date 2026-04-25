@@ -1,31 +1,35 @@
 package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
+import cc.cassian.rrv.common.config.options.NamespaceTooltip;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.JsonOps;
+import cc.cassian.rrv.common.integration.ModCompat;
 
 public class ClientConfig extends AbstractRrvConfig {
 
-    private OverlayDisplay showItemView = OverlayDisplay.ENABLED;
+	private OverlayDisplay showItemView = OverlayDisplay.ENABLED;
 	private OverlayDisplay showSidePanel = OverlayDisplay.WITH_ITEM_VIEW;
 	private SidePanel sidePanel = SidePanel.DISABLED;
 	private boolean background = true;
 	private boolean showProgressBar = true;
 	private boolean itemWrapMode = true;
 	private WrapScrolling wrapScrolling = WrapScrolling.ON_BUTTONS;
-	private boolean appendModNamespace = true;
+	private NamespaceTooltip namespaceTooltip = ModCompat.hasModNamespaceModsInstalled() ? NamespaceTooltip.HIDE : NamespaceTooltip.SHOW;
+	private boolean showRecipeId = false;
 	private boolean rightIndex = true;
 	private boolean centerSearch = true;
 	private boolean centerRecipeScreen = false;
 	private boolean fluidUnitDroplets = false;
 	private boolean showButtons = true;
+	private boolean recipeBookButton = false;
+	private boolean recipeBookTheme = true;
+	private boolean localFallback = false;
 
 	public ClientConfig() {
 		super("client_settings");
-	}
+    }
 
 	public boolean drawBackground() {
 		return this.background;
@@ -43,12 +47,12 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.itemWrapMode = itemWrapMode;
 	}
 
-	public boolean isAppendModNamespace() {
-		return appendModNamespace;
+	public NamespaceTooltip showNamespaceTooltip() {
+		return namespaceTooltip;
 	}
 	
-	public void setAppendModNamespace(boolean appendModNamespace) {
-		this.appendModNamespace = appendModNamespace;
+	public void setNamespaceTooltip(NamespaceTooltip namespaceTooltip) {
+		this.namespaceTooltip = namespaceTooltip;
 	}
 
 	public boolean isRightIndex() {
@@ -99,41 +103,6 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.showButtons = showButtons;
 	}
 
-	@Override
-	protected void loadData() {
-		this.showItemView = OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("enabled")).mapOrElse(Pair::getFirst, (e)-> OverlayDisplay.ENABLED);
-		this.showSidePanel = OverlayDisplay.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanelEnabled")).mapOrElse(Pair::getFirst, (e)-> OverlayDisplay.ENABLED);
-		this.background = this.data().get("background").getAsBoolean();
-		this.itemWrapMode = this.data().get("itemWrapMode").getAsBoolean();
-		this.appendModNamespace = this.data().get("appendModNamespace").getAsBoolean();
-		this.rightIndex = this.data().get("rightIndex").getAsBoolean();
-		this.centerSearch = this.data().get("centerSearch").getAsBoolean();
-		this.showButtons = this.data().get("showButtons").getAsBoolean();
-		this.showProgressBar = this.data().get("showProgressBar").getAsBoolean();
-		this.fluidUnitDroplets = this.data().get("fluidUnitDroplets").getAsBoolean();
-		this.centerRecipeScreen = this.data().get("centerRecipeScreen").getAsBoolean();
-		this.wrapScrolling = WrapScrolling.CODEC.decode(JsonOps.INSTANCE, this.data().get("wrapScrolling")).mapOrElse(Pair::getFirst, (e)->WrapScrolling.ON_BUTTONS);
-		this.sidePanel = SidePanel.CODEC.decode(JsonOps.INSTANCE, this.data().get("sidePanel")).mapOrElse(Pair::getFirst, (e)-> SidePanel.BOOKMARKS);
-	}
-
-	@Override
-	protected void saveData() {
-		this.data().add("enabled", OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showItemView).getOrThrow());
-		this.data().add("sidePanelEnabled", OverlayDisplay.CODEC.encodeStart(JsonOps.INSTANCE, this.showSidePanel).getOrThrow());
-		this.data().addProperty("background", this.background);
-		this.data().addProperty("itemWrapMode", this.itemWrapMode);
-		this.data().addProperty("appendModNamespace", this.appendModNamespace);
-		this.data().addProperty("rightIndex", this.rightIndex);
-		this.data().addProperty("centerSearch", this.centerSearch);
-		this.data().addProperty("showButtons", this.showButtons);
-		this.data().addProperty("showProgressBar", this.showProgressBar);
-		this.data().addProperty("fluidUnitDroplets", this.fluidUnitDroplets);
-		this.data().addProperty("centerRecipeScreen", this.centerRecipeScreen);
-		this.data().add("wrapScrolling", WrapScrolling.CODEC.encodeStart(JsonOps.INSTANCE, this.wrapScrolling).getOrThrow());
-		this.data().add("sidePanel", SidePanel.CODEC.encodeStart(JsonOps.INSTANCE, this.sidePanel).getOrThrow());
-
-	}
-
 	public OverlayDisplay isShowSidePanel() {
 		return showSidePanel;
 	}
@@ -142,27 +111,101 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.showSidePanel = showSidePanel;
 	}
 
-    public boolean isCenterRecipeScreen() {
-        return centerRecipeScreen;
-    }
+	public boolean isCenterRecipeScreen() {
+		return centerRecipeScreen;
+	}
 
-    public void setCenterRecipeScreen(boolean centerRecipeScreen) {
-        this.centerRecipeScreen = centerRecipeScreen;
-    }
+	public void setCenterRecipeScreen(boolean centerRecipeScreen) {
+		this.centerRecipeScreen = centerRecipeScreen;
+	}
 
-    public boolean isFluidUnitDroplets() {
-        return fluidUnitDroplets;
-    }
+	public boolean isFluidUnitDroplets() {
+		return fluidUnitDroplets;
+	}
 
-    public void setFluidUnitDroplets(boolean fluidUnitDroplets) {
-        this.fluidUnitDroplets = fluidUnitDroplets;
-    }
+	public void setFluidUnitDroplets(boolean fluidUnitDroplets) {
+		this.fluidUnitDroplets = fluidUnitDroplets;
+	}
 
-    public boolean isShowProgressBar() {
-        return showProgressBar;
-    }
+	public boolean isShowProgressBar() {
+		return showProgressBar;
+	}
 
-    public void setShowProgressBar(boolean showProgressBar) {
-        this.showProgressBar = showProgressBar;
-    }
+	public void setShowProgressBar(boolean showProgressBar) {
+		this.showProgressBar = showProgressBar;
+	}
+
+	public boolean isShowRecipeId() {
+		return showRecipeId;
+	}
+
+	public void setShowRecipeId(boolean showRecipeId) {
+		this.showRecipeId = showRecipeId;
+	}
+
+	public boolean isRecipeBookButton() {
+		return recipeBookButton;
+	}
+
+	public void setRecipeBookButton(boolean recipeBookButton) {
+		this.recipeBookButton = recipeBookButton;
+	}
+
+	public boolean isRecipeBookTheme() {
+		return recipeBookTheme;
+	}
+
+	public void setRecipeBookTheme(boolean recipeBookTheme) {
+		this.recipeBookTheme = recipeBookTheme;
+	}
+
+	public boolean localFallbackAllowed() {
+		return localFallback;
+	}
+
+	public void setLocalFallbackAllowed(boolean localFallback) {
+		this.localFallback = localFallback;
+	}
+
+	@Override
+	protected void loadData() {
+		this.showItemView = load("enabled", this.showItemView, OverlayDisplay.CODEC);
+		this.showSidePanel = load("sidePanelEnabled", this.showSidePanel, OverlayDisplay.CODEC);
+		this.background = load("background", this.background);
+		this.itemWrapMode = load("itemWrapMode", this.itemWrapMode);
+		this.namespaceTooltip = load("namespaceTooltip", this.namespaceTooltip, NamespaceTooltip.CODEC);
+		this.rightIndex = load("rightIndex", this.rightIndex);
+		this.centerSearch = load("centerSearch", this.centerSearch);
+		this.showButtons = load("showButtons", showButtons);
+		this.showProgressBar = load("showProgressBar", this.showProgressBar);
+		this.fluidUnitDroplets = load("fluidUnitDroplets", this.fluidUnitDroplets);
+		this.centerRecipeScreen = load("centerRecipeScreen", this.centerRecipeScreen);
+		this.showRecipeId = load("showRecipeId", this.showRecipeId);
+		this.recipeBookButton = load("recipeBookButton", this.recipeBookButton);
+		this.recipeBookTheme = load("recipeBookTheme", this.recipeBookTheme);
+		this.localFallback = load("localFallback", this.localFallback);
+		this.wrapScrolling = load("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
+		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
+	}
+
+	@Override
+	protected void saveData() {
+		save("enabled", this.showItemView, OverlayDisplay.CODEC);
+		save("sidePanelEnabled", this.showSidePanel, OverlayDisplay.CODEC);
+		save("background", this.background);
+		save("itemWrapMode", this.itemWrapMode);
+		save("namespaceTooltip", this.namespaceTooltip, NamespaceTooltip.CODEC);
+		save("rightIndex", this.rightIndex);
+		save("centerSearch", this.centerSearch);
+		save("showButtons", showButtons);
+		save("showProgressBar", this.showProgressBar);
+		save("fluidUnitDroplets", this.fluidUnitDroplets);
+		save("centerRecipeScreen", this.centerRecipeScreen);
+		save("showRecipeId", this.showRecipeId);
+		save("recipeBookButton", this.recipeBookButton);
+		save("recipeBookTheme", this.recipeBookTheme);
+		save("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
+		save("sidePanel", this.sidePanel, SidePanel.CODEC);
+		save("localFallback", this.localFallback);
+	}
 }

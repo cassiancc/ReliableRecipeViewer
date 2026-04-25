@@ -1,51 +1,60 @@
-<h1 align="center">RRV</h1>
+# Reliable Recipe Viewer
 
-<p align="center">
-  <img width="250" height="250" src="https://asphodel.cc/resources/modrinth/rrv/icon2.png">
-</p>
+<a href='https://modrinth.com/mod/rrv/versions?l=fabric'><img alt="fabric" height="56" src="https://raw.githubusercontent.com/intergrav/devins-badges/refs/heads/v3/assets/cozy/supported/fabric_vector.svg"></a>
+<a href='https://modrinth.com/mod/rrv/versions?l=neoforge'><img alt="neoforge" height="56" src="https://raw.githubusercontent.com/cassiancc/Cassians-Badges/refs/heads/main/cozy/NeoForge.svg"></a>
 
-## Overview
+A recipe viewer for the latest versions of Minecraft, rebuilt from [EIV](https://modrinth.com/mod/eiv) and designed to be configured.
 
-[Reliable Recipe Viewer](https://modrinth.com/mod/rrv) is a mod that provides recipe viewer functionality on modern Minecraft versions, from 1.21.11 to 26.1. It's based on [Extended Item View](https://modrinth.com/mod/eiv), which supported 1.21.4-1.21.10. Since EIV never made the jump to 1.21.11 and beyond and had a few issues I opted to provide this fork.
+**NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server for full functionality.**
 
-Currently supported functions are:
+## Features
 
-- recipe viewing
-- bookmarking items
-- item-transfer (fast-move items in crafting gui)
-- hiding/showing overlay
-- item highlighting (double-click on searchbar)
-- cheatmode
+* **Recipe Viewing:** See recipes for all vanilla recipe types, as well as [supported modded recipe types]((https://modrinth.com/collection/divCExF5)) as well!
+* **Powerful Configuration:** Reorder and disable recipe types, rearrange the item index, rearrange the overlays, and more config options to fit your needs.
+* **Bookmarking and Craftables Panel:** Bookmark items and recipes with the `A` key, or use the side panel to see what you can craft with the items in your inventory.
+* **Recipe Transfer:** Click the transfer button on supported recipes to quickly transfer items from your inventory to the workstation.
 
-In addition, this fork provides:
-- Support for 1.21.11 and 26.1, including support for data-driven villager trading.
-- Additional configuration options, including switching the side of the item index, centering the search bar.
-- Additional GUI improvemenets, like a scroll bar for the item index, a way to see all recipes by clicking on the recipe type, buttons to change the item index page, and more.
-- Additional recipe types for item tags.
-- Compatibility improvements, showing mod name translations, tag translations, and more.
+Reliable Recipe Viewer is a fork of [Extended Item View](https://modrinth.com/mod/eiv). A summary of changes made from the original project can be found below.
+
+<details>
+
+<summary>Why Reliable Recipe Viewer?</summary>
+
+- A reworked API designed around the recipe synchronization APIs present in Fabric and NeoForge, cutting down on redundant work and allowing some parts of RRV to function even when the server has a different recipe viewer or uses a plugin like [JustEnoughPaper](https://github.com/cassiancc/JustEnoughPaper/releases/tag/1.0-26.1-SNAPSHOT).
+- On Fabric, a local fallback mode allowing for partial functionality on vanilla servers.
+- Support for the latest versions of Minecraft, including snapshots when possible.
+- New API options to hide recipes, recipe categories, enchantments, potions, and more.
+- Ability to bookmark individual recipes, rather than only stacks.
+- An option to show craftable items from your inventory.
+- Additional configuration options, including switching the side of the item index, centering the search bar, reorganizing and hiding recipe categories, editing the index, and much, much more.
+- Additional GUI improvements, like a scroll bar for the item index, a way to see all recipes by clicking on the recipe type, buttons to change the item index page, and more.
+- Additional recipe types for special crafting recipes, item tags, repairing, and resource pack-driven info, world interaction, and anvil combining recipes.
+- Compatibility improvements, showing mod name translations, tag translations, support for component ingredients, and more.
+- Improved mod compatibility with [Reliable Remover](https://modrinth.com/mod/reliable-remover), [Polydex](https://modrinth.com/mod/polydex), [Controlify](https://modrinth.com/mod/controlify), and more.
 - Fixes for multiple bugs seen in the original project.
 
-For more details, see the original Modrinth page for [Extended Item View](https://modrinth.com/mod/eiv), as well as the changelog for a complete list of changes.
+</details>
 
-**NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server.**
+## Documentation
+
+Developers wishing to integrate their mods with Reliable Recipe Viewer or configure it for their modpack can make use of RRV's easy to use API. You can find more info on the [Modded Minecraft Wiki](https://moddedmc.wiki/en/project/rrv/latest/docs). Unlike the original mod, this fork provides its sources through [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven#h_233c0ebd50) so that API Javadocs can be easily used.
 
 ## FAQ
 
 - Will this mod be ported to other versions/loaders?
-  - This port will be kept up to date with the latest version of Minecraft. No backports are planned/necessary, please use the original mod.
+  - This port will be kept up to date with the latest version of Minecraft, and I have opted to support the primary loaders on 26.1, Fabric and NeoForge. No backports are planned/necessary, please use the original mod.
 - How do I get started adding compatibility with RRV?
-  - Please see the docs on the [Modded Minecraft Wiki](https://moddedmc.wiki/en/project/rrv/latest/docs)
+  - Please see the docs on the [Modded Minecraft Wiki](https://moddedmc.wiki/en/project/rrv/latest/docs)!
 - What mods are compatible with RRV?
-  - Please see the [Modrinth Collection](https://modrinth.com/collection/divCExF5), which lists every mod that I know has RRV integration.
+  - Please see the [Modrinth Collection](https://modrinth.com/collection/divCExF5), which lists every mod that I know has RRV integration. If you are a developer, and you've added support for RRV, please reach out in the Discord and I'll add your mod!
 - Where can I ask questions about RRV?
   - I am happy to answer RRV related questions in my [Discord](https://discord.cassian.cc/).
 
 ## License
-[![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](github.com/cassiancc/bygone-fortress)
+[![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](https://github.com/cassiancc/reliablerecipeviewer)
 
-RRV is available under the open source MIT License, matching the original mod.
+Reliable Recipe Viewer is available under the open source MIT License, matching the original mod.
 
 ## Credits
-This started as a port of [Extended Item View](https://modrinth.com/mod/rrv) to Fabric 1.21.11 that I made for personal use. EIV is available under [MIT License](https://www.curseforge.com/minecraft/mc-mods/extended-itemview-eiv#license), but has not been worked on in two months, and due to changes in 1.21.11, previous versions cannot be compiled against. I have opted to redesign some elements of the mod with the goal to make it a more reliable recipe viewer to use.
 
-Code from the now archived [Polydex2EIV](https://github.com/SAGUMEDREAM/Polydex2EIV/) is used under its [MIT License](https://github.com/SAGUMEDREAM/Polydex2EIV/blob/b75fc66d3a835db8f2f18bd42d8895038d74fdb5/src/main/resources/fabric.mod.json#L12).
+This began as a port of [Extended Item View](https://modrinth.com/mod/eiv) to Fabric 1.21.11 and beyond with the goal of improving the mod and making it available on newer versions. I was not able to make these changes to EIV directly, as the developer does not seem to respond to pull requests. EIV is available under [MIT License](https://github.com/liushmn/ExtendedItemView/blob/26.1/LICENSE).

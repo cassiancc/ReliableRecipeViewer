@@ -36,12 +36,18 @@ public class ItemViewRecipes {
     /**
      * A map of recipe wrappers
      */
-    private final HashMap<ReliableServerRecipeType<?>, ClientRecipeWrapper<?>> recipeWrappers;
+    private final HashMap<ReliableServerRecipeType<?>, ClientRecipeWrapper<?>> clientRecipeWrappers;
 
     /**
      * A map of recipe providers
      */
-    private final List<ServerRecipeProvider> recipeProviders;
+    private final List<ServerRecipeProvider> serverRecipeProviders;
+
+
+    /**
+     * A map of recipe providers
+     */
+    private final List<ClientRecipeProvider> clientRecipeProviders;
 
     /**
      * A map of items by fluid
@@ -50,14 +56,15 @@ public class ItemViewRecipes {
     public final HashMap<Fluid, Item> fluidItemMap;
 
     private ItemViewRecipes() {
-        this.recipeWrappers = new HashMap<>();
-        this.recipeProviders = new ArrayList<>();
+        this.clientRecipeWrappers = new HashMap<>();
+        this.serverRecipeProviders = new ArrayList<>();
+        this.clientRecipeProviders = new ArrayList<>();
         this.fluidItemMap = new HashMap<>();
     }
 
 
     /**
-     * Old way to register recipe wrappers
+     * Internal way to register recipe wrappers
      * <br>
      * <br>
      * Will be removed soon
@@ -67,28 +74,44 @@ public class ItemViewRecipes {
      */
     @Deprecated
     public <T extends ReliableServerRecipe> void registerRecipeWrapper(ReliableServerRecipeType<T> recipeType, ClientRecipeWrapper<T> wrapper) {
-        this.recipeWrappers.put(recipeType, wrapper);
+        this.clientRecipeWrappers.put(recipeType, wrapper);
     }
 
     /**
-     * Old way to register recipe providers
+     * Old way to register server recipe providers
      * <br>
      * <br>
      * Will be removed soon
      * @param provider
      */
     @Deprecated
-    public void addRecipeProvider(ServerRecipeProvider provider) {
-        this.recipeProviders.add(provider);
+    public void addServerRecipeProvider(ServerRecipeProvider provider) {
+        this.serverRecipeProviders.add(provider);
+    }
+
+    /**
+     * Internal way to register client recipe providers
+     * <br>
+     * <br>
+     * Will be removed soon
+     * @param provider
+     */
+    @Deprecated
+    public void addClientRecipeProvider(ClientRecipeProvider provider) {
+        this.clientRecipeProviders.add(provider);
     }
 
 
     public HashMap<ReliableServerRecipeType<?>, ClientRecipeWrapper<?>> wrapperMap() {
-        return this.recipeWrappers;
+        return this.clientRecipeWrappers;
     }
 
-    public List<ServerRecipeProvider> getRecipeProviders() {
-        return this.recipeProviders;
+    public List<ServerRecipeProvider> getServerRecipeProviders() {
+        return this.serverRecipeProviders;
+    }
+
+    public List<ClientRecipeProvider> getClientRecipeProviders() {
+        return this.clientRecipeProviders;
     }
 
     public void setFluidItemMap(HashMap<Fluid, Item> fluidItemMap) {
@@ -211,6 +234,12 @@ public class ItemViewRecipes {
     public interface ServerRecipeProvider {
 
         void provide(List<ReliableServerRecipe> recipeList);
+
+    }
+
+    public interface ClientRecipeProvider {
+
+        void provide(List<ReliableClientRecipe> recipeList);
 
     }
 

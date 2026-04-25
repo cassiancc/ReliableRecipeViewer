@@ -9,10 +9,15 @@ import cc.cassian.rrv.fabric.FabricPlatformImpl;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 
 @ApiStatus.Internal
 public interface Platform {

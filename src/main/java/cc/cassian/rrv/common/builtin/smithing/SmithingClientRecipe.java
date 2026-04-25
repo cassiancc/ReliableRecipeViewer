@@ -4,58 +4,66 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import org.jspecify.annotations.Nullable;
-import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SmithingClientRecipe implements ReliableClientRecipe {
 
-    private final SlotContent additionIngredient;
-    private final SlotContent base, template;
-    private final SlotContent result;
+    private final SlotContent additionIngredient, base, template, result;
 
-    private final boolean isTrimType;
-    private final SlotContent upgradeResult;
+    private final int priority;
+    private final Identifier id;
 
-
-    public SmithingClientRecipe(boolean isTrimType, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern, SlotContent upgradeResult) {
-        this.isTrimType = isTrimType;
-
+    public SmithingClientRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, SlotContent result, int priority) {
+        this.priority = priority;
+        this.id = id;
         this.template = template;
         this.base = base;
         this.additionIngredient = additionIngredient;
-        this.upgradeResult = upgradeResult;
+        this.result = result;
+    }
 
-        if (this.isTrimType) {
-            List<ItemStack> possibleResults = new ArrayList<>();
+    /// Smithing trim recipes
+    public static SmithingClientRecipe trimRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, TrimPattern trimPattern) {
+        return new SmithingClientRecipe(id, additionIngredient, base, template, getPossibleResults(additionIngredient, base, trimPattern), 1);
+    }
 
-            this.additionIngredient.getValidContents().forEach(addition -> {
-                possibleResults.add(SmithingTrimRecipe.applyTrim(this.base.next(), addition, Holder.direct(trimPattern)));
-            });
+    /// Smithing trim recipes
+    public static SmithingClientRecipe trimRecipe(Identifier id, Ingredient additionIngredient, Ingredient base, Ingredient template, TrimPattern trimPattern) {
+        return trimRecipe(id, SlotContent.of(additionIngredient), SlotContent.of(base), SlotContent.of(template), trimPattern);
+    }
 
-            this.result = SlotContent.of(possibleResults);
+    /// Smithing transformation recipes
+    public static SmithingClientRecipe transformationRecipe(Identifier id, SlotContent additionIngredient, SlotContent base, SlotContent template, SlotContent upgradeResult) {
+        return new SmithingClientRecipe(id, additionIngredient, base, template, upgradeResult, 0);
+    }
 
-            return;
-        }
+    /// Smithing transformation recipes
+    public static SmithingClientRecipe transformationRecipe(Identifier id, Ingredient additionIngredient, Ingredient base, Ingredient template, ItemStackTemplate upgradeResult) {
+        return transformationRecipe(id, SlotContent.of(additionIngredient), SlotContent.of(base), SlotContent.of(template), SlotContent.of(upgradeResult));
+    }
 
-        this.result = this.upgradeResult;
+    private static SlotContent getPossibleResults(SlotContent additionIngredient, SlotContent base, TrimPattern trimPattern) {
+        List<ItemStack> possibleResults = new ArrayList<>();
 
+        additionIngredient.getValidContents().forEach(addition -> {
+            possibleResults.add(SmithingTrimRecipe.applyTrim(base.next(), addition, Holder.direct(trimPattern)));
+        });
+        return SlotContent.of(possibleResults);
     }
 
     @Override
-    public ReliableClientRecipeType getViewType() {
+    public ReliableClientRecipeType getType() {
         return SmithingClientRecipeType.INSTANCE;
     }
 
@@ -81,7 +89,12 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
 
     @Override
     public int getPriority() {
-        return this.isTrimType ? 1 : 0;
+        return priority;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override

@@ -1,25 +1,16 @@
 package cc.cassian.rrv.common.mixin.client.multiplayer;
 
-import com.mojang.brigadier.CommandDispatcher;
-import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import cc.cassian.rrv.api.recipe.ItemView;
-import cc.cassian.rrv.common.network.RrvNetworkManager;
-import cc.cassian.rrv.common.recipe.ClientRecipeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.CommonListenerCookie;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.Connection;
 import net.minecraft.network.TickablePacketListener;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.resources.Identifier;
-import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -33,7 +24,7 @@ public abstract class MixinClientPacketListener extends ClientCommonPacketListen
 
     @Inject(method = "handleLogin", at = @At("RETURN"))
     private void requestRecipes(ClientboundLoginPacket clientboundLoginPacket, CallbackInfo ci) {
-        ClientRecipeManager.INSTANCE.requestServerRrvData();
+        InternalRecipeManager.INSTANCE.requestServerRrvData();
         ItemView.getClientReloadCallbacks().forEach(ItemView.ReloadCallback::onReload);
     }
 }

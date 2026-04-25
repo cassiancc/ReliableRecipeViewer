@@ -7,7 +7,7 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.client.RrvClientNetworkManager;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -20,6 +20,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -29,6 +30,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -154,7 +156,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         for (int i = 0; i < this.getMenu().getViewTypeOrder().size(); i++) {
             int tempId = i % 5;
 
-            int xPos = this.width / 2 - (5 * size / 2 + 4 * 2 / 2) + tempId * size + tempId * 2;
+            int xPos = this.width / 2 - (64) + tempId * size + tempId * 2;
             int yPos = this.getTopPos() - size - 1;
 
             this.recipeTypeButtons.add(new RecipeTypeButton(this, xPos, yPos, size, size, this.getMenu().getViewTypeOrder().get(i), i));
@@ -185,14 +187,15 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     protected void checkGui() {
         this.clearRecipeWidgets();
 
-        this.prevRecipe.active = this.getMenu().hasPrevRecipe();
-        this.nextRecipe.active = this.getMenu().hasNextRecipe();
+        RecipeViewMenu menu = this.getMenu();
+        this.prevRecipe.active = menu.hasPrevRecipe();
+        this.nextRecipe.active = menu.hasNextRecipe();
 
         this.prevTypePage.visible = this.viewTypePage > 0;
-        this.nextTypePage.visible = this.viewTypePage < (this.getMenu().getViewTypeOrder().size() - 1) / 5;
+        this.nextTypePage.visible = this.viewTypePage < (menu.getViewTypeOrder().size() - 1) / 5;
 
-        this.imageHeight = this.getMenu().getHeight();
-        this.imageWidth = this.getMenu().getWidth();
+        this.imageHeight = menu.getHeight();
+        this.imageWidth = menu.getWidth();
 
         this.topPos = 32;
         if (Configs.CLIENT_SETTINGS.isCenterRecipeScreen())
@@ -204,7 +207,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.prevTypePage.setPosition(this.width / 2 - 64 - 2 - 12, getTopPos() - 19);
         this.nextTypePage.setPosition(this.width / 2 + 64 + 2, getTopPos() - 19);
 
-        this.guiTitle = this.getMenu().getClientRecipeType().getDisplayName();
+        this.guiTitle = menu.getClientRecipeType().getDisplayName();
         this.titleLabelX = this.imageWidth / 2 - this.font.width(this.guiTitle) / 2;
 
         this.page = this.createPageComponent();
@@ -217,46 +220,22 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.transferButtons.forEach(this::removeWidget);
         this.transferButtons.clear();
 
-        int guiLeft = this.leftPos + this.getMenu().guiOffsetLeft();
+        int guiLeft = this.leftPos + menu.guiOffsetLeft();
 
-        for (int i = 0; i < this.getMenu().getCurrentDisplay().size(); i++) {
-            final ReliableClientRecipe currentView = this.getMenu().getCurrentDisplay().get(i);
+        for (int i = 0; i < menu.getCurrentDisplay().size(); i++) {
+            final ReliableClientRecipe currentRecipe = menu.getCurrentDisplay().get(i);
 
-            int guiTop = getTopPos() + this.getMenu().guiOffsetTop(i);
+            int guiTop = getTopPos() + menu.guiOffsetTop(i);
 
             int finalI = i;
-            Button button = Button.builder(Component.literal("+"), button1 -> {
-                        if (!currentView.supportsItemTransfer())
-                            return;
-
-                        RRVClientUtil.setScreen(this.getMenu().getParentScreen());
-                        LocalPlayer player = Minecraft.getInstance().player;
-
-                        if (player != null && RRVClientUtil.matchesAnyTransferClass(currentView, RRVClientUtil.currentScreen())) {
-
-                            if (!currentView.canTransferToScreen((AbstractContainerScreen<?>) RRVClientUtil.currentScreen()))
-                                return;
-
-                            ReliableClientRecipe.RecipeTransferMap map = new ReliableClientRecipe.RecipeTransferMap();
-                            currentView.mapRecipeItems(map, (AbstractContainerScreen<?>) RRVClientUtil.currentScreen());
-
-
-                            RecipeTransferData transferData = this.getMenu().getTransferData().get(finalI);
-
-                            HashMap<Integer, HashMap<Integer, ItemStack>> usedPlayerSlots = Minecraft.getInstance().hasShiftDown() ? transferData.getStackedData().getUsedPlayerSlots() : transferData.getUsedPlayerSlots();
-                            //TODO make component required in recipes
-                            RrvClientNetworkManager.sendPacketToServer(new ServerboundTransferPayload(map.getTransferMap(), usedPlayerSlots));
-
-                        }
-
-                    })
+            Button button = Button.builder(Component.literal("+"), button1 -> menu.quickCraft(currentRecipe, finalI))
                     .size(12, 12)
-                    .pos(guiLeft + currentView.getViewType().getDisplayWidth() + 4, guiTop + currentView.getViewType().getDisplayHeight() / 2 - 6)
+                    .pos(guiLeft + currentRecipe.getType().getDisplayWidth() + 4, guiTop + currentRecipe.getType().getDisplayHeight() / 2 - 6)
                     .build();
 
-            RecipeTransferData data = this.getMenu().getTransferData().get(i);
-            button.active = data.isSuccess() && currentView.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentView, this.getMenu().getParentScreen()) && currentView.canTransferToScreen((AbstractContainerScreen<?>) this.getMenu().getParentScreen());
-            button.visible = currentView.supportsItemTransfer();
+            RecipeTransferData data = menu.getTransferData().get(i);
+            button.active = data.isSuccess() && currentRecipe.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentRecipe, menu.getParentScreen()) && currentRecipe.canTransferToScreen((AbstractContainerScreen<?>) menu.getParentScreen());
+            button.visible = currentRecipe.supportsItemTransfer();
 
             this.addRenderableWidget(button);
             this.transferButtons.add(button);
@@ -311,25 +290,31 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     protected List<Component> getTooltipFromContainerItem(ItemStack itemStack) {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
+        Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, true);
+        var index = component != null ? tooltip.indexOf(component) : tooltip.size();
+
         CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_itemTag")) {
-            replaceTooltipWithTagDetails(tooltip, tagTag, "_itemTag", "tag.item.");
+            replaceTooltipWithTagDetails(tooltip, tagTag, "_itemTag", "tag.item.", index);
         }
         else if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_blockTag")) {
-            replaceTooltipWithTagDetails(tooltip, tagTag, "_blockTag", "tag.block.");
+            replaceTooltipWithTagDetails(tooltip, tagTag, "_blockTag", "tag.block.", index);
+        }
+
+        if (Configs.CLIENT_SETTINGS.isShowRecipeId() && tagTag.contains(ReliableRecipeViewer.MOD_ID + "_result")) {
+            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_result", "Error");
+            MutableComponent tag = Component.literal(tagKeyString).withStyle(ChatFormatting.GRAY);
+            tooltip.add(index, Component.translatable("view.rrv.recipe_id", tag).withStyle(ChatFormatting.GOLD));
         }
 
         if (this.hoveredSlot != null && this.hoveredSlot.hasItem())
             this.getMenu().getAdditionalStackModifier(this.hoveredSlot.getContainerSlot()).addTooltip(itemStack, tooltip);
 
-        //TODO make more performant
-        if (Configs.CLIENT_SETTINGS.isAppendModNamespace())
-            tooltip.addLast(Component.literal(ReliableRecipeViewerClient.resolver().getModNameForItem(itemStack)).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC));
 
         return tooltip;
     }
 
-    private static void replaceTooltipWithTagDetails(List<Component> tooltip, CompoundTag nbt, String nbtPrefix, String languageKeyPrefix) {
+    private static void replaceTooltipWithTagDetails(List<Component> tooltip, CompoundTag nbt, String nbtPrefix, String languageKeyPrefix, int index) {
         Component first = tooltip.getFirst();
         String tagKeyString = nbt.getStringOr(ReliableRecipeViewer.MOD_ID + nbtPrefix, "Error");
 		String baseTagTranslation = Identifier.parse(tagKeyString).toLanguageKey().replace("/", ".");
@@ -340,7 +325,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             tooltip.addFirst(Component.literal("#" + tagKeyString));
         }
         tooltip.set(1, Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(first));
-        tooltip.add(
+        tooltip.add(index,
                 Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
                         .append(Component.literal("#" + tagKeyString).withStyle(ChatFormatting.GRAY))
 
@@ -532,7 +517,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             if (data.getSlotResults().get(slotId))
                 continue;
 
-            int actualSlotId = slotId + (displayId * current.getViewType().getSlotCount());
+            int actualSlotId = slotId + (displayId * current.getType().getSlotCount());
             Slot invSlot = this.getMenu().getSlot(actualSlotId);
 
             int x = invSlot.x;
@@ -568,7 +553,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 return;
 
 			ArrayList<Component> tooltip = new ArrayList<>(Collections.singleton(this.recipeType.getDisplayName()));
-            if (Minecraft.getInstance().options.advancedItemTooltips) {
+            if (Minecraft.getInstance().options.advancedItemTooltips || Configs.CLIENT_SETTINGS.isShowRecipeId()) {
                 tooltip.add(Component.literal(this.recipeType.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
             }
             tooltip.add(Component.literal(Platform.INSTANCE.getModNameForNamespace(this.recipeType.getId().getNamespace())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));

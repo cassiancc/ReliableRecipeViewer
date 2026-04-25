@@ -4,6 +4,7 @@ package cc.cassian.rrv.fabric;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.command.RrvCommand;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.PolymerIntegration;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
@@ -21,8 +22,6 @@ import net.minecraft.world.level.material.Fluids;
 
 import java.util.HashMap;
 
-import static cc.cassian.rrv.common.ReliableRecipeViewer.*;
-
 public class FabricEntrypoint implements ModInitializer {
 
 
@@ -35,8 +34,8 @@ public class FabricEntrypoint implements ModInitializer {
 
         RrvNetworkManager.INSTANCE.registerPayloads();
 
-        if (ModCompat.POLYDEX)
-            cc.cassian.rrv.common.integration.polymer.PolydexIntegration.onInitialize();
+        if (ModCompat.POLYMER)
+            PolymerIntegration.onInitialize();
     }
 
 

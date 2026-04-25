@@ -1,7 +1,7 @@
 //? fabric {
 package cc.cassian.rrv.common.integration.polymer.client;
 
-import cc.cassian.rrv.common.integration.polymer.PolydexIntegration;
+import cc.cassian.rrv.common.integration.polymer.PolymerIntegration;
 import cc.cassian.rrv.common.integration.polymer.network.ItemStackModifierSetPayload;
 import cc.cassian.rrv.common.integration.polymer.network.ItemStackRemoverSetPayload;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolydexClientIntegration {
+public class PolymerClientIntegration {
 
     public static void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(StackActionPayload.PACKET_ID, (payload, context) -> {
@@ -18,17 +18,17 @@ public class PolydexClientIntegration {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(ItemStackModifierSetPayload.PACKET_ID, (payload, context) -> {
-            PolydexIntegration.ITEM_STACKS = new ArrayList<>();
+            PolymerIntegration.ITEM_STACKS = new ArrayList<>();
             List<ItemStack> stacks = payload.itemStacks();
             if (stacks != null) {
-                PolydexIntegration.ITEM_STACKS.addAll(stacks);
+                PolymerIntegration.ITEM_STACKS.addAll(stacks);
             }
         });
         ClientPlayNetworking.registerGlobalReceiver(ItemStackRemoverSetPayload.PACKET_ID, (payload, context) -> {
-            PolydexIntegration.REMOVED_ITEM_STACKS = new ArrayList<>();
+            PolymerIntegration.REMOVED_ITEM_STACKS = new ArrayList<>();
             List<ItemStack> stacks = payload.itemStacks();
             if (stacks != null) {
-                PolydexIntegration.REMOVED_ITEM_STACKS.addAll(stacks);
+                PolymerIntegration.REMOVED_ITEM_STACKS.addAll(stacks);
             }
         });
 

@@ -55,6 +55,6 @@ World interaction recipes can also be added programmatically via a mod's client 
 
 ```java
 ItemView.addClientReloadCallback(() -> {
-    ItemView.addWorldInteractionRecipe(new WorldInteractionClientRecipe(SlotContent.of(Items.STONE), SlotContent.of(Items.WOODEN_AXE), SlotContent.of(Items.STONE_AXE)));
+    ItemView.addWorldInteractionRecipe(new WorldInteractionClientRecipe(Identifier.fromNamespaceAndPath("example-mod", "stone_axe"), SlotContent.of(Items.STONE), SlotContent.of(Items.WOODEN_AXE), SlotContent.of(Items.STONE_AXE)));
 });
 ```

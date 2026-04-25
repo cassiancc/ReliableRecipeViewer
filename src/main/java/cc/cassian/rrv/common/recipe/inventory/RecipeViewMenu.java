@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -10,9 +11,11 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
+import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.NonNullList;
@@ -87,11 +90,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         HashMap<ReliableClientRecipeType, HashMap<Integer, List<ReliableClientRecipe>>> prioOrder = new HashMap<>();
 
         recipes.forEach(recipe -> {
-            List<ReliableClientRecipe> list = prioOrder.getOrDefault(recipe.getViewType(), new HashMap<>()).getOrDefault(recipe.getPriority(), new ArrayList<>());
+            List<ReliableClientRecipe> list = prioOrder.getOrDefault(recipe.getType(), new HashMap<>()).getOrDefault(recipe.getPriority(), new ArrayList<>());
             list.add(recipe);
-            HashMap<Integer, List<ReliableClientRecipe>> map = prioOrder.getOrDefault(recipe.getViewType(), new HashMap<>());
+            HashMap<Integer, List<ReliableClientRecipe>> map = prioOrder.getOrDefault(recipe.getType(), new HashMap<>());
             map.put(recipe.getPriority(), list);
-            prioOrder.put(recipe.getViewType(), map);
+            prioOrder.put(recipe.getType(), map);
         });
 
         prioOrder.forEach((viewType, map) -> {
@@ -275,7 +278,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.currentTypeIndex;
     }
 
-    protected List<ReliableClientRecipe> getCurrentDisplay() {
+    public List<ReliableClientRecipe> getCurrentDisplay() {
         return this.currentDisplay;
     }
 
@@ -309,7 +312,10 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             recipe.getResults().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
 
             recipe.getIngredients().forEach(slotContent -> slotContent.setType(ActionType.INPUT));
-            recipe.getResults().forEach(slotContent -> slotContent.setType(ActionType.RESULT));
+            recipe.getResults().forEach(slotContent -> {
+                slotContent.setType(ActionType.RESULT);
+                slotContent.bindResult(recipe.entryId());
+            });
 
             SlotDefinition slotDefinition = new SlotDefinition();
             this.clientRecipeType.placeSlots(slotDefinition);
@@ -365,6 +371,34 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         List<ItemStack> craftReferences = this.clientRecipeType.getCraftReferences();
         for (int i = this.currentCraftReference; i < Math.min(this.clientRecipeType.getCraftReferences().size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
             this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i));
+        }
+    }
+
+    public void quickCraft(ReliableClientRecipe currentRecipe, int index) {
+        if (!currentRecipe.supportsItemTransfer())
+            return;
+
+        RRVClientUtil.setScreen(this.getParentScreen());
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        Screen currentScreen = RRVClientUtil.currentScreen();
+        if (player != null && RRVClientUtil.matchesAnyTransferClass(currentRecipe, currentScreen)) {
+
+            AbstractContainerScreen<?> containerScreen = (AbstractContainerScreen<?>) currentScreen;
+
+            if (!currentRecipe.canTransferToScreen(containerScreen))
+                return;
+
+            ReliableClientRecipe.RecipeTransferMap map = new ReliableClientRecipe.RecipeTransferMap();
+            currentRecipe.mapRecipeItems(map, containerScreen);
+
+
+            RecipeTransferData transferData = this.getTransferData().get(index);
+
+            HashMap<Integer, HashMap<Integer, ItemStack>> usedPlayerSlots = Minecraft.getInstance().hasShiftDown() ? transferData.getStackedData().getUsedPlayerSlots() : transferData.getUsedPlayerSlots();
+            //TODO make component required in recipes
+            ClientNetworkManager.sendPacketToServer(new ServerboundTransferPayload(map.getTransferMap(), usedPlayerSlots));
+
         }
     }
 
@@ -645,7 +679,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         Optional<? extends ReliableClientRecipe> optional = recipes.stream().findFirst();
 
         if (optional.isPresent()) {
-            this.clientRecipeType = optional.get().getViewType();
+            this.clientRecipeType = optional.get().getType();
             this.maxPossiblePerPage = this.calculateRecipesPerPage();
 
             if (maxPossiblePerPage != 0) {
@@ -680,13 +714,13 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     }
 
     /**
-	 * Returns how far the viewtype-specific texture is away from the border
+	 * Returns how far the client recipe type's specific texture is away from the border
 	 */
-    protected int guiOffsetLeft() {
+    public int guiOffsetLeft() {
         return (this.menuWidth - this.getClientRecipeType().getDisplayWidth()) / 2;
     }
 
-    protected int guiOffsetTop(int displayIndex) {
+    public int guiOffsetTop(int displayIndex) {
         return TOP_SPACE + (displayIndex * (this.getClientRecipeType().getDisplayHeight() + BUFFER_ZONE));
     }
 

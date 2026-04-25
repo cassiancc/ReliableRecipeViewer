@@ -50,7 +50,7 @@ Info recipes can also be added programmatically via a mod's client integration.
 
 ```java
 ItemView.addClientReloadCallback(() -> {
-    ItemView.addInfoRecipe(new InfoClientRecipe(SlotContent.of(Items.STONE), "Stone can be found underground."));
-    ItemView.addInfoRecipe(new InfoClientRecipe(SlotContent.of(Items.STONE), Component.translatable("rrv.info.stone")));
+    ItemView.addInfoRecipe(new InfoClientRecipe(Identifier.fromNamespaceAndPath("example-mod", "stone"), SlotContent.of(Items.STONE), "Stone can be found underground."));
+    ItemView.addInfoRecipe(new InfoClientRecipe(Identifier.fromNamespaceAndPath("example-mod", "stone"), SlotContent.of(Items.STONE), Component.translatable("rrv.info.stone")));
 });
 ```

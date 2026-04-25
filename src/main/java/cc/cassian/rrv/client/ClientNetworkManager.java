@@ -11,8 +11,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 //?} else {
-/*import net.minecraft.network.Connection;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+/*import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 *///?}
 import net.minecraft.client.Minecraft;
@@ -25,12 +24,12 @@ import java.util.Optional;
  * Network Manager for all clientbound RRV packets
  */
 @ApiStatus.Internal
-public class RrvClientNetworkManager {
+public class ClientNetworkManager {
 
     //? neoforge
     //public static RegisterClientPayloadHandlersEvent event;
 
-    private RrvClientNetworkManager() {}
+    private ClientNetworkManager() {}
 
     /**
      * Send a payload to the server
@@ -46,11 +45,11 @@ public class RrvClientNetworkManager {
         *///?}
     }
 
-    public static void handleClientboundUpdateTransferCachePayload(RrvClientNetworkManager.ClientContext context, ClientboundUpdateTransferCachePayload payload) {
+    public static void handleClientboundUpdateTransferCachePayload(ClientNetworkManager.ClientContext context, ClientboundUpdateTransferCachePayload payload) {
         if (RRVClientUtil.currentScreen() instanceof RecipeViewScreen viewScreen) {
 			viewScreen.getMenu().updateTransferCache();
             if (SidePanelOverlay.showCraftables()) {
-				SidePanelOverlay.INSTANCE.updateSidePanelIndex("an update to the inventory!");
+				SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.INVENTORY_CHANGE);
 			}
 		}
     }
@@ -66,7 +65,7 @@ public class RrvClientNetworkManager {
     ) {
 
         //? neoforge
-        //RrvClientNetworkManager.event = event;
+        //ClientNetworkManager.event = event;
     }
 
 	public static boolean canSend(CustomPacketPayload.Type<ServerboundRequestRrvUpdate> type) {
@@ -88,9 +87,9 @@ public class RrvClientNetworkManager {
      * @param codec         The codec for the packet
      * @param clientHandler The client payload handler
      */
-    public static <T extends CustomPacketPayload> void registerClientboundReciever(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, RrvClientNetworkManager.PayloadHandler<RrvClientNetworkManager.ClientContext, T> clientHandler) {
+    public static <T extends CustomPacketPayload> void registerClientboundReciever(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, ClientNetworkManager.PayloadHandler<ClientNetworkManager.ClientContext, T> clientHandler) {
         ClientPlayNetworking.registerGlobalReceiver(type, ((payload, context) -> {
-            clientHandler.handle(new RrvClientNetworkManager.ClientContext(Optional.of(context.client())), payload);
+            clientHandler.handle(new ClientNetworkManager.ClientContext(Optional.of(context.client())), payload);
         }));
     }
     //?}
