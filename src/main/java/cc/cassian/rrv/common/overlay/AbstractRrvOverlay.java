@@ -1,6 +1,8 @@
 package cc.cassian.rrv.common.overlay;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.overlay.OverlayKeybindSlotHandler;
+import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -11,7 +13,9 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.awt.*;
@@ -103,16 +107,30 @@ public abstract class AbstractRrvOverlay {
             if (!slot.isHovered())
                 continue;
 
-            if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent))
+            Identifier overlayId = this.getReportedOverlayId();
+            for (OverlayKeybindSlotHandler overlayKeybindSlotHandler : OverlayView.getGlobalSlotKeybindHandlers()) {
+                if (overlayKeybindSlotHandler.onKeybindPressedOnSlot(keyEvent, slot, overlayId)) {
+                    return true;
+                }
+            }
+
+            if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent)) {
                 ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ActionType.INPUT);
+                return true;
+            }
 
-            if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent))
+            if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent)) {
                 ItemViewOverlay.INSTANCE.openRecipeView(slot.getStack(), ActionType.RESULT);
-
-            return true;
+                return true;
+            }
+            return false;
         }
 
         return false;
+    }
+
+    protected @NonNull Identifier getReportedOverlayId() {
+        return OverlayView.UNKNOWN;
     }
 
     protected boolean charTyped(char c, int i) {

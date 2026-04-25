@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.recipe.InternalRecipeManager;
@@ -37,6 +38,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -228,8 +230,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected boolean keyPressed(KeyEvent event) {
-        super.keyPressed(event);
-
+        if (super.keyPressed(event)) {
+            return true;
+        }
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
@@ -241,6 +244,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 
         return false;
+    }
+
+    @Override
+    protected @NonNull Identifier getReportedOverlayId() {
+        return OverlayView.ITEM_VIEW;
     }
 
     @Override
