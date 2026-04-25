@@ -118,6 +118,9 @@ dependencies {
     compileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
     compileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
     compileOnly("eu.pb4:polydex:${property("deps.polydex")}")
+    compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
+        isTransitive = false;
+    }
 
     if (stonecutter.eval(mcVersion, "=26.1")) {
         localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
