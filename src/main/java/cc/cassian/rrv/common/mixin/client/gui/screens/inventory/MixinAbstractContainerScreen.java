@@ -107,8 +107,9 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
                 info.imageHeight()
         ));
 
-        if (OverlayManager.INSTANCE.checkForScreenChange(info))
-            OverlayManager.INSTANCE.updateOverlaysAndWidgets(false);
+        if (OverlayManager.INSTANCE.checkForScreenChange(info)) {
+			OverlayManager.INSTANCE.updateOverlaysAndWidgets(false);
+		}
 
         if (OverlayManager.INSTANCE.hasQueuedWidgetUpdate())
             this.updateWidgets();
@@ -166,6 +167,10 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
     private void injectOverlay$4(CallbackInfo ci) {
         OverlayManager.INSTANCE.oldWidgets().clear();
         OverlayManager.INSTANCE.screenContextMap().clear();
+
+        // close any recipe book widgets that may otherwise persist
+        OverlayManager.INSTANCE.removeGuiBlocking(Identifier -> Identifier.getPath().startsWith("recipetabbutton_"), false);
+        OverlayManager.INSTANCE.removeGuiBlocking(Identifier.withDefaultNamespace("recipebook"), false);
 
 
         if (((Object) this instanceof RecipeViewScreen viewScreen)) {

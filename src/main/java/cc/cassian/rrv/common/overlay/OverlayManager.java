@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -234,6 +235,7 @@ public class OverlayManager {
 
 
         this.guiBlockings.forEach(blockingGuiComponent -> {
+            guiGraphics.text(Minecraft.getInstance().font, blockingGuiComponent.id().toString(), blockingGuiComponent.x(), blockingGuiComponent.y(), -1);
 
             Random rand = new Random(blockingGuiComponent.id().toString().chars().sum());
             int debugColor = new Color(rand.nextInt(255 + 1), rand.nextInt(255 + 1), rand.nextInt(255 + 1)).getRGB();
