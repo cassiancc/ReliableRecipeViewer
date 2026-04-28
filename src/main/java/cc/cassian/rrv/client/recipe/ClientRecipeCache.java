@@ -100,14 +100,10 @@ public class ClientRecipeCache {
 
 
     public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
-        if (ModCompat.POLYMER && ClientPolymerItemUtils.isPolyItem(inputStack)) {
-            inputStack = ClientPolymerItemUtils.getServerItem(inputStack);
-        }
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
 
-        ItemStack finalInputStack = inputStack;
-        recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsIngredient(finalInputStack) && (clientRecipe.getType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == finalInputStack.getItem()) || !clientRecipe.getType().getCraftReferenceCondition().matches(finalInputStack, clientRecipe)));
+		recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsIngredient(inputStack) && (clientRecipe.getType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == inputStack.getItem()) || !clientRecipe.getType().getCraftReferenceCondition().matches(inputStack, clientRecipe)));
         recipes.removeIf(this::disabled);
 
         return recipes;
@@ -122,15 +118,10 @@ public class ClientRecipeCache {
     }
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
-        if (ClientPolymerItemUtils.isPolyItem(outputStack)) {
-            outputStack = ClientPolymerItemUtils.getServerItem(outputStack);
-        }
-
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
 
-        ItemStack finalOutputStack = outputStack;
-        recipes.removeIf(viewRecipe -> !viewRecipe.redirectsAsResult(finalOutputStack));
+		recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsResult(outputStack));
         recipes.removeIf(this::disabled);
 
         return recipes;

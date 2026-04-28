@@ -379,16 +379,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             warned = true;
         }
 
-
-        //? fabric {
-        if (ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack)) {
-            MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
-            if (server != null) {
-                stack = PolymerHelpers.getRealItemStack(stack, server.registryAccess());
-            }
-        }
-        //?}
-
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 

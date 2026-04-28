@@ -1,7 +1,9 @@
 package cc.cassian.rrv.common.recipe.util;
 
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,11 +14,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
@@ -111,5 +115,14 @@ public class RrvUtil {
 
     private static @NonNull Optional<Identifier> getIdentifier(Block block) {
         return BuiltInRegistries.BLOCK.getResourceKey(block).map(ResourceKey::identifier);
+    }
+
+    public static Level getLevel() {
+        MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
+        if (server != null) {
+            return server.overworld();
+        } else {
+            return RRVClientUtil.level();
+        }
     }
 }

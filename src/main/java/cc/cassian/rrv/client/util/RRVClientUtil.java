@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -36,4 +37,8 @@ public class RRVClientUtil {
 
         return clientRecipe.getTransferClasses().stream().anyMatch(screenClass -> screenClass.isInstance(playerScreen));
     }
+
+	public static Level level() {
+		return Minecraft.getInstance().level;
+	}
 }
