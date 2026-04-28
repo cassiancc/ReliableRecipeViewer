@@ -75,7 +75,7 @@ public class ClientRecipeCache {
         List<Identifier> identifiers = multiRecipeMap.get(recipeId);
         if (identifiers == null) return clientRecipes;
         identifiers.stream().map(recipeMap::get).forEach(recipe -> {
-            if (!clientRecipes.contains(recipe))
+            if (recipe != null && !clientRecipes.contains(recipe))
                 clientRecipes.add(recipe);
         });
         return clientRecipes;
