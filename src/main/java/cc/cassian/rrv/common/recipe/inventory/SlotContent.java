@@ -107,6 +107,10 @@ public class SlotContent {
         return SlotContent.of(slotDisplay.resolveForStacks(SlotDisplayContext.fromLevel(level)));
     }
 
+    public static SlotContent of(SlotDisplay slotDisplay) {
+        return SlotContent.of(slotDisplay.resolveForStacks(SlotDisplayContext.fromLevel(RrvUtil.getLevel())));
+    }
+
     public void setType(ActionType type) {
         this.type = type;
     }
@@ -327,7 +331,7 @@ public class SlotContent {
     }
 
     public static SlotContent of(Ingredient ingredient) {
-        return SlotContent.of(ingredient.display(), RrvUtil.getLevel());
+        return SlotContent.of(ingredient.display());
     }
 
     public static Optional<HolderSet.Named<Item>> getItemsFromTag(TagKey<Item> tag) {

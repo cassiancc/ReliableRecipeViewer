@@ -1,2 +1,6 @@
+### Added
+- `SlotContent` now accepts a `SlotDisplay`.
+
 ### Fixed
-- Improvements to Polymer integration.
+- Major improvements to Polymer integration.
+- Recipe book persisting between screens.
