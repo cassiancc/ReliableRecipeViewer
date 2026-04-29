@@ -1,6 +1,8 @@
 package cc.cassian.rrv.common.recipe;
 
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
@@ -8,17 +10,31 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
+//? fabric {
+import net.fabricmc.loader.api.FabricLoader;
+//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.StrictJsonParser;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Stream;
 
+import static cc.cassian.rrv.common.ReliableRecipeViewer.GSON;
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 
 public class ResourceRecipeManager {
@@ -157,6 +173,50 @@ public class ResourceRecipeManager {
 				LOGGER.error("Could not parse index modification {} due to an exception: ", identifier, e);
 			}
 		});
+	}
+
+	/// Client fallback for when a server did not provide recipes.
+	/// Fabric-exclusive, as Neo does not provide NIO paths for mods.
+	public static void getLocalRecipes() {
+		HashMap<Identifier, RecipeHolder<?>> objects = new HashMap<>();
+		//? fabric {
+		FabricLoader.getInstance().getAllMods().forEach(mod->{
+			var rootPath = mod.getRootPaths().getFirst();
+			String modId = mod.getMetadata().getId();
+			getCachedRecipesFromMod(rootPath, modId, objects);
+		});
+		//?}
+		try {
+			ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(objects.values());
+		} catch (Exception e) {
+			LOGGER.error("Could not get local recipes due to an exception: ", e);
+		}
+
+	}
+
+	private static void getCachedRecipesFromMod(Path rootPath, String modId, Map<Identifier, RecipeHolder<?>> objects) {
+		var path = rootPath.resolve("data/%s/recipe".formatted(modId));
+		if (Files.exists(path)) {
+			try (Stream<Path> files = Files.walk(path)) {
+				files.forEach(recipePath->{
+					if (Files.isDirectory(recipePath)) return;
+					try (BufferedReader tagReader = Files.newBufferedReader(recipePath)) {
+						String id = recipePath.getFileName().toString().replace(".json", "");
+						JsonElement jsonElement = GSON.fromJson(tagReader, JsonElement.class);
+						JsonObject recipeObject = jsonElement.getAsJsonObject();
+						if (!recipeObject.has("type")) return;
+						Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
+						Identifier recipeId = Identifier.fromNamespaceAndPath(modId, id);
+						if (!objects.containsKey(recipeId))
+							objects.put(recipeId, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), recipe));
+					} catch (Exception e) {
+						LOGGER.error("Error loading local recipe: {}", recipePath);
+					}
+				});
+			} catch (Exception e) {
+				LOGGER.error("Error loading local recipes from mod: {}", modId);
+			}
+		}
 	}
 
 	private static void findAndAddStack(List<ItemStack> results, JsonObject itemObject, String key, int offset) {

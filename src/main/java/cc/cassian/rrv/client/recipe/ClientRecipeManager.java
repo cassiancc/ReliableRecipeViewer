@@ -1,6 +1,7 @@
 package cc.cassian.rrv.client.recipe;
 
 
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.serialization.DynamicOps;
@@ -58,6 +59,6 @@ public class ClientRecipeManager {
 	/// }
 	/// ```
     public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
-        return Platform.INSTANCE.getRecipesForType(type);
+        return ReliableRecipeViewerClient.LOCAL_RECIPES.byType(type);
     }
 }

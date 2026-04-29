@@ -3,7 +3,6 @@
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
-import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
@@ -12,7 +11,6 @@ import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.crafting.RecipeMap;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
@@ -32,8 +30,6 @@ import java.util.Optional;
 
 @EventBusSubscriber(modid = ReliableRecipeViewer.MOD_ID, value = Dist.CLIENT)
 public class NeoForgeClientEntrypoint {
-
-    public static RecipeMap SYNCHRONIZED_RECIPES;
 
     @SubscribeEvent
 	private static void setupIntegrations(FMLClientSetupEvent event) {
@@ -93,10 +89,9 @@ public class NeoForgeClientEntrypoint {
 
     @SubscribeEvent
     public static void receiveRecipes(RecipesReceivedEvent event) {
-        SYNCHRONIZED_RECIPES = event.getRecipeMap();
-        ClientRecipeCache.INSTANCE.buildSynchronizedRecipeCache();
+        ReliableRecipeViewerClient.LOCAL_RECIPES = event.getRecipeMap();
+        ClientRecipeCache.INSTANCE.buildRecipeCache(true);
     }
-
 
     @SubscribeEvent
     public static void receiveRecipes(ItemTooltipEvent event) {

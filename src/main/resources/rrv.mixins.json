@@ -2,11 +2,12 @@
   "required": true,
   "package": "cc.cassian.rrv.common.mixin",
   "plugin": "cc.cassian.rrv.common.mixin.RRVMixinPlugin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "mixins": [
     "EntityPredicateAccessor",
     "advancements.criterion.MixinInventoryChangeTrigger",
+    "recipe.ConcretePowderBlockAccessor",
     "server.MixinMinecraftServer",
     "stats.ServerPlayerMixin",
     "world.entity.npc.VillagerTradeAccessor",

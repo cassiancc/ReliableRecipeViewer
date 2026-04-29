@@ -5,7 +5,7 @@
 
 A recipe viewer for the latest versions of Minecraft, rebuilt from [EIV](https://modrinth.com/mod/eiv) and designed to be configured.
 
-**NOTE: Since 1.21.2, a compatible recipe viewer must be installed on both the client and server. [JustEnoughPaper](https://github.com/cassiancc/JustEnoughPaper/releases/tag/1.0-26.1-SNAPSHOT) can be used on Paper servers to allow clients using the Fabric version of the mod to see recipes.**
+**NOTE: Since 1.21.2, all recipe viewers must be installed on both the client and server for full functionality.**
 
 ## Features
 
@@ -20,12 +20,13 @@ Reliable Recipe Viewer is a fork of [Extended Item View](https://modrinth.com/mo
 
 <summary>Why Reliable Recipe Viewer?</summary>
 
-- Support for 26.1.1 and 26.2 snapshots.
-- A reworked API designed around the recipe synchronization APIs present in Fabric and NeoForge, cutting down on redundant work and allowing some parts of RRV to function even when a different recipe viewer is present on the server.
+- A reworked API designed around the recipe synchronization APIs present in Fabric and NeoForge, cutting down on redundant work and allowing some parts of RRV to function even when the server has a different recipe viewer or uses a plugin like [JustEnoughPaper](https://github.com/cassiancc/JustEnoughPaper/releases/tag/1.0-26.1-SNAPSHOT).
+- On Fabric, a local fallback mode allowing for partial functionality on vanilla servers.
+- Support for the latest versions of Minecraft, including snapshots when possible.
 - New API options to hide recipes, recipe categories, enchantments, potions, and more.
 - Ability to bookmark individual recipes, rather than only stacks.
 - An option to show craftable items from your inventory.
-- Additional configuration options, including switching the side of the item index, centering the search bar, reorganizing and hiding recipe categories, editing the index, and much much more.
+- Additional configuration options, including switching the side of the item index, centering the search bar, reorganizing and hiding recipe categories, editing the index, and much, much more.
 - Additional GUI improvements, like a scroll bar for the item index, a way to see all recipes by clicking on the recipe type, buttons to change the item index page, and more.
 - Additional recipe types for special crafting recipes, item tags, repairing, and resource pack-driven info, world interaction, and anvil combining recipes.
 - Compatibility improvements, showing mod name translations, tag translations, support for component ingredients, and more.

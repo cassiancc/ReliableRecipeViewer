@@ -72,6 +72,13 @@ repositories {
             includeGroupAndSubgroups("folk.sisby")
         }
     }
+    maven {
+        name = "Modrinth"
+        url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroupAndSubgroups("maven.modrinth")
+        }
+    }
     mavenCentral()
 }
 
@@ -84,6 +91,9 @@ dependencies {
         isTransitive = false;
     }
     compileOnly("folk.sisby:kaleido-config:0.3.3+1.3.2")
+    compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
+        isTransitive = false;
+    }
 }
 
 neoForge {

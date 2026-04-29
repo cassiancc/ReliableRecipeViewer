@@ -3,7 +3,6 @@ package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
-import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
@@ -12,15 +11,19 @@ import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.PolymerClientIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeMap;
 
 public class FabricClientEntrypoint implements ClientModInitializer {
 
@@ -52,7 +55,14 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         ItemTooltipCallback.EVENT.register((stack, _, _, tooltip) -> ReliableRecipeViewerClient.addNamespaceTooltip(stack, tooltip, false));
 
 
-        ClientRecipeSynchronizedEvent.EVENT.register((client, recipes) -> ClientRecipeCache.INSTANCE.buildSynchronizedRecipeCache());
+        ClientRecipeSynchronizedEvent.EVENT.register((client, recipes) -> {
+            ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(recipes.recipes());
+            ClientRecipeCache.INSTANCE.buildRecipeCache(true);
+        });
+
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, recipes) -> {
+            ClientRecipeCache.INSTANCE.buildRecipeCache(false);
+        });
     }
 
 

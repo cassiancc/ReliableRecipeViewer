@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.panel;
 
+import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
@@ -33,6 +34,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import org.jspecify.annotations.NonNull;
 
 import java.awt.*;
 import java.util.Comparator;
@@ -106,6 +108,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         //-14 for cleaner appearance
         this.width = screen.width - ((screen.width - 176) / 2 + 176) - 14 - 2 * ITEM_ENTRY_SIZE;
         this.width -= (this.width - 4) % ITEM_ENTRY_SIZE;
+        this.width = Math.max(this.width, Minecraft.getInstance().font.width(Component.translatable("rrv.craftables"))+30);
 
         this.height = screen.height;
 
@@ -125,7 +128,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
             this.itemStartX+=12;
-            this.itemStartY+=6;
+            this.itemStartY+=26;
             this.itemEndY-=10;
         }
     }
@@ -216,7 +219,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected boolean keyPressed(KeyEvent event) {
-        super.keyPressed(event);
+        if (super.keyPressed(event)) {
+            return true;
+        }
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
@@ -228,6 +233,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 } else {
                     BookmarkManager.INSTANCE.removeItem(slot.getStack());
                 }
+                return true;
             }
         }
 
@@ -235,15 +241,26 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     @Override
+    protected @NonNull Identifier getReportedOverlayId() {
+        return switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
+            case BOOKMARKS -> OverlayView.BOOKMARKS;
+            case CRAFTABLES -> OverlayView.CRAFTABLES;
+            default -> OverlayView.UNKNOWN;
+        };
+    }
+
+    @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        boolean b = super.mouseClicked(event, doubleClick);
-        if (b) return true;
+        if (super.mouseClicked(event, doubleClick)) {
+            return true;
+        }
         if (isHoveringOverTitle(event.x(), event.y())) {
             if (showBookmarks())
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.CRAFTABLES);
             else
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
             updateSidePanelIndex(Reason.BUTTON);
+            return true;
         }
         return false;
     }
@@ -255,7 +272,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
         int xMin = left + this.width / 2 - 59;
         int xMax = left + this.width / 2 + 60;
-        return (mouseX > xMin && mouseX < xMax) && (mouseY >= 1 && mouseY <= 20);
+        return (mouseX > xMin && mouseX < xMax) && (mouseY >= 21 && mouseY <= 41);
     }
 
     public static boolean showBookmarks() {
@@ -272,7 +289,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             return;
 
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme())
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX()+6, checkedY(), checkedWidth()-6, checkedY()+checkedHeight()-20, -1);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX()+6, checkedY()+20, checkedWidth()-6, checkedY()+checkedHeight()-40, -1);
         else
             guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
     }
@@ -300,7 +317,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             int titleY = checkedY() + 10;
             if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
                 titleX+=3;
-                titleY+=5;
+                titleY+=25;
             }
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, colour);
 		}
@@ -331,7 +348,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         int buttonY = 5;
         int buttonEnd = itemEndX - 16;
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-            buttonY+=5;
+            buttonY+=25;
             buttonEnd-=13;
         }
 

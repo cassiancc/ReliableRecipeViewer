@@ -1,6 +1,10 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -19,6 +23,7 @@ import cc.cassian.rrv.fabric.mixin.ComponentsIngredientAccessor;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 *///?}
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentPatch;
@@ -28,11 +33,16 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jspecify.annotations.Nullable;
 
@@ -62,7 +72,16 @@ public class SlotContent {
     private SlotContent(List<ItemStack> content) {
 
         List<ItemStack> copied = new ArrayList<>();
-        content.stream().map(ItemStack::copy).forEach(copied::add);
+        content.stream().map(ItemStack::copy)
+        //? fabric {
+        .map(i->{
+            if (ModCompat.POLYMER && ClientPolymerItemUtils.isPolyItem(i)) {
+                return ClientPolymerItemUtils.getServerItem(i);
+            }
+            return i;
+        })
+        //?}
+        .forEach(copied::add);
 
         this.content = copied;
         this.current = 0;
@@ -82,6 +101,14 @@ public class SlotContent {
     public static SlotContent of(@Nullable HolderSet<Item> items) {
         if (items == null) return SlotContent.of();
         return SlotContent.of(Ingredient.of(items));
+    }
+
+    public static SlotContent of(SlotDisplay slotDisplay, Level level) {
+        return SlotContent.of(slotDisplay.resolveForStacks(SlotDisplayContext.fromLevel(level)));
+    }
+
+    public static SlotContent of(SlotDisplay slotDisplay) {
+        return SlotContent.of(slotDisplay.resolveForStacks(SlotDisplayContext.fromLevel(RrvUtil.getLevel())));
     }
 
     public void setType(ActionType type) {
@@ -304,46 +331,7 @@ public class SlotContent {
     }
 
     public static SlotContent of(Ingredient ingredient) {
-        if (ingredient == null) return SlotContent.of();
-
-        HolderSet<Item> set = ((IngredientAccessor) (Object) ingredient).getValues();
-
-        Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = set.unwrap();
-
-        // item tags
-        if (ingredientContent.left().isPresent()) {
-            return SlotContent.of(ingredientContent.left().get());
-        }
-
-        if (ingredientContent.right().isEmpty())
-            return SlotContent.of();
-
-        // custom ingredients
-        //? fabric {
-        if (ingredient instanceof FabricIngredient fabricIngredient) {
-            CustomIngredient customIngredient = fabricIngredient.getCustomIngredient();
-            if (customIngredient != null) {
-                if (customIngredient instanceof ComponentsIngredient componentsIngredient) {
-                    DataComponentPatch dataComponentPatch = ((ComponentsIngredientAccessor) componentsIngredient).callGetComponents();
-                    return SlotContent.of(customIngredient.items().map((item)->new ItemStack(item, 1, dataComponentPatch)).toList());
-                }
-                List<Item> matchingItems = customIngredient.items().filter(Holder::isBound).map(Holder::value).toList();
-                return SlotContent.ofItemList(matchingItems);
-            }
-        }
-        //?} else {
-        /*if (ingredient.getCustomIngredient() instanceof DataComponentIngredient dataComponentIngredient) {
-            DataComponentPatch dataComponentPatch = dataComponentIngredient.components();
-            return SlotContent.of(dataComponentIngredient.items().map((item)->new ItemStack(item, 1, dataComponentPatch)).toList());
-        }
-        else if (ingredient.getCustomIngredient() instanceof BlockTagIngredient blockTagIngredient) {
-            TagKey<Block> blockTag = blockTagIngredient.getTag();
-            return SlotContent.ofBlockTag(blockTag);
-        }
-        *///?}
-
-        return SlotContent.ofItemList(RrvUtil.getItemsFromIngredient(ingredient));
-
+        return SlotContent.of(ingredient.display());
     }
 
     public static Optional<HolderSet.Named<Item>> getItemsFromTag(TagKey<Item> tag) {

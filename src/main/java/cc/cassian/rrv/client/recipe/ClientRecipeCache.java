@@ -1,6 +1,5 @@
 package cc.cassian.rrv.client.recipe;
 
-import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
@@ -9,13 +8,11 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
@@ -31,12 +28,20 @@ public class ClientRecipeCache {
 
     private final HashMap<Identifier, List<Identifier>> multiRecipeMap;
     private final HashMap<Identifier, ReliableClientRecipe> recipeMap;
+    private final HashMap<Identifier, Identifier> clientEntryMap;
     private final HashMap<Item, List<Identifier>> byItemIngredient, byItemResult;
 
     private final HashMap<Item, List<ItemView.StackSensitive>> stackSensitives;
 
+    public boolean localCacheBuilt() {
+        return localCacheBuilt;
+    }
+
+    private boolean localCacheBuilt;
+
     private ClientRecipeCache() {
         this.serverEntryMap = new LinkedHashMap<>();
+        this.clientEntryMap = new LinkedHashMap<>();
 
         this.multiRecipeMap = new LinkedHashMap<>();
         this.recipeMap = new HashMap<>();
@@ -71,7 +76,7 @@ public class ClientRecipeCache {
         List<Identifier> identifiers = multiRecipeMap.get(recipeId);
         if (identifiers == null) return clientRecipes;
         identifiers.stream().map(recipeMap::get).forEach(recipe -> {
-            if (!clientRecipes.contains(recipe))
+            if (recipe != null && !clientRecipes.contains(recipe))
                 clientRecipes.add(recipe);
         });
         return clientRecipes;
@@ -96,14 +101,10 @@ public class ClientRecipeCache {
 
 
     public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
-        if (ModCompat.POLYMER && ClientPolymerItemUtils.isPolyItem(inputStack)) {
-            inputStack = ClientPolymerItemUtils.getServerItem(inputStack);
-        }
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
 
-        ItemStack finalInputStack = inputStack;
-        recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsIngredient(finalInputStack) && (clientRecipe.getType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == finalInputStack.getItem()) || !clientRecipe.getType().getCraftReferenceCondition().matches(finalInputStack, clientRecipe)));
+		recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsIngredient(inputStack) && (clientRecipe.getType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == inputStack.getItem()) || !clientRecipe.getType().getCraftReferenceCondition().matches(inputStack, clientRecipe)));
         recipes.removeIf(this::disabled);
 
         return recipes;
@@ -118,15 +119,10 @@ public class ClientRecipeCache {
     }
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
-        if (ClientPolymerItemUtils.isPolyItem(outputStack)) {
-            outputStack = ClientPolymerItemUtils.getServerItem(outputStack);
-        }
-
         List<ReliableClientRecipe> recipes = new ArrayList<>();
         this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
 
-        ItemStack finalOutputStack = outputStack;
-        recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsResult(finalOutputStack));
+		recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsResult(outputStack));
         recipes.removeIf(this::disabled);
 
         return recipes;
@@ -159,13 +155,27 @@ public class ClientRecipeCache {
 
             for (int id = 0; id < wrappedRecipes.size(); id++) {
                 ReliableClientRecipe wrapped = wrappedRecipes.get(id);
-                handleClientRecipe(Objects.requireNonNullElse(wrapped.getId(), modEntry.modRecipeId()), wrapped, id);
+                handleClientRecipe(Objects.requireNonNullElse(wrapped.getId(), modEntry.modRecipeId()), wrapped, id, false);
             }
         }
     }
 
-    public void buildSynchronizedRecipeCache() {
-        if (!Platform.INSTANCE.getRecipesForType(RecipeType.CRAFTING).isEmpty()) InternalRecipeManager.INSTANCE.setSyncFailed(false);
+    public void buildRecipeCache(boolean rebuildFromSynchronizedRecipes) {
+        ReliableRecipeViewer.LOGGER.info("RRV: Rebuilding client recipe cache {}", rebuildFromSynchronizedRecipes ? "from synchronized recipes." : "from client recipe folder.");
+
+        //? fabric
+        if (localCacheBuilt && !rebuildFromSynchronizedRecipes) return;
+
+        if (rebuildFromSynchronizedRecipes)
+            InternalRecipeManager.INSTANCE.setRecipesSynced(true);
+        else if (Configs.CLIENT_SETTINGS.localFallbackAllowed()) {
+            //? fabric {
+            ResourceRecipeManager.getLocalRecipes();
+            //?}
+            localCacheBuilt = true;
+        }
+
+        ClientRecipeCache.INSTANCE.clear();
 
         for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {
             List<ReliableClientRecipe> recipes = new ArrayList<>();
@@ -177,12 +187,12 @@ public class ClientRecipeCache {
             }
             for (int id = 0; id < recipes.size(); id++) {
                 ReliableClientRecipe clientRecipe = recipes.get(id);
-                handleClientRecipe(clientRecipe.entryId(), clientRecipe, id);
+                handleClientRecipe(clientRecipe.entryId(), clientRecipe, id, true);
             }
         }
     }
 
-    private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id) {
+    private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id, boolean fromNewSystem) {
         // disabled categories
         if (ItemView.getExcludedRecipeTypes().contains(wrapped.getType().getId()))
             return;
@@ -199,6 +209,9 @@ public class ClientRecipeCache {
         summarized.add(uniqueId);
         this.multiRecipeMap.put(modEntryId, summarized);
 
+
+        if (fromNewSystem)
+            this.clientEntryMap.put(uniqueId, modEntryId);
         this.recipeMap.put(uniqueId, wrapped);
 
         // populate ingredient map with ingredients and workstations
@@ -244,6 +257,16 @@ public class ClientRecipeCache {
     }
 
     public void addUnlockedRecipes(List<Identifier> recipes) {
-        UNLOCKED_RECIPES.addAll(recipes);
+        UNLOCKED_RECIPES.addAll(recipes); 
+    }
+    
+    public void clear() {
+        this.clientEntryMap.forEach((id, identifier2) -> {
+            this.recipeMap.remove(id);
+
+            this.byItemIngredient.forEach((item, identifiers) -> identifiers.remove(id));
+
+            this.byItemResult.forEach((item, identifiers) -> identifiers.remove(id));
+        });
     }
 }

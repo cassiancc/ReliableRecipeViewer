@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -28,6 +29,7 @@ public class OverlayManager {
     private final List<GuiEventListener> oldWidgets = new ArrayList<>();
     private final HashMap<AbstractRrvOverlay, AbstractRrvOverlay.ScreenContext> screenContextMap = new HashMap<>();
     private boolean queuedWidgetUpdate = false;
+    private boolean newScreenQueued = false;
 
     private final List<BlockingGuiComponent> guiBlockings = new ArrayList<>();
 
@@ -42,6 +44,7 @@ public class OverlayManager {
 
     public void setCurrentInvInfo(AbstractRrvOverlay.InventoryPositionInfo info) {
         this.currentInvInfo = info;
+        this.newScreenQueued = true;
     }
 
     public boolean checkForScreenChange(AbstractRrvOverlay.InventoryPositionInfo newInfo) {
@@ -50,7 +53,8 @@ public class OverlayManager {
             return true;
         }
 
-        return false;
+        // Must return true if screen changed and components aren't updated
+        return this.newScreenQueued;
     }
 
     //Update all overlays and collect widgets
@@ -66,7 +70,10 @@ public class OverlayManager {
     }
 
     //Update widget lists
-    public void updateOverlaysAndWidgets() {
+    public void updateOverlaysAndWidgets(boolean always) {
+        if (!always && !this.newScreenQueued)
+            return;
+        this.newScreenQueued = false;
         if (this.currentInfo() == null)
             return;
 
@@ -228,6 +235,7 @@ public class OverlayManager {
 
 
         this.guiBlockings.forEach(blockingGuiComponent -> {
+            guiGraphics.text(Minecraft.getInstance().font, blockingGuiComponent.id().toString(), blockingGuiComponent.x(), blockingGuiComponent.y(), -1);
 
             Random rand = new Random(blockingGuiComponent.id().toString().chars().sum());
             int debugColor = new Color(rand.nextInt(255 + 1), rand.nextInt(255 + 1), rand.nextInt(255 + 1)).getRGB();
@@ -247,7 +255,7 @@ public class OverlayManager {
         this.guiBlockings.removeIf(blockingGuiComponent -> blockingGuiComponent.id().equals(id));
 
         if (updateOverlays) {
-            this.updateOverlaysAndWidgets();
+            this.updateOverlaysAndWidgets(true);
         }
 
     }
@@ -256,18 +264,18 @@ public class OverlayManager {
         this.guiBlockings.removeIf(blockingGuiComponent -> filter.test(blockingGuiComponent.id()));
 
         if (updateOverlays) {
-            this.updateOverlaysAndWidgets();
+            this.updateOverlaysAndWidgets(true);
         }
 
     }
 
     public void setGuiBlocking(BlockingGuiComponent comp) {
-        List<BlockingGuiComponent> old = new ArrayList<>(this.guiBlockings);
+        HashSet<BlockingGuiComponent> old = new HashSet<>(this.guiBlockings);
         this.removeGuiBlocking(comp.id(), false);
         this.guiBlockings.add(comp);
 
-        if (!(new HashSet<>(old).containsAll(this.guiBlockings) && old.size() == this.guiBlockings.size())) {
-            this.updateOverlaysAndWidgets();
+        if (!(old.containsAll(this.guiBlockings) && old.size() == this.guiBlockings.size())) {
+            this.setQueuedWidgetUpdate(true);
         }
 
 

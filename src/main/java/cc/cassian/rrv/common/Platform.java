@@ -54,6 +54,4 @@ public interface Platform {
     Path getConfigDirectory();
 
     Path getDataDirectory();
-
-    <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type);
 }

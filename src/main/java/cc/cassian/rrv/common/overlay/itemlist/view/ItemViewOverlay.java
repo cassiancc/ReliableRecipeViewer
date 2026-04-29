@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.recipe.InternalRecipeManager;
@@ -37,6 +38,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     private String currentQuery;
     boolean itemFilterMode;
+    private boolean warned = false;
 
     public ItemViewOverlay() {
         super(-1, -1, -1, -1);
@@ -157,7 +160,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
             this.itemStartX+=8;
-            this.itemStartY+=6;
+            this.itemStartY+=26;
             this.itemEndY-=10;
         }
     }
@@ -227,8 +230,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected boolean keyPressed(KeyEvent event) {
-        super.keyPressed(event);
-
+        if (super.keyPressed(event)) {
+            return true;
+        }
 
         for (ItemSlot slot : this.itemSlots()) {
             if (!slot.isHovered())
@@ -243,12 +247,17 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     }
 
     @Override
+    protected @NonNull Identifier getReportedOverlayId() {
+        return OverlayView.ITEM_VIEW;
+    }
+
+    @Override
     protected void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (this.fittingPerPage() == 0)
             return;
 
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme())
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX(), checkedY(), checkedWidth()-4, checkedY()+checkedHeight()-20, -1);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_book"), checkedX(), checkedY()+20, checkedWidth()-4, checkedY()+checkedHeight()-40, -1);
         else
             guiGraphics.fill(checkedX(), checkedY(), checkedX() + checkedWidth(), checkedY() + checkedHeight(), new Color(0, 0, 0, 64).getRGB());
     }
@@ -267,7 +276,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             int titleX = checkedX() + checkedWidth() / 2;
             int titleY = checkedY() + 10;
             if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-                titleY+=6;
+                titleY+=26;
             }
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, -1);
         }
@@ -351,7 +360,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         int buttonY = 5;
         int buttonEnd = itemEndX - 16;
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-            buttonY+=5;
+            buttonY+=25;
             buttonEnd-=13;
         }
 
@@ -365,17 +374,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void openRecipeView(ItemStack stack, ActionType openType) {
         if (stack.isEmpty()) return;
 
-        if (InternalRecipeManager.INSTANCE.isSyncFailed())
+        if (!InternalRecipeManager.INSTANCE.isRecipesSynced() && !warned) {
             Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
-
-        //? fabric {
-        if (ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack)) {
-            MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
-            if (server != null) {
-                stack = PolymerHelpers.getRealItemStack(stack, server.registryAccess());
-            }
+            warned = true;
         }
-        //?}
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
@@ -464,7 +466,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         back.visible = b;
     }
 
-    public void quickCraft(Identifier id) {
-        openRecipeView(id, Minecraft.getInstance().hasControlDown());
+    public void setWarned(boolean b) {
+        warned = b;
     }
 }

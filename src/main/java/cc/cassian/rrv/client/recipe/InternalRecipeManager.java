@@ -5,7 +5,6 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class InternalRecipeManager {
 
     private volatile LinkedList<Runnable> queuedRecipeTasks = new LinkedList<>();
 
-    private boolean syncFailed = true;
+    private boolean recipesSynced = false;
 
     public void queueTask(Runnable runnable) {
         this.queuedRecipeTasks.add(runnable);
@@ -72,9 +71,7 @@ public class InternalRecipeManager {
         if (this.status.isIdle()) {
             if (ClientNetworkManager.canSend(ServerboundRequestRrvUpdate.TYPE)) {
                 ClientNetworkManager.sendPacketToServer(new ServerboundRequestRrvUpdate());
-                setSyncFailed(false);
-            } else {
-                setSyncFailed(true);
+                setRecipesSynced(true);
             }
         }
     }
@@ -96,12 +93,12 @@ public class InternalRecipeManager {
         this.status.setIdle(true);
     }
 
-    public boolean isSyncFailed() {
-        return syncFailed;
+    public boolean isRecipesSynced() {
+        return recipesSynced;
     }
 
-    public void setSyncFailed(boolean syncFailed) {
-        this.syncFailed = syncFailed;
+    public void setRecipesSynced(boolean recipesSynced) {
+        this.recipesSynced = recipesSynced;
     }
 
 

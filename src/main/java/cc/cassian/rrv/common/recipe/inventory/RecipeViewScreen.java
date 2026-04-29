@@ -290,8 +290,8 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     protected List<Component> getTooltipFromContainerItem(ItemStack itemStack) {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
-        MutableComponent mutableComponent = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, true);
-        var index = mutableComponent != null ? tooltip.indexOf(mutableComponent) : tooltip.size();
+        Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, true);
+        var index = component != null ? tooltip.indexOf(component) : tooltip.size();
 
         CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_itemTag")) {

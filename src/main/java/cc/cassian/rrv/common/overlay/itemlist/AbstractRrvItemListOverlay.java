@@ -200,7 +200,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
             int maxWidth = checkedWidth();
             if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
                 x+=10;
-                y+=4;
+                y+=24;
                 maxWidth-=24;
                 if (sidePanel) {
                     x+=5;

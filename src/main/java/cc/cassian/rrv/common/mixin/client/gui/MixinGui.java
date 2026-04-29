@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.client.gui;
 
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -18,21 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
 public abstract class MixinGui {
-
-
-    //? <26.1 {
-    /*@Shadow public abstract Font getFont();
-
-    @Inject(method = "extractRenderState", at = @At("RETURN"))
-    private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        Font font = this.getFont();
-        String statusMsg = InternalRecipeManager.INSTANCE.status().get();
-
-        if(!InternalRecipeManager.INSTANCE.status().isIdle()) {
-			guiGraphics.text(font, statusMsg, guiGraphics.guiWidth() - font.width(statusMsg) - 2, 2, -1);
-		}
-    }
-    *///?}
 
     //? >26.1 {
 

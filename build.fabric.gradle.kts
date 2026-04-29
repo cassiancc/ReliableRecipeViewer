@@ -103,6 +103,7 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     compileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
+    localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         exclude(group = "maven.modrinth")
@@ -117,9 +118,11 @@ dependencies {
     compileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
     compileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
     compileOnly("eu.pb4:polydex:${property("deps.polydex")}")
+    compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
+        isTransitive = false;
+    }
 
     if (stonecutter.eval(mcVersion, "=26.1")) {
-        localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
         localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
             exclude(group = "mcp.mobius.waila")
             exclude(group = "lol.bai")
