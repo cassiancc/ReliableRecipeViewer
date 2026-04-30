@@ -248,7 +248,8 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
         int xMin = left + this.width / 2 - 59;
         int xMax = left + this.width / 2 + 60;
-        return (mouseX > xMin && mouseX < xMax) && (mouseY >= 21 && mouseY <= 41);
+        int verticalPadding = Configs.CLIENT_SETTINGS.isRecipeBookTheme() ? 25 : 0;
+        return (mouseX > xMin && mouseX < xMax) && (mouseY >= (1+verticalPadding) && mouseY <= (21+verticalPadding));
     }
 
     public static boolean showBookmarks() {
