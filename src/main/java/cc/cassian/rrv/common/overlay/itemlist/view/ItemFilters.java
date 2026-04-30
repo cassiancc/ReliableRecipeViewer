@@ -238,7 +238,7 @@ public class ItemFilters {
         List<ItemStack> results = new ArrayList<>();
 
 
-        if (Configs.UNLOCKS.isEnabled()) {
+        if (Configs.UNLOCKS.indexShowsUnlockedItems()) {
             results.addAll(UnlockManager.INSTANCE.displayItems());
         } else {
             BuiltInRegistries.ITEM.forEach(item -> {

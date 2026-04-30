@@ -12,6 +12,7 @@ public class UnlockedItemsConfig extends AbstractRrvConfig {
 
 
     private boolean enabled = true;
+    private boolean indexShowsUnlockedItems = true;
 
     public UnlockedItemsConfig() {
         super("unlocked_items");
@@ -31,6 +32,8 @@ public class UnlockedItemsConfig extends AbstractRrvConfig {
                 }
             });
         }
+        this.enabled = load("enabled", this.enabled);
+        this.indexShowsUnlockedItems = load("indexShowsUnlockedItems", this.indexShowsUnlockedItems);
 
     }
 
@@ -47,6 +50,8 @@ public class UnlockedItemsConfig extends AbstractRrvConfig {
         });
 
         this.data().add("unlockedItems", itemList);
+        save("enabled", this.enabled);
+        save("indexShowsUnlockedItems", this.indexShowsUnlockedItems);
 
     }
 
@@ -58,4 +63,12 @@ public class UnlockedItemsConfig extends AbstractRrvConfig {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
+    public boolean indexShowsUnlockedItems() {
+        return indexShowsUnlockedItems;
+    }
+
+    public void setIndexShowsUnlockedItems(boolean enabled) {
+        this.indexShowsUnlockedItems = enabled;
+    }
 }
