@@ -245,6 +245,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         return switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
             case BOOKMARKS -> OverlayView.BOOKMARKS;
             case CRAFTABLES -> OverlayView.CRAFTABLES;
+            case UNLOCKED -> OverlayView.UNLOCKED;
             default -> OverlayView.UNKNOWN;
         };
     }
@@ -255,10 +256,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             return true;
         }
         if (isHoveringOverTitle(event.x(), event.y())) {
-            if (showBookmarks())
-                Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.CRAFTABLES);
-            else
-                Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
+            SidePanel.next(true);
             updateSidePanelIndex(Reason.BUTTON);
             return true;
         }

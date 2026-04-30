@@ -17,6 +17,7 @@ public final class OverlayView {
 	public static final Identifier ITEM_VIEW = Identifier.fromNamespaceAndPath("rrv", "item_view");
 	public static final Identifier CRAFTABLES = Identifier.fromNamespaceAndPath("rrv", "craftables");
 	public static final Identifier BOOKMARKS = Identifier.fromNamespaceAndPath("rrv", "bookmarks");
+	public static final Identifier UNLOCKED = Identifier.fromNamespaceAndPath("rrv", "unlocked");
 
 	public static void registerGlobalOverlayKeybindSlotHandler(OverlayKeybindSlotHandler handler) {
 		GLOBAL_SLOT_KEYBIND_HANDLERS.add(handler);

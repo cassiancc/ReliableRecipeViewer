@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -25,9 +26,9 @@ public class SidePanelButton extends ReliableSpriteIconButton {
 
     public static void nextSidePanel(Button button) {
         if (Minecraft.getInstance().hasShiftDown()) {
-            Configs.CLIENT_SETTINGS.getSidePanel().back();
+            back();
         } else {
-            Configs.CLIENT_SETTINGS.getSidePanel().next();
+            next(false);
         }
         if (!Configs.CLIENT_SETTINGS.getSidePanel().equals(DISABLED)) {
             SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.BUTTON);

@@ -9,10 +9,10 @@ import net.minecraft.util.StringRepresentable;
 import java.util.Locale;
 
 public enum SidePanel implements StringRepresentable {
-	BOOKMARKS(0),
-	CRAFTABLES(1),
-	UNLOCKED(2),
-	DISABLED(3);
+	BOOKMARKS(1),
+	CRAFTABLES(2),
+	UNLOCKED(3),
+	DISABLED(0);
 
 	private final int id;
 
@@ -41,13 +41,14 @@ public enum SidePanel implements StringRepresentable {
 		return id;
 	}
 
-    public void next() {
+    public static void next(boolean skipDisabled) {
 		int id1 = Configs.CLIENT_SETTINGS.getSidePanel().id + 1;
 		if (id1 > 3) id1 = 0;
+		if (id1 == 0 && skipDisabled) id1 = 1;
 		Configs.CLIENT_SETTINGS.setSidePanel(get(id1));
     }
 
-	public void back() {
+	public static void back() {
 		int id1 = Configs.CLIENT_SETTINGS.getSidePanel().id - 1;
 		if (id1 < 0) id1 = 3;
 		Configs.CLIENT_SETTINGS.setSidePanel(get(id1));
