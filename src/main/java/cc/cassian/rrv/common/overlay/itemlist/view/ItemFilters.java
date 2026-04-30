@@ -4,11 +4,13 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.common.overlay.itemlist.unlock.UnlockManager;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
@@ -235,11 +237,16 @@ public class ItemFilters {
     private static List<ItemStack> fullStackList() {
         List<ItemStack> results = new ArrayList<>();
 
-        BuiltInRegistries.ITEM.forEach(item -> {
-            if (!EXCLUDED_ITEMS.contains(item))
-                results.add(new ItemStack(item));
-            results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
-        });
+
+        if (Configs.UNLOCKS.isEnabled()) {
+            results.addAll(UnlockManager.INSTANCE.displayItems());
+        } else {
+            BuiltInRegistries.ITEM.forEach(item -> {
+                if (!EXCLUDED_ITEMS.contains(item))
+                    results.add(new ItemStack(item));
+                results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
+            });
+        }
 
         if (ModCompat.POLYMER)
             PolymerHelpers.polymerFilter(results);

@@ -13,6 +13,7 @@ import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
+import cc.cassian.rrv.common.overlay.itemlist.unlock.UnlockManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -171,11 +172,13 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 if (!(screen instanceof CreativeModeInventoryScreen))
                     ClientRecipeCache.INSTANCE.getRecipes().stream().filter((recipe)-> RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())).sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
                         ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
+                        UnlockManager.INSTANCE.unlockItem(stack);
                         setResultAndAdd(recipe, stack);
                     });
                 if (this.availableItems.isEmpty()) {
                     ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
                         ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
+                        UnlockManager.INSTANCE.unlockItem(stack);
                         setResultAndAdd(recipe, stack);
                     });
                 }
@@ -273,6 +276,10 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         return (mouseX > xMin && mouseX < xMax) && (mouseY >= 21 && mouseY <= 41);
     }
 
+    public static boolean showUnlocks() {
+        return Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.UNLOCKED);
+    }
+
     public static boolean showBookmarks() {
         return Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.BOOKMARKS);
     }
@@ -359,6 +366,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     public enum Reason {
-        BUTTON, INVENTORY_CHANGE, BOOKMARK, SCREEN_CHANGE, OTHER;
+        BUTTON, INVENTORY_CHANGE, BOOKMARK, SCREEN_CHANGE, OTHER, UNLOCK;
     }
 }

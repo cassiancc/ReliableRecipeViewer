@@ -23,11 +23,11 @@ public class BookmarkManager {
             if (!SidePanelOverlay.showBookmarks()) {
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
             }
-            updateIndex(SidePanelOverlay.Reason.BOOKMARK);
+            updateIndex();
         }
     }
-    private static void updateIndex(SidePanelOverlay.Reason reason) {
-        Minecraft.getInstance().execute(() -> SidePanelOverlay.INSTANCE.updateSidePanelIndex(reason));
+    private static void updateIndex() {
+        Minecraft.getInstance().execute(() -> SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.BOOKMARK));
     }
 
     public List<ItemStackTemplate> availableItems() {
@@ -46,7 +46,7 @@ public class BookmarkManager {
         if (this.availableItems().contains(stack)) {
             this.availableItems().remove(stack);
             if (SidePanelOverlay.showBookmarks())
-                updateIndex(SidePanelOverlay.Reason.BOOKMARK);
+                updateIndex();
         }
     }
 }
