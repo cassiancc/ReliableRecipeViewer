@@ -1,3 +1,9 @@
+## [8.0.3]
+
+### Fixed
+- Improvements to null safety on `SlotDisplay`
+- Improvements to error handling (thanks @Fox2Code!)
+
 ## [8.0.2]
 
 ### Fixed

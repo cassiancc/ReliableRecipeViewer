@@ -322,7 +322,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             for (Slot slot : slotDefinition.getItemSlots()) {
                 int id = slot.getContainerSlot() + (i * this.getClientRecipeType().getSlotCount());
 
-                this.addSlot(new Slot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i)));
+                this.addSlot(new RecipeSlot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i)));
             }
 
             SlotFillContext slotFillContext = new SlotFillContext();
@@ -355,7 +355,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
 
         for (int i = 0; i < this.getDisplayableCraftReferences(); i++) {
-            this.addSlot(new Slot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i));
+            this.addSlot(new RecipeSlot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i));
         }
 
         this.updateReferences();
@@ -809,7 +809,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         }
 
         public void addItemSlot(int slotId, int x, int y) {
-            this.itemSlots.put(slotId, new Slot(RecipeViewMenu.this.viewContainer, slotId, x, y));
+            this.itemSlots.put(slotId, new RecipeSlot(RecipeViewMenu.this.viewContainer, slotId, x, y));
         }
 
         private List<Slot> getItemSlots() {
