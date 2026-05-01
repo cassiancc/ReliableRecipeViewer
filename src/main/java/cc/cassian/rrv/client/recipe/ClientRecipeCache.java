@@ -181,7 +181,9 @@ public class ClientRecipeCache {
             try {
                 clientRecipeProvider.provide(recipes);
             } catch (Exception e) {
-                ReliableRecipeViewer.LOGGER.error("Failed to add client recipes {}, skipping it...", e.getMessage());
+                ReliableRecipeViewer.LOGGER.atError().setCause(e).log(
+                        "Failed to add client recipes from {}, skipping it...",
+                        clientRecipeProvider.getClass().getName());
                 continue;
             }
             for (int id = 0; id < recipes.size(); id++) {
