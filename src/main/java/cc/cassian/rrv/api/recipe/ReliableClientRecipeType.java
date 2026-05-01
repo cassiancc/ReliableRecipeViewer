@@ -153,7 +153,7 @@ public interface ReliableClientRecipeType {
      *
      * @return A condition managing the recipes a craft-reference can redirect to<br>
      * <br>
-     * <b>Example</b>: The villager's working blocks only redirect if the trading recipe matches to the profession of the villager applied by the working block
+     * <b>Example</b>: Villager workstations only redirect if the trading recipe matches to the profession of the villager applied by the working block
      */
     default ReferenceCondition getCraftReferenceCondition() {
         return (stack, viewRecipe) -> true;
@@ -167,10 +167,10 @@ public interface ReliableClientRecipeType {
         /**
          *
          * @param craftReference The craft-reference
-         * @param viewRecipe The recipe that is checked
-         * @return Whether the craft-reference can redirect to the viewRecipe
+         * @param clientRecipe The recipe that is checked
+         * @return Whether the craft-reference can redirect to the client recipe
          */
-        boolean matches(ItemStack craftReference, ReliableClientRecipe viewRecipe);
+        boolean matches(ItemStack craftReference, ReliableClientRecipe clientRecipe);
 
     }
 }

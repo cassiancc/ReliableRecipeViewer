@@ -7,8 +7,10 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
+import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.ChatFormatting;
@@ -64,6 +66,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     private int viewTypePage;
     private Button prevTypePage, nextTypePage;
     private final ArrayList<Renderable> widgets = new ArrayList<>();
+    private ItemSlot workstationSlot;
 
     public RecipeViewScreen(RecipeViewMenu recipeViewMenu, Inventory inventory, Component component) {
         super(recipeViewMenu, inventory, component);
@@ -262,11 +265,9 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         guiGraphics.text(this.font, this.page, (this.imageWidth - font.width(this.page)) / 2, this.imageHeight - 12, -12566464, false);
-        if (isHoveringOverTitle(mouseX, mouseY)) {
-            guiGraphics.text(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -5606651, false); // colored title
-        } else {
-            guiGraphics.text(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, -12566464, false); // normal title
-        }
+
+        var color = isHoveringOverTitle(mouseX, mouseY) ? -5606651 : -12566464;
+        guiGraphics.text(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, color, false);
     }
 
     @Override
@@ -278,6 +279,18 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
     }
 
+    @Override
+    public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
+        super.extractContents(guiGraphics, mouseX, mouseY, a);
+        List<ItemStack> craftReferences = this.getMenu().getClientRecipeType().getCraftReferences();
+        if (!craftReferences.isEmpty()) {
+            var x = this.leftPos+ 4;
+            var y= this.imageHeight+8;
+            this.workstationSlot = new ItemSlot(craftReferences.getFirst(), x, y);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.DEFAULT_SLOT_TEXTURE, x+1, y+1, 0, 0, 18, 18, 18, 18);
+            this.workstationSlot.extractRenderState(guiGraphics, mouseX, mouseY, 0);
+        }
+    }
 
     @Override
     protected List<Component> getTooltipFromContainerItem(ItemStack itemStack) {
@@ -360,17 +373,26 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-        if (mouseButtonEvent.button() == 1 && this.hoveredSlot != null) {
-            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.INPUT);
-            return true;
-        }
-
-        if (mouseButtonEvent.button() == 0 && this.hoveredSlot != null) {
-            ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.RESULT);
-            return true;
+        if (mouseButtonEvent.button() == 1) {
+            if (this.hoveredSlot != null) {
+                ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.INPUT);
+                return true;
+            }
+            else if (this.workstationSlot.isHovered()) {
+                ItemViewOverlay.INSTANCE.openRecipeView(this.workstationSlot.getStack(), ActionType.INPUT);
+                return true;
+            }
         }
 
         if (mouseButtonEvent.button() == 0) {
+            if (this.hoveredSlot != null) {
+                ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.RESULT);
+                return true;
+            }
+            else if (this.workstationSlot.isHovered()) {
+                ItemViewOverlay.INSTANCE.openRecipeView(this.workstationSlot.getStack(), ActionType.RESULT);
+                return true;
+            }
 
             for (int i = this.viewTypePage * 5; i < this.viewTypePage * 5 + 5 && this.recipeTypeButtons.size() > i; i++) {
                 if (this.recipeTypeButtons.get(i).onClick(mouseButtonEvent))
