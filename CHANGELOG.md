@@ -1,3 +1,12 @@
+## [8.0.1]
+
+### Added
+- `SlotContent` now accepts a `SlotDisplay`.
+
+### Fixed
+- Major improvements to Polymer integration.
+- Recipe book persisting between screens.
+
 ## [8.0.0]
 
 ### Added
