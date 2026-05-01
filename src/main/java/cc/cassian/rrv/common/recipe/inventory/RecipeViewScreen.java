@@ -8,8 +8,8 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
-import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -29,7 +29,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -121,18 +120,16 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     protected void init() {
         super.init();
 
-        this.prevRecipe = new ReliablePlainButton(Component.literal("<"), button -> {
-                    this.getMenu().prevPage();
-                }, 12, 12);
+        this.prevRecipe = new ReliablePlainButton(Component.literal("<"), button -> this.getMenu().prevRecipe(button),
+                12, 12);
 
-        this.nextRecipe = new ReliablePlainButton(Component.literal(">"), button -> {
-                    this.getMenu().nextRecipe();
-                }, 12, 12);
+        this.nextRecipe = new ReliablePlainButton(Component.literal(">"), button -> this.getMenu().nextRecipe(button),
+                12, 12);
 
-        this.prevTypePage = new ReliablePlainButton(Component.literal("<"), button -> prevPage(),
+        this.prevTypePage = new ReliablePlainButton(Component.literal("<"), _ -> prevPage(),
                 12, 14);
 
-        this.nextTypePage = new ReliablePlainButton(Component.literal(">"), button -> nextPage(),
+        this.nextTypePage = new ReliablePlainButton(Component.literal(">"), _ -> nextPage(),
                 12, 14);
 
         this.checkGui();
@@ -183,8 +180,9 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.clearRecipeWidgets();
 
         RecipeViewMenu menu = this.getMenu();
-        this.prevRecipe.active = menu.hasPrevRecipe();
-        this.nextRecipe.active = menu.hasNextRecipe();
+        boolean wrapScrolling = (Configs.CLIENT_SETTINGS.isWrapScrolling().equals(WrapScrolling.ON_BUTTONS) || Configs.CLIENT_SETTINGS.isWrapScrolling().equals(WrapScrolling.ENABLED)) && menu.getMaxPageIndex()>1;
+        this.prevRecipe.active = menu.hasPrevRecipe() || wrapScrolling;
+        this.nextRecipe.active = menu.hasNextRecipe() || wrapScrolling;
 
         this.prevTypePage.visible = this.viewTypePage > 0;
         this.nextTypePage.visible = this.viewTypePage < (menu.getViewTypeOrder().size() - 1) / 5;
@@ -350,7 +348,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             this.checkTickers();
         }
         if (scrollY > 0) {
-            this.getMenu().prevPage();
+            this.getMenu().prevRecipe(null);
             this.checkTickers();
         }
 

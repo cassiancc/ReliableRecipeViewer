@@ -1,11 +1,11 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -14,6 +14,7 @@ import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -29,6 +30,8 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 import java.util.function.Supplier;
+
+import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
 
 public class RecipeViewMenu extends AbstractContainerMenu {
 
@@ -240,14 +243,25 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.updateByPage();
     }
 
-    public void prevPage() {
-        this.currentPage = Math.max(this.currentPage - 1, 0);
+    public void prevRecipe(Button button) {
+        if (hasPrevRecipe()) {
+            this.currentPage = Math.max(this.currentPage - 1, 0);
+        } else if (shouldWrapScroll(button)) {
+            this.currentPage = maxPageIndex;
+        }
+
         this.updateByPage();
     }
 
-    public void nextRecipe() {
+    public void nextRecipe(Button button) {
+
         int prevPage = this.currentPage;
-        this.currentPage = Math.min(this.currentPage + 1, this.maxPageIndex);
+
+        if (hasNextRecipe()) {
+            this.currentPage = Math.min(this.currentPage + 1, this.maxPageIndex);
+        } else if (shouldWrapScroll(button)) {
+            this.currentPage = 0;
+        }
 
         if (prevPage != this.currentPage)
             this.updateByPage();
