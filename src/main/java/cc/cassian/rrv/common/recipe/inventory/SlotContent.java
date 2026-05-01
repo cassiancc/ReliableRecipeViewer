@@ -104,11 +104,12 @@ public class SlotContent {
     }
 
     public static SlotContent of(SlotDisplay slotDisplay, Level level) {
+        if (slotDisplay == null) return SlotContent.of();
         return SlotContent.of(slotDisplay.resolveForStacks(SlotDisplayContext.fromLevel(level)));
     }
 
     public static SlotContent of(SlotDisplay slotDisplay) {
-        return SlotContent.of(slotDisplay.resolveForStacks(SlotDisplayContext.fromLevel(RrvUtil.getLevel())));
+        return SlotContent.of(slotDisplay, RrvUtil.getLevel());
     }
 
     public void setType(ActionType type) {
