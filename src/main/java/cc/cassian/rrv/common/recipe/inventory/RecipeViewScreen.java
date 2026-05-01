@@ -9,6 +9,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -120,25 +121,19 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     protected void init() {
         super.init();
 
-        this.prevRecipe = Button.builder(Component.literal("<"), button -> {
+        this.prevRecipe = new ReliablePlainButton(Component.literal("<"), button -> {
                     this.getMenu().prevPage();
-                })
-                .size(12, 12)
-                .build();
+                }, 12, 12);
 
-        this.nextRecipe = Button.builder(Component.literal(">"), button -> {
+        this.nextRecipe = new ReliablePlainButton(Component.literal(">"), button -> {
                     this.getMenu().nextRecipe();
-                })
-                .size(12, 12)
-                .build();
+                }, 12, 12);
 
-        this.prevTypePage = Button.builder(Component.literal("<"), button -> prevPage())
-                .size(12, 14)
-                .build();
+        this.prevTypePage = new ReliablePlainButton(Component.literal("<"), button -> prevPage(),
+                12, 14);
 
-        this.nextTypePage = Button.builder(Component.literal(">"), button -> nextPage())
-                .size(12, 14)
-                .build();
+        this.nextTypePage = new ReliablePlainButton(Component.literal(">"), button -> nextPage(),
+                12, 14);
 
         this.checkGui();
 
