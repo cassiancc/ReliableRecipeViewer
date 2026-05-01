@@ -1,10 +1,7 @@
 package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
-import cc.cassian.rrv.common.config.options.NamespaceTooltip;
-import cc.cassian.rrv.common.config.options.OverlayDisplay;
-import cc.cassian.rrv.common.config.options.SidePanel;
-import cc.cassian.rrv.common.config.options.WrapScrolling;
+import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 
 public class ClientConfig extends AbstractRrvConfig {
@@ -16,6 +13,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean showProgressBar = true;
 	private boolean itemWrapMode = true;
 	private WrapScrolling wrapScrolling = WrapScrolling.ON_BUTTONS;
+	private WorkstationDisplay workstationDisplay = WorkstationDisplay.IN_FOOTER;
 	private NamespaceTooltip namespaceTooltip = ModCompat.hasModNamespaceModsInstalled() ? NamespaceTooltip.HIDE : NamespaceTooltip.SHOW;
 	private boolean showRecipeId = false;
 	private boolean rightIndex = true;
@@ -186,6 +184,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.localFallback = load("localFallback", this.localFallback);
 		this.wrapScrolling = load("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
+		this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 	}
 
 	@Override
@@ -207,5 +206,14 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		save("sidePanel", this.sidePanel, SidePanel.CODEC);
 		save("localFallback", this.localFallback);
+		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
+	}
+
+	public WorkstationDisplay getWorkstationDisplay() {
+		return workstationDisplay;
+	}
+
+	public void setWorkstationDisplay(WorkstationDisplay workstationDisplay) {
+		this.workstationDisplay = workstationDisplay;
 	}
 }

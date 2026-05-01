@@ -9,6 +9,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -283,9 +284,9 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
         super.extractContents(guiGraphics, mouseX, mouseY, a);
         List<ItemStack> craftReferences = this.getMenu().getClientRecipeType().getCraftReferences();
-        if (!craftReferences.isEmpty()) {
-            var x = this.leftPos+ 4;
-            var y= this.imageHeight+8;
+        if (!craftReferences.isEmpty() && Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER)) {
+            var x = this.leftPos + 4;
+            var y = this.imageHeight + 8;
             this.workstationSlot = new ItemSlot(craftReferences.getFirst(), x, y);
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.DEFAULT_SLOT_TEXTURE, x+1, y+1, 0, 0, 18, 18, 18, 18);
             this.workstationSlot.extractRenderState(guiGraphics, mouseX, mouseY, 0);
@@ -378,7 +379,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.INPUT);
                 return true;
             }
-            else if (this.workstationSlot.isHovered()) {
+            else if (this.workstationSlot != null && this.workstationSlot.isHovered()) {
                 ItemViewOverlay.INSTANCE.openRecipeView(this.workstationSlot.getStack(), ActionType.INPUT);
                 return true;
             }
@@ -389,7 +390,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.RESULT);
                 return true;
             }
-            else if (this.workstationSlot.isHovered()) {
+            else if (this.workstationSlot != null && this.workstationSlot.isHovered()) {
                 ItemViewOverlay.INSTANCE.openRecipeView(this.workstationSlot.getStack(), ActionType.RESULT);
                 return true;
             }
@@ -472,15 +473,17 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         //Render craft references
 
-        for (int i = 0; i < this.getMenu().getDisplayableCraftReferences(); i++) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 25, this.getTopPos() + 4 + i * 24 + i, 231, 48, 25, 24, 256, 256);
+        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
+            for (int i = 0; i < this.getMenu().getDisplayableCraftReferences(); i++) {
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 25, this.getTopPos() + 4 + i * 24 + i, 231, 48, 25, 24, 256, 256);
+            }
+
+            if (this.getMenu().getCurrentCraftReference() > 0)
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
+
+            if (this.getMenu().getCurrentCraftReference() < this.getMenu().getClientRecipeType().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
         }
-
-        if (this.getMenu().getCurrentCraftReference() > 0)
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
-
-        if (this.getMenu().getCurrentCraftReference() < this.getMenu().getClientRecipeType().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
 
         int guiLeft = this.leftPos + this.getMenu().guiOffsetLeft();
 
