@@ -4,3 +4,4 @@
 ### Fixed
 - Recipe view screens no longer render compasses/clocks incorrectly.
 - Previous/next recipe buttons now wrap scroll.
+- Further Polymer mod loaded check fixes.
