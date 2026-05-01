@@ -7,9 +7,7 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.ChatFormatting;
@@ -20,11 +18,9 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
@@ -32,6 +28,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -47,6 +44,9 @@ import java.util.List;
 public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
     private static final Identifier VIEW_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/recipe_view.png");
+    private static final Identifier UNSELECTED_TOP_TABS = Identifier.withDefaultNamespace("container/creative_inventory/tab_top_unselected_2");
+
+    private static final Identifier SELECTED_TOP_TABS = Identifier.withDefaultNamespace("container/creative_inventory/tab_top_selected_2");
 
     //Timestamp when opening the view
     private final long timestamp;
@@ -133,11 +133,11 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 .build();
 
         this.prevTypePage = Button.builder(Component.literal("<"), button -> prevPage())
-                .size(12, 12)
+                .size(12, 14)
                 .build();
 
         this.nextTypePage = Button.builder(Component.literal(">"), button -> nextPage())
-                .size(12, 12)
+                .size(12, 14)
                 .build();
 
         this.checkGui();
@@ -151,13 +151,13 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
     private void updateRecipeTypeButtons() {
-        int size = 24;
+        int size = 25;
         this.recipeTypeButtons.clear();
         for (int i = 0; i < this.getMenu().getViewTypeOrder().size(); i++) {
             int tempId = i % 5;
 
             int xPos = this.width / 2 - (64) + tempId * size + tempId * 2;
-            int yPos = this.getTopPos() - size - 1;
+            int yPos = this.getTopPos() - size - 3;
 
             this.recipeTypeButtons.add(new RecipeTypeButton(this, xPos, yPos, size, size, this.getMenu().getViewTypeOrder().get(i), i));
         }
@@ -204,8 +204,8 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.prevRecipe.setPosition(this.leftPos + 8, getTopPos() + 4);
         this.nextRecipe.setPosition(this.leftPos + this.imageWidth - 8 - 12, getTopPos() + 4);
 
-        this.prevTypePage.setPosition(this.width / 2 - 64 - 2 - 12, getTopPos() - 19);
-        this.nextTypePage.setPosition(this.width / 2 + 64 + 2, getTopPos() - 19);
+        this.prevTypePage.setPosition(this.width / 2 - 64 - 16, getTopPos() - 18);
+        this.nextTypePage.setPosition(this.width / 2 + 64 + 8, getTopPos() - 18);
 
         this.guiTitle = menu.getClientRecipeType().getDisplayName();
         this.titleLabelX = this.imageWidth / 2 - this.font.width(this.guiTitle) / 2;
@@ -442,6 +442,9 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
+        // render deselected icons
+        renderRecipeTypeButtons(guiGraphics, mouseX, mouseY, partialTicks, false);
+
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.getTopPos(), 0.0F, 0.0F, this.imageWidth, this.imageHeight - 3, 256, 256);
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.getTopPos() + (this.imageHeight - 3), 0, 256 - 3, this.imageWidth, 3, 256, 256);
 
@@ -449,17 +452,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         ReliableClientRecipeType recipeType = this.getMenu().getClientRecipeType();
 
         //Render icons
-
-        int current = this.getMenu().getCurrentTypeIndex();
-
-        for (int i = 0; i < 5; i++) {
-
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.width / 2 - (5 * 24 + 4 * 2) / 2 + i * 24 + i * 2, this.getTopPos() - 24 - 1, 208, 0, 24, 24, 256, 256);
-        }
-
-        for (int i = this.viewTypePage * 5; i < this.viewTypePage * 5 + 5 && this.recipeTypeButtons.size() > i; i++) {
-            this.recipeTypeButtons.get(i).extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-        }
+        renderRecipeTypeButtons(guiGraphics, mouseX, mouseY, partialTicks, true);
 
 
         //Render craft references
@@ -498,6 +491,15 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             guiGraphics.pose().popMatrix();
         }
 
+    }
+
+    private void renderRecipeTypeButtons(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, boolean b) {
+        for (int i = this.viewTypePage * 5; i < this.viewTypePage * 5 + 5 && this.recipeTypeButtons.size() > i; i++) {
+            RecipeTypeButton recipeTypeButton = this.recipeTypeButtons.get(i);
+            boolean selected = recipeTypeButton.recipeType() == this.getMenu().getClientRecipeType();
+            if (selected == b)
+                recipeTypeButton.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        }
     }
 
 
@@ -561,8 +563,16 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
 
         private void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.recipeType() == this.viewScreen.getMenu().getClientRecipeType() ? 24 : 0, 24, 24, 256, 256);
-            this.recipeType().renderIcon(this.viewScreen(), this.x()+4, this.y+4, guiGraphics, mouseX, mouseY, partialTicks);
+
+//            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.recipeType() == this.viewScreen.getMenu().getClientRecipeType() ? 24 : 0, 24, 24, 256, 256);
+
+            boolean selected = this.recipeType() == this.viewScreen.getMenu().getClientRecipeType();
+            Identifier sprite = selected ? SELECTED_TOP_TABS : UNSELECTED_TOP_TABS;
+            var pos = 1;
+
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x(), y(), 26, 32);
+
+            this.recipeType().renderIcon(this.viewScreen(), this.x()+5, this.y+8, guiGraphics, mouseX, mouseY, partialTicks);
 
             this.onHover(guiGraphics, mouseX, mouseY);
         }
