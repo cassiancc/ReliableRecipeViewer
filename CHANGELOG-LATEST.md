@@ -1,4 +1,3 @@
 ### Fixed
-- Polymer mod loaded check.
-- Incorrect bookmark title hover check on classic theme.
-- Crash loading modified data-driven villager trades.
+- Improvements to null safety on `SlotDisplay`
+- Improvements to error handling (thanks @Fox2Code!)
