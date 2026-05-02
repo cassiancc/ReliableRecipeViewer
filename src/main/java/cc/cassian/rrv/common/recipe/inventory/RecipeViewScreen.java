@@ -32,6 +32,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -68,6 +69,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     private Button prevTypePage, nextTypePage;
     private final ArrayList<Renderable> widgets = new ArrayList<>();
     private ItemSlot workstationSlot;
+    private int workstationIndex = 0;
 
     public RecipeViewScreen(RecipeViewMenu recipeViewMenu, Inventory inventory, Component component) {
         super(recipeViewMenu, inventory, component);
@@ -287,7 +289,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         if (!craftReferences.isEmpty() && Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER)) {
             var x = this.leftPos + 4;
             var y = this.imageHeight + 8;
-            this.workstationSlot = new ItemSlot(craftReferences.getFirst(), x, y);
+            this.workstationSlot = new ItemSlot(craftReferences.get(workstationIndex), x, y);
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.DEFAULT_SLOT_TEXTURE, x+1, y+1, 0, 0, 18, 18, 18, 18);
             this.workstationSlot.extractRenderState(guiGraphics, mouseX, mouseY, 0);
         }
@@ -343,15 +345,27 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 
-        if (mouseX <= this.leftPos && mouseX >= this.leftPos - 25 && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight) {
+        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
+            if (mouseX <= this.leftPos && mouseX >= this.leftPos - 25 && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight) {
+                if (scrollY < 0)
+                    this.getMenu().nextReference();
+
+                if (scrollY > 0)
+                    this.getMenu().prevReference();
+
+                return true;
+            }
+        } else if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER) && workstationSlot != null && workstationSlot.isHovered()) {
+            int max = menu.getClientRecipeType().getCraftReferences().size() - 1;
             if (scrollY < 0)
-                this.getMenu().nextReference();
+                workstationIndex = Mth.clamp(workstationIndex+1, 0, max);
 
             if (scrollY > 0)
-                this.getMenu().prevReference();
+                workstationIndex = Mth.clamp(workstationIndex-1, 0, max);
 
             return true;
         }
+
 
         if (!(mouseX >= this.leftPos && mouseX <= this.leftPos + this.imageWidth && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight))
             return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
