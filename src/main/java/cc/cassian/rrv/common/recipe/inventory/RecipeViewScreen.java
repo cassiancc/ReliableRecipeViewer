@@ -71,7 +71,6 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     private Button prevTypePage, nextTypePage;
     private final ArrayList<Renderable> widgets = new ArrayList<>();
     private ItemSlot workstationSlot;
-    private int workstationIndex = 0;
 
     public RecipeViewScreen(RecipeViewMenu recipeViewMenu, Inventory inventory, Component component) {
         super(recipeViewMenu, inventory, component);
@@ -287,11 +286,11 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     @Override
     public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
         super.extractContents(guiGraphics, mouseX, mouseY, a);
-        List<ItemStack> craftReferences = this.getMenu().getClientRecipeType().getCraftReferences();
+        List<ItemStack> craftReferences = menu.getCraftReferences();
         if (!craftReferences.isEmpty() && Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER)) {
             var x = this.leftPos + 4;
             var y = this.imageHeight + 8;
-            this.workstationSlot = new ItemSlot(craftReferences.get(workstationIndex), x, y);
+            this.workstationSlot = new ItemSlot(craftReferences.get(menu.getCurrentCraftReference()), x, y);
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace( "advancements/task_frame_unobtained"),  x-1, y-1, 22, 22);
             this.workstationSlot.extractRenderState(guiGraphics, mouseX, mouseY, 0);
         }
@@ -358,12 +357,12 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 return true;
             }
         } else if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER) && workstationSlot != null && workstationSlot.isHovered()) {
-            int max = menu.getClientRecipeType().getCraftReferences().size() - 1;
+            int max = menu.getCraftReferences().size() - 1;
             if (scrollY < 0)
-                workstationIndex = Mth.clamp(workstationIndex+1, 0, max);
+                menu.setCurrentCraftReference(Mth.clamp(menu.getCurrentCraftReference()+1, 0, max));
 
             if (scrollY > 0)
-                workstationIndex = Mth.clamp(workstationIndex-1, 0, max);
+                menu.setCurrentCraftReference(Mth.clamp(menu.getCurrentCraftReference()-1, 0, max));
 
             return true;
         }
@@ -497,7 +496,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             if (this.getMenu().getCurrentCraftReference() > 0)
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
 
-            if (this.getMenu().getCurrentCraftReference() < this.getMenu().getClientRecipeType().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
+            if (this.getMenu().getCurrentCraftReference() < menu.getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
         }
 

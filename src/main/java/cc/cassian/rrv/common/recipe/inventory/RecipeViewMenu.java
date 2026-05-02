@@ -818,6 +818,20 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.viewScreen.checkGui();
     }
 
+	public void setCurrentCraftReference(int newWorkstation) {
+		currentCraftReference = newWorkstation;
+	}
+
+    List<ItemStack> getCraftReferences() {
+        return getClientRecipeType().getCraftReferences().stream().filter(e->{
+			for (ReliableClientRecipe reliableClientRecipe : getCurrentDisplay()) {
+                if (getClientRecipeType().getCraftReferenceCondition().matches(e, reliableClientRecipe))
+                    return true;
+            }
+            return false;
+        }).toList();
+    }
+
 
     public class SlotDefinition {
 

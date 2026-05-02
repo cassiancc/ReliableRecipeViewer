@@ -156,7 +156,7 @@ public interface ReliableClientRecipeType {
      * <b>Example</b>: Villager workstations only redirect if the trading recipe matches to the profession of the villager applied by the working block
      */
     default ReferenceCondition getCraftReferenceCondition() {
-        return (stack, viewRecipe) -> true;
+        return (stack, clientRecipe) -> true;
     }
 
 
