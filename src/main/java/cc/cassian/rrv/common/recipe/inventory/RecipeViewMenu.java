@@ -818,7 +818,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     /// Set the currently focused workstation/craft reference.
 	void setCurrentCraftReference(int newWorkstation) {
-		currentCraftReference = newWorkstation;
+		if (newWorkstation > getCraftReferences().size()-1) {
+            this.currentCraftReference = 0;
+        } else {
+            this.currentCraftReference = newWorkstation;
+        }
 	}
 
     /// Returns a list of workstations or craft references for a given set of recipes.

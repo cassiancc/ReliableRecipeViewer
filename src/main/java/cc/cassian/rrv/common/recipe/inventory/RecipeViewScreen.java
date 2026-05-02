@@ -9,6 +9,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.ItemSlot;
@@ -25,6 +26,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
@@ -283,7 +285,21 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         if (isHoveringOverTitle(mouseX, mouseY)) {
             guiGraphics.setComponentTooltipForNextFrame(this.font, List.of(this.guiTitle, Component.translatable("rrv.all_recipes_hint")), mouseX, mouseY);
         }
+        // switch active workstation
+        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER) && workstationSlot != null && !workstationSlot.isHovered()) {
+            ClientLevel level = this.minecraft.level;
+            if (level != null) {
+                long gameTime = level.getGameTime();
+                long l = gameTime % 120; // change every two seconds
+                if (l == 0 && (gameTime-lastChanged > 100)) {
+                    lastChanged = gameTime;
+                    menu.setCurrentCraftReference(menu.getCurrentCraftReference() + 1);
+                }
+            }
+        }
     }
+
+    long lastChanged = 0;
 
     @Override
     public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
