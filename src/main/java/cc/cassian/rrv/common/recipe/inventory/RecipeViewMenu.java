@@ -239,11 +239,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.updateReferences();
     }
 
-    public void nextPage() {
-        this.currentPage = Math.min(this.currentPage + 1, this.maxPageIndex);
-        this.updateByPage();
-    }
-
+    /// Switch to the previous page of recipes of this type.
     public void prevRecipe(Button button) {
         if (hasPrevRecipe()) {
             this.currentPage = Math.max(this.currentPage - 1, 0);
@@ -254,6 +250,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.updateByPage();
     }
 
+    /// Switch to the next page of recipes of this type.
     public void nextRecipe(Button button) {
 
         int prevPage = this.currentPage;
@@ -293,10 +290,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.currentTypeIndex;
     }
 
+    /// Return a list of recipes that are currently visible.
     public List<ReliableClientRecipe> getCurrentDisplay() {
         return this.currentDisplay;
     }
 
+    /// Calculate and return a list of recipes that can be shown on the page.
     private List<ReliableClientRecipe> getRecipeDisplay() {
         List<ReliableClientRecipe> recipesOnPage = new ArrayList<>();
         for (int i = this.currentPage * this.maxPossiblePerPage; i < Math.min(this.getRecipes().size(), (this.currentPage + 1) * this.maxPossiblePerPage); i++) {
@@ -732,13 +731,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.menuWidth;
     }
 
-    /**
-	 * Returns how far the client recipe type's specific texture is away from the border
-	 */
+    /// Returns how far the client recipe type's specific texture is away from the left border
     public int guiOffsetLeft() {
         return (this.menuWidth - this.getClientRecipeType().getDisplayWidth()) / 2;
     }
 
+    /// Returns how far the client recipe type's specific texture is away from the top border
     public int guiOffsetTop(int displayIndex) {
         return TOP_SPACE + (displayIndex * (this.getClientRecipeType().getDisplayHeight() + BUFFER_ZONE));
     }
@@ -818,10 +816,13 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.viewScreen.checkGui();
     }
 
-	public void setCurrentCraftReference(int newWorkstation) {
+    /// Set the currently focused workstation/craft reference.
+	void setCurrentCraftReference(int newWorkstation) {
 		currentCraftReference = newWorkstation;
 	}
 
+    /// Returns a list of workstations or craft references for a given set of recipes.
+    /// Currently only used in footer view due to issues with the sidebar view.
     List<ItemStack> getCraftReferences() {
         return getClientRecipeType().getCraftReferences().stream().filter(e->{
 			for (ReliableClientRecipe reliableClientRecipe : getCurrentDisplay()) {

@@ -173,11 +173,13 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         });
     }
 
+    /// Switch to the previous type of recipes.
     public void prevPage() {
         this.viewTypePage = Math.max(this.viewTypePage - 1, 0);
         this.checkGui();
     }
 
+    /// Switch to the next type of recipes
     public void nextPage() {
         this.viewTypePage = Math.min(this.viewTypePage + 1, this.getMenu().getViewTypeOrder().size() / 5);
         this.checkGui();
@@ -373,7 +375,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
 
         if (scrollY < 0) {
-            this.getMenu().nextPage();
+            this.getMenu().nextRecipe(null);
             this.checkTickers();
         }
         if (scrollY > 0) {
