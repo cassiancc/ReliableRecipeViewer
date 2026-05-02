@@ -7,9 +7,7 @@ import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.overlay.ItemSlot;
@@ -39,6 +37,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import org.jspecify.annotations.NonNull;
 
 
 import java.awt.*;
@@ -46,8 +45,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import static cc.cassian.rrv.common.ReliableRecipeViewer.MOD_ID;
 
 public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
@@ -102,7 +99,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+    public boolean mouseReleased(@NonNull MouseButtonEvent mouseButtonEvent) {
 
         if (ReliableRecipeViewerClient.GO_BACK_RECIPE.matchesMouse(mouseButtonEvent) && this.getMenu().goBack())
             return true;
@@ -113,7 +110,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
+    public boolean keyPressed(@NonNull KeyEvent keyEvent) {
 
         if (ReliableRecipeViewerClient.GO_BACK_RECIPE.matches(keyEvent) && this.getMenu().goBack())
             return true;
@@ -279,7 +276,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         this.extractTooltip(guiGraphics, mouseX, mouseY);
         if (isHoveringOverTitle(mouseX, mouseY)) {
@@ -302,20 +299,20 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     long lastChanged = 0;
 
     @Override
-    public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
+    public void extractContents(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
         super.extractContents(guiGraphics, mouseX, mouseY, a);
-        List<ItemStack> craftReferences = menu.getCraftReferences();
+        List<ItemStack> craftReferences = getMenu().getCraftReferences();
         if (!craftReferences.isEmpty() && Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER)) {
             var x = this.leftPos + 4;
             var y = this.imageHeight + 8;
             this.workstationSlot = new ItemSlot(craftReferences.get(menu.getCurrentCraftReference()), x, y);
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace( "advancements/task_frame_unobtained"),  x-1, y-1, 22, 22);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("workstation_slot"),  x-1, y-1, 22, 22);
             this.workstationSlot.extractRenderState(guiGraphics, mouseX, mouseY, 0);
         }
     }
 
     @Override
-    protected List<Component> getTooltipFromContainerItem(ItemStack itemStack) {
+    protected @NonNull List<Component> getTooltipFromContainerItem(@NonNull ItemStack itemStack) {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
         Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, true);
@@ -488,7 +485,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractBackground(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
         // render deselected icons
