@@ -45,6 +45,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static cc.cassian.rrv.common.ReliableRecipeViewer.MOD_ID;
+
 public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
     private static final Identifier VIEW_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/recipe_view.png");
@@ -290,7 +292,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             var x = this.leftPos + 4;
             var y = this.imageHeight + 8;
             this.workstationSlot = new ItemSlot(craftReferences.get(workstationIndex), x, y);
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.DEFAULT_SLOT_TEXTURE, x+1, y+1, 0, 0, 18, 18, 18, 18);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace( "advancements/task_frame_unobtained"),  x-1, y-1, 22, 22);
             this.workstationSlot.extractRenderState(guiGraphics, mouseX, mouseY, 0);
         }
     }
