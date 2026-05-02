@@ -48,7 +48,6 @@
     "client.gui.screens.inventory.MixinAnvilScreen",
     "client.gui.screens.inventory.MixinCreativeModeInventoryScreen",
     "client.gui.screens.inventory.MixinEffectsInInventory",
-    "client.gui.screens.inventory.MixinScreen",
     "client.gui.screens.recipebook.MixinRecipeBookComponent",
     "client.multiplayer.MixinClientPacketListener",
     "client.renderer.entity.state.MixinEntityRenderState",
