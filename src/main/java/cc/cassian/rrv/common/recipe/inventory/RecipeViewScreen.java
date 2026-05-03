@@ -298,8 +298,8 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             ClientLevel level = this.minecraft.level;
             if (level != null) {
                 long gameTime = level.getGameTime();
-                long l = gameTime % 120; // change every two seconds
-                if (l == 0 && (gameTime-lastChanged > 100)) {
+                long l = gameTime % 40; // change every two seconds
+                if (l == 0 && (gameTime-lastChanged > 40)) {
                     lastChanged = gameTime;
                     menu.setCurrentCraftReference(menu.getCurrentCraftReference() + 1);
                 }
