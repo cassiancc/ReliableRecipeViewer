@@ -22,6 +22,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -117,6 +118,16 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         if (ReliableRecipeViewerClient.GO_FORWARD_RECIPE.matches(keyEvent) && this.getMenu().goForward())
             return true;
+
+		if (ReliableRecipeViewerClient.USAGE_KEYBIND.matches(keyEvent) && this.workstationSlot != null && this.workstationSlot.isHovered()) {
+			ItemViewOverlay.INSTANCE.openRecipeView(this.workstationSlot.getStack(), ActionType.INPUT);
+			return true;
+		}
+
+		if (ReliableRecipeViewerClient.RECIPE_KEYBIND.matches(keyEvent) && this.workstationSlot != null && this.workstationSlot.isHovered()) {
+			ItemViewOverlay.INSTANCE.openRecipeView(this.workstationSlot.getStack(), ActionType.RESULT);
+			return true;
+		}
 
         return super.keyPressed(keyEvent);
     }
@@ -439,7 +450,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         return super.mouseClicked(mouseButtonEvent, bl);
     }
 
-	private boolean isHoveringOverTitle(double mouseX, double mouseY) {
+    private boolean isHoveringOverTitle(double mouseX, double mouseY) {
         int xMin = this.width / 2 - 64 - 2 - 3;
         int xMax = this.width / 2 + 64 + 2;
 		return (mouseX > xMin && mouseX < xMax) && (mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + 16);

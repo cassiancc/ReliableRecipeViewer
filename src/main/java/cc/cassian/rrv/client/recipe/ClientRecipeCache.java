@@ -191,6 +191,8 @@ public class ClientRecipeCache {
                 handleClientRecipe(clientRecipe.entryId(), clientRecipe, id, true);
             }
         }
+
+        Configs.CATEGORIES.addNewCategories();
     }
 
     private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id, boolean fromNewSystem) {
