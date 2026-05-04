@@ -60,8 +60,10 @@ public class ResourceRecipeManager {
 						}
 					});
 
-					parsedRecipe.get("item").getAsJsonArray().forEach(item -> HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString())));
-					parsedRecipe.get("block").getAsJsonArray().forEach(item -> HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString())));
+					if (parsedRecipe.has("item"))
+						parsedRecipe.get("item").getAsJsonArray().forEach(item -> HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString())));
+					if (parsedRecipe.has("block"))
+						parsedRecipe.get("block").getAsJsonArray().forEach(item -> HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString())));
 					LOGGER.debug("RRV: Loaded exclusion list {}", identifier);
 				}
 			} catch (IOException e) {
