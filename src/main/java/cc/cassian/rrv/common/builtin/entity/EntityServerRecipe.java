@@ -1,19 +1,17 @@
 package cc.cassian.rrv.common.builtin.entity;
 
-import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
-//? if >26.1 {
-/*import net.minecraft.world.entity.EntityTypes;
-*///?}
-import net.minecraft.world.item.ItemStack;
 
+import java.util.Collections;
 import java.util.List;
 
 public class EntityServerRecipe implements ReliableServerRecipe {
@@ -42,14 +40,20 @@ public class EntityServerRecipe implements ReliableServerRecipe {
 
     @Override
     public void writeToTag(CompoundTag tag) {
-        tag.store("entity", BuiltInRegistries.ENTITY_TYPE.byNameCodec(), entityType);
+        tag.store("entity", ResourceKey.codec(Registries.ENTITY_TYPE), entityType.builtInRegistryHolder().key());
         tag.put("stacks", TagUtil.writeList(this.drops, (origin, tag1) -> TagUtil.writeSlotContent(origin)));
     }
 
     @Override
     public void loadFromTag(CompoundTag tag) {
-        this.entityType = tag.read("entity", BuiltInRegistries.ENTITY_TYPE.byNameCodec()).orElse(null);
-        this.drops = TagUtil.readList(tag, "stacks", TagUtil::readSlotContent);
+        ResourceKey<EntityType<?>> entity = tag.read("entity", ResourceKey.codec(Registries.ENTITY_TYPE)).orElseThrow();
+        if (BuiltInRegistries.ENTITY_TYPE.containsKey(entity)) {
+            this.entityType = BuiltInRegistries.ENTITY_TYPE.getValue(entity);
+            this.drops = TagUtil.readList(tag, "stacks", TagUtil::readSlotContent);
+        } else {
+            this.entityType = null;
+            this.drops = Collections.emptyList();
+        }
     }
 
     @Override

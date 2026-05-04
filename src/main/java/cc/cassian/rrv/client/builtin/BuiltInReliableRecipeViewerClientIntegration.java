@@ -99,7 +99,10 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         //Wrapper
         ItemView.addClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> unwrapped.getClientOffers().stream().map(VillagerClientRecipe::new).toList());
-        ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> List.of(new EntityClientRecipe(unwrapped)));
+        ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> {
+            if (unwrapped.getEntityType() == null) return Collections.emptyList();
+			return List.of(new EntityClientRecipe(unwrapped));
+		});
         ItemView.addClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe.Builder(null, unwrapped.getIngredients()).setResult(unwrapped.getResult()).build()));
         ItemView.addClientRecipeProvider(recipeList -> {
             ClientLevel level = Minecraft.getInstance().level;
