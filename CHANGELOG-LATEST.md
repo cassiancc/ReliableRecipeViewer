@@ -1,5 +1,6 @@
+### Changed
+- If an `item_model` component is set and `getCreatorNamespace` is not overriden, the `item_model`'s namespace is now used.
+
 ### Fixed
-- Recipe keybinds on footer workstation slot.
-- Potential missing categories from client recipe providers.
-- Bug preventing index modification from working with normal items.
-- Bug allowing scrolling onto a blank page.
+- Crash loading an exclusions file without `block` and `item` keys.
+- Exception caused by logging onto a server with a different entity registry than the client.
