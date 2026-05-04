@@ -71,7 +71,6 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
     public boolean enabled(ReliableClientRecipeType reliableClientRecipeType) {
 		if (CATEGORIES.containsKey(reliableClientRecipeType.getId()))
         	return CATEGORIES.get(reliableClientRecipeType.getId()).enabled();
-		ReliableRecipeViewer.LOGGER.error("Category %s is not in configuration!".formatted(reliableClientRecipeType.getId()));
 	    return true; // this shouldn't ever be the case, but safer to allow it
     }
 

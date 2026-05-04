@@ -163,7 +163,7 @@ stonecutter {
 
 tasks {
     processResources {
-        exclude("**/neoforge.mods.toml", "**/mods.toml", "rrv.neoforge.mixins.json",)
+        exclude("**/neoforge.mods.toml", "**/rrv.neoforge.mixins.json", "**/accesstransformer.cfg", "**/mods.toml", "rrv.neoforge.mixins.json",)
     }
 
     register<Copy>("buildAndCollect") {

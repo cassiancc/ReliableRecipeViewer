@@ -36,13 +36,6 @@ jsonlang {
 
 repositories {
     maven {
-        name = "Parchment Mappings"
-        url = uri("https://maven.parchmentmc.org")
-        content {
-            includeGroup("org.parchmentmc.data")
-        }
-    }
-    maven {
         name = "Xander Maven"
         url = uri("https://maven.isxander.dev/releases")
         content {
@@ -109,12 +102,6 @@ neoForge {
     version = property("deps.neoforge") as String
     validateAccessTransformers = true
 
-    if (hasProperty("deps.parchment")) parchment {
-        val (mc, ver) = (property("deps.parchment") as String).split(':')
-        mappingsVersion = ver
-        minecraftVersion = mc
-    }
-
     runs {
         register("client") {
             gameDirectory = file("run/")
@@ -136,7 +123,7 @@ neoForge {
 
 tasks {
     processResources {
-        exclude("**/fabric.mod.json", "**/*.accesswidener", "**/mods.toml")
+        exclude("**/fabric.mod.json", "**/rrv.fabric.mixins.json", "**/*.classtweaker", "**/mods.toml")
     }
 
     named("createMinecraftArtifacts") {
