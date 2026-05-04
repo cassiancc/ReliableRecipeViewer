@@ -79,6 +79,14 @@ repositories {
             includeGroupAndSubgroups("maven.modrinth")
         }
     }
+    maven {
+        name = "WTHIT"
+        url = uri("https://maven2.bai.lol")
+        content {
+            includeGroupAndSubgroups("mcp.mobius.waila")
+            includeGroupAndSubgroups("lol.bai")
+        }
+    }
     mavenCentral()
 }
 
@@ -94,6 +102,7 @@ dependencies {
     compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
         isTransitive = false;
     }
+    compileOnly("mcp.mobius.waila:wthit:neo-${property("deps.wthit")}")
 }
 
 neoForge {

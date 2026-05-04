@@ -94,6 +94,14 @@ repositories {
             includeGroupAndSubgroups("cc.cassian")
         }
     }
+    maven {
+        name = "WTHIT"
+        url = uri("https://maven2.bai.lol")
+        content {
+            includeGroupAndSubgroups("mcp.mobius.waila")
+            includeGroupAndSubgroups("lol.bai")
+        }
+    }
     mavenCentral()
 }
 
@@ -109,10 +117,7 @@ dependencies {
         exclude(group = "maven.modrinth")
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
-    compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
-        exclude(group = "mcp.mobius.waila")
-        exclude(group = "lol.bai")
-    }
+
     compileOnly("folk.sisby:kaleido-config:0.3.3+1.3.2")
 
     compileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
@@ -120,6 +125,15 @@ dependencies {
     compileOnly("eu.pb4:polydex:${property("deps.polydex")}")
     compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
         isTransitive = false;
+    }
+    compileOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
+    if (hasProperty("deps.badpackets")) {
+        runtimeOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
+        runtimeOnly("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
+    }
+    compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+        exclude(group = "mcp.mobius.waila")
+        exclude(group = "lol.bai")
     }
 
     if (stonecutter.eval(mcVersion, "=26.1")) {

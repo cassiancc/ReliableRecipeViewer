@@ -11,6 +11,6 @@ public class ModCompat {
 
     public static boolean hasModNamespaceModsInstalled() {
         return (ITEM_DESCRIPTIONS && ItemDescriptionsCompat.modNamespaceEnabled()) ||
-				(JADE && JadeCompat.modNamespaceEnabled()) || WTHIT;
+				(JADE && JadeCompat.modNamespaceEnabled()) || (WTHIT && WTHITCompat.modNamespaceEnabled());
     }
 }
