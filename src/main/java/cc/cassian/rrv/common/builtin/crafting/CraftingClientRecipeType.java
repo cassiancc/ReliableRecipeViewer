@@ -14,7 +14,7 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
 
     public static final CraftingClientRecipeType INSTANCE = new CraftingClientRecipeType();
 
-    private static final Identifier CRAFTING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/crafting.png");
+    private static final Identifier GUI_BACKGROUND = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/crafting.png");
 
     @Override
     public Component getDisplayName() {
@@ -44,7 +44,7 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return CRAFTING_LOCATION;
+        return GUI_BACKGROUND;
     }
 
 

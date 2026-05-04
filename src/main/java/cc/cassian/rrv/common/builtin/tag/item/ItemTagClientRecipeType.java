@@ -11,6 +11,7 @@ import net.minecraft.world.item.Items;
 public class ItemTagClientRecipeType implements ReliableClientRecipeType {
 
     public static final ItemTagClientRecipeType INSTANCE = new ItemTagClientRecipeType();
+    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/entity.png");
 
     @Override
     public Component getDisplayName() {
@@ -29,7 +30,7 @@ public class ItemTagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return ReliableRecipeViewer.of("textures/gui/type/entity.png");
+        return GUI_BACKGROUND;
     }
 
     // Tags should not exceed 54 slots

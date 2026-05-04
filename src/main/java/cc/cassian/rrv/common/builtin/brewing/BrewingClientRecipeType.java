@@ -13,7 +13,8 @@ import java.util.List;
 public class BrewingClientRecipeType implements ReliableClientRecipeType {
 
     protected static final BrewingClientRecipeType INSTANCE = new BrewingClientRecipeType();
-    
+    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/brewing.png");
+
     @Override
     public Component getDisplayName() {
         return Component.translatable("view.rrv.type.brewing");
@@ -31,7 +32,7 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/brewing.png");
+        return GUI_BACKGROUND;
     }
 
     @Override

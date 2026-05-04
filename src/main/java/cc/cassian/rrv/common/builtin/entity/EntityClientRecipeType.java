@@ -18,12 +18,13 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     private static final List<ItemStack> SPAWN_EGGS = BuiltInRegistries.ITEM.stream().filter(item -> item instanceof SpawnEggItem).map(ItemStack::new).toList();
     private static final ReferenceCondition REFERENCE_CONDITION = (craftReference, viewRecipe) -> {
 
-        if(!(craftReference.getItem() instanceof SpawnEggItem eggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
+        if(!(craftReference.getItem() instanceof SpawnEggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
             return true;
 
-        return eggItem.getType(craftReference) == entityViewRecipe.getEntityType();
+        return SpawnEggItem.getType(craftReference) == entityViewRecipe.getEntityType();
 
     };
+    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/entity.png");
 
     @Override
     public Component getDisplayName() {
@@ -42,7 +43,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/entity.png");
+        return GUI_BACKGROUND;
     }
 
     //Mob loot should not exceed 54 slots

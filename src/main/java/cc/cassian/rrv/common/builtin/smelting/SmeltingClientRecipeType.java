@@ -14,7 +14,7 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
 
     public static final SmeltingClientRecipeType INSTANCE = new SmeltingClientRecipeType();
 
-    private static final Identifier SMELTING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smelting.png");
+    private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/smelting.png");
 
     @Override
     public Component getDisplayName() {
@@ -43,7 +43,7 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return SMELTING_LOCATION;
+        return GUI_BACKGROUND;
     }
 
     @Override

@@ -866,7 +866,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
         private final HashMap<Integer, OptionalSlotRenderer> optionalSlotRenderers;
 
-        protected SlotFillContext() {
+        public SlotFillContext() {
             this.contents = new HashMap<>();
             this.contentDependencies = new HashMap<>();
 
@@ -925,7 +925,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             return this.optionalSlotRenderers;
         }
 
-        protected SlotContent contentBySlot(int slotId) {
+        public SlotContent contentBySlot(int slotId) {
             return this.contents.getOrDefault(slotId, SlotContent.of(List.of()));
         }
 

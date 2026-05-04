@@ -14,7 +14,7 @@ public class CampfireClientRecipeType implements ReliableClientRecipeType {
 
     protected static final CampfireClientRecipeType INSTANCE = new CampfireClientRecipeType();
 
-    private static final Identifier CAMPFIRE_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/campfire.png");
+    private static final Identifier GUI_BACKGROUND = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/campfire.png");
 
     @Override
     public Component getDisplayName() {
@@ -43,7 +43,7 @@ public class CampfireClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return CAMPFIRE_LOCATION;
+        return GUI_BACKGROUND;
     }
 
     @Override

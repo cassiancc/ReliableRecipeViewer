@@ -14,7 +14,7 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     protected static final StonecutterClientRecipeType INSTANCE = new StonecutterClientRecipeType();
 
-    private static final Identifier STONECUTTER_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/stonecutter.png");
+    private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/stonecutter.png");
 
     @Override
     public Component getDisplayName() {
@@ -43,7 +43,7 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return STONECUTTER_LOCATION;
+        return GUI_BACKGROUND;
     }
 
     @Override

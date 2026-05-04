@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmokingRecipe;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
 
     @Override
     public ReliableClientRecipeType getType() {
-        return SmokingClientRecipeRecipeType.INSTANCE;
+        return SmokingClientRecipeType.INSTANCE;
     }
 
     @Override

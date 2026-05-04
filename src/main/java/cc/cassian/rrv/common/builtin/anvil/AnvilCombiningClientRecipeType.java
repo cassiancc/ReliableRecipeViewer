@@ -14,7 +14,7 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 
 	protected static final AnvilCombiningClientRecipeType INSTANCE = new AnvilCombiningClientRecipeType();
 
-	private static final Identifier ANVIL_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/anvil.png");
+	private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
 
 	@Override
 	public Component getDisplayName() {
@@ -43,7 +43,7 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 
 	@Override
 	public Identifier getGuiTexture() {
-		return ANVIL_LOCATION;
+		return GUI_BACKGROUND;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -288,10 +289,24 @@ public class ItemView {
         ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.INPUT);
     }
 
+    /// Opens a recipe view for the client player containing all recipes that use the specified stack as an ingredient ([ReliableClientRecipe#getIngredients], ([ReliableClientRecipeType#getCraftReferences])).
+    /// @param stack The ingredient [ItemStack]
+    public static void openForStackIngredient(ItemStack stack, ReliableClientRecipeType type) {
+        ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.INPUT, type);
+    }
+
     /// Opens a recipe view for the client player containing all recipes that own the specified stack as a result ([ReliableClientRecipe#getResults]).
     /// @param stack The result [ItemStack]
-    public static void openForStackResult(ItemStack stack) {
-        ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.RESULT);
+    public static void openForStackResult(ItemStack stack, ReliableClientRecipeType type) {
+        ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.RESULT, type);
+    }
+
+    public ReliableClientRecipe getRecipe(final Identifier recipeId) {
+        return getRecipes(recipeId).getFirst();
+    }
+
+    public List<ReliableClientRecipe> getRecipes(final Identifier recipeId) {
+        return ClientRecipeCache.INSTANCE.getRecipes(recipeId);
     }
 
     /// Mods can add a ReloadCallback to hook into a server reload.

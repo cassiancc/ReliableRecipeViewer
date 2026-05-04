@@ -14,7 +14,7 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
 
     protected static final SmithingClientRecipeType INSTANCE = new SmithingClientRecipeType();
 
-    private static final Identifier SMITHING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smithing.png");
+    private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/smithing.png");
 
     @Override
     public Component getDisplayName() {
@@ -43,7 +43,7 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return SMITHING_LOCATION;
+        return GUI_BACKGROUND;
     }
 
     @Override

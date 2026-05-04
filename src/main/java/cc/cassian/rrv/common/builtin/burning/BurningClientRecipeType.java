@@ -13,6 +13,7 @@ import java.util.List;
 public class BurningClientRecipeType implements ReliableClientRecipeType {
 
     public static final BurningClientRecipeType INSTANCE = new BurningClientRecipeType();
+    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/burning.png");
 
 
     @Override
@@ -32,7 +33,7 @@ public class BurningClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/burning.png");
+        return GUI_BACKGROUND;
     }
 
     @Override

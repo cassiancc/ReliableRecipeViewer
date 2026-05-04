@@ -9,11 +9,11 @@ import net.minecraft.world.item.Items;
 
 import java.util.List;
 
-public class SmokingClientRecipeRecipeType extends SmeltingClientRecipeType {
+public class SmokingClientRecipeType extends SmeltingClientRecipeType {
 
-    public static final SmokingClientRecipeRecipeType INSTANCE = new SmokingClientRecipeRecipeType();
+    public static final SmokingClientRecipeType INSTANCE = new SmokingClientRecipeType();
 
-    private static final Identifier BLASTING_LOCATION = ReliableRecipeViewer.of("textures/gui/type/smoking.png");
+    private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/smoking.png");
 
     @Override
     public Component getDisplayName() {
@@ -22,7 +22,7 @@ public class SmokingClientRecipeRecipeType extends SmeltingClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return BLASTING_LOCATION;
+        return GUI_BACKGROUND;
     }
 
     @Override

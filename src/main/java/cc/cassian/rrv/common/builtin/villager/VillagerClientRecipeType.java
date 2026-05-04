@@ -41,6 +41,7 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
 
         return profession.heldJobSite().test(holder);
     };
+    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/villager.png");
 
     @Override
     public Component getDisplayName() {
@@ -59,7 +60,7 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/villager.png");
+        return GUI_BACKGROUND;
     }
 
     @Override

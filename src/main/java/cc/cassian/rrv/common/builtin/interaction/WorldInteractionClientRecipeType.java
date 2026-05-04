@@ -8,13 +8,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.List;
-
 public class WorldInteractionClientRecipeType implements ReliableClientRecipeType {
 
 	protected static final WorldInteractionClientRecipeType INSTANCE = new WorldInteractionClientRecipeType();
 
-	private static final Identifier ANVIL_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/anvil.png");
+	private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
 
 	@Override
 	public Component getDisplayName() {
@@ -43,7 +41,7 @@ public class WorldInteractionClientRecipeType implements ReliableClientRecipeTyp
 
 	@Override
 	public Identifier getGuiTexture() {
-		return ANVIL_LOCATION;
+		return GUI_BACKGROUND;
 	}
 
 	@Override
