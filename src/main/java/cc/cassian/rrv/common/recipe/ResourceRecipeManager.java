@@ -164,7 +164,7 @@ public class ResourceRecipeManager {
 						}
 						else {
 							ItemStack itemStack = RrvUtil.getItemStack(item);
-							if (itemStack.isEmpty())
+							if (!itemStack.isEmpty())
 								results.add(itemStack);
 						}
 					});
