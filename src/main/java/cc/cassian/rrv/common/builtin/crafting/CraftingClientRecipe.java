@@ -61,8 +61,8 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         ReliableClientRecipe.super.renderRecipe(screen, recipePosition, guiGraphics, mouseX, mouseY, partialTicks);
         if (shapeless) {
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("crafting_shapeless"), 26, 14, 0, 0, 92, 0, 26, 14);
-            if ((mouseX > 92 && mouseX < 122) && (mouseY>0 && mouseY < 14)) {
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("crafting_shapeless"), 23, 14, 0, 0, 95, 3, 23, 14);
+            if ((mouseX > 95 && mouseX < 120) && (mouseY>0 && mouseY < 14)) {
                 guiGraphics.setComponentTooltipForNextFrame(screen.getFont(), List.of(Component.translatable("view.rrv.type.crafting.shapeless")), mouseX+recipePosition.left(), mouseY+recipePosition.top());
             }
         }

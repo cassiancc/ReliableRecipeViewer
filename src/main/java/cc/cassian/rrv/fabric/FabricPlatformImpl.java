@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -48,8 +49,11 @@ public class FabricPlatformImpl implements Platform {
 
     @Override
     public String getModNamespaceForItem(ItemStack stack) {
+        var holderNamespace = stack.typeHolder().unwrapKey().map(ResourceKey::identifier).map(Identifier::getNamespace).orElse("");
+        if (holderNamespace.isEmpty()) {
+            return "";
+        }
         String creatorNamespace = stack.getCreatorNamespace();
-        var holderNamespace = stack.typeHolder().unwrapKey().orElseThrow().identifier().getNamespace();
         if (holderNamespace.equals(creatorNamespace) && stack.has(DataComponents.ITEM_MODEL)) {
             return stack.get(DataComponents.ITEM_MODEL).getNamespace();
         }

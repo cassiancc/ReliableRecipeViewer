@@ -13,7 +13,7 @@ import java.util.List;
 public class BurningClientRecipeType implements ReliableClientRecipeType {
 
     public static final BurningClientRecipeType INSTANCE = new BurningClientRecipeType();
-    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/burning.png");
+    public static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/burning.png");
 
 
     @Override
@@ -23,17 +23,17 @@ public class BurningClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 72;
+        return 108;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 18;
+        return 24;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class BurningClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        slotDefinition.addItemSlot(0, 1, 1);
+        slotDefinition.addItemSlot(0, 4, 4);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     protected static final StonecutterClientRecipeType INSTANCE = new StonecutterClientRecipeType();
 
-    private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/stonecutter.png");
+    private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/stonecutter.png");
 
     @Override
     public Component getDisplayName() {
@@ -33,17 +33,17 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 74;
+        return 80;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 18;
+        return 24;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
     @Override
@@ -53,13 +53,9 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        //Input
-        slotDefinition.addItemSlot(0, 1, 1);
-
-        //Result
-        slotDefinition.addItemSlot(1, 57, 1);
+        slotDefinition.addItemSlot(0, 4, 4);
+        slotDefinition.addItemSlot(1, 60, 4);
     }
-
 
     @Override
     public List<ItemStack> getCraftReferences() {

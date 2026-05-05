@@ -13,7 +13,7 @@ public class SmokingClientRecipeType extends SmeltingClientRecipeType {
 
     public static final SmokingClientRecipeType INSTANCE = new SmokingClientRecipeType();
 
-    private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/smoking.png");
+    private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/smoking.png");
 
     @Override
     public Component getDisplayName() {
@@ -22,7 +22,7 @@ public class SmokingClientRecipeType extends SmeltingClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
     @Override

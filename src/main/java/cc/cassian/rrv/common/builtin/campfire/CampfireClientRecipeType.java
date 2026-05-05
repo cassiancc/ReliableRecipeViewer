@@ -14,7 +14,7 @@ public class CampfireClientRecipeType implements ReliableClientRecipeType {
 
     protected static final CampfireClientRecipeType INSTANCE = new CampfireClientRecipeType();
 
-    private static final Identifier GUI_BACKGROUND = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/campfire.png");
+    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/campfire.png");
 
     @Override
     public Component getDisplayName() {
@@ -33,17 +33,17 @@ public class CampfireClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 74;
+        return 80;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 36;
+        return 42;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
     @Override
@@ -55,10 +55,10 @@ public class CampfireClientRecipeType implements ReliableClientRecipeType {
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 
         //Ingredient
-        slotDefinition.addItemSlot(0, 1, 1);
+        slotDefinition.addItemSlot(0, 3, 4);
 
         //Cooked result
-        slotDefinition.addItemSlot(1, 57, 1);
+        slotDefinition.addItemSlot(1, 60, 4);
     }
 
 

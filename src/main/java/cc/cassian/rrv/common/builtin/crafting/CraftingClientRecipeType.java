@@ -14,7 +14,7 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
 
     public static final CraftingClientRecipeType INSTANCE = new CraftingClientRecipeType();
 
-    private static final Identifier GUI_BACKGROUND = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/crafting.png");
+    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/crafting_bordered.png");
 
     @Override
     public Component getDisplayName() {
@@ -33,18 +33,18 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 116;
+        return 122;
     }
 
 
     @Override
     public int getDisplayHeight() {
-        return 54;
+        return 60;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
 
@@ -59,12 +59,12 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
         //Input slots
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                slotDefinition.addItemSlot(x + y * 3, 1 + x * 18,  1 + y * 18);
+                slotDefinition.addItemSlot(x + y * 3, 4 + x * 18,  4 + y * 18);
             }
         }
 
         //Result Slot
-        slotDefinition.addItemSlot(9, 95, 19);
+        slotDefinition.addItemSlot(9, 98, 22);
 
     }
 

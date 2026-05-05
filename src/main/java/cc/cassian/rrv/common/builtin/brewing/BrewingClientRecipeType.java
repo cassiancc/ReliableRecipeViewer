@@ -13,7 +13,8 @@ import java.util.List;
 public class BrewingClientRecipeType implements ReliableClientRecipeType {
 
     protected static final BrewingClientRecipeType INSTANCE = new BrewingClientRecipeType();
-    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/brewing.png");
+
+    public static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/brewing.png");
 
     @Override
     public Component getDisplayName() {
@@ -22,17 +23,17 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 133;
+        return 139;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 61;
+        return 67;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
     @Override
@@ -43,15 +44,15 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
         //Result
-        slotDefinition.addItemSlot(0, 1, 2);
+        slotDefinition.addItemSlot(0, 4, 5);
 
-        //magic ingredient
-        slotDefinition.addItemSlot(1, 58, 3);
+        //reagent
+        slotDefinition.addItemSlot(1, 61, 6);
 
         //Ingredient bottles
-        slotDefinition.addItemSlot(2, 35, 37);
-        slotDefinition.addItemSlot(3, 58, 44);
-        slotDefinition.addItemSlot(4, 81, 37);
+        slotDefinition.addItemSlot(2, 38, 40);
+        slotDefinition.addItemSlot(3, 61, 47);
+        slotDefinition.addItemSlot(4, 84, 40);
     }
 
     @Override

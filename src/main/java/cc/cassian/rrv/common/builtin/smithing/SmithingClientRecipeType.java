@@ -14,7 +14,7 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
 
     protected static final SmithingClientRecipeType INSTANCE = new SmithingClientRecipeType();
 
-    private static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/smithing.png");
+    private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/smithing.png");
 
     @Override
     public Component getDisplayName() {
@@ -33,17 +33,17 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 108;
+        return 114;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 18;
+        return 24;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
     @Override
@@ -55,16 +55,16 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 
         //Base
-        slotDefinition.addItemSlot(0, 1, 1);
+        slotDefinition.addItemSlot(0, 3, 4);
 
         //Addition
-        slotDefinition.addItemSlot(1, 19, 1);
+        slotDefinition.addItemSlot(1, 22, 4);
 
         //Template
-        slotDefinition.addItemSlot(2, 37, 1);
+        slotDefinition.addItemSlot(2, 40, 4);
 
         //Result
-        slotDefinition.addItemSlot(3, 91, 1);
+        slotDefinition.addItemSlot(3, 94, 4);
     }
 
 

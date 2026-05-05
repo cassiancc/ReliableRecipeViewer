@@ -41,7 +41,7 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
 
         return profession.heldJobSite().test(holder);
     };
-    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/villager.png");
+    public static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/villager.png");
 
     @Override
     public Component getDisplayName() {
@@ -50,17 +50,17 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 140;
+        return 146;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 36;
+        return 56;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
     @Override
@@ -72,11 +72,11 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 
         //Currency
-        slotDefinition.addItemSlot(0, 35, 9);
-        slotDefinition.addItemSlot(1, 61, 9);
+        slotDefinition.addItemSlot(0, 38, 26);
+        slotDefinition.addItemSlot(1, 64, 26);
 
         //offer
-        slotDefinition.addItemSlot(2, 119, 10);
+        slotDefinition.addItemSlot(2, 122, 27);
     }
 
     @Override

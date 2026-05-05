@@ -68,9 +68,9 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
         int litProgress = Math.round(this.smeltingTicker.getProgress() * 14);
         int smeltProgress = Math.round(this.smeltingTicker.getProgress() * 24);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 1, 20 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 4, 23 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 24, 19, 14, 0, smeltProgress, 16, 128, 128);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 26, 21, 14, 0, smeltProgress, 16, 128, 128);
     }
 
 

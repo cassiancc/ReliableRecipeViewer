@@ -24,7 +24,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
         return SpawnEggItem.getType(craftReference) == entityViewRecipe.getEntityType();
 
     };
-    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/entity.png");
+    private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/entity.png");
 
     @Override
     public Component getDisplayName() {
@@ -43,7 +43,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return GUI_BACKGROUND;
+        return BACKGROUND;
     }
 
     //Mob loot should not exceed 54 slots
