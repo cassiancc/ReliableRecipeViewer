@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.Platform;
@@ -22,30 +23,35 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.Tool;
 import org.jspecify.annotations.NonNull;
 
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
@@ -65,6 +71,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     private final HashMap<Identifier, Integer> animationTickCache;
 
     public final List<Button> transferButtons;
+    public final List<Button> shareButtons;
 
     //View Type
     private final List<RecipeTypeButton> recipeTypeButtons;
@@ -78,6 +85,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         this.transferButtons = new ArrayList<>();
         this.recipeTypeButtons = new ArrayList<>();
+        this.shareButtons = new ArrayList<>();
         this.viewTypePage = 0;
 
         this.animationTickers = new ArrayList<>();
@@ -233,6 +241,11 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.transferButtons.forEach(this::removeWidget);
         this.transferButtons.clear();
 
+        // Share Button Logic
+        this.shareButtons.forEach(this::removeWidget);
+        this.shareButtons.clear();
+
+
         int guiLeft = this.leftPos + menu.guiOffsetLeft();
 
         for (int i = 0; i < menu.getCurrentDisplay().size(); i++) {
@@ -243,7 +256,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             int finalI = i;
             Button button = Button.builder(Component.literal("+"), button1 -> menu.quickCraft(currentRecipe, finalI))
                     .size(12, 12)
-                    .pos(guiLeft + currentRecipe.getType().getDisplayWidth() + 4, guiTop + currentRecipe.getType().getDisplayHeight() / 2 - 6)
+                    .pos(guiLeft + currentRecipe.getType().getDisplayWidth() + 4, guiTop + currentRecipe.getType().getDisplayHeight() / 2 - 20)
                     .build();
 
             RecipeTransferData data = menu.getTransferData().get(i);
@@ -252,6 +265,17 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
             this.addRenderableWidget(button);
             this.transferButtons.add(button);
+
+            Button shareButton = Button.builder(Component.literal(">"), button1 -> RecipeSharing.shareRecipe(currentRecipe))
+						.size(12, 12)
+						.pos(guiLeft + currentRecipe.getType().getDisplayWidth() + 4, guiTop + currentRecipe.getType().getDisplayHeight() / 2 - 6)
+						.build();
+            shareButton.setTooltip(Tooltip.create(Component.literal("Share Recipe: %s".formatted(currentRecipe.getId()))));
+
+            shareButton.active = true;
+
+            this.shareButtons.add(shareButton);
+            this.addRenderableWidget(shareButton);
 
         }
 
