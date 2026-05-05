@@ -332,7 +332,18 @@ public class SlotContent {
     }
 
     public static SlotContent of(Ingredient ingredient) {
-        return SlotContent.of(ingredient.display());
+        if (ingredient == null) return SlotContent.of();
+        SlotContent slotContent = SlotContent.of(ingredient.display());
+        //? neoforge {
+        /*ingredient.getValues().unwrap().ifLeft(slotContent::bindItemTag);
+        if (ingredient.getCustomIngredient() instanceof BlockTagIngredient blockTagIngredient) {
+            TagKey<Block> blockTag = blockTagIngredient.getTag();
+            slotContent.bindBlockTag(blockTag);
+        }
+        *///?} else {
+        ingredient.values.unwrap().ifLeft(slotContent::bindItemTag);
+        //?}
+        return slotContent;
     }
 
     public static Optional<HolderSet.Named<Item>> getItemsFromTag(TagKey<Item> tag) {
