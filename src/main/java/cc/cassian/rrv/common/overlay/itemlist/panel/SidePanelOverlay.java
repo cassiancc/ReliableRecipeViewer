@@ -16,6 +16,7 @@ import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -286,6 +287,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         int colour = -1;
         if (isHoveringOverTitle(mouseX, mouseY)) {
             colour = -256;
+            guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
             guiGraphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable(pageKey + ".hint1"), Component.translatable(pageKey + ".hint2"), Component.translatable("rrv.switch_tabs.hint")), mouseX, mouseY+10);
         }
 

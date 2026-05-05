@@ -10,9 +10,12 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
+import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
+import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -22,12 +25,10 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -291,6 +292,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         this.extractTooltip(guiGraphics, mouseX, mouseY);
         if (isHoveringOverTitle(mouseX, mouseY)) {
+            guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
             guiGraphics.setComponentTooltipForNextFrame(this.font, List.of(this.guiTitle, Component.translatable("rrv.all_recipes_hint")), mouseX, mouseY);
         }
         // switch active workstation
@@ -329,16 +331,16 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, true);
         var index = component != null ? tooltip.indexOf(component) : tooltip.size();
 
-        CompoundTag tagTag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_itemTag")) {
-            replaceTooltipWithTagDetails(tooltip, tagTag, "_itemTag", "tag.item.", index);
+        CompoundTag customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (customData.contains(ReliableRecipeViewer.MOD_ID + "_itemTag")) {
+            replaceTooltipWithTagDetails(tooltip, customData, "_itemTag", "tag.item.");
         }
-        else if (tagTag.contains(ReliableRecipeViewer.MOD_ID + "_blockTag")) {
-            replaceTooltipWithTagDetails(tooltip, tagTag, "_blockTag", "tag.block.", index);
+        else if (customData.contains(ReliableRecipeViewer.MOD_ID + "_blockTag")) {
+            replaceTooltipWithTagDetails(tooltip, customData, "_blockTag", "tag.block.");
         }
 
-        if (Configs.CLIENT_SETTINGS.isShowRecipeId() && tagTag.contains(ReliableRecipeViewer.MOD_ID + "_result")) {
-            String tagKeyString = tagTag.getStringOr(ReliableRecipeViewer.MOD_ID + "_result", "Error");
+        if (Configs.CLIENT_SETTINGS.isShowRecipeId() && customData.contains(ReliableRecipeViewer.MOD_ID + "_result")) {
+            String tagKeyString = customData.getStringOr(ReliableRecipeViewer.MOD_ID + "_result", "Error");
             MutableComponent tag = Component.literal(tagKeyString).withStyle(ChatFormatting.GRAY);
             tooltip.add(index, Component.translatable("view.rrv.recipe_id", tag).withStyle(ChatFormatting.GOLD));
         }
@@ -350,22 +352,35 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         return tooltip;
     }
 
-    private static void replaceTooltipWithTagDetails(List<Component> tooltip, CompoundTag nbt, String nbtPrefix, String languageKeyPrefix, int index) {
-        Component first = tooltip.getFirst();
+    private static void replaceTooltipWithTagDetails(List<Component> tooltip, CompoundTag nbt, String nbtPrefix, String languageKeyPrefix) {
+        // clear tooltip and setup data
+        Component itemName = tooltip.getFirst();
+        tooltip.clear();
         String tagKeyString = nbt.getStringOr(ReliableRecipeViewer.MOD_ID + nbtPrefix, "Error");
-		String baseTagTranslation = Identifier.parse(tagKeyString).toLanguageKey().replace("/", ".");
-        String tagTranslation = languageKeyPrefix + baseTagTranslation;
-        if (I18n.exists(tagTranslation)) {
-            tooltip.addFirst(Component.translatable(tagTranslation));
-        } else {
-            tooltip.addFirst(Component.literal("#" + tagKeyString));
-        }
-        tooltip.set(1, Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(first));
-        tooltip.add(index,
-                Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
-                        .append(Component.literal("#" + tagKeyString).withStyle(ChatFormatting.GRAY))
+        Identifier tagId = Identifier.parse(tagKeyString);
+        String baseTagKey = tagId.toLanguageKey().replace("/", ".");
+        String tagTranslationKey = languageKeyPrefix + baseTagKey;
 
-        );
+        // add tag name, ideally translated
+        tooltip.add(Component.translatableWithFallback(tagTranslationKey, "#" + tagKeyString));
+
+        // add tag description
+        if (ModCompat.ITEM_DESCRIPTIONS)
+            ItemDescriptionsCompat.addTagDescription(tooltip, baseTagKey);
+
+        // "Displaying: "
+        tooltip.add(Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(itemName));
+
+        // "Accepts any: "
+        if (Minecraft.getInstance().options.advancedItemTooltips) {
+            tooltip.add(
+                    Component.translatable("view.rrv.tags").append(": ").withStyle(ChatFormatting.GOLD)
+                            .append(Component.literal("#" + tagKeyString).withStyle(ChatFormatting.GRAY))
+            );
+        }
+
+        // Add tag namespace
+        ReliableRecipeViewerClient.addNamespaceTooltip(Platform.INSTANCE.getModNameForNamespace(tagId.getNamespace()), tooltip, true, true);
     }
 
 
@@ -617,17 +632,15 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             if (Minecraft.getInstance().options.advancedItemTooltips || Configs.CLIENT_SETTINGS.isShowRecipeId()) {
                 tooltip.add(Component.literal(this.recipeType.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
             }
+            guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
             tooltip.add(Component.literal(Platform.INSTANCE.getModNameForNamespace(this.recipeType.getId().getNamespace())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
             guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
         }
 
         private void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
-//            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.x(), this.y(), 232, this.recipeType() == this.viewScreen.getMenu().getClientRecipeType() ? 24 : 0, 24, 24, 256, 256);
-
             boolean selected = this.recipeType() == this.viewScreen.getMenu().getClientRecipeType();
             Identifier sprite = selected ? SELECTED_TOP_TABS : UNSELECTED_TOP_TABS;
-            var pos = 1;
 
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x(), y(), 26, 32);
 
