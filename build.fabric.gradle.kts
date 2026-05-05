@@ -135,12 +135,13 @@ dependencies {
         exclude(group = "mcp.mobius.waila")
         exclude(group = "lol.bai")
     }
+    localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+        exclude(group = "mcp.mobius.waila")
+        exclude(group = "lol.bai")
+    }
 
     if (stonecutter.eval(mcVersion, "=26.1")) {
-        localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
-            exclude(group = "mcp.mobius.waila")
-            exclude(group = "lol.bai")
-        }
+
 //        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
