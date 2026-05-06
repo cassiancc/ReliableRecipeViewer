@@ -56,6 +56,8 @@
   "rrv.sharing.recipe": "[%s]",
   "rrv.sharing.shared_by": "%s shared recipe: %s",
   "rrv.sharing.type": "%s recipe for: %s",
+  "rrv.sharing.recipe_type": "Recipe type: %s",
+  "rrv.sharing.recipe_for": "Recipe for: %s",
 
   "modmenu.nameTranslation.c": "Common",
 

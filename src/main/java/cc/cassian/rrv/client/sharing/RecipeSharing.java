@@ -56,10 +56,10 @@ public class RecipeSharing {
 
         public List<Component> getTooltipLines() {
             return List.of(
-					recipeType,
+					Component.translatable("rrv.sharing.recipe_type", recipeType.copy().withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD),
 					Component.literal(Platform.INSTANCE.getModNameForNamespace(recipeTypeNamespace)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC),
 					Component.empty(),
-					result.getHoverName(),
+					Component.translatable("rrv.sharing.recipe_for", result.getHoverName().copy().withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD),
 					Component.literal(Platform.INSTANCE.getModNameForItem(result)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)
 			);
         }
