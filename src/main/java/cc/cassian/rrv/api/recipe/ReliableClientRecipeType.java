@@ -1,6 +1,6 @@
 package cc.cassian.rrv.api.recipe;
 
-import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -147,6 +147,17 @@ public interface ReliableClientRecipeType {
      */
     default List<ItemStack> getCraftReferences() {
         return List.of();
+    }
+
+    /// Where to place the Recipe Transfer button, if at all.
+    /// Note that this button will only be visible if all prior requirements are fulfilled.
+    default ButtonData placeRecipeTransferButton(int guiLeft, int guiTop) {
+        return new ButtonData(guiLeft + getDisplayWidth() + 4, guiTop + getDisplayHeight() / 2 - 20, true);
+    }
+
+    /// Where to place the Recipe Sharing button, if at all.
+    default ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
+        return new ButtonData(guiLeft + getDisplayWidth() + 4, guiTop + getDisplayHeight() / 2 - 6, true);
     }
 
     /**

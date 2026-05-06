@@ -8,7 +8,11 @@ import java.util.function.Supplier;
 
 public class ReliablePlainButton extends Button.Plain {
 	public ReliablePlainButton(MutableComponent literal, OnPress o, int width, int height) {
-		super(0, 0, width, height, literal, o, Supplier::get);
+		this(literal, o, 0, 0, width, height);
+	}
+
+	public ReliablePlainButton(MutableComponent literal, OnPress o, int x, int y, int width, int height) {
+		super(x, y, width, height, literal, o, Supplier::get);
 	}
 
 	@Override

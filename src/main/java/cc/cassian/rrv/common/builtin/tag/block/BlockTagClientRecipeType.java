@@ -41,6 +41,7 @@ public class BlockTagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
+        slotDefinition.setHighlightWithoutContents(false);
 
         slotDefinition.addItemSlot(0,73,8);
         for (int row = 0; row < 6; row++) {

@@ -30,23 +30,17 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.Tool;
 import org.jspecify.annotations.NonNull;
 
 
@@ -250,29 +244,35 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
         for (int i = 0; i < menu.getCurrentDisplay().size(); i++) {
             final ReliableClientRecipe currentRecipe = menu.getCurrentDisplay().get(i);
-
+            ReliableClientRecipeType type = currentRecipe.getType();
             int guiTop = getTopPos() + menu.guiOffsetTop(i);
 
             int finalI = i;
-            Button button = Button.builder(Component.literal("+"), button1 -> menu.quickCraft(currentRecipe, finalI))
-                    .size(12, 12)
-                    .pos(guiLeft + currentRecipe.getType().getDisplayWidth() + 4, guiTop + currentRecipe.getType().getDisplayHeight() / 2 - 20)
-                    .build();
+
+            // transfer button
+            var transferButtonData = type.placeRecipeTransferButton(guiLeft, guiTop);
+            Button transferButton = new ReliablePlainButton(Component.literal("+"),
+                    button1 -> menu.quickCraft(currentRecipe, finalI),
+                    transferButtonData.x(), transferButtonData.y(),
+                    12, 12);
 
             RecipeTransferData data = menu.getTransferData().get(i);
-            button.active = data.isSuccess() && currentRecipe.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentRecipe, menu.getParentScreen()) && currentRecipe.canTransferToScreen((AbstractContainerScreen<?>) menu.getParentScreen());
-            button.visible = currentRecipe.supportsItemTransfer();
+            transferButton.active = data.isSuccess() && currentRecipe.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentRecipe, menu.getParentScreen()) && currentRecipe.canTransferToScreen((AbstractContainerScreen<?>) menu.getParentScreen());
+            transferButton.visible = currentRecipe.supportsItemTransfer() && transferButtonData.visible();
 
-            this.addRenderableWidget(button);
-            this.transferButtons.add(button);
+            this.addRenderableWidget(transferButton);
+            this.transferButtons.add(transferButton);
 
-            Button shareButton = Button.builder(Component.literal(">"), button1 -> RecipeSharing.shareRecipe(currentRecipe))
-						.size(12, 12)
-						.pos(guiLeft + currentRecipe.getType().getDisplayWidth() + 4, guiTop + currentRecipe.getType().getDisplayHeight() / 2 - 6)
-						.build();
-            shareButton.setTooltip(Tooltip.create(Component.literal("Share Recipe: %s".formatted(currentRecipe.getId()))));
+            // share button
+            var shareButtonData = type.placeRecipeShareButton(guiLeft, guiTop);
+            Button shareButton = new ReliablePlainButton(Component.literal(">"),
+                    button1 -> RecipeSharing.shareRecipe(currentRecipe),
+                    shareButtonData.x(), shareButtonData.y(),
+                    12, 12);
+            shareButton.setTooltip(Tooltip.create(Component.translatable("rrv.sharing.share", Component.literal(currentRecipe.getId().toString()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD)));
 
             shareButton.active = true;
+            shareButton.visible = shareButtonData.visible();
 
             this.shareButtons.add(shareButton);
             this.addRenderableWidget(shareButton);

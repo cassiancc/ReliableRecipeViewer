@@ -54,6 +54,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
+        slotDefinition.setHighlightWithoutContents(false);
 
         for (int row = 0; row < 6; row++) {
             for (int i = 0; i < 9; i++) {

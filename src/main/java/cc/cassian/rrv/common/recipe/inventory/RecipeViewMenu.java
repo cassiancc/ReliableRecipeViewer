@@ -336,7 +336,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             for (Slot slot : slotDefinition.getItemSlots()) {
                 int id = slot.getContainerSlot() + (i * this.getClientRecipeType().getSlotCount());
 
-                this.addSlot(new RecipeSlot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i)));
+                this.addSlot(new RecipeSlot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i), slotDefinition.highlightWithoutContents));
             }
 
             SlotFillContext slotFillContext = new SlotFillContext();
@@ -370,7 +370,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
         if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
             for (int i = 0; i < this.getDisplayableCraftReferences(); i++) {
-                this.addSlot(new RecipeSlot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i));
+                this.addSlot(new RecipeSlot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i, false));
             }
         }
 
@@ -841,13 +841,18 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     public class SlotDefinition {
 
         private final HashMap<Integer, Slot> itemSlots;
+        private boolean highlightWithoutContents = true;
 
         private SlotDefinition() {
             this.itemSlots = new HashMap<>();
         }
 
         public void addItemSlot(int slotId, int x, int y) {
-            this.itemSlots.put(slotId, new RecipeSlot(RecipeViewMenu.this.viewContainer, slotId, x, y));
+            this.itemSlots.put(slotId, new RecipeSlot(RecipeViewMenu.this.viewContainer, slotId, x, y, highlightWithoutContents));
+        }
+
+        public void setHighlightWithoutContents(boolean highlightWithoutContents) {
+            this.highlightWithoutContents = highlightWithoutContents;
         }
 
         private List<Slot> getItemSlots() {

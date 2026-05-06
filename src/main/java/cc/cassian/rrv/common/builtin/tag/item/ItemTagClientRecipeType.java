@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.tag.item;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -41,6 +42,7 @@ public class ItemTagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
+        slotDefinition.setHighlightWithoutContents(false);
 
         slotDefinition.addItemSlot(0,73,8);
         for (int row = 0; row < 6; row++) {
@@ -64,5 +66,10 @@ public class ItemTagClientRecipeType implements ReliableClientRecipeType {
     @Override
     public int getPriority() {
         return 100;
+    }
+
+    @Override
+    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
+        return new ButtonData(guiLeft + getDisplayWidth() - 20, guiTop+20, true);
     }
 }

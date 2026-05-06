@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.brewing;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -68,5 +69,10 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
     @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.BREWING_STAND), new ItemStack(Items.POTION));
+    }
+
+    @Override
+    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
+        return new ButtonData(guiLeft + getDisplayWidth() - 20, guiTop + getDisplayHeight() - 18, true);
     }
 }

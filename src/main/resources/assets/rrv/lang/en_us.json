@@ -51,6 +51,8 @@
   "rrv.all_recipes_hint": "Click to show all recipes",
   "rrv.previous_page": "Previous Page",
   "rrv.next_page": "Next Page",
+
+  "rrv.sharing.share": "Share recipe: %s",
   "rrv.sharing.recipe": "[%s]",
   "rrv.sharing.shared_by": "%s shared recipe: %s",
   "rrv.sharing.type": "%s recipe for: %s",
