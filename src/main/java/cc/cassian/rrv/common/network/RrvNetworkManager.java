@@ -2,12 +2,17 @@ package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.network.payload.recipe.*;
 import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPayload;
+import cc.cassian.rrv.common.network.payload.sharing.ClientboundShareRecipePayload;
+import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
@@ -18,6 +23,7 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
+import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 //?} else {
@@ -26,6 +32,9 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 *///?}
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -232,6 +241,19 @@ public class RrvNetworkManager {
                         Component.translatable("cheatmode.rrv.denied").withStyle(ChatFormatting.RED)
                 );
 
+        });
+
+
+        registerServerbound(ServerboundShareRecipePayload.TYPE, ServerboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
+            context.server().getPlayerList().getPlayers().forEach(player -> {
+                this.sendPacket(player, new ClientboundShareRecipePayload(payload.recipeId(), context.sender().getUUID()));
+            });
+        });
+
+        registerClientbound(ClientboundShareRecipePayload.TYPE, ClientboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
+            LocalPlayer player = context.client().orElse(Minecraft.getInstance()).player;
+            if (player == null) return;
+            RecipeSharing.shareRecipe(ClientRecipeCache.INSTANCE.getRecipes(payload.recipeId()).getFirst(), player);
         });
 
 
