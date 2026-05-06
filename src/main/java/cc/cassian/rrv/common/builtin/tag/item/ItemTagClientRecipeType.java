@@ -70,6 +70,6 @@ public class ItemTagClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() - 20, guiTop+20, true);
+        return new ButtonData(guiLeft + getDisplayWidth() - 12, guiTop+30, true);
     }
 }

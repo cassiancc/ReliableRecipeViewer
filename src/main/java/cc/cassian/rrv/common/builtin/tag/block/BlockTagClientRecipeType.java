@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.tag.block;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -70,5 +71,10 @@ public class BlockTagClientRecipeType implements ReliableClientRecipeType {
     @Override
     public ItemStack getIcon() {
         return new ItemStack(Items.NAME_TAG);
+    }
+
+    @Override
+    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
+        return new ButtonData(guiLeft + getDisplayWidth() - 12, guiTop+30, true);
     }
 }

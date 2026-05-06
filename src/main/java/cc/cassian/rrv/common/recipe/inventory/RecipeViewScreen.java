@@ -272,7 +272,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             shareButton.setTooltip(Tooltip.create(Component.translatable("rrv.sharing.share", Component.literal(currentRecipe.getId().toString()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD)));
 
             shareButton.active = true;
-            shareButton.visible = shareButtonData.visible();
+            shareButton.visible = shareButtonData.visible() && Configs.CLIENT_SETTINGS.isRecipeSharing();
 
             this.shareButtons.add(shareButton);
             this.addRenderableWidget(shareButton);

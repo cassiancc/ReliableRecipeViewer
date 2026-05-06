@@ -251,6 +251,7 @@ public class RrvNetworkManager {
         });
 
         registerClientbound(ClientboundShareRecipePayload.TYPE, ClientboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
+            if (!Configs.CLIENT_SETTINGS.isRecipeSharing()) return;
             LocalPlayer player = context.client().orElse(Minecraft.getInstance()).player;
             if (player == null) return;
             RecipeSharing.shareRecipe(ClientRecipeCache.INSTANCE.getRecipes(payload.recipeId()).getFirst(), player);

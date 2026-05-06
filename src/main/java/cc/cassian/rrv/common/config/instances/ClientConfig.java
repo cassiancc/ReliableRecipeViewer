@@ -24,6 +24,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean recipeBookButton = false;
 	private boolean recipeBookTheme = true;
 	private boolean localFallback = false;
+	private boolean recipeSharing = true;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -185,6 +186,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.wrapScrolling = load("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
 		this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
+		this.recipeSharing = load("recipeSharing", this.recipeSharing);
 	}
 
 	@Override
@@ -207,6 +209,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("sidePanel", this.sidePanel, SidePanel.CODEC);
 		save("localFallback", this.localFallback);
 		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
+		save("recipeSharing", this.recipeSharing);
 	}
 
 	public WorkstationDisplay getWorkstationDisplay() {
@@ -216,4 +219,12 @@ public class ClientConfig extends AbstractRrvConfig {
 	public void setWorkstationDisplay(WorkstationDisplay workstationDisplay) {
 		this.workstationDisplay = workstationDisplay;
 	}
+
+    public boolean isRecipeSharing() {
+        return recipeSharing;
+    }
+
+    public void setRecipeSharing(boolean recipeSharing) {
+        this.recipeSharing = recipeSharing;
+    }
 }
