@@ -7,6 +7,7 @@
   "mixins": [
     "EntityPredicateAccessor",
     "advancements.criterion.MixinInventoryChangeTrigger",
+    "chat.HoverEventActionMixin",
     "recipe.ConcretePowderBlockAccessor",
     "server.MixinMinecraftServer",
     "world.entity.npc.VillagerTradeAccessor",
@@ -39,6 +40,7 @@
     "defaultRequire": 1
   },
   "client": [
+    "chat.GuiGraphicsExtractorMixin",
     "client.MixinMinecraft",
     "client.gui.MixinGui",
     "client.gui.components.MixinEditBox",
