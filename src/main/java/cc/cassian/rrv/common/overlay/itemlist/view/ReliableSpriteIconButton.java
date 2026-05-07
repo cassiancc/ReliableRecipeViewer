@@ -11,7 +11,7 @@ public class ReliableSpriteIconButton extends SpriteIconButton.CenteredIcon {
 		super(width, height, message, spriteWidth, spriteHeight, sprite, onPress, message, null);
 	}
 
-	protected ReliableSpriteIconButton(int size, Component message, int spriteSize, Identifier sprite, OnPress onPress) {
+	public ReliableSpriteIconButton(int size, Component message, int spriteSize, Identifier sprite, OnPress onPress) {
 		super(size, size, message, spriteSize, spriteSize, new WidgetSprites(sprite), onPress, message, null);
 	}
 

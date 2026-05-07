@@ -15,6 +15,7 @@ import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.ChatFormatting;
@@ -265,10 +266,17 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
             // share button
             var shareButtonData = type.placeRecipeShareButton(guiLeft, guiTop);
-            Button shareButton = new ReliablePlainButton(Component.literal(">"),
-                    button1 -> RecipeSharing.shareRecipe(currentRecipe),
-                    shareButtonData.x(), shareButtonData.y(),
-                    12, 12);
+            Button shareButton = new ReliableSpriteIconButton(12,
+                    Component.literal(">"),
+                    12,
+                    ReliableRecipeViewer.of("widget/share"),
+                    button1 -> {
+                        RecipeSharing.shareRecipe(currentRecipe);
+                        RRVClientUtil.setScreen(this.getMenu().getParentScreen());
+                    }
+                    );
+            shareButton.setX(shareButtonData.x());
+            shareButton.setY(shareButtonData.y());
             shareButton.setTooltip(Tooltip.create(Component.translatable("rrv.sharing.share", Component.literal(currentRecipe.getId().toString()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD)));
 
             shareButton.active = true;
