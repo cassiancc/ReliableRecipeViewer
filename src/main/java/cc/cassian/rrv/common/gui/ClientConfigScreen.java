@@ -65,6 +65,7 @@ public class ClientConfigScreen extends Screen {
         addChild(behaviorHelper, "wrap_scrolling", configs.isWrapScrolling(), WrapScrolling.values(), (_, sidePanel)-> configs.setWrapScrolling(sidePanel));
         addChild(behaviorHelper, "recipe_book_button", "toggles_overlay", "toggles_recipe_book", configs.isRecipeBookButton(), (_, b) -> configs.setRecipeBookButton(b));
         addChild(behaviorHelper, "recipe_sharing", "enabled", "disabled", configs.isRecipeSharing(), (_, b) -> configs.setRecipeSharing(b));
+        addChild(behaviorHelper, "tutorial_state", configs.getTutorialState(), TutorialState.values(), (_, tutorialState)-> configs.setTutorial(tutorialState));
 
         linearLayout.addChild(behavior);
 

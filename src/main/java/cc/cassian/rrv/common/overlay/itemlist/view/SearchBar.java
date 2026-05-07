@@ -1,13 +1,20 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
+import cc.cassian.rrv.common.config.options.TutorialState;
 import com.mojang.blaze3d.platform.InputConstants;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import org.jspecify.annotations.Nullable;
+
+import java.util.List;
 
 public class SearchBar extends EditBox {
 
@@ -55,6 +62,20 @@ public class SearchBar extends EditBox {
             }
         }
         return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
+        if (isHovered() && TutorialState.showTutorial()) {
+            graphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, List.of(
+                    Component.translatable("rrv.search_bar.description").withStyle(ChatFormatting.GRAY),
+                    Component.translatable("rrv.search_bar.search_prefixes").withStyle(ChatFormatting.GRAY),
+                    Component.translatable("rrv.search_bar.search_mod_name").withStyle(ChatFormatting.GOLD),
+                    Component.translatable("rrv.search_bar.search_tags").withStyle(ChatFormatting.GREEN),
+                    Component.translatable("rrv.search_bar.search_id").withStyle(ChatFormatting.LIGHT_PURPLE)
+            ), getX()-8, getY()-40);
+        }
     }
 
     public void clear() {

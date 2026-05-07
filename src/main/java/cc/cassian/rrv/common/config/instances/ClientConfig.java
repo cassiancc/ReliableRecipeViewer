@@ -25,6 +25,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean recipeBookTheme = true;
 	private boolean localFallback = false;
 	private boolean recipeSharing = true;
+	private TutorialState tutorial = TutorialState.ALWAYS;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -166,6 +167,30 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.localFallback = localFallback;
 	}
 
+	public WorkstationDisplay getWorkstationDisplay() {
+		return workstationDisplay;
+	}
+
+	public void setWorkstationDisplay(WorkstationDisplay workstationDisplay) {
+		this.workstationDisplay = workstationDisplay;
+	}
+
+	public boolean isRecipeSharing() {
+		return recipeSharing;
+	}
+
+	public void setRecipeSharing(boolean recipeSharing) {
+		this.recipeSharing = recipeSharing;
+	}
+
+	public TutorialState getTutorialState() {
+		return tutorial;
+	}
+
+	public void setTutorial(TutorialState tutorial) {
+		this.tutorial = tutorial;
+	}
+
 	@Override
 	protected void loadData() {
 		this.showItemView = load("enabled", this.showItemView, OverlayDisplay.CODEC);
@@ -187,6 +212,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
 		this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		this.recipeSharing = load("recipeSharing", this.recipeSharing);
+		this.tutorial = load("tutorialState", this.tutorial, TutorialState.CODEC);
 	}
 
 	@Override
@@ -210,21 +236,6 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("localFallback", this.localFallback);
 		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		save("recipeSharing", this.recipeSharing);
+		save("tutorialState", this.tutorial, TutorialState.CODEC);
 	}
-
-	public WorkstationDisplay getWorkstationDisplay() {
-		return workstationDisplay;
-	}
-
-	public void setWorkstationDisplay(WorkstationDisplay workstationDisplay) {
-		this.workstationDisplay = workstationDisplay;
-	}
-
-    public boolean isRecipeSharing() {
-        return recipeSharing;
-    }
-
-    public void setRecipeSharing(boolean recipeSharing) {
-        this.recipeSharing = recipeSharing;
-    }
 }
