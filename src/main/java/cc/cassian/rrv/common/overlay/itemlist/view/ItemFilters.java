@@ -10,6 +10,7 @@ import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
+import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
@@ -38,6 +39,7 @@ public class ItemFilters {
 
     public static List<TagKey<Item>> TAGS;
     private static final List<Item> EXCLUDED_ITEMS = List.of(Items.POTION, Items.TIPPED_ARROW, Items.ENCHANTED_BOOK);
+    public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
 
     /// Filters just by the items display name and tooltip
     /// @param query The query
@@ -50,6 +52,7 @@ public class ItemFilters {
         for (ItemStack stack : fullStackList()) {
 
             String itemName = stack.getDisplayName().getString().toLowerCase();
+            Set<String> aliases = ALIASES.get(stack.getItem());
 
             if (itemName.startsWith(query.toLowerCase()))
                 firstPrio.add(stack);
@@ -62,8 +65,13 @@ public class ItemFilters {
                     secondPrio.add(stack);
                 if (compCheck == 2)
                     thirdPrio.add(stack);
+            } else if (!aliases.isEmpty()) {
+                aliases.forEach(alias -> {
+                    if (alias.toLowerCase().contains(query.toLowerCase())) {
+                        secondPrio.add(stack);
+                    }
+                });
             }
-
         }
 
         List<ItemStack> results = new ArrayList<>();
