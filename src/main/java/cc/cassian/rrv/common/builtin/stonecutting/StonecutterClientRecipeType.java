@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.stonecutting;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -60,5 +61,13 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
     @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.STONECUTTER));
+    }
+
+    public ButtonData placeRecipeTransferButton(int guiLeft, int guiTop) {
+        return new ButtonData(guiLeft + getDisplayWidth() + 4, guiTop + getDisplayHeight() / 2 - 14, true);
+    }
+
+    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
+        return new ButtonData(guiLeft + getDisplayWidth() + 4, guiTop + getDisplayHeight() / 2 + 1, true);
     }
 }
