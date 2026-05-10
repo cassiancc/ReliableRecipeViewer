@@ -191,12 +191,14 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     public void prevPage() {
         this.viewTypePage = Math.max(this.viewTypePage - 1, 0);
         this.checkGui();
+        this.getMenu().setClientRecipeType(this.viewTypePage*5);
     }
 
     /// Switch to the next type of recipes
     public void nextPage() {
         this.viewTypePage = Math.min(this.viewTypePage + 1, this.getMenu().getViewTypeOrder().size() / 5);
         this.checkGui();
+        this.getMenu().setClientRecipeType(this.viewTypePage*5);
 	}
 
     protected void checkGui() {
@@ -277,7 +279,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                     );
             shareButton.setX(shareButtonData.x());
             shareButton.setY(shareButtonData.y());
-            shareButton.setTooltip(Tooltip.create(Component.translatable("rrv.sharing.share", Component.literal(currentRecipe.getId().toString()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD)));
+            shareButton.setTooltip(Tooltip.create(Component.translatable("rrv.sharing.share", Component.literal(currentRecipe.entryId().toString()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD)));
 
             shareButton.active = true;
             shareButton.visible = shareButtonData.visible() && Configs.CLIENT_SETTINGS.isRecipeSharing();
@@ -349,7 +351,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         List<ItemStack> craftReferences = getMenu().getCraftReferences();
         if (!craftReferences.isEmpty() && Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER)) {
             var x = this.leftPos + 4;
-            var y = this.imageHeight + 8;
+            var y = this.topPos + this.imageHeight - 24;
             this.workstationSlot = new ItemSlot(craftReferences.get(menu.getCurrentCraftReference()), x, y);
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("workstation_slot"),  x-1, y-1, 22, 22);
             this.workstationSlot.extractRenderState(guiGraphics, mouseX, mouseY, 0);
