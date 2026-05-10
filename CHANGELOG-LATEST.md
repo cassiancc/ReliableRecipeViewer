@@ -2,6 +2,7 @@
 - Search aliases, used to allow for mods wanting to make their items searchable from other names.
 - Recipe sharing, all recipes types now have a button used to share the recipe to the chat.
   - The recipe sharing button can be manually positioned by overriding `placeRecipeShareButton` in your `ReliableClientRecipeType`.
+  - Recipes can also be shared via the `/rrv shareRecipe` command.
 - The recipe transfer button can now be manually positioned by overriding `placeRecipeTransferButton` in your `ReliableClientRecipeType`.
 
 ### Changed

@@ -58,6 +58,7 @@
   "rrv.sharing.type": "%s recipe for: %s",
   "rrv.sharing.recipe_type": "Recipe type: %s",
   "rrv.sharing.recipe_for": "Recipe for: %s",
+  "rrv.sharing.unable_to_share": "Unable to share recipe: %s",
 
   "modmenu.nameTranslation.c": "Common",
 

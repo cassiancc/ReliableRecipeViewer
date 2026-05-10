@@ -240,7 +240,7 @@ public class RrvNetworkManager {
 
         registerServerbound(ServerboundShareRecipePayload.TYPE, ServerboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
             context.server().getPlayerList().getPlayers().forEach(player -> {
-                this.sendPacket(player, new ClientboundShareRecipePayload(payload.recipeId(), context.sender().getUUID()));
+                this.sendPacket(player, new ClientboundShareRecipePayload(payload.recipeId(), context.sender.getStringUUID(), context.sender().getDisplayName()));
             });
         });
 
