@@ -1,8 +1,12 @@
 package cc.cassian.rrv.client;
 
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.client.util.RRVClientUtil;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
+import cc.cassian.rrv.common.network.payload.sharing.ClientboundShareRecipePayload;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -52,6 +56,11 @@ public class ClientNetworkManager {
 				SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.INVENTORY_CHANGE);
 			}
 		}
+    }
+
+    public static void handleClientboundRecipeSharingPayload(ClientNetworkManager.ClientContext context, ClientboundShareRecipePayload payload) {
+        if (!Configs.CLIENT_SETTINGS.isRecipeSharing()) return;
+        RecipeSharing.sendMessage(ClientRecipeCache.INSTANCE.getRecipes(payload.recipeId()).getFirst());
     }
 
     /**

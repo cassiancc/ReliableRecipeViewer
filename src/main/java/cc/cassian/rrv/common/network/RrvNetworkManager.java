@@ -2,8 +2,6 @@ package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ClientNetworkManager;
-import cc.cassian.rrv.client.recipe.ClientRecipeCache;
-import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
@@ -23,7 +21,6 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
-import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 //?} else {
@@ -32,9 +29,6 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 *///?}
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -250,12 +244,7 @@ public class RrvNetworkManager {
             });
         });
 
-        registerClientbound(ClientboundShareRecipePayload.TYPE, ClientboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
-            if (!Configs.CLIENT_SETTINGS.isRecipeSharing()) return;
-            LocalPlayer player = context.client().orElse(Minecraft.getInstance()).player;
-            if (player == null) return;
-            RecipeSharing.shareRecipe(ClientRecipeCache.INSTANCE.getRecipes(payload.recipeId()).getFirst(), player);
-        });
+        registerClientbound(ClientboundShareRecipePayload.TYPE, ClientboundShareRecipePayload.STREAM_CODEC, ClientNetworkManager::handleClientboundRecipeSharingPayload);
 
 
         return this;

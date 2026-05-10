@@ -8,6 +8,7 @@ import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePaylo
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.Identifier;
@@ -19,7 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class RecipeSharing {
-	public static void shareRecipe(ReliableClientRecipe recipe, Player player) {
+	public static void sendMessage(ReliableClientRecipe recipe) {
+		var player = Minecraft.getInstance().player;
 		player.sendSystemMessage(getMessage(recipe, player));
 	}
 
