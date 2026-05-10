@@ -17,7 +17,7 @@ tasks.named<ProcessResources>("processResources") {
         this["mod_authors"] = prop("mod.authors")
         this["mod_license"] = prop("mod.license")
         this["neoforge_loader_version_range"] = "[1,)"
-        this["neoforge_version_range"] = "[21.11,)"
+        this["neoforge_version_range"] = "[26.1.2.13-beta,)"
         this["minecraft_version_range"] = prop("deps.minecraft_version_range")
     }
 
