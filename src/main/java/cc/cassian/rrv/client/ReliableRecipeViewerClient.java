@@ -68,7 +68,8 @@ public class ReliableRecipeViewerClient {
     }
 
     public static boolean isCheatmodeActive() {
-        return Minecraft.getInstance().player != null && RrvUtil.hasPermission(Minecraft.getInstance().player) && InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
+        Minecraft mc = Minecraft.getInstance();
+        return mc.player != null && RrvUtil.hasPermission(mc.player) && !ReliableRecipeViewerClient.USE_CHEATMODE.isUnbound() && InputConstants.isKeyDown(mc.getWindow(), ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
     }
 
     public static Component addNamespaceTooltip(String modName, List<Component> tooltip, boolean inItemView, boolean force) {
