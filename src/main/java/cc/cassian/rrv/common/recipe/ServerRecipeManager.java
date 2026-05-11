@@ -110,6 +110,7 @@ public class ServerRecipeManager {
 
         this.reloadRecipes();
         this.broadcastAllRecipes();
+        ReliableRecipeViewer.loadServerConfigs();
 
     }
 

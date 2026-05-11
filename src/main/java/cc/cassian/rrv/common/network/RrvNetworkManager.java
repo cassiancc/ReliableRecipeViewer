@@ -239,6 +239,10 @@ public class RrvNetworkManager {
 
 
         registerServerbound(ServerboundShareRecipePayload.TYPE, ServerboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
+            if (!Configs.SERVER_SETTINGS.isRecipeSharing()) {
+                context.sender().sendSystemMessage(Component.translatable("rrv.sharing.denied"));
+                return;
+            }
             context.server().getPlayerList().getPlayers().forEach(player -> {
                 this.sendPacket(player, new ClientboundShareRecipePayload(payload.recipeId(), context.sender.getStringUUID(), context.sender().getDisplayName()));
             });

@@ -13,7 +13,7 @@ public abstract class MixinMinecraftServer {
 
 
     @Inject(method = "setPlayerList", at = @At("RETURN"))
-    private void setServer(PlayerList $$0, CallbackInfo ci) {
+    private void rrv$setServer(PlayerList $$0, CallbackInfo ci) {
         ServerRecipeManager.INSTANCE.setServer((MinecraftServer) (Object) this);
     }
 }

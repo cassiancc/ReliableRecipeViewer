@@ -59,6 +59,7 @@
   "rrv.sharing.recipe_type": "Recipe type: %s",
   "rrv.sharing.recipe_for": "Recipe for: %s",
   "rrv.sharing.unable_to_share": "Unable to share recipe: %s",
+  "rrv.sharing.denied": "Recipe sharing is not enabled on this server",
 
   "modmenu.nameTranslation.c": "Common",
 

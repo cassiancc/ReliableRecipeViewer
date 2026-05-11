@@ -1,9 +1,13 @@
 package cc.cassian.rrv.common.command;
 
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.sharing.ClientboundShareRecipePayload;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -49,15 +53,20 @@ public class RrvCommand {
         commandDispatcher.register(
                 Commands.literal("rrv_admin")
                         .requires(RrvUtil::hasPermission)
+                        .then(RrvCommand.shareRecipeConfig())
 //                        .then(Commands.literal("reloadRecipes").executes(RrvCommand::reloadRecipes)) removed as there's not much use post RRV 8
-                        .then(Commands.literal("reloadStackSensitives").executes(RrvCommand::reloadStackSensitives))
+                        .then(Commands.literal("reload_stack_sensitives").executes(RrvCommand::reloadStackSensitives))
         );
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> shareRecipe() {
-        return Commands.literal("shareRecipe").then(argument("shareRecipe", StringArgumentType.string())
+        return Commands.literal("share_recipe").then(argument("id", StringArgumentType.string())
                 .executes(context -> {
-                    final String text = StringArgumentType.getString(context, "shareRecipe");
+                    if (!Configs.SERVER_SETTINGS.isRecipeSharing()) {
+                        context.getSource().sendFailure(Component.translatableWithFallback("rrv.sharing.denied","Recipe sharing is not enabled on this server"));
+                        return -1;
+                    }
+                    final String text = StringArgumentType.getString(context, "id");
                     final Identifier id = Identifier.tryParse(text);
                     if (id == null) return -1;
                     ServerRecipeManager.INSTANCE.getServer().getPlayerList().getPlayers().forEach(player -> {
@@ -69,6 +78,17 @@ public class RrvCommand {
                     });
                     return 1;
         }));
+    }
+
+    private static ArgumentBuilder<CommandSourceStack, ?> shareRecipeConfig() {
+        return Commands.literal("recipe_sharing").then(argument("enabled", BoolArgumentType.bool())
+                .executes(context -> {
+                    final boolean enabled = BoolArgumentType.getBool(context, "enabled");
+                    Configs.SERVER_SETTINGS.setRecipeSharing(enabled);
+                    ReliableRecipeViewer.saveServerConfigs();
+                    context.getSource().sendSuccess(()-> Component.literal("Recipe sharing has been %s on this server".formatted(enabled ? "enabled" : "disabled")), true);
+                    return 1;
+                }));
     }
 
 }
