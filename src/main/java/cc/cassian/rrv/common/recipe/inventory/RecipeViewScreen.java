@@ -249,11 +249,11 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             final ReliableClientRecipe currentRecipe = menu.getCurrentDisplay().get(i);
             ReliableClientRecipeType type = currentRecipe.getType();
             int guiTop = getTopPos() + menu.guiOffsetTop(i);
-
             int finalI = i;
+            RecipeViewMenu.DisplayInfo info = new RecipeViewMenu.DisplayInfo(guiLeft, guiTop, type.getDisplayWidth(), type.getDisplayHeight());
 
             // transfer button
-            var transferButtonData = type.placeRecipeTransferButton(guiLeft, guiTop);
+            var transferButtonData = type.placeRecipeTransferButton(info);
             Button transferButton = new ReliablePlainButton(Component.literal("+"),
                     button1 -> menu.quickCraft(currentRecipe, finalI),
                     transferButtonData.x(), transferButtonData.y(),
@@ -267,7 +267,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             this.transferButtons.add(transferButton);
 
             // share button
-            var shareButtonData = type.placeRecipeShareButton(guiLeft, guiTop);
+            var shareButtonData = type.placeRecipeShareButton(info);
             Button shareButton = new ReliableSpriteIconButton(12,
                     Component.literal(">"),
                     12,
@@ -571,7 +571,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             if (this.getMenu().getCurrentCraftReference() > 0)
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
 
-            if (this.getMenu().getCurrentCraftReference() < menu.getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
+            if (this.getMenu().getCurrentCraftReference() < getMenu().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
         }
 

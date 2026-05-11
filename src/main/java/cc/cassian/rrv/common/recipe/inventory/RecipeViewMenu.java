@@ -980,4 +980,17 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         boolean validate(ItemStack stack);
 
     }
+
+    public record DisplayInfo(int guiLeft, int guiTop, int displayWidth, int displayHeight) {
+        public int guiRight() {
+            return guiLeft() + displayWidth;
+        }
+        public int guiBottom() {
+            return guiTop() + displayHeight;
+        }
+
+        public boolean recipeSharingEnabled() {
+            return Configs.CLIENT_SETTINGS.isRecipeSharing();
+        }
+    }
 }

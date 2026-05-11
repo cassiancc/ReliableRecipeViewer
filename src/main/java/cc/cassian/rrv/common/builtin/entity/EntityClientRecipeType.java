@@ -86,7 +86,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() - 12, guiTop+30, true);
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() - 12, info.guiTop()+30, true);
     }
 }

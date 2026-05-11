@@ -63,11 +63,14 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
         return List.of(new ItemStack(Items.STONECUTTER));
     }
 
-    public ButtonData placeRecipeTransferButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() + 4, guiTop + getDisplayHeight() / 2 - 14, true);
+    public ButtonData placeRecipeTransferButton(RecipeViewMenu.DisplayInfo info) {
+        int y = info.guiTop() + getDisplayHeight() / 2 - 14;
+        if (!info.recipeSharingEnabled())
+            y+=7;
+        return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, y, true);
     }
 
-    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() + 4, guiTop + getDisplayHeight() / 2 + 1, true);
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, info.guiTop() + getDisplayHeight() / 2 + 1, true);
     }
 }
