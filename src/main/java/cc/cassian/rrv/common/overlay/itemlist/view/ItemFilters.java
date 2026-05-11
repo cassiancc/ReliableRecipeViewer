@@ -68,7 +68,8 @@ public class ItemFilters {
             } else if (!aliases.isEmpty()) {
                 aliases.forEach(alias -> {
                     if (alias.toLowerCase().contains(query.toLowerCase())) {
-                        secondPrio.add(stack);
+                        if (!secondPrio.contains(stack))
+                            secondPrio.add(stack);
                     }
                 });
             }
@@ -261,9 +262,18 @@ public class ItemFilters {
         try (var output = Files.newOutputStream(Platform.INSTANCE.getDataDirectory().resolve("rrv_index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
             JsonObject index = new JsonObject();
             JsonArray encodedStacks = new JsonArray();
+            JsonObject encodedAliases = new JsonObject();
             for (ItemStack itemStack : fullStackList()) {
                 if (!itemStack.isEmpty()) {
                     JsonObject result = ItemStack.CODEC.encodeStart(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), itemStack).getOrThrow().getAsJsonObject();
+                    // dump aliases
+                    Set<String> aliasSet = ItemFilters.ALIASES.get(itemStack.getItem());
+                    if (!aliasSet.isEmpty()) {
+                        JsonArray aliases = new JsonArray();
+                        aliasSet.stream().map(JsonPrimitive::new).forEach(aliases::add);
+                        encodedAliases.add(result.get("id").getAsString(), aliases);
+                    }
+                    // add to encodedStacks
                     result.remove("count");
                     if (result.has("components")) {
                         encodedStacks.add(result);
@@ -274,6 +284,7 @@ public class ItemFilters {
             }
             index.addProperty("replace", true);
             index.add("values", encodedStacks);
+            index.add("aliases", encodedAliases);
             ReliableRecipeViewer.GSON.toJson(index, writer);
             button.setMessage(ClientConfigScreen.clientSetting("export_item_view.success"));
             Util.getPlatform().openPath(Platform.INSTANCE.getDataDirectory());
