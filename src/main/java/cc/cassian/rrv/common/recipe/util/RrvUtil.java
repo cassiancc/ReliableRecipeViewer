@@ -12,6 +12,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.locale.Language;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -124,5 +125,15 @@ public class RrvUtil {
         } else {
             return RRVClientUtil.level();
         }
+    }
+
+    /// Replaces I18n.get
+    public static String get(String key) {
+        return Language.getInstance().getOrDefault(key);
+    }
+
+    /// Replaces I18n.exists - removed in 26.2.
+    public static boolean has(String key) {
+        return Language.getInstance().has(key);
     }
 }

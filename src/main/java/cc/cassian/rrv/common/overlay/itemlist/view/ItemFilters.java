@@ -10,13 +10,13 @@ import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -228,10 +228,10 @@ public class ItemFilters {
 
         for (Component line : lore) {
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && I18n.get(translatableContents.getKey()).toLowerCase().startsWith(query.toLowerCase()))
+            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase().startsWith(query.toLowerCase()))
                 return 1;
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && I18n.get(translatableContents.getKey()).toLowerCase().contains(query.toLowerCase()))
+            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase().contains(query.toLowerCase()))
                 return 2;
         }
 

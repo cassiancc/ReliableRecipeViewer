@@ -111,7 +111,6 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     compileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
-    localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         exclude(group = "maven.modrinth")
@@ -141,18 +140,13 @@ dependencies {
     }
 
     if (stonecutter.eval(mcVersion, "=26.1")) {
-
+        localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 //        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-virtual-entity:0.16.2+26.1.1")
     }
-
-
-//    val modules = listOf("command-api-v2", "key-mapping-api-v1", "item-api-v1", "recipe-api-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
-//    for (it in modules) implementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
-
 }
 
 stonecutter {

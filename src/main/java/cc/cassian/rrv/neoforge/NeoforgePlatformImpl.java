@@ -2,10 +2,10 @@ package cc.cassian.rrv.neoforge;
 
 //? neoforge {
 /*import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -44,8 +44,8 @@ public class NeoforgePlatformImpl implements Platform {
         Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(namespace);
         if (modContainer.isPresent()) {
             return modContainer.get().getModInfo().getDisplayName();
-        } else if (I18n.exists(key)) {
-            return I18n.get(key);
+        } else if (RrvUtil.has(key)) {
+            return RrvUtil.get(key);
         } else {
             return WordUtils.capitalize(namespace);
         }
