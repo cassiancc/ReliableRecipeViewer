@@ -15,3 +15,4 @@
 - Switching to a new page of recipe types now changes the current screen.
 - Log spam caused by unbinding the cheatmode.
 - Shortened tag translations are now supported.
+- Rewrote tag search for performance benefits and deduplication.

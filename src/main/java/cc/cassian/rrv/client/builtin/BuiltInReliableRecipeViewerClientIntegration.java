@@ -93,7 +93,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
             excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
-            ItemFilters.buildTagCache();
             hideRecipes();
         });
 

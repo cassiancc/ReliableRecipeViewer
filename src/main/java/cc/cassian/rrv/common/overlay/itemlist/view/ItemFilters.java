@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemFilters {
 
-    public static List<TagKey<Item>> TAGS;
     private static final List<Item> EXCLUDED_ITEMS = List.of(Items.POTION, Items.TIPPED_ARROW, Items.ENCHANTED_BOOK);
     public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
 
@@ -166,52 +165,28 @@ public class ItemFilters {
     /// @param query The query
     /// @return A list of matching item stacks
     protected static List<ItemStack> tag(String query) {
-        List<ItemStack> firstPrio = new ArrayList<>();
-        List<ItemStack> secondPrio = new ArrayList<>();
+        List<ItemStack> results = new ArrayList<>();
 
-        for (TagKey<Item> tag : BuiltInRegistries.ITEM.getTags().map(HolderSet.Named::key).toList()) {
-            String tagName = tag.location().getPath().toLowerCase();
-
-            if (tagName.startsWith(query.toLowerCase())) {
-                BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).filter(item -> !firstPrio.contains(item)).forEach(stack -> {
-                    add(firstPrio, stack);
-                    firstPrio.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(stack.getItem()).stream().map(ItemView.StackSensitive::stack).toList());
-                }));
-
-            } else if (tagName.contains(query.toLowerCase())) {
-                BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).filter(item -> !firstPrio.contains(item) && !secondPrio.contains(item)).forEach(stack -> {
-                    add(secondPrio, stack);
-                    secondPrio.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(stack.getItem()).stream().map(ItemView.StackSensitive::stack).toList());
-                }));
+        for (ItemStack itemStack : fullStackList()) {
+            if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {
+                results.add(itemStack);
             }
-
         }
-
-		List<ItemStack> results = new ArrayList<>(firstPrio);
-        secondPrio.stream().filter(results::contains).forEach(results::add);
 
         return results;
     }
 
     /// Filters by an item's tags
-    /// @param stack The item stack
+    /// @param itemStack The item stack
     /// @param query The query
     /// @return Whether the item stack matches the items tags
-    protected static boolean tag(ItemStack stack, String query) {
+    protected static boolean tag(ItemStack itemStack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
-        for (TagKey<Item> tag : TAGS) {
-            String tagName = tag.location().getPath().toLowerCase();
-
-            if (tagName.contains(query.toLowerCase())) {
-                BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).forEach(stack2 -> {
-                    if (ItemStack.isSameItem(stack2, stack)) {
-                        result.set(true);
-                    }
-                }));
-            }
-
+        if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {
+            result.set(true);
         }
+
         return result.get();
     }
 
@@ -293,8 +268,4 @@ public class ItemFilters {
             ReliableRecipeViewer.LOGGER.error("Unable to export full stack list!", e);
         }
     }
-
-	public static void buildTagCache() {
-        TAGS = BuiltInRegistries.ITEM.getTags().map(HolderSet.Named::key).toList();
-	}
 }
