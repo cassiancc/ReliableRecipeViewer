@@ -17,6 +17,7 @@ import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -393,10 +394,18 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         String tagKeyString = nbt.getStringOr(ReliableRecipeViewer.MOD_ID + nbtPrefix, "Error");
         Identifier tagId = Identifier.parse(tagKeyString);
         String baseTagKey = tagId.toLanguageKey().replace("/", ".");
-        String tagTranslationKey = languageKeyPrefix + baseTagKey;
+        String registryPrefixedTagKey = languageKeyPrefix + baseTagKey;
+        String shortenedTagKey = "tag." + baseTagKey;
 
         // add tag name, ideally translated
-        tooltip.add(Component.translatableWithFallback(tagTranslationKey, "#" + tagKeyString));
+        if (RrvUtil.has(registryPrefixedTagKey)) {
+            tooltip.add(Component.translatable(registryPrefixedTagKey));
+        } else if (RrvUtil.has(shortenedTagKey)) {
+            tooltip.add(Component.translatable(shortenedTagKey));
+        } else {
+            tooltip.add(Component.literal("#" + tagKeyString));
+        }
+
 
         // add tag description
         if (ModCompat.ITEM_DESCRIPTIONS)

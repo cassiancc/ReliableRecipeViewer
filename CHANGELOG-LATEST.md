@@ -14,3 +14,4 @@
 - Workstation slot is no longer offscreen when using the Center Recipe Screen config.
 - Switching to a new page of recipe types now changes the current screen.
 - Log spam caused by unbinding the cheatmode.
+- Shortened tag translations are now supported.
