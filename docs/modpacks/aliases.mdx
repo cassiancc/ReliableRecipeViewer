@@ -1,0 +1,29 @@
+# Adding Aliases
+
+## Via Resource Packs
+
+The Item View can be easily modified by adding JSON files to `assets/<namespace>/rrv/index`. The format is as follows:
+
+- `aliases`: An optional object containing a list of items to associate aliases with.
+
+```json
+{
+    "aliases": {
+      "minecraft:enchanting_table": [
+        "enchantment table"
+      ],
+      "minecraft:crafting_table": [
+        "workbench"
+      ]
+    }
+}
+```
+
+## Via Code
+
+Mods that prefer having dedicated RRV integration can use the `ItemView` API to add aliases. This is useful when adding aliases in bulk.
+
+```java
+ItemView.addAlias(Items.EMERALD, "ruby");
+ItemView.addAliases(Items.DIAMOND, List.of("ruby", "sapphire"));
+```

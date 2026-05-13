@@ -6,7 +6,6 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
-import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;

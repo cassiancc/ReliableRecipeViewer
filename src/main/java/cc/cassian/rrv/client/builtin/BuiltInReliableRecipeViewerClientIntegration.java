@@ -27,12 +27,10 @@ import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.recipe.ConcretePowderBlockAccessor;
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.*;
-import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
-import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
+import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
-import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
@@ -68,7 +66,7 @@ import net.minecraft.world.level.material.Fluids;
 
 import java.util.*;
 
-import static cc.cassian.rrv.common.recipe.ResourceRecipeManager.*;
+import static cc.cassian.rrv.client.recipe.ResourceRecipeManager.*;
 import static cc.cassian.rrv.common.recipe.util.RrvUtil.blockName;
 import static cc.cassian.rrv.common.recipe.util.RrvUtil.getItemsFromIngredient;
 

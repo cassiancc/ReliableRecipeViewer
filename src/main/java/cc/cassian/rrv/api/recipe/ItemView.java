@@ -244,9 +244,10 @@ public class ItemView {
     /// Add aliases for items, e.g. enchanting table -> enchantment table.
     /// This is used in the Item View's search.
     /// @param item The item
-    /// @param aliases The aliases to add for the item.
-    public static void addAliases(Item item, String... aliases) {
-        ItemFilters.ALIASES.putAll(item, Arrays.asList(aliases));
+    /// @param alias The alias
+    public static void addAlias(Item item, String alias) {
+        if (!ItemFilters.ALIASES.get(item).contains(alias))
+            ItemFilters.ALIASES.put(item, alias);
     }
 
     /// Add aliases for items, e.g. enchanting table -> enchantment table.
@@ -254,15 +255,8 @@ public class ItemView {
     /// @param item The item
     /// @param aliases The aliases to add for the item.
     public static void addAliases(Item item, Collection<String> aliases) {
-        ItemFilters.ALIASES.putAll(item, aliases);
-    }
-
-    /// Add aliases for items, e.g. enchanting table -> enchantment table.
-    /// This is used in the Item View's search.
-    /// @param item The item
-    /// @param alias The alias
-    public static void addAlias(Item item, String alias) {
-        ItemFilters.ALIASES.put(item, alias);
+        if (!ItemFilters.ALIASES.get(item).containsAll(aliases))
+            ItemFilters.ALIASES.putAll(item, aliases);
     }
 
 

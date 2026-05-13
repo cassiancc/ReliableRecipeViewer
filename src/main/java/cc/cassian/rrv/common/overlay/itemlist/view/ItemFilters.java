@@ -9,7 +9,7 @@ import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
-import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
+import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
@@ -17,13 +17,11 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +56,6 @@ public class ItemFilters {
             else if (itemName.contains(query.toLowerCase()))
                 secondPrio.add(stack);
             else if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
-
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
                 if (compCheck == 1)
                     secondPrio.add(stack);

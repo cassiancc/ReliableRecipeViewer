@@ -60,4 +60,9 @@ public class BurningClientRecipeType implements ReliableClientRecipeType {
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.FURNACE));
     }
+
+    @Override
+    public int getPriority() {
+        return 50;
+    }
 }
