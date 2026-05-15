@@ -55,7 +55,7 @@ public class ItemFilters {
                 firstPrio.add(stack);
             else if (itemName.contains(query.toLowerCase()))
                 secondPrio.add(stack);
-            else if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
+            else if (stack.has(DataComponents.STORED_ENCHANTMENTS) || stack.has(DataComponents.ENCHANTMENTS)) {
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
                 if (compCheck == 1)
                     secondPrio.add(stack);
