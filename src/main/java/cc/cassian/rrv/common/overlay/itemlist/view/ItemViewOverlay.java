@@ -33,6 +33,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -307,7 +308,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
-            if (!slot.hasItem() || this.availableItems.stream().noneMatch(stack -> ItemStack.matches(stack, slot.getItem()))) {
+
+            if (!slot.hasItem()
+                    || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())
+                    && ItemFilters.getTooltipMatch(slot.getItem(), this.currentQuery) == 0) {
                 guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
             }
             guiGraphics.pose().popMatrix();
