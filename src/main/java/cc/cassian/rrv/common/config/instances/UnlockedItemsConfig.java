@@ -1,11 +1,14 @@
 package cc.cassian.rrv.common.config.instances;
 
+import cc.cassian.rrv.client.recipe.ClientUnlockManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
-import cc.cassian.rrv.common.overlay.itemlist.unlock.UnlockManager;
+import cc.cassian.rrv.common.recipe.unlocking.ServerUnlockManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 
 public class UnlockedItemsConfig extends AbstractRrvConfig {
@@ -20,39 +23,19 @@ public class UnlockedItemsConfig extends AbstractRrvConfig {
 
     @Override
     protected void loadData() {
-        UnlockManager.INSTANCE.availableItems().clear();
-
-        if (this.data().has("unlockedItems")) {
-            this.data().getAsJsonArray("unlockedItems").forEach(element -> {
-                JsonObject encodedItem = element.getAsJsonObject();
-                try {
-                    UnlockManager.INSTANCE.availableItems().add(ItemStackTemplate.CODEC.decode(JsonOps.INSTANCE, encodedItem).getOrThrow().getFirst());
-                } catch (Exception e) {
-                    ReliableRecipeViewer.LOGGER.error("Failed to load unlocked item from json: {}", encodedItem);
-                }
-            });
-        }
+        ClientUnlockManager.INSTANCE.availableItems().clear();
+        ClientUnlockManager.INSTANCE.unlockItems(load("unlockedItems", ClientUnlockManager.INSTANCE.availableItems(), ItemStackTemplate.CODEC.listOf()).stream().map(ItemStackTemplate::create).toList());
+        ClientUnlockManager.INSTANCE.addUnlockedRecipes(load("unlockedRecipes", ClientUnlockManager.INSTANCE.availableRecipes(), Identifier.CODEC.listOf()));
         this.enabled = load("enabled", this.enabled);
         this.indexShowsUnlockedItems = load("indexShowsUnlockedItems", this.indexShowsUnlockedItems);
-
     }
 
     @Override
     protected void saveData() {
-
-        JsonArray itemList = new JsonArray();
-        UnlockManager.INSTANCE.availableItems().forEach(itemStack -> {
-            try {
-                itemList.add(ItemStackTemplate.CODEC.encode(itemStack, JsonOps.INSTANCE, new JsonObject()).getOrThrow().getAsJsonObject());
-            } catch (Exception e) {
-                ReliableRecipeViewer.LOGGER.error("Could not save unlocked item: {}", itemStack.toString());
-            }
-        });
-
-        this.data().add("unlockedItems", itemList);
+        save("unlockedItems", ClientUnlockManager.INSTANCE.availableItems(), ItemStackTemplate.CODEC.listOf());
+        save("unlockedRecipes", ClientUnlockManager.INSTANCE.availableRecipes(), Identifier.CODEC.listOf());
         save("enabled", this.enabled);
         save("indexShowsUnlockedItems", this.indexShowsUnlockedItems);
-
     }
 
 

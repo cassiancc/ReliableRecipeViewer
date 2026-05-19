@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.client.recipe.ClientUnlockManager;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
@@ -10,8 +11,7 @@ import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
-import cc.cassian.rrv.common.overlay.itemlist.unlock.UnlockManager;
-import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
+import cc.cassian.rrv.common.recipe.unlocking.ServerUnlockManager;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
@@ -221,7 +221,7 @@ public class ItemFilters {
 
 
         if (Configs.UNLOCKS.indexShowsUnlockedItems()) {
-            results.addAll(UnlockManager.INSTANCE.displayItems());
+            results.addAll(ClientUnlockManager.INSTANCE.displayItems());
         } else {
             BuiltInRegistries.ITEM.forEach(item -> {
                 if (!EXCLUDED_ITEMS.contains(item))

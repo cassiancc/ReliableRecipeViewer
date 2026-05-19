@@ -1,8 +1,7 @@
 package cc.cassian.rrv.common.mixin.client;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.client.recipe.ClientRecipeCache;
-import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientUnlockManager;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.Minecraft;
@@ -22,7 +21,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "disconnectFromWorld", at = @At("HEAD"))
     private void cleanup(CallbackInfo ci) {
-        ClientRecipeCache.INSTANCE.clearRecipes();
+        ClientUnlockManager.INSTANCE.clearRecipes();
         ItemViewOverlay.INSTANCE.setWarned(false);
         if (ItemViewOverlay.INSTANCE.getSearchbar() != null) {
             ItemViewOverlay.INSTANCE.getSearchbar().clear();

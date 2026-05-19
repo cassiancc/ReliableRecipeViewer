@@ -19,8 +19,6 @@ import java.util.*;
 public class ClientRecipeCache {
 
     public static final ClientRecipeCache INSTANCE = new ClientRecipeCache();
-    static ArrayList<Identifier> UNLOCKED_RECIPES = new ArrayList<>();
-
 
     private final LinkedHashMap<ReliableServerRecipeType<?>, List<ServerRecipeManager.ServerRecipeEntry>> serverEntryMap;
 
@@ -115,7 +113,7 @@ public class ClientRecipeCache {
     }
 
     private boolean enabled(ReliableClientRecipe clientRecipe) {
-        return Configs.CATEGORIES.enabled(clientRecipe.getType()) && unlocked(clientRecipe.getId());
+        return Configs.CATEGORIES.enabled(clientRecipe.getType()) && ClientUnlockManager.INSTANCE.unlocked(clientRecipe.getId());
     }
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
@@ -252,17 +250,6 @@ public class ClientRecipeCache {
         return Identifier.fromNamespaceAndPath(modEntry.getNamespace(), modEntry.getPath() + "/" + index);
     }
 
-    public static boolean unlocked(Identifier id) {
-        return UNLOCKED_RECIPES.contains(id);
-    }
-
-    public void clearRecipes() {
-        UNLOCKED_RECIPES.clear();
-    }
-
-    public void addUnlockedRecipes(List<Identifier> recipes) {
-        UNLOCKED_RECIPES.addAll(recipes); 
-    }
     
     public void clear() {
         this.clientEntryMap.forEach((id, identifier2) -> {

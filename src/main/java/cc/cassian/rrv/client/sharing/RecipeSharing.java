@@ -2,9 +2,11 @@ package cc.cassian.rrv.client.sharing;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.recipe.ClientUnlockManager;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePayload;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
@@ -39,6 +41,11 @@ public class RecipeSharing {
 	public static void shareRecipe(ReliableClientRecipe currentRecipe) {
 		ClientNetworkManager.sendPacketToServer(new ServerboundShareRecipePayload(currentRecipe.getId()));
 	}
+
+    public static void clickRecipe(Identifier recipeId) {
+		ItemViewOverlay.INSTANCE.openRecipeView(recipeId, false);
+		ClientUnlockManager.INSTANCE.addUnlockedRecipe(recipeId);
+    }
 
 	public record ShowRecipe(Component recipeType, String recipeTypeNamespace, ItemStack result) implements HoverEvent {
 		public static final MapCodec<ShowRecipe> CODEC = RecordCodecBuilder.mapCodec(

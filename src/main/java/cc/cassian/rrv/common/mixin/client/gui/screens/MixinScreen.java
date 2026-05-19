@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens;
 
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -50,7 +51,7 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
 		if (event instanceof ClickEvent.Custom(
 				Identifier id, Optional<Tag> payload
 		) && id.equals(ReliableRecipeViewer.of("click_recipe"))) {
-			ItemViewOverlay.INSTANCE.openRecipeView(Identifier.parse(payload.flatMap(Tag::asString).orElseThrow()), false);
+			RecipeSharing.clickRecipe(Identifier.parse(payload.flatMap(Tag::asString).orElseThrow()));
 			ci.cancel();
 		}
 	}

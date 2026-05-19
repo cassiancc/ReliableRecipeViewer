@@ -2,8 +2,7 @@ package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ClientNetworkManager;
-import cc.cassian.rrv.client.recipe.ClientRecipeCache;
-import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.recipe.ClientUnlockManager;
 import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
@@ -40,8 +39,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.Optional;
 
 /**
  * Network Manager for all RRV packets
@@ -195,7 +192,7 @@ public class RrvNetworkManager {
             InternalRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.endCaching(payload.recipeType()));
         });
         registerClientbound(ClientboundUnlockedRecipesPayload.TYPE, ClientboundUnlockedRecipesPayload.STREAM_CODEC, (context, payload) -> {
-            ClientRecipeCache.INSTANCE.addUnlockedRecipes(payload.recipes());
+            ClientUnlockManager.INSTANCE.addUnlockedRecipes(payload.recipes());
         });
 
 

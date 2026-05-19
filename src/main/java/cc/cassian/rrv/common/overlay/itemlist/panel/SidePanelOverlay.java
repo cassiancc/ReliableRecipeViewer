@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.panel;
 
 import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.client.recipe.ClientUnlockManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.Platform;
@@ -13,7 +14,7 @@ import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
-import cc.cassian.rrv.common.overlay.itemlist.unlock.UnlockManager;
+import cc.cassian.rrv.common.recipe.unlocking.ServerUnlockManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -173,13 +174,13 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 if (!(screen instanceof CreativeModeInventoryScreen))
                     ClientRecipeCache.INSTANCE.getRecipes().stream().filter((recipe)-> RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())).sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
                         ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
-                        UnlockManager.INSTANCE.unlockItem(stack);
+                        ClientUnlockManager.INSTANCE.unlockItem(stack);
                         setResultAndAdd(recipe, stack);
                     });
                 if (this.availableItems.isEmpty()) {
                     ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
                         ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
-                        UnlockManager.INSTANCE.unlockItem(stack);
+                        ClientUnlockManager.INSTANCE.unlockItem(stack);
                         setResultAndAdd(recipe, stack);
                     });
                 }
