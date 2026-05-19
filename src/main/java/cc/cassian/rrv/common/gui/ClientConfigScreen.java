@@ -3,10 +3,7 @@ package cc.cassian.rrv.common.gui;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.instances.ClientConfig;
-import cc.cassian.rrv.common.config.options.NamespaceTooltip;
-import cc.cassian.rrv.common.config.options.OverlayDisplay;
-import cc.cassian.rrv.common.config.options.SidePanel;
-import cc.cassian.rrv.common.config.options.WrapScrolling;
+import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.*;
@@ -67,6 +64,7 @@ public class ClientConfigScreen extends Screen {
         addChild(behaviorHelper, "sidepanel", configs.getSidePanel(), SidePanel.values(), (_, sidePanel)-> configs.setSidePanel(sidePanel));
         addChild(behaviorHelper, "wrap_scrolling", configs.isWrapScrolling(), WrapScrolling.values(), (_, sidePanel)-> configs.setWrapScrolling(sidePanel));
         addChild(behaviorHelper, "recipe_book_button", "toggles_overlay", "toggles_recipe_book", configs.isRecipeBookButton(), (_, b) -> configs.setRecipeBookButton(b));
+        addChild(behaviorHelper, "recipe_sharing", "enabled", "disabled", configs.isRecipeSharing(), (_, b) -> configs.setRecipeSharing(b));
 
         linearLayout.addChild(behavior);
 
@@ -88,6 +86,7 @@ public class ClientConfigScreen extends Screen {
         addChild(styleHelper, "right_index", "right", "left", configs.isRightIndex(), (_, b) -> configs.setRightIndex(b));
 
         addChild(styleHelper, "recipe_screen_position", "centered", "top", configs.isCenterRecipeScreen(), (_, b) -> configs.setCenterRecipeScreen(b));
+        addChild(styleHelper, "workstation_display", configs.getWorkstationDisplay(), WorkstationDisplay.values(), (_, workstationDisplay)-> configs.setWorkstationDisplay(workstationDisplay));
 
         linearLayout.addChild(style);
 

@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.brewing;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -13,7 +14,9 @@ import java.util.List;
 public class BrewingClientRecipeType implements ReliableClientRecipeType {
 
     protected static final BrewingClientRecipeType INSTANCE = new BrewingClientRecipeType();
-    
+
+    public static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/brewing.png");
+
     @Override
     public Component getDisplayName() {
         return Component.translatable("view.rrv.type.brewing");
@@ -21,17 +24,17 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 133;
+        return 139;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 61;
+        return 67;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/brewing.png");
+        return BACKGROUND;
     }
 
     @Override
@@ -42,15 +45,15 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
         //Result
-        slotDefinition.addItemSlot(0, 1, 2);
+        slotDefinition.addItemSlot(0, 4, 5);
 
-        //magic ingredient
-        slotDefinition.addItemSlot(1, 58, 3);
+        //reagent
+        slotDefinition.addItemSlot(1, 61, 6);
 
         //Ingredient bottles
-        slotDefinition.addItemSlot(2, 35, 37);
-        slotDefinition.addItemSlot(3, 58, 44);
-        slotDefinition.addItemSlot(4, 81, 37);
+        slotDefinition.addItemSlot(2, 38, 40);
+        slotDefinition.addItemSlot(3, 61, 47);
+        slotDefinition.addItemSlot(4, 84, 40);
     }
 
     @Override
@@ -66,5 +69,10 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
     @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.BREWING_STAND), new ItemStack(Items.POTION));
+    }
+
+    @Override
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiRight() - 20, info.guiBottom() - 18, true);
     }
 }

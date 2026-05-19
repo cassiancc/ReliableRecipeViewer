@@ -1,19 +1,21 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -29,6 +31,8 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 import java.util.function.Supplier;
+
+import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
 
 public class RecipeViewMenu extends AbstractContainerMenu {
 
@@ -235,19 +239,27 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.updateReferences();
     }
 
-    public void nextPage() {
-        this.currentPage = Math.min(this.currentPage + 1, this.maxPageIndex);
+    /// Switch to the previous page of recipes of this type.
+    public void prevRecipe(Button button) {
+        if (hasPrevRecipe()) {
+            this.currentPage = Math.max(this.currentPage - 1, 0);
+        } else if (shouldWrapScroll(button)) {
+            this.currentPage = maxPageIndex;
+        }
+
         this.updateByPage();
     }
 
-    public void prevPage() {
-        this.currentPage = Math.max(this.currentPage - 1, 0);
-        this.updateByPage();
-    }
+    /// Switch to the next page of recipes of this type.
+    public void nextRecipe(Button button) {
 
-    public void nextRecipe() {
         int prevPage = this.currentPage;
-        this.currentPage = Math.min(this.currentPage + 1, this.maxPageIndex);
+
+        if (hasNextRecipe()) {
+            this.currentPage = Math.min(this.currentPage + 1, this.maxPageIndex);
+        } else if (shouldWrapScroll(button)) {
+            this.currentPage = 0;
+        }
 
         if (prevPage != this.currentPage)
             this.updateByPage();
@@ -278,10 +290,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.currentTypeIndex;
     }
 
+    /// Return a list of recipes that are currently visible.
     public List<ReliableClientRecipe> getCurrentDisplay() {
         return this.currentDisplay;
     }
 
+    /// Calculate and return a list of recipes that can be shown on the page.
     private List<ReliableClientRecipe> getRecipeDisplay() {
         List<ReliableClientRecipe> recipesOnPage = new ArrayList<>();
         for (int i = this.currentPage * this.maxPossiblePerPage; i < Math.min(this.getRecipes().size(), (this.currentPage + 1) * this.maxPossiblePerPage); i++) {
@@ -322,7 +336,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             for (Slot slot : slotDefinition.getItemSlots()) {
                 int id = slot.getContainerSlot() + (i * this.getClientRecipeType().getSlotCount());
 
-                this.addSlot(new Slot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i)));
+                this.addSlot(new RecipeSlot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i), slotDefinition.highlightWithoutContents));
             }
 
             SlotFillContext slotFillContext = new SlotFillContext();
@@ -354,8 +368,10 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.updateDependencies();
 
 
-        for (int i = 0; i < this.getDisplayableCraftReferences(); i++) {
-            this.addSlot(new Slot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i));
+        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
+            for (int i = 0; i < this.getDisplayableCraftReferences(); i++) {
+                this.addSlot(new RecipeSlot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i, false));
+            }
         }
 
         this.updateReferences();
@@ -368,9 +384,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     }
 
     private void updateReferences() {
-        List<ItemStack> craftReferences = this.clientRecipeType.getCraftReferences();
-        for (int i = this.currentCraftReference; i < Math.min(this.clientRecipeType.getCraftReferences().size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
-            this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i));
+        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
+            List<ItemStack> craftReferences = this.clientRecipeType.getCraftReferences();
+            for (int i = this.currentCraftReference; i < Math.min(this.clientRecipeType.getCraftReferences().size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
+                this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i));
+            }
         }
     }
 
@@ -713,13 +731,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.menuWidth;
     }
 
-    /**
-	 * Returns how far the client recipe type's specific texture is away from the border
-	 */
+    /// Returns how far the client recipe type's specific texture is away from the left border
     public int guiOffsetLeft() {
         return (this.menuWidth - this.getClientRecipeType().getDisplayWidth()) / 2;
     }
 
+    /// Returns how far the client recipe type's specific texture is away from the top border
     public int guiOffsetTop(int displayIndex) {
         return TOP_SPACE + (displayIndex * (this.getClientRecipeType().getDisplayHeight() + BUFFER_ZONE));
     }
@@ -799,17 +816,43 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         this.viewScreen.checkGui();
     }
 
+    /// Set the currently focused workstation/craft reference.
+	void setCurrentCraftReference(int newWorkstation) {
+		if (newWorkstation > getCraftReferences().size()-1) {
+            this.currentCraftReference = 0;
+        } else {
+            this.currentCraftReference = newWorkstation;
+        }
+	}
+
+    /// Returns a list of workstations or craft references for a given set of recipes.
+    /// Currently only used in footer view due to issues with the sidebar view.
+    List<ItemStack> getCraftReferences() {
+        return getClientRecipeType().getCraftReferences().stream().filter(e->{
+			for (ReliableClientRecipe reliableClientRecipe : getCurrentDisplay()) {
+                if (getClientRecipeType().getCraftReferenceCondition().matches(e, reliableClientRecipe))
+                    return true;
+            }
+            return false;
+        }).toList();
+    }
+
 
     public class SlotDefinition {
 
         private final HashMap<Integer, Slot> itemSlots;
+        private boolean highlightWithoutContents = true;
 
         private SlotDefinition() {
             this.itemSlots = new HashMap<>();
         }
 
         public void addItemSlot(int slotId, int x, int y) {
-            this.itemSlots.put(slotId, new Slot(RecipeViewMenu.this.viewContainer, slotId, x, y));
+            this.itemSlots.put(slotId, new RecipeSlot(RecipeViewMenu.this.viewContainer, slotId, x, y, highlightWithoutContents));
+        }
+
+        public void setHighlightWithoutContents(boolean highlightWithoutContents) {
+            this.highlightWithoutContents = highlightWithoutContents;
         }
 
         private List<Slot> getItemSlots() {
@@ -828,7 +871,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
         private final HashMap<Integer, OptionalSlotRenderer> optionalSlotRenderers;
 
-        protected SlotFillContext() {
+        public SlotFillContext() {
             this.contents = new HashMap<>();
             this.contentDependencies = new HashMap<>();
 
@@ -887,7 +930,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             return this.optionalSlotRenderers;
         }
 
-        protected SlotContent contentBySlot(int slotId) {
+        public SlotContent contentBySlot(int slotId) {
             return this.contents.getOrDefault(slotId, SlotContent.of(List.of()));
         }
 
@@ -936,5 +979,18 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
         boolean validate(ItemStack stack);
 
+    }
+
+    public record DisplayInfo(int guiLeft, int guiTop, int displayWidth, int displayHeight) {
+        public int guiRight() {
+            return guiLeft() + displayWidth;
+        }
+        public int guiBottom() {
+            return guiTop() + displayHeight;
+        }
+
+        public boolean recipeSharingEnabled() {
+            return Configs.CLIENT_SETTINGS.isRecipeSharing();
+        }
     }
 }

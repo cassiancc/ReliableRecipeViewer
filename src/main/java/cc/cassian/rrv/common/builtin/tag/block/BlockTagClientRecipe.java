@@ -21,7 +21,7 @@ public class BlockTagClientRecipe implements ReliableClientRecipe {
 	private final Identifier id;
 
 	public BlockTagClientRecipe(TagKey<Block> serverRecipe) {
-		this.id = serverRecipe.location().withSuffix("block_tag");
+		this.id = serverRecipe.location().withSuffix("_block_tag");
 		this.tagKey = serverRecipe;
 
 		List<SlotContent> drops = new ArrayList<>();

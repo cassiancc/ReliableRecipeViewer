@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.anvil;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -14,7 +15,7 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 
 	protected static final AnvilCombiningClientRecipeType INSTANCE = new AnvilCombiningClientRecipeType();
 
-	private static final Identifier ANVIL_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/anvil.png");
+	private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
 
 	@Override
 	public Component getDisplayName() {
@@ -33,17 +34,17 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 
 	@Override
 	public int getDisplayWidth() {
-		return 129;
+		return 131;
 	}
 
 	@Override
 	public int getDisplayHeight() {
-		return 20;
+		return 24;
 	}
 
 	@Override
 	public Identifier getGuiTexture() {
-		return ANVIL_LOCATION;
+		return BACKGROUND;
 	}
 
 	@Override
@@ -55,17 +56,28 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 	public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 
 		//Base
-		slotDefinition.addItemSlot(0, 3, 2);
+		slotDefinition.addItemSlot(0, 4, 4);
 
 		//Repair Ingredient
-		slotDefinition.addItemSlot(1, 52, 2);
+		slotDefinition.addItemSlot(1, 53, 4);
 
 		//Result
-		slotDefinition.addItemSlot(2, 110, 2);
+		slotDefinition.addItemSlot(2, 111, 4);
 	}
 
 	@Override
 	public List<ItemStack> getCraftReferences() {
 		return List.of(Items.ANVIL.getDefaultInstance(), Items.CHIPPED_ANVIL.getDefaultInstance(), Items.DAMAGED_ANVIL.getDefaultInstance());
+	}
+
+	public ButtonData placeRecipeTransferButton(RecipeViewMenu.DisplayInfo info) {
+		int y = info.guiTop() + getDisplayHeight() / 2 - 14;
+		if (!info.recipeSharingEnabled())
+			y+=7;
+		return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, y, true);
+	}
+
+	public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+		return new ButtonData(info.guiLeft()+getDisplayWidth() + 4, info.guiTop() + getDisplayHeight() / 2 + 1, true);
 	}
 }

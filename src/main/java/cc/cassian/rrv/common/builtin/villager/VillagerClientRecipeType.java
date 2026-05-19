@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.villager;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -41,6 +42,7 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
 
         return profession.heldJobSite().test(holder);
     };
+    public static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/villager.png");
 
     @Override
     public Component getDisplayName() {
@@ -49,17 +51,17 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 140;
+        return 146;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 36;
+        return 56;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/villager.png");
+        return BACKGROUND;
     }
 
     @Override
@@ -71,11 +73,11 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 
         //Currency
-        slotDefinition.addItemSlot(0, 35, 9);
-        slotDefinition.addItemSlot(1, 61, 9);
+        slotDefinition.addItemSlot(0, 38, 26);
+        slotDefinition.addItemSlot(1, 64, 26);
 
         //offer
-        slotDefinition.addItemSlot(2, 119, 10);
+        slotDefinition.addItemSlot(2, 122, 27);
     }
 
     @Override
@@ -110,5 +112,9 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
     @Override
     public ReferenceCondition getCraftReferenceCondition() {
         return REFERENCE_CONDITION;
+    }
+
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiRight() - 16, info.guiTop() + 5, true);
     }
 }

@@ -86,6 +86,9 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         } else {
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
         }
+        if (getPage()>getMaxPageIndex()) {
+            this.startIndex = 0;
+        }
 
         this.updateSlots();
     }
@@ -98,6 +101,9 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         this.startIndex = Math.min(this.startIndex + fittingPerPage, size - (size - (size / fittingPerPage) * fittingPerPage));
         if (currentIndex == this.startIndex && shouldWrapScroll(button)) {
             this.startIndex = 0;
+        }
+        if (getPage()>getMaxPageIndex()) {
+            this.startIndex = currentIndex;
         }
         this.updateSlots();
     }
@@ -207,9 +213,9 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
                 }
             }
 
-            guiGraphics.fill(x, y, x + maxWidth, y+4, new Color(255, 255, 255, 32).getRGB());
-
-            guiGraphics.fill(x, y, getWidth(x, maxWidth, scrollPage, rightIndex), y+4, new Color(255, 255, 255, 255).getRGB());
+            int white = 255;
+            guiGraphics.fill(x, y, x + maxWidth, y+4, new Color(white, white, white, 32).getRGB());
+            guiGraphics.fill(x, y, getWidth(x, maxWidth, scrollPage, rightIndex), y+4, new Color(white, white, white, 255).getRGB());
         }
     }
 

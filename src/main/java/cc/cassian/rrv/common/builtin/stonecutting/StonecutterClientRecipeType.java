@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.stonecutting;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -14,7 +15,7 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     protected static final StonecutterClientRecipeType INSTANCE = new StonecutterClientRecipeType();
 
-    private static final Identifier STONECUTTER_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/stonecutter.png");
+    private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/stonecutter.png");
 
     @Override
     public Component getDisplayName() {
@@ -33,17 +34,17 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 74;
+        return 80;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 18;
+        return 24;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return STONECUTTER_LOCATION;
+        return BACKGROUND;
     }
 
     @Override
@@ -53,16 +54,23 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        //Input
-        slotDefinition.addItemSlot(0, 1, 1);
-
-        //Result
-        slotDefinition.addItemSlot(1, 57, 1);
+        slotDefinition.addItemSlot(0, 4, 4);
+        slotDefinition.addItemSlot(1, 60, 4);
     }
-
 
     @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.STONECUTTER));
+    }
+
+    public ButtonData placeRecipeTransferButton(RecipeViewMenu.DisplayInfo info) {
+        int y = info.guiTop() + getDisplayHeight() / 2 - 14;
+        if (!info.recipeSharingEnabled())
+            y+=7;
+        return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, y, true);
+    }
+
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, info.guiTop() + getDisplayHeight() / 2 + 1, true);
     }
 }

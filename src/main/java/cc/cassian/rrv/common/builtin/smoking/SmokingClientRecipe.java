@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmokingRecipe;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
 
     @Override
     public ReliableClientRecipeType getType() {
-        return SmokingClientRecipeRecipeType.INSTANCE;
+        return SmokingClientRecipeType.INSTANCE;
     }
 
     @Override
@@ -70,9 +69,9 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
         int litProgress = Math.round(this.smokingTicker.getProgress() * 14);
         int smeltProgress = Math.round(this.smokingTicker.getProgress() * 24);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 1, 20 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 4, 23 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 24, 19, 14, 0, smeltProgress, 16, 128, 128);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 27, 22, 14, 0, smeltProgress, 16, 128, 128);
     }
 
 

@@ -168,11 +168,6 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         OverlayManager.INSTANCE.oldWidgets().clear();
         OverlayManager.INSTANCE.screenContextMap().clear();
 
-        // close any recipe book widgets that may otherwise persist
-        OverlayManager.INSTANCE.removeGuiBlocking(Identifier -> Identifier.getPath().startsWith("recipetabbutton_"), false);
-        OverlayManager.INSTANCE.removeGuiBlocking(Identifier.withDefaultNamespace("recipebook"), false);
-
-
         if (((Object) this instanceof RecipeViewScreen viewScreen)) {
             if (this.hoveredSlot != null) {
                 this.onStopHovering(this.hoveredSlot);

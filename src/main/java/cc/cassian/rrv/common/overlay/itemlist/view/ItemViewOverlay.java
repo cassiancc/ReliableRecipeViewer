@@ -372,6 +372,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     /// Open a recipe view screen showing all recipes that either result in or create an item stack - dependent on the supplied [ActionType].
     public void openRecipeView(ItemStack stack, ActionType openType) {
+        openRecipeView(stack, openType, ReliableClientRecipeType.NONE);
+    }
+
+    /// Open a recipe view screen showing all recipes that either result in or create an item stack - dependent on the supplied [ActionType].
+    public void openRecipeView(ItemStack stack, ActionType openType, ReliableClientRecipeType type) {
         if (stack.isEmpty()) return;
 
         if (!InternalRecipeManager.INSTANCE.isRecipesSynced() && !warned) {
@@ -383,17 +388,17 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (clientPlayer == null) return;
 
         List<ReliableClientRecipe> foundRecipes = switch (openType) {
-			case INPUT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
-			case RESULT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingOutput(stack);
-			case ANY -> {
+            case INPUT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
+            case RESULT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingOutput(stack);
+            case ANY -> {
                 var b = ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
                 b.addAll(ClientRecipeCache.INSTANCE.getRecipesForCraftingOutput(stack));
                 yield b;
             }
-		};
+        };
 
         if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack))) {
-            openRecipeView(stack, openType, clientPlayer, foundRecipes, ReliableClientRecipeType.NONE, false);
+            openRecipeView(stack, openType, clientPlayer, foundRecipes, type, false);
         }
     }
 

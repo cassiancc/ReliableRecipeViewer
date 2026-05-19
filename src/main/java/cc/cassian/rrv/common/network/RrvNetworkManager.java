@@ -5,11 +5,14 @@ import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.network.payload.recipe.*;
 import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPayload;
+import cc.cassian.rrv.common.network.payload.sharing.ClientboundShareRecipePayload;
+import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
@@ -238,6 +241,19 @@ public class RrvNetworkManager {
                 );
 
         });
+
+
+        registerServerbound(ServerboundShareRecipePayload.TYPE, ServerboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
+            if (!Configs.SERVER_SETTINGS.isRecipeSharing()) {
+                context.sender().sendSystemMessage(Component.translatable("rrv.sharing.denied"));
+                return;
+            }
+            context.server().getPlayerList().getPlayers().forEach(player -> {
+                this.sendPacket(player, new ClientboundShareRecipePayload(payload.recipeId(), context.sender.getStringUUID(), context.sender().getDisplayName()));
+            });
+        });
+
+        registerClientbound(ClientboundShareRecipePayload.TYPE, ClientboundShareRecipePayload.STREAM_CODEC, ClientNetworkManager::handleClientboundRecipeSharingPayload);
 
 
         return this;

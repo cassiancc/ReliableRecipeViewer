@@ -5,15 +5,13 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.integration.ModCompat;
-import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
-import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -66,11 +64,13 @@ public class ClientRecipeCache {
         return this.stackSensitives.getOrDefault(item, new ArrayList<>());
     }
 
-
-    public ReliableClientRecipe getRecipe(final Identifier recipeId) {
+    /// Prefer [ClientRecipeCache#getRecipes(Identifier)] when using recipe ids provided by users or client recipes.
+    @ApiStatus.Internal
+    public @Nullable ReliableClientRecipe getRecipeEntry(final Identifier recipeId) {
         return recipeMap.getOrDefault(recipeId, null);
     }
 
+    /// Retrieve all recipes with a certain ID.
     public List<ReliableClientRecipe> getRecipes(final Identifier recipeId) {
         ArrayList<ReliableClientRecipe> clientRecipes = new ArrayList<>();
         List<Identifier> identifiers = multiRecipeMap.get(recipeId);
@@ -84,7 +84,7 @@ public class ClientRecipeCache {
 
 
     public void updateType(ReliableServerRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
-        this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> this.multiRecipeMap.getOrDefault(entry.modRecipeId(), new ArrayList<>()).forEach(id -> {
+        this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> this.multiRecipeMap.getOrDefault(entry.recipeId(), new ArrayList<>()).forEach(id -> {
             this.recipeMap.remove(id);
 
             this.byItemIngredient.forEach((item, identifiers) -> identifiers.remove(id));
@@ -102,7 +102,7 @@ public class ClientRecipeCache {
 
     public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
         List<ReliableClientRecipe> recipes = new ArrayList<>();
-        this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
+        this.byItemIngredient.getOrDefault(inputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipeEntry(Identifier)));
 
 		recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsIngredient(inputStack) && (clientRecipe.getType().getCraftReferences().stream().noneMatch(itemStack -> itemStack.getItem() == inputStack.getItem()) || !clientRecipe.getType().getCraftReferenceCondition().matches(inputStack, clientRecipe)));
         recipes.removeIf(this::disabled);
@@ -120,7 +120,7 @@ public class ClientRecipeCache {
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
         List<ReliableClientRecipe> recipes = new ArrayList<>();
-        this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipe(Identifier)));
+        this.byItemResult.getOrDefault(outputStack.getItem(), List.of()).forEach(Identifier -> recipes.add(getRecipeEntry(Identifier)));
 
 		recipes.removeIf(clientRecipe -> !clientRecipe.redirectsAsResult(outputStack));
         recipes.removeIf(this::disabled);
@@ -143,9 +143,9 @@ public class ClientRecipeCache {
                 wrappedRecipes = wrapper.wrap(modEntry.asWrapped());
             }catch (Exception e) {
                 if (e.getMessage() != null && !e.getMessage().isEmpty()) {
-                    ReliableRecipeViewer.LOGGER.error("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.modRecipeId(), e.getMessage());
+                    ReliableRecipeViewer.LOGGER.error("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.recipeId(), e.getMessage());
                 } else {
-                    ReliableRecipeViewer.LOGGER.debug("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.modRecipeId(), e.getMessage());
+                    ReliableRecipeViewer.LOGGER.debug("Failed to wrap recipe entry {}: {}, skipping it...", modEntry.recipeId(), e.getMessage());
                 }
                 continue;
             }
@@ -155,7 +155,7 @@ public class ClientRecipeCache {
 
             for (int id = 0; id < wrappedRecipes.size(); id++) {
                 ReliableClientRecipe wrapped = wrappedRecipes.get(id);
-                handleClientRecipe(Objects.requireNonNullElse(wrapped.getId(), modEntry.modRecipeId()), wrapped, id, false);
+                handleClientRecipe(Objects.requireNonNullElse(wrapped.getId(), modEntry.recipeId()), wrapped, id, false);
             }
         }
     }
@@ -182,7 +182,9 @@ public class ClientRecipeCache {
             try {
                 clientRecipeProvider.provide(recipes);
             } catch (Exception e) {
-                ReliableRecipeViewer.LOGGER.error("Failed to add client recipes {}, skipping it...", e.getMessage());
+                ReliableRecipeViewer.LOGGER.atError().setCause(e).log(
+                        "Failed to add client recipes from {}, skipping it...",
+                        clientRecipeProvider.getClass().getName());
                 continue;
             }
             for (int id = 0; id < recipes.size(); id++) {
@@ -190,6 +192,8 @@ public class ClientRecipeCache {
                 handleClientRecipe(clientRecipe.entryId(), clientRecipe, id, true);
             }
         }
+
+        Configs.CATEGORIES.addNewCategories();
     }
 
     private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id, boolean fromNewSystem) {

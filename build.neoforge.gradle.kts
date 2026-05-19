@@ -17,7 +17,7 @@ tasks.named<ProcessResources>("processResources") {
         this["mod_authors"] = prop("mod.authors")
         this["mod_license"] = prop("mod.license")
         this["neoforge_loader_version_range"] = "[1,)"
-        this["neoforge_version_range"] = "[21.11,)"
+        this["neoforge_version_range"] = "[26.1.2.13-beta,)"
         this["minecraft_version_range"] = prop("deps.minecraft_version_range")
     }
 
@@ -35,13 +35,6 @@ jsonlang {
 }
 
 repositories {
-    maven {
-        name = "Parchment Mappings"
-        url = uri("https://maven.parchmentmc.org")
-        content {
-            includeGroup("org.parchmentmc.data")
-        }
-    }
     maven {
         name = "Xander Maven"
         url = uri("https://maven.isxander.dev/releases")
@@ -79,6 +72,14 @@ repositories {
             includeGroupAndSubgroups("maven.modrinth")
         }
     }
+    maven {
+        name = "WTHIT"
+        url = uri("https://maven2.bai.lol")
+        content {
+            includeGroupAndSubgroups("mcp.mobius.waila")
+            includeGroupAndSubgroups("lol.bai")
+        }
+    }
     mavenCentral()
 }
 
@@ -94,17 +95,12 @@ dependencies {
     compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
         isTransitive = false;
     }
+    compileOnly("mcp.mobius.waila:wthit:neo-${property("deps.wthit")}")
 }
 
 neoForge {
     version = property("deps.neoforge") as String
     validateAccessTransformers = true
-
-    if (hasProperty("deps.parchment")) parchment {
-        val (mc, ver) = (property("deps.parchment") as String).split(':')
-        mappingsVersion = ver
-        minecraftVersion = mc
-    }
 
     runs {
         register("client") {
@@ -127,7 +123,7 @@ neoForge {
 
 tasks {
     processResources {
-        exclude("**/fabric.mod.json", "**/*.accesswidener", "**/mods.toml")
+        exclude("**/fabric.mod.json", "**/rrv.fabric.mixins.json", "**/*.classtweaker", "**/mods.toml")
     }
 
     named("createMinecraftArtifacts") {

@@ -8,13 +8,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.List;
-
 public class WorldInteractionClientRecipeType implements ReliableClientRecipeType {
 
 	protected static final WorldInteractionClientRecipeType INSTANCE = new WorldInteractionClientRecipeType();
 
-	private static final Identifier ANVIL_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/anvil.png");
+	private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
 
 	@Override
 	public Component getDisplayName() {
@@ -33,17 +31,17 @@ public class WorldInteractionClientRecipeType implements ReliableClientRecipeTyp
 
 	@Override
 	public int getDisplayWidth() {
-		return 129;
+		return 131;
 	}
 
 	@Override
 	public int getDisplayHeight() {
-		return 20;
+		return 24;
 	}
 
 	@Override
 	public Identifier getGuiTexture() {
-		return ANVIL_LOCATION;
+		return BACKGROUND;
 	}
 
 	@Override
@@ -55,12 +53,12 @@ public class WorldInteractionClientRecipeType implements ReliableClientRecipeTyp
 	public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 
 		//Base
-		slotDefinition.addItemSlot(0, 3, 2);
+		slotDefinition.addItemSlot(0, 4, 4);
 
 		//Repair Ingredient
-		slotDefinition.addItemSlot(1, 52, 2);
+		slotDefinition.addItemSlot(1, 53, 4);
 
 		//Result
-		slotDefinition.addItemSlot(2, 110, 2);
+		slotDefinition.addItemSlot(2, 111, 4);
 	}
 }

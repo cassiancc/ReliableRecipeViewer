@@ -1,4 +1,4 @@
-classTweaker v1 official
+classTweaker v2 official
 
 accessible field net/minecraft/world/item/crafting/ShapedRecipe result Lnet/minecraft/world/item/ItemStackTemplate;
 accessible field net/minecraft/world/item/crafting/ShapelessRecipe result Lnet/minecraft/world/item/ItemStackTemplate;
@@ -25,3 +25,6 @@ mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen
 # World Interaction
 accessible field net/minecraft/world/item/ShovelItem FLATTENABLES Ljava/util/Map;
 accessible field net/minecraft/world/item/AxeItem STRIPPABLES Ljava/util/Map;
+
+# Recipe Sharing
+extend-enum net/minecraft/network/chat/HoverEvent$Action RRV_SHOW_RECIPE

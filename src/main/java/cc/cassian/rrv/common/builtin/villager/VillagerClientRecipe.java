@@ -148,7 +148,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(0, -(font.lineHeight) * scale);
         guiGraphics.pose().scale(scale, scale);
-        guiGraphics.text(font, professionComp, 0, 0, -1, false);
+        guiGraphics.text(font, professionComp, 5, 17, -1, false);
         guiGraphics.pose().popMatrix();
 
         if (this.villagerLookLeft != this.prevVillagerLookLeft && this.currentTick - this.lastHeadChange <= 0.25F * 20) {
@@ -162,7 +162,7 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         if (this.villagerOffer.requiredType() == null)
             return;
 
-        if (mouseX >= 0 && mouseX <= 24 && mouseY >= 0 && mouseY <= 36) {
+        if (mouseX >= 0 && mouseX <= 24 && mouseY >= 15 && mouseY <= 51) {
             Identifier typeLocation = this.villagerOffer.requiredType().identifier();
             Component typeComponent = Component.translatableWithFallback("view.rrv.type.trading.%s.%s".formatted(typeLocation.getNamespace(), typeLocation.getPath()), WordUtils.capitalizeFully(typeLocation.getPath().replace("_", " "))).withStyle(ChatFormatting.GOLD);
             guiGraphics.setComponentTooltipForNextFrame(font, List.of(typeComponent), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
@@ -175,7 +175,9 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
         if (this.previewVillager == null)
             return;
 
-        RrvGuiRenderHelper.renderEntityOnScreen(guiGraphics, this.previewVillager, recipePosition.left() + 2, recipePosition.top() + 2, recipePosition.left() + 2 + 20, recipePosition.top() + 2 + 32, 15.0F, new Vector3f(0, (32.0F / 15.0F / 2.0F), 0), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), 0.0F, 0.0F), null);
+        int x = recipePosition.left() + 5;
+        int y = recipePosition.top() + 18;
+        RrvGuiRenderHelper.renderEntityOnScreen(guiGraphics, this.previewVillager, x, y, x + 20, y + 32, 15.0F, new Vector3f(0, (32.0F / 15.0F / 2.0F), 0), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), 0.0F, 0.0F), null);
 
     }
 }

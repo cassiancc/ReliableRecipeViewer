@@ -14,7 +14,7 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
 
     public static final SmeltingClientRecipeType INSTANCE = new SmeltingClientRecipeType();
 
-    private static final Identifier SMELTING_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/smelting.png");
+    private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/smelting.png");
 
     @Override
     public Component getDisplayName() {
@@ -33,17 +33,17 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public int getDisplayWidth() {
-        return 82;
+        return 88;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 54;
+        return 60;
     }
 
     @Override
     public Identifier getGuiTexture() {
-        return SMELTING_LOCATION;
+        return BACKGROUND;
     }
 
     @Override
@@ -55,13 +55,13 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 
         //Input Slot
-        slotDefinition.addItemSlot(0, 1, 1);
+        slotDefinition.addItemSlot(0, 4, 4);
 
         //Fuel Slot
-        slotDefinition.addItemSlot(1, 1, 37);
+        slotDefinition.addItemSlot(1, 4, 40);
 
         //Result Slot
-        slotDefinition.addItemSlot(2, 61, 19);
+        slotDefinition.addItemSlot(2, 64, 22);
     }
 
     @Override

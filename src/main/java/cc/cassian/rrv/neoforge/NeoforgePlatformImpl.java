@@ -2,10 +2,11 @@ package cc.cassian.rrv.neoforge;
 
 //? neoforge {
 /*import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -43,8 +44,8 @@ public class NeoforgePlatformImpl implements Platform {
         Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(namespace);
         if (modContainer.isPresent()) {
             return modContainer.get().getModInfo().getDisplayName();
-        } else if (I18n.exists(key)) {
-            return I18n.get(key);
+        } else if (RrvUtil.has(key)) {
+            return RrvUtil.get(key);
         } else {
             return WordUtils.capitalize(namespace);
         }
@@ -55,6 +56,10 @@ public class NeoforgePlatformImpl implements Platform {
         String namespace = "minecraft";
         if (Minecraft.getInstance().level != null) {
             namespace = stack.getItem().getCreatorModId(Minecraft.getInstance().level.registryAccess(), stack);
+            var holderNamespace = stack.typeHolder().unwrapKey().orElseThrow().identifier().getNamespace();
+            if (holderNamespace.equals(namespace) && stack.has(DataComponents.ITEM_MODEL)) {
+                namespace = stack.get(DataComponents.ITEM_MODEL).getNamespace();
+            }
         }
         return namespace;
     }

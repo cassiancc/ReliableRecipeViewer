@@ -1,6 +1,6 @@
 package cc.cassian.rrv.api.recipe;
 
-import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -149,14 +149,26 @@ public interface ReliableClientRecipeType {
         return List.of();
     }
 
+    /// Where to place the Recipe Transfer button, if at all.
+    /// Note that this button will only be visible if all prior requirements are fulfilled.
+    default ButtonData placeRecipeTransferButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, info.guiTop() + getDisplayHeight() / 2 - 20, true);
+    }
+
+    /// Where to place the Recipe Sharing button, if at all.
+    /// Note that this button will only be visible if the config option is enabled.
+    default ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, info.guiTop() + getDisplayHeight() / 2 - 6, true);
+    }
+
     /**
      *
      * @return A condition managing the recipes a craft-reference can redirect to<br>
      * <br>
-     * <b>Example</b>: The villager's working blocks only redirect if the trading recipe matches to the profession of the villager applied by the working block
+     * <b>Example</b>: Villager workstations only redirect if the trading recipe matches to the profession of the villager applied by the working block
      */
     default ReferenceCondition getCraftReferenceCondition() {
-        return (stack, viewRecipe) -> true;
+        return (stack, clientRecipe) -> true;
     }
 
 
@@ -167,10 +179,10 @@ public interface ReliableClientRecipeType {
         /**
          *
          * @param craftReference The craft-reference
-         * @param viewRecipe The recipe that is checked
-         * @return Whether the craft-reference can redirect to the viewRecipe
+         * @param clientRecipe The recipe that is checked
+         * @return Whether the craft-reference can redirect to the client recipe
          */
-        boolean matches(ItemStack craftReference, ReliableClientRecipe viewRecipe);
+        boolean matches(ItemStack craftReference, ReliableClientRecipe clientRecipe);
 
     }
 }

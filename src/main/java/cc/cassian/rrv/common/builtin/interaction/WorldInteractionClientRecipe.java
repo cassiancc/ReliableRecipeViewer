@@ -27,7 +27,6 @@ public class WorldInteractionClientRecipe implements ReliableClientRecipe {
     @Deprecated(forRemoval = true)
     public WorldInteractionClientRecipe(SlotContent left, SlotContent right, SlotContent result, int priority) {
         this(null, left, right, result, priority);
-
     }
 
     @Deprecated(forRemoval = true)
@@ -64,7 +63,6 @@ public class WorldInteractionClientRecipe implements ReliableClientRecipe {
 
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-
         slotFillContext.bindSlot(0, this.left);
         slotFillContext.bindSlot(1, this.right);
         slotFillContext.bindSlot(2, this.result);

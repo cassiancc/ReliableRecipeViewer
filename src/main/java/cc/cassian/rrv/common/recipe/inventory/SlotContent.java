@@ -104,11 +104,12 @@ public class SlotContent {
     }
 
     public static SlotContent of(SlotDisplay slotDisplay, Level level) {
+        if (slotDisplay == null) return SlotContent.of();
         return SlotContent.of(slotDisplay.resolveForStacks(SlotDisplayContext.fromLevel(level)));
     }
 
     public static SlotContent of(SlotDisplay slotDisplay) {
-        return SlotContent.of(slotDisplay.resolveForStacks(SlotDisplayContext.fromLevel(RrvUtil.getLevel())));
+        return SlotContent.of(slotDisplay, RrvUtil.getLevel());
     }
 
     public void setType(ActionType type) {
@@ -331,7 +332,18 @@ public class SlotContent {
     }
 
     public static SlotContent of(Ingredient ingredient) {
-        return SlotContent.of(ingredient.display());
+        if (ingredient == null) return SlotContent.of();
+        SlotContent slotContent = SlotContent.of(ingredient.display());
+        //? neoforge {
+        /*ingredient.getValues().unwrap().ifLeft(slotContent::bindItemTag);
+        if (ingredient.getCustomIngredient() instanceof BlockTagIngredient blockTagIngredient) {
+            TagKey<Block> blockTag = blockTagIngredient.getTag();
+            slotContent.bindBlockTag(blockTag);
+        }
+        *///?} else {
+        ingredient.values.unwrap().ifLeft(slotContent::bindItemTag);
+        //?}
+        return slotContent;
     }
 
     public static Optional<HolderSet.Named<Item>> getItemsFromTag(TagKey<Item> tag) {

@@ -1,3 +1,68 @@
+## [8.1.3]
+
+### Added
+- Tags now show proper Item Descriptions.
+
+### Changed
+- Tags no longer show their ID if Advanced Tooltips is not enabled.
+
+### Fixed
+- Tags not displaying in recipes.
+- Tags not displaying proper namespaces.
+- Buttons and clickables now change the cursor correctly.
+
+## [8.1.2]
+
+### Changed
+- If an `item_model` component is set and `getCreatorNamespace` is not overridden, the `item_model`'s namespace is now used.
+
+### Fixed
+- Crash loading an exclusions file without `block` and `item` keys.
+- Exception caused by logging onto a server with a different entity registry than the client.
+- Cleanup log spam from newly registered categories.
+
+## [8.1.1]
+
+### Fixed
+- Recipe keybinds on footer workstation slot.
+- Potential missing categories from client recipe providers.
+- Bug preventing index modification from working with normal items.
+- Bug allowing scrolling onto a blank page.
+
+## [8.1.0]
+
+### Changed
+- Textures for recipe type tabs have been reworked to better match the Creative Mode and Advancements screens.
+- Workstations are now displayed below the recipe. This can be reverted in the config.
+
+### Fixed
+- Recipe view screens no longer render compasses/clocks incorrectly.
+- Previous/next recipe buttons now wrap scroll.
+- Further Polymer mod loaded check fixes.
+- Overlays persisting between screens.
+
+## [8.0.3]
+
+### Fixed
+- Improvements to null safety on `SlotDisplay`
+- Improvements to error handling (thanks @Fox2Code!)
+
+## [8.0.2]
+
+### Fixed
+- Polymer mod loaded check.
+- Incorrect bookmark title hover check on classic theme.
+- Crash loading modified data-driven villager trades.
+
+## [8.0.1]
+
+### Added
+- `SlotContent` now accepts a `SlotDisplay`.
+
+### Fixed
+- Major improvements to Polymer integration.
+- Recipe book persisting between screens.
+
 ## [8.0.0]
 
 ### Added

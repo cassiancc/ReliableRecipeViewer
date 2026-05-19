@@ -12,19 +12,19 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.overlay.itemlist.unlock.UnlockManager;
 import cc.cassian.rrv.common.recipe.ResourceRecipeManager;
+import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -38,8 +38,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemFilters {
 
-    public static List<TagKey<Item>> TAGS;
     private static final List<Item> EXCLUDED_ITEMS = List.of(Items.POTION, Items.TIPPED_ARROW, Items.ENCHANTED_BOOK);
+    public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
 
     /// Filters just by the items display name and tooltip
     /// @param query The query
@@ -52,20 +52,26 @@ public class ItemFilters {
         for (ItemStack stack : fullStackList()) {
 
             String itemName = stack.getDisplayName().getString().toLowerCase();
+            Set<String> aliases = ALIASES.get(stack.getItem());
 
             if (itemName.startsWith(query.toLowerCase()))
                 firstPrio.add(stack);
             else if (itemName.contains(query.toLowerCase()))
                 secondPrio.add(stack);
             else if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
-
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
                 if (compCheck == 1)
                     secondPrio.add(stack);
                 if (compCheck == 2)
                     thirdPrio.add(stack);
+            } else if (!aliases.isEmpty()) {
+                aliases.forEach(alias -> {
+                    if (alias.toLowerCase().contains(query.toLowerCase())) {
+                        if (!secondPrio.contains(stack))
+                            secondPrio.add(stack);
+                    }
+                });
             }
-
         }
 
         List<ItemStack> results = new ArrayList<>();
@@ -159,52 +165,28 @@ public class ItemFilters {
     /// @param query The query
     /// @return A list of matching item stacks
     protected static List<ItemStack> tag(String query) {
-        List<ItemStack> firstPrio = new ArrayList<>();
-        List<ItemStack> secondPrio = new ArrayList<>();
+        List<ItemStack> results = new ArrayList<>();
 
-        for (TagKey<Item> tag : BuiltInRegistries.ITEM.getTags().map(HolderSet.Named::key).toList()) {
-            String tagName = tag.location().getPath().toLowerCase();
-
-            if (tagName.startsWith(query.toLowerCase())) {
-                BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).filter(item -> !firstPrio.contains(item)).forEach(stack -> {
-                    add(firstPrio, stack);
-                    firstPrio.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(stack.getItem()).stream().map(ItemView.StackSensitive::stack).toList());
-                }));
-
-            } else if (tagName.contains(query.toLowerCase())) {
-                BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).filter(item -> !firstPrio.contains(item) && !secondPrio.contains(item)).forEach(stack -> {
-                    add(secondPrio, stack);
-                    secondPrio.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(stack.getItem()).stream().map(ItemView.StackSensitive::stack).toList());
-                }));
+        for (ItemStack itemStack : fullStackList()) {
+            if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {
+                results.add(itemStack);
             }
-
         }
-
-		List<ItemStack> results = new ArrayList<>(firstPrio);
-        secondPrio.stream().filter(results::contains).forEach(results::add);
 
         return results;
     }
 
     /// Filters by an item's tags
-    /// @param stack The item stack
+    /// @param itemStack The item stack
     /// @param query The query
     /// @return Whether the item stack matches the items tags
-    protected static boolean tag(ItemStack stack, String query) {
+    protected static boolean tag(ItemStack itemStack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
-        for (TagKey<Item> tag : TAGS) {
-            String tagName = tag.location().getPath().toLowerCase();
-
-            if (tagName.contains(query.toLowerCase())) {
-                BuiltInRegistries.ITEM.get(tag).ifPresent(items -> items.stream().map(itemHolder -> new ItemStack(itemHolder.value())).forEach(stack2 -> {
-                    if (ItemStack.isSameItem(stack2, stack)) {
-                        result.set(true);
-                    }
-                }));
-            }
-
+        if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {
+            result.set(true);
         }
+
         return result.get();
     }
 
@@ -221,10 +203,10 @@ public class ItemFilters {
 
         for (Component line : lore) {
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && I18n.get(translatableContents.getKey()).toLowerCase().startsWith(query.toLowerCase()))
+            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase().startsWith(query.toLowerCase()))
                 return 1;
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && I18n.get(translatableContents.getKey()).toLowerCase().contains(query.toLowerCase()))
+            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase().contains(query.toLowerCase()))
                 return 2;
         }
 
@@ -260,9 +242,18 @@ public class ItemFilters {
         try (var output = Files.newOutputStream(Platform.INSTANCE.getDataDirectory().resolve("rrv_index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
             JsonObject index = new JsonObject();
             JsonArray encodedStacks = new JsonArray();
+            JsonObject encodedAliases = new JsonObject();
             for (ItemStack itemStack : fullStackList()) {
                 if (!itemStack.isEmpty()) {
                     JsonObject result = ItemStack.CODEC.encodeStart(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), itemStack).getOrThrow().getAsJsonObject();
+                    // dump aliases
+                    Set<String> aliasSet = ItemFilters.ALIASES.get(itemStack.getItem());
+                    if (!aliasSet.isEmpty()) {
+                        JsonArray aliases = new JsonArray();
+                        aliasSet.stream().map(JsonPrimitive::new).forEach(aliases::add);
+                        encodedAliases.add(result.get("id").getAsString(), aliases);
+                    }
+                    // add to encodedStacks
                     result.remove("count");
                     if (result.has("components")) {
                         encodedStacks.add(result);
@@ -273,6 +264,7 @@ public class ItemFilters {
             }
             index.addProperty("replace", true);
             index.add("values", encodedStacks);
+            index.add("aliases", encodedAliases);
             ReliableRecipeViewer.GSON.toJson(index, writer);
             button.setMessage(ClientConfigScreen.clientSetting("export_item_view.success"));
             Util.getPlatform().openPath(Platform.INSTANCE.getDataDirectory());
@@ -281,8 +273,4 @@ public class ItemFilters {
             ReliableRecipeViewer.LOGGER.error("Unable to export full stack list!", e);
         }
     }
-
-	public static void buildTagCache() {
-        TAGS = BuiltInRegistries.ITEM.getTags().map(HolderSet.Named::key).toList();
-	}
 }

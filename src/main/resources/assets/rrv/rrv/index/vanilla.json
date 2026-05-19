@@ -1,4 +1,12 @@
 {
+  "aliases": {
+    "minecraft:enchanting_table": [
+      "enchantment table"
+    ],
+    "minecraft:crafting_table": [
+      "workbench"
+    ]
+  },
   "values": [
     {
       "id": "minecraft:goat_horn",

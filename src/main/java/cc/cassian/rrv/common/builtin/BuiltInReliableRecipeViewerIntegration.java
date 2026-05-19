@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
@@ -56,10 +57,10 @@ import static cc.cassian.rrv.common.ReliableRecipeViewer.*;
 @NullMarked
 public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
 
-    public static final Identifier WIDGETS = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/rrv_widgets.png");
+    public static final Identifier WIDGETS = ReliableRecipeViewer.of("textures/gui/rrv_widgets.png");
 
     //Default slot rendering
-    public static final Identifier DEFAULT_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/default_slot.png");
+    public static final Identifier DEFAULT_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/default_slot.png");
 
 
     @Override

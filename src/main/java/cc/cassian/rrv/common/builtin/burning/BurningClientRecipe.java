@@ -27,7 +27,7 @@ public class BurningClientRecipe implements ReliableClientRecipe {
     private final Identifier id;
 
     public BurningClientRecipe(Item item, int i) {
-        this.id = item.builtInRegistryHolder().key().identifier().withSuffix("_burning");
+        this.id = item.builtInRegistryHolder().key().identifier().withPrefix("/").withSuffix("_burning");
         this.fuel = SlotContent.of(item);
         this.burnTime = i;
 
@@ -67,11 +67,11 @@ public class BurningClientRecipe implements ReliableClientRecipe {
 
     @Override
     public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        // burn sprite
         int burnProgress = Math.round(this.ticker.getProgress() * 14);
-
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 22, 5 + (14 - burnProgress), 0, 14 - burnProgress, 14, burnProgress, 128, 128);
+        // burn text
         Font font = Minecraft.getInstance().font;
-
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 19, 2 + (14 - burnProgress), 0, 14 - burnProgress, 14, burnProgress, 128, 128);
-        guiGraphics.text(font, Component.translatable("view.rrv.type.burning.ticks", this.burnTime), 38, 18 / 2 - font.lineHeight / 2, 0xFF808080, false);
+        guiGraphics.text(font, Component.translatable("view.rrv.type.burning.ticks", this.burnTime), 40, 25 / 2 - font.lineHeight / 2, 0xFF808080, false);
     }
 }

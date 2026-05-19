@@ -1,12 +1,12 @@
-package cc.cassian.rrv.common.recipe;
+package cc.cassian.rrv.client.recipe;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
@@ -40,6 +40,10 @@ import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 public class ResourceRecipeManager {
 	public static final ArrayList<Identifier> HIDDEN_ITEM_TAGS = new ArrayList<>();
 	public static final ArrayList<Identifier> HIDDEN_BLOCK_TAGS = new ArrayList<>();
+	public static final String ALIASES_KEY = "aliases";
+	public static final String VALUES_KEY = "values";
+	public static final String REMOVE_KEY = "remove";
+	public static final String REPLACE_KEY = "replace";
 
 	private static Map<Identifier, Resource> getIdentifierResourceMap(String path) {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
@@ -60,8 +64,10 @@ public class ResourceRecipeManager {
 						}
 					});
 
-					parsedRecipe.get("item").getAsJsonArray().forEach(item -> HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString())));
-					parsedRecipe.get("block").getAsJsonArray().forEach(item -> HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString())));
+					if (parsedRecipe.has("item"))
+						parsedRecipe.get("item").getAsJsonArray().forEach(item -> HIDDEN_ITEM_TAGS.add(Identifier.parse(item.getAsString())));
+					if (parsedRecipe.has("block"))
+						parsedRecipe.get("block").getAsJsonArray().forEach(item -> HIDDEN_BLOCK_TAGS.add(Identifier.parse(item.getAsString())));
 					LOGGER.debug("RRV: Loaded exclusion list {}", identifier);
 				}
 			} catch (IOException e) {
@@ -139,12 +145,12 @@ public class ResourceRecipeManager {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
 				// replace - whether to replace the entire index with this modified one
-				if (parsedRecipe.has("replace") && parsedRecipe.get("replace").isJsonPrimitive() && parsedRecipe.get("replace").getAsJsonPrimitive().isBoolean() && parsedRecipe.getAsJsonPrimitive("replace").getAsBoolean()) {
+				if (parsedRecipe.has(REPLACE_KEY) && parsedRecipe.get(REPLACE_KEY).isJsonPrimitive() && parsedRecipe.get(REPLACE_KEY).getAsJsonPrimitive().isBoolean() && parsedRecipe.getAsJsonPrimitive(REPLACE_KEY).getAsBoolean()) {
 					results.clear();
 				}
 				// values to remove from the index
-				if (parsedRecipe.has("remove") && parsedRecipe.get("remove").isJsonArray()) {
-					parsedRecipe.getAsJsonArray("remove").forEach(item -> {
+				if (parsedRecipe.has(REMOVE_KEY) && parsedRecipe.get(REMOVE_KEY).isJsonArray()) {
+					parsedRecipe.getAsJsonArray(REMOVE_KEY).forEach(item -> {
 						if (item.isJsonObject()) {
 							results.remove(RrvUtil.getItemStack(item));
 						}
@@ -155,8 +161,8 @@ public class ResourceRecipeManager {
 					});
 				}
 				// new values to insert into the index
-				if (parsedRecipe.has("values") && parsedRecipe.get("values").isJsonArray()) {
-					parsedRecipe.getAsJsonArray("values").forEach(item -> {
+				if (parsedRecipe.has(VALUES_KEY) && parsedRecipe.get(VALUES_KEY).isJsonArray()) {
+					parsedRecipe.getAsJsonArray(VALUES_KEY).forEach(item -> {
 						if (item.isJsonObject() && item.getAsJsonObject().has("after")) {
 							findAndAddStack(results, item.getAsJsonObject(), "after", 1);
 						} else if (item.isJsonObject() && item.getAsJsonObject().has("before")) {
@@ -164,8 +170,16 @@ public class ResourceRecipeManager {
 						}
 						else {
 							ItemStack itemStack = RrvUtil.getItemStack(item);
-							if (itemStack.isEmpty())
+							if (!itemStack.isEmpty())
 								results.add(itemStack);
+						}
+					});
+				}
+				// data-driven aliases
+				if (parsedRecipe.has(ALIASES_KEY) && parsedRecipe.get(ALIASES_KEY).isJsonObject()) {
+					parsedRecipe.getAsJsonObject(ALIASES_KEY).entrySet().forEach(entry -> {
+						if (entry.getValue().isJsonArray()) {
+							ItemView.addAliases(BuiltInRegistries.ITEM.getValue(Identifier.parse(entry.getKey())), entry.getValue().getAsJsonArray().asList().stream().map(JsonElement::getAsString).toList());
 						}
 					});
 				}

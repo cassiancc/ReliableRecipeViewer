@@ -110,6 +110,7 @@ public class ServerRecipeManager {
 
         this.reloadRecipes();
         this.broadcastAllRecipes();
+        ReliableRecipeViewer.loadServerConfigs();
 
     }
 
@@ -186,11 +187,11 @@ public class ServerRecipeManager {
         });
     }
 
-    public record ServerRecipeEntry(Identifier modRecipeId, ReliableServerRecipe recipe) {
+    public record ServerRecipeEntry(Identifier recipeId, ReliableServerRecipe recipe) {
 
         public static final StreamCodec<FriendlyByteBuf, ServerRecipeEntry> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8,
-                entry -> entry.modRecipeId().toString(),
+                entry -> entry.recipeId().toString(),
                 ByteBufCodecs.COMPOUND_TAG,
                 ServerRecipeEntry::createFullTag,
                 (s, compoundTag) -> new ServerRecipeEntry(Identifier.tryParse(s), ServerRecipeEntry.fromTag(compoundTag))
@@ -208,7 +209,7 @@ public class ServerRecipeManager {
                 this.recipe().writeToTag(dataTag);
                 tag.put("recipeData", dataTag);
             }catch (Exception e) {
-                ReliableRecipeViewer.LOGGER.error("Failed to encode recipe {}: {}, please contact the mod author", this.modRecipeId(), e.getMessage());
+                ReliableRecipeViewer.LOGGER.error("Failed to encode recipe {}: {}, please contact the mod author", this.recipeId(), e.getMessage());
             }
 
             return tag;

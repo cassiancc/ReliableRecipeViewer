@@ -36,7 +36,7 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 		}
 		// sort
 		ids.sort(this::compareIdentifiers);
-		int i = 0;
+		int i = 2;
         for (Identifier id : ids) {
             addNewCategory(id, i++,true);
         }
@@ -71,7 +71,6 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
     public boolean enabled(ReliableClientRecipeType reliableClientRecipeType) {
 		if (CATEGORIES.containsKey(reliableClientRecipeType.getId()))
         	return CATEGORIES.get(reliableClientRecipeType.getId()).enabled();
-		ReliableRecipeViewer.LOGGER.error("Category %s is not in configuration!".formatted(reliableClientRecipeType.getId()));
 	    return true; // this shouldn't ever be the case, but safer to allow it
     }
 

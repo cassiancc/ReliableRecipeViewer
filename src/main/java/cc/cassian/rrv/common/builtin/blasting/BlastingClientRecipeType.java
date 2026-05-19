@@ -13,7 +13,7 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
 
     public static final BlastingClientRecipeType INSTANCE = new BlastingClientRecipeType();
 
-    private static final Identifier BLASTING_LOCATION = ReliableRecipeViewer.of("textures/gui/type/blasting.png");
+    private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/blasting.png");
 
     @Override
     public Component getDisplayName() {
@@ -22,7 +22,7 @@ public class BlastingClientRecipeType extends SmeltingClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return BLASTING_LOCATION;
+        return BACKGROUND;
     }
 
     @Override

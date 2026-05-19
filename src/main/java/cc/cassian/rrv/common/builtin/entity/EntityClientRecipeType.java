@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.entity;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -18,12 +19,13 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     private static final List<ItemStack> SPAWN_EGGS = BuiltInRegistries.ITEM.stream().filter(item -> item instanceof SpawnEggItem).map(ItemStack::new).toList();
     private static final ReferenceCondition REFERENCE_CONDITION = (craftReference, viewRecipe) -> {
 
-        if(!(craftReference.getItem() instanceof SpawnEggItem eggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
+        if(!(craftReference.getItem() instanceof SpawnEggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
             return true;
 
-        return eggItem.getType(craftReference) == entityViewRecipe.getEntityType();
+        return SpawnEggItem.getType(craftReference) == entityViewRecipe.getEntityType();
 
     };
+    private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/entity.png");
 
     @Override
     public Component getDisplayName() {
@@ -42,7 +44,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public Identifier getGuiTexture() {
-        return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/type/entity.png");
+        return BACKGROUND;
     }
 
     //Mob loot should not exceed 54 slots
@@ -53,6 +55,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
+        slotDefinition.setHighlightWithoutContents(false);
 
         for (int row = 0; row < 6; row++) {
             for (int i = 0; i < 9; i++) {
@@ -80,5 +83,10 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     @Override
     public ReferenceCondition getCraftReferenceCondition() {
         return REFERENCE_CONDITION;
+    }
+
+    @Override
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() - 12, info.guiTop()+30, true);
     }
 }

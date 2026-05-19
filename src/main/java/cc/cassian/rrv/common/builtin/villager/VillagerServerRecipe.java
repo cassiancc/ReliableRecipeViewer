@@ -30,6 +30,7 @@ import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.*;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? if >26.1 {
 /*import cc.cassian.rrv.common.mixin.EntityPredicateAccessor;
@@ -252,7 +253,10 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 		this.modifiers.clear();
 		tag.getListOrEmpty("modifiers").forEach(modifier -> {
-			this.modifiers.add(LootItemFunctions.ROOT_CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), modifier).getOrThrow());
+			DataResult<LootItemFunction> parse = LootItemFunctions.ROOT_CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), modifier);
+			if (parse.isSuccess()) {
+				this.modifiers.add(parse.getOrThrow());
+			}
 		});
 
 
