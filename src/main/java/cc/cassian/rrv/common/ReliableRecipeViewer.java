@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common;
 
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import com.google.gson.Gson;
@@ -35,12 +36,12 @@ public class ReliableRecipeViewer {
     }
 
     public static void loadServerConfigs() {
-        Configs.SERVER_SETTINGS.load();
+        ServerConfigs.SERVER_SETTINGS.load();
     }
 
     /// This is currently called whenever the server config changes as it is only used for recipe sharing, need to find a better target in MinecraftServer.
     public static void saveServerConfigs() {
-        Configs.SERVER_SETTINGS.save();
+        ServerConfigs.SERVER_SETTINGS.save();
     }
 
 }

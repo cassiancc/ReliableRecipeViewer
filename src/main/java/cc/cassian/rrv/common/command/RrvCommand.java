@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.command;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.sharing.ClientboundShareRecipePayload;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
@@ -62,7 +63,7 @@ public class RrvCommand {
     private static ArgumentBuilder<CommandSourceStack, ?> shareRecipe() {
         return Commands.literal("share_recipe").then(argument("id", StringArgumentType.string())
                 .executes(context -> {
-                    if (!Configs.SERVER_SETTINGS.isRecipeSharing()) {
+                    if (!ServerConfigs.SERVER_SETTINGS.isRecipeSharing()) {
                         context.getSource().sendFailure(Component.translatableWithFallback("rrv.sharing.denied","Recipe sharing is not enabled on this server"));
                         return -1;
                     }
@@ -84,7 +85,7 @@ public class RrvCommand {
         return Commands.literal("recipe_sharing").then(argument("enabled", BoolArgumentType.bool())
                 .executes(context -> {
                     final boolean enabled = BoolArgumentType.getBool(context, "enabled");
-                    Configs.SERVER_SETTINGS.setRecipeSharing(enabled);
+                    ServerConfigs.SERVER_SETTINGS.setRecipeSharing(enabled);
                     ReliableRecipeViewer.saveServerConfigs();
                     context.getSource().sendSuccess(()-> Component.literal("Recipe sharing has been %s on this server".formatted(enabled ? "enabled" : "disabled")), true);
                     return 1;
