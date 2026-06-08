@@ -1,3 +1,8 @@
+## [8.2.1]
+
+### Fixed
+- Potential crash from Jade causing client configs to load on the server.
+
 ## [8.2.0]
 
 ### Added

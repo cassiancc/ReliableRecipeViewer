@@ -1,2 +1,4 @@
 ### Fixed
-- Potential crash from Jade causing client configs to load on the server.
+- Fluid stacks now handle data component patches.
+- Client integration no longer assumes fluids have buckets.
+- Crash rendering entities on 26.2.

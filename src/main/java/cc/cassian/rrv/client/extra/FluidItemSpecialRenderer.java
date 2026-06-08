@@ -84,7 +84,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         //? fabric {
         var handler = FluidVariantRendering.getHandler(fluid);
         if (handler != null) {
-            return handler.getColor(FluidVariant.of(fluid), null, null);
+            return handler.getColor(FluidVariant.of(fluid, fluidStack.patch()), null, null);
         }
         BlockTintSource blockTintSource = fluidModel.tintSource();
         if (blockTintSource != null) {
