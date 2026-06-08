@@ -117,7 +117,7 @@ public class ItemFilters {
     /// @param stack The item stack
     /// @param query The query
     /// @return Whether the item stack matches the mod name
-    protected static boolean modNamespace(ItemStack stack, String query) {
+    public static boolean modNamespace(ItemStack stack, String query) {
         String modNamespace = ReliableRecipeViewerClient.resolver().getModNamespaceForItem(stack);
         if (modNamespace == null)
             return false;
@@ -153,7 +153,7 @@ public class ItemFilters {
     /// @param stack The item stack
     /// @param query The query
     /// @return Whether the item stack matches the item id
-    protected static boolean id(ItemStack stack, String query) {
+    public static boolean id(ItemStack stack, String query) {
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase();
         return itemId.startsWith(query.toLowerCase()) || itemId.contains(query.toLowerCase());
     }
@@ -177,7 +177,7 @@ public class ItemFilters {
     /// @param itemStack The item stack
     /// @param query The query
     /// @return Whether the item stack matches the items tags
-    protected static boolean tag(ItemStack itemStack, String query) {
+    public static boolean tag(ItemStack itemStack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
         if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {

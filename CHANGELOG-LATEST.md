@@ -1,3 +1,6 @@
+### Changed
+- Craftables panel now responds to the search bar.
+
 ### Fixed
 - Fluid stacks now handle data component patches.
 - Client integration no longer assumes fluids have buckets.

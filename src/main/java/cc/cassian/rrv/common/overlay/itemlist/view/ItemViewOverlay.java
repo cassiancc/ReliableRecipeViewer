@@ -22,6 +22,7 @@ import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -214,6 +215,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 
         this.availableItems().removeIf(ItemView::isExcludedItem);
+
+        SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
 
         this.updateSlots();
 
@@ -474,4 +477,13 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void setWarned(boolean b) {
         warned = b;
     }
+
+    /// Returns an array of search parameters.
+	public String[] getCurrentQueries() {
+		if (currentQuery.contains(" ")) {
+            return currentQuery.split(" ");
+        } else {
+            return new String[]{currentQuery};
+		}
+	}
 }
