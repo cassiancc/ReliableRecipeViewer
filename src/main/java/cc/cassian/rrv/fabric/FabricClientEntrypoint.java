@@ -7,6 +7,8 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
+import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.PolymerClientIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -59,7 +61,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         });
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, recipes) -> {
-            ClientRecipeCache.INSTANCE.buildRecipeCache(false);
+            if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED))
+                ClientRecipeCache.INSTANCE.buildRecipeCache(false);
         });
     }
 
