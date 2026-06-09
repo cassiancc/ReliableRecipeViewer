@@ -40,6 +40,8 @@ public class ReliableRecipeViewerClient {
     public static final KeyMapping GO_BACK_RECIPE = new KeyMapping("key.rrv.go_back", InputConstants.Type.MOUSE, 3, RRV_CATEGORY);
     public static final KeyMapping GO_FORWARD_RECIPE = new KeyMapping("key.rrv.go_forward", InputConstants.Type.MOUSE, 4, RRV_CATEGORY);
 
+    public static final KeyMapping USE_QUICK_CRAFT = new KeyMapping("key.rrv.quick_craft", GLFW.GLFW_KEY_LEFT_CONTROL, RRV_CATEGORY);
+
     public static final KeyMapping USE_CHEATMODE = new KeyMapping("key.rrv.cheatmode", GLFW.GLFW_KEY_LEFT_ALT, RRV_ADMIN_CATEGORY);
 
     public static final List<KeyMapping> RRV_KEY_MAPPINGS = List.of(USAGE_KEYBIND, RECIPE_KEYBIND, TOGGLE_OVERLAY_KEYBIND, ADD_BOOKMARK_KEYBIND, GO_BACK_RECIPE, GO_FORWARD_RECIPE, USE_CHEATMODE);
@@ -65,6 +67,11 @@ public class ReliableRecipeViewerClient {
     public static boolean isCheatmodeActive() {
         Minecraft mc = Minecraft.getInstance();
         return mc.player != null && RrvUtil.hasPermission(mc.player) && !ReliableRecipeViewerClient.USE_CHEATMODE.isUnbound() && InputConstants.isKeyDown(mc.getWindow(), ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
+    }
+
+    public static boolean isQuickCraftActive() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.player != null && !ReliableRecipeViewerClient.USE_QUICK_CRAFT.isUnbound() && InputConstants.isKeyDown(mc.getWindow(), ReliableRecipeViewerClient.USE_QUICK_CRAFT.key.getValue());
     }
 
     public static Component addNamespaceTooltip(String modName, List<Component> tooltip, boolean inItemView, boolean force) {

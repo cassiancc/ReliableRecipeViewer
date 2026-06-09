@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.config.options.TutorialState;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.ChatFormatting;
@@ -84,6 +85,8 @@ public class ItemSlot {
 
             if (recipe != null) {
                 tooltip.add(Component.translatable("view.rrv.recipe_id", Component.literal(recipe).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD));
+                if (TutorialState.showTutorial() && !ReliableRecipeViewerClient.isQuickCraftActive())
+                    tooltip.addLast(Component.literal("Hold ").append(Component.keybind("key.rrv.quick_craft")).append(" to quick craft items!"));
             }
 
             if (ReliableRecipeViewerClient.isCheatmodeActive()) {
