@@ -364,7 +364,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     protected @NonNull List<Component> getTooltipFromContainerItem(@NonNull ItemStack itemStack) {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
-        Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, true);
+        Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, false);
         var index = component != null ? tooltip.indexOf(component) : tooltip.size();
 
         CompoundTag customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
@@ -424,7 +424,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
 
         // Add tag namespace
-        ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(tagId.getNamespace()), tooltip, true, true);
+        ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(tagId.getNamespace()), tooltip, true);
     }
 
 
