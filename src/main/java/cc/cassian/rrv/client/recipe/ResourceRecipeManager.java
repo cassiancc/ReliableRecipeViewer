@@ -1,12 +1,12 @@
-package cc.cassian.rrv.common.recipe;
+package cc.cassian.rrv.client.recipe;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonObject;
@@ -15,7 +15,9 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 //? fabric {
 import net.fabricmc.loader.api.FabricLoader;
-//?}
+//?} else {
+/*import net.neoforged.fml.ModList;
+*///?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -40,6 +42,10 @@ import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 public class ResourceRecipeManager {
 	public static final ArrayList<Identifier> HIDDEN_ITEM_TAGS = new ArrayList<>();
 	public static final ArrayList<Identifier> HIDDEN_BLOCK_TAGS = new ArrayList<>();
+	public static final String ALIASES_KEY = "aliases";
+	public static final String VALUES_KEY = "values";
+	public static final String REMOVE_KEY = "remove";
+	public static final String REPLACE_KEY = "replace";
 
 	private static Map<Identifier, Resource> getIdentifierResourceMap(String path) {
 		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
@@ -141,12 +147,12 @@ public class ResourceRecipeManager {
 			try {
 				JsonObject parsedRecipe = StrictJsonParser.parse(resource.openAsReader()).getAsJsonObject();
 				// replace - whether to replace the entire index with this modified one
-				if (parsedRecipe.has("replace") && parsedRecipe.get("replace").isJsonPrimitive() && parsedRecipe.get("replace").getAsJsonPrimitive().isBoolean() && parsedRecipe.getAsJsonPrimitive("replace").getAsBoolean()) {
+				if (parsedRecipe.has(REPLACE_KEY) && parsedRecipe.get(REPLACE_KEY).isJsonPrimitive() && parsedRecipe.get(REPLACE_KEY).getAsJsonPrimitive().isBoolean() && parsedRecipe.getAsJsonPrimitive(REPLACE_KEY).getAsBoolean()) {
 					results.clear();
 				}
 				// values to remove from the index
-				if (parsedRecipe.has("remove") && parsedRecipe.get("remove").isJsonArray()) {
-					parsedRecipe.getAsJsonArray("remove").forEach(item -> {
+				if (parsedRecipe.has(REMOVE_KEY) && parsedRecipe.get(REMOVE_KEY).isJsonArray()) {
+					parsedRecipe.getAsJsonArray(REMOVE_KEY).forEach(item -> {
 						if (item.isJsonObject()) {
 							results.remove(RrvUtil.getItemStack(item));
 						}
@@ -157,8 +163,8 @@ public class ResourceRecipeManager {
 					});
 				}
 				// new values to insert into the index
-				if (parsedRecipe.has("values") && parsedRecipe.get("values").isJsonArray()) {
-					parsedRecipe.getAsJsonArray("values").forEach(item -> {
+				if (parsedRecipe.has(VALUES_KEY) && parsedRecipe.get(VALUES_KEY).isJsonArray()) {
+					parsedRecipe.getAsJsonArray(VALUES_KEY).forEach(item -> {
 						if (item.isJsonObject() && item.getAsJsonObject().has("after")) {
 							findAndAddStack(results, item.getAsJsonObject(), "after", 1);
 						} else if (item.isJsonObject() && item.getAsJsonObject().has("before")) {
@@ -171,6 +177,14 @@ public class ResourceRecipeManager {
 						}
 					});
 				}
+				// data-driven aliases
+				if (parsedRecipe.has(ALIASES_KEY) && parsedRecipe.get(ALIASES_KEY).isJsonObject()) {
+					parsedRecipe.getAsJsonObject(ALIASES_KEY).entrySet().forEach(entry -> {
+						if (entry.getValue().isJsonArray()) {
+							ItemView.addAliases(BuiltInRegistries.ITEM.getValue(Identifier.parse(entry.getKey())), entry.getValue().getAsJsonArray().asList().stream().map(JsonElement::getAsString).toList());
+						}
+					});
+				}
 			} catch (Exception e) {
 				LOGGER.error("Could not parse index modification {} due to an exception: ", identifier, e);
 			}
@@ -178,16 +192,41 @@ public class ResourceRecipeManager {
 	}
 
 	/// Client fallback for when a server did not provide recipes.
-	/// Fabric-exclusive, as Neo does not provide NIO paths for mods.
 	public static void getLocalRecipes() {
 		HashMap<Identifier, RecipeHolder<?>> objects = new HashMap<>();
 		//? fabric {
 		FabricLoader.getInstance().getAllMods().forEach(mod->{
 			var rootPath = mod.getRootPaths().getFirst();
 			String modId = mod.getMetadata().getId();
-			getCachedRecipesFromMod(rootPath, modId, objects);
+			var path = rootPath.resolve("data/%s/recipe".formatted(modId));
+			if (Files.exists(path)) {
+				try (Stream<Path> files = Files.walk(path)) {
+					files.forEach(recipePath->{
+						if (Files.isDirectory(recipePath)) return;
+						try (BufferedReader tagReader = Files.newBufferedReader(recipePath)) {
+							readRecipe(tagReader, objects, recipePath.getFileName().toString(), modId);
+						} catch (Exception e) {
+							LOGGER.error("Error loading local recipe: {}", recipePath);
+						}
+					});
+				} catch (Exception e) {
+					LOGGER.error("Error loading local recipes from mod: {}", modId);
+				}
+			}
 		});
-		//?}
+		//?} else {
+		/*ModList.get().getMods().forEach(mod -> {
+			var modid = mod.getModId();
+			mod.getOwningFile().getFile().getContents().visitContent("data/%s/recipe".formatted(modid), (name, jarResource)->{
+				var recipePath = Arrays.asList(name.split("recipe/")).getLast();
+				try {
+					readRecipe(jarResource.bufferedReader(), objects, recipePath, modid);
+				} catch (Exception e) {
+					LOGGER.debug("Error loading local recipe: {}", recipePath); // downgraded to debug as neo is throwing errors from common tags not being loaded
+				}
+			});
+		});
+		*///?}
 		try {
 			ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(objects.values());
 		} catch (Exception e) {
@@ -196,29 +235,15 @@ public class ResourceRecipeManager {
 
 	}
 
-	private static void getCachedRecipesFromMod(Path rootPath, String modId, Map<Identifier, RecipeHolder<?>> objects) {
-		var path = rootPath.resolve("data/%s/recipe".formatted(modId));
-		if (Files.exists(path)) {
-			try (Stream<Path> files = Files.walk(path)) {
-				files.forEach(recipePath->{
-					if (Files.isDirectory(recipePath)) return;
-					try (BufferedReader tagReader = Files.newBufferedReader(recipePath)) {
-						String id = recipePath.getFileName().toString().replace(".json", "");
-						JsonElement jsonElement = GSON.fromJson(tagReader, JsonElement.class);
-						JsonObject recipeObject = jsonElement.getAsJsonObject();
-						if (!recipeObject.has("type")) return;
-						Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
-						Identifier recipeId = Identifier.fromNamespaceAndPath(modId, id);
-						if (!objects.containsKey(recipeId))
-							objects.put(recipeId, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), recipe));
-					} catch (Exception e) {
-						LOGGER.error("Error loading local recipe: {}", recipePath);
-					}
-				});
-			} catch (Exception e) {
-				LOGGER.error("Error loading local recipes from mod: {}", modId);
-			}
-		}
+	private static void readRecipe(BufferedReader tagReader, Map<Identifier, RecipeHolder<?>> objects, String recipePath, String modId) {
+		String id = recipePath.replace(".json", "");
+		JsonElement jsonElement = GSON.fromJson(tagReader, JsonElement.class);
+		JsonObject recipeObject = jsonElement.getAsJsonObject();
+		if (!recipeObject.has("type")) return;
+		Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
+		Identifier recipeId = Identifier.fromNamespaceAndPath(modId, id);
+		if (!objects.containsKey(recipeId))
+			objects.put(recipeId, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), recipe));
 	}
 
 	private static void findAndAddStack(List<ItemStack> results, JsonObject itemObject, String key, int offset) {

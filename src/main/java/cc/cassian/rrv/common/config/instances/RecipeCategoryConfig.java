@@ -36,7 +36,7 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 		}
 		// sort
 		ids.sort(this::compareIdentifiers);
-		int i = 0;
+		int i = 2;
         for (Identifier id : ids) {
             addNewCategory(id, i++,true);
         }

@@ -151,13 +151,14 @@ public interface ReliableClientRecipeType {
 
     /// Where to place the Recipe Transfer button, if at all.
     /// Note that this button will only be visible if all prior requirements are fulfilled.
-    default ButtonData placeRecipeTransferButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() + 4, guiTop + getDisplayHeight() / 2 - 20, true);
+    default ButtonData placeRecipeTransferButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, info.guiTop() + getDisplayHeight() / 2 - 20, true);
     }
 
     /// Where to place the Recipe Sharing button, if at all.
-    default ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() + 4, guiTop + getDisplayHeight() / 2 - 6, true);
+    /// Note that this button will only be visible if the config option is enabled.
+    default ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() + 4, info.guiTop() + getDisplayHeight() / 2 - 6, true);
     }
 
     /**

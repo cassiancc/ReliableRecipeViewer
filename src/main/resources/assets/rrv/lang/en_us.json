@@ -64,6 +64,8 @@
   "rrv.sharing.type": "%s recipe for: %s",
   "rrv.sharing.recipe_type": "Recipe type: %s",
   "rrv.sharing.recipe_for": "Recipe for: %s",
+  "rrv.sharing.unable_to_share": "Unable to share recipe: %s",
+  "rrv.sharing.denied": "Recipe sharing is not enabled on this server",
 
   "modmenu.nameTranslation.c": "Common",
 
@@ -170,6 +172,7 @@
   "rrv.client_settings.local_fallback": "Local Fallback",
   "rrv.client_settings.local_fallback.tooltip": "Enable a local fallback mode for vanilla servers that pulls recipes from your client's recipe folder. Will be inaccurate on servers with datapacks or server mods.",
   "rrv.client_settings.local_fallback.enabled": "Enabled",
+  "rrv.client_settings.local_fallback.when_needed": "When Needed",
   "rrv.client_settings.local_fallback.disabled": "Disabled",
   "rrv.client_settings.general": "General",
   "rrv.client_settings.advanced": "Advanced",
@@ -389,6 +392,7 @@
   "tag.item.minecraft.sulfur_cube_archetype.fast_flat": "Fast Flat Sulfur Cube Archetype",
   "tag.item.minecraft.sulfur_cube_archetype.regular": "Regular Sulfur Cube Archetype",
   "tag.item.minecraft.sulfur_cube_archetype.bouncy": "Bouncy Sulfur Cube Archetype",
+  "tag.item.minecraft.sulfur_cube_archetype.slow_bouncy": "Slow Bouncy Sulfur Cube Archetype",
   "tag.item.minecraft.sulfur_cube_archetype.slow_flat": "Slow Flat Sulfur Cube Archetype",
   "tag.item.minecraft.sulfur_cube_archetype.light": "Light Sulfur Cube Archetype",
   "tag.item.minecraft.sulfur_cube_archetype.fast_sliding": "Fast Sliding Sulfur Cube Archetype",

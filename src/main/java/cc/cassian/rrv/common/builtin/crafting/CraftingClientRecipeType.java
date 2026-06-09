@@ -72,4 +72,9 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.CRAFTING_TABLE), new ItemStack(Items.CRAFTER));
     }
+
+    @Override
+    public int getPriority() {
+        return 1;
+    }
 }

@@ -72,7 +72,7 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() - 20, guiTop + getDisplayHeight() - 18, true);
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiRight() - 20, info.guiBottom() - 18, true);
     }
 }

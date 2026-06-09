@@ -4,7 +4,7 @@ import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
@@ -13,6 +13,7 @@ import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -38,7 +39,7 @@ import net.minecraft.world.item.component.CustomData;
 import org.jspecify.annotations.NonNull;
 
 import java.awt.*;
-import java.util.ConcurrentModificationException;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -52,8 +53,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     public SpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
-    private static int FOOTER_HEIGHT = 20;
+    private static final int FOOTER_HEIGHT = 20;
     private NonNullList<ItemStack> inventory;
+    private List<ItemStack> lastAvailableItems = availableItems;
 
     public SidePanelOverlay() {
         super(-1, -1, -1, -1);
@@ -133,14 +135,13 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
     }
 
-
     /**
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(Reason reason) {
         var screen = RRVClientUtil.currentScreen();
         if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-        if (Platform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
+        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
         this.availableItems.clear();
         if (showCraftables()) {
             Minecraft client = Minecraft.getInstance();
@@ -148,24 +149,55 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             if (player == null) {
                 return;
             }
-			this.inventory = player.getInventory().getNonEquipmentItems();
+            // when searching, use the last unfiltered list rather than constantly querying the recipe manager
+            if (!reason.equals(Reason.SEARCH)) {
+                this.inventory = player.getInventory().getNonEquipmentItems();
 
-            if (!(screen instanceof CreativeModeInventoryScreen))
-                inventory.forEach(inventoryItem -> {
-                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
-            });
-            if (this.availableItems.isEmpty()) {
-                try {
-                inventory.forEach(inventoryItem -> {
-                    ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
-                });
-                } catch (ConcurrentModificationException ignored) {}
+                // search by what craftables the workstation supports
+                if (!(screen instanceof CreativeModeInventoryScreen))
+                    inventory.forEach(inventoryItem -> {
+                        ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
+                    });
+
+                // if the workstation is not supported, search by what craftables exist
+                if (this.availableItems.isEmpty()) {
+                    try {
+                        inventory.forEach(inventoryItem -> {
+                            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
+                        });
+                    } catch (ConcurrentModificationException ignored) {}
+                }
+
+                // save last available items for when searching occurs
+                this.lastAvailableItems = new ArrayList<>(availableItems);
+            } else {
+                this.availableItems = new ArrayList<>(lastAvailableItems);
             }
+
+            filter();
+            this.availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
         } else {
             this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
         }
 
         this.updateSlots();
+    }
+
+    private void filter() {
+        for (String query : ItemViewOverlay.INSTANCE.getCurrentQueries()) {
+            if (query.startsWith("@")) {
+                this.availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
+            }
+            else if (query.startsWith(":")) {
+                this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
+            }
+            else if (query.startsWith("#")) {
+                this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
+            }
+            else {
+                this.availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)));
+            }
+        }
     }
 
     void updateRecipes(ReliableClientRecipe recipe, NonNullList<ItemStack> inventory, boolean b) {
@@ -340,6 +372,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     public enum Reason {
-        BUTTON, INVENTORY_CHANGE, BOOKMARK, SCREEN_CHANGE, OTHER;
+        BUTTON, INVENTORY_CHANGE, BOOKMARK, SCREEN_CHANGE, SEARCH, OTHER;
     }
 }

@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
@@ -238,6 +239,24 @@ public class ItemView {
     @SafeVarargs
     public static void excludePotions(Holder<Potion>... items) {
         Arrays.stream(items).filter(item -> !EXCLUDED_POTIONS.contains(item)).forEach(EXCLUDED_POTIONS::add);
+    }
+
+    /// Add aliases for items, e.g. enchanting table -> enchantment table.
+    /// This is used in the Item View's search.
+    /// @param item The item
+    /// @param alias The alias
+    public static void addAlias(Item item, String alias) {
+        if (!ItemFilters.ALIASES.get(item).contains(alias))
+            ItemFilters.ALIASES.put(item, alias);
+    }
+
+    /// Add aliases for items, e.g. enchanting table -> enchantment table.
+    /// This is used in the Item View's search.
+    /// @param item The item
+    /// @param aliases The aliases to add for the item.
+    public static void addAliases(Item item, Collection<String> aliases) {
+        if (!ItemFilters.ALIASES.get(item).containsAll(aliases))
+            ItemFilters.ALIASES.putAll(item, aliases);
     }
 
 

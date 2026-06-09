@@ -114,7 +114,7 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
         return REFERENCE_CONDITION;
     }
 
-    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() - 16, guiTop + 5, true);
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiRight() - 16, info.guiTop() + 5, true);
     }
 }

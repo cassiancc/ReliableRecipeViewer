@@ -11,6 +11,7 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -22,7 +23,7 @@ import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
-import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.Minecraft;
@@ -35,7 +36,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NonNull;
@@ -215,6 +215,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         this.availableItems().removeIf(ItemView::isExcludedItem);
 
+        SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
+
         this.updateSlots();
 
         this.updateButtons();
@@ -382,6 +384,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (!InternalRecipeManager.INSTANCE.isRecipesSynced() && !warned) {
             Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
             warned = true;
+            if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.WHEN_NEEDED) || Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED)) {
+                ClientRecipeCache.INSTANCE.buildRecipeCache(false);
+            }
         }
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
@@ -474,4 +479,17 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void setWarned(boolean b) {
         warned = b;
     }
+
+    public boolean wasWarned() {
+        return warned;
+    }
+
+    /// Returns an array of search parameters.
+	public String[] getCurrentQueries() {
+		if (currentQuery.contains(" ")) {
+            return currentQuery.split(" ");
+        } else {
+            return new String[]{currentQuery};
+		}
+	}
 }

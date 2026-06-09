@@ -123,9 +123,7 @@ dependencies {
     compileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
     compileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
     compileOnly("eu.pb4:polydex:${property("deps.polydex")}")
-    compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
-        isTransitive = false;
-    }
+    compileOnly("maven.modrinth:jade:${property("deps.jade")}")
     compileOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
     if (hasProperty("deps.badpackets")) {
         runtimeOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
@@ -141,18 +139,13 @@ dependencies {
     }
 
     if (stonecutter.eval(mcVersion, "=26.1")) {
-
 //        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-virtual-entity:0.16.2+26.1.1")
+        localRuntime("maven.modrinth:jade:${property("deps.jade")}")
     }
-
-
-//    val modules = listOf("command-api-v2", "key-mapping-api-v1", "item-api-v1", "recipe-api-v1", "transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
-//    for (it in modules) implementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
-
 }
 
 stonecutter {

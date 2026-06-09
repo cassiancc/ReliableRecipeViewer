@@ -98,7 +98,7 @@ public class ClientConfigScreen extends Screen {
 
         addChild(advancedHelper, "fluid_unit", "droplets", "mb", configs.isFluidUnitDroplets(), (_, b) -> configs.setFluidUnitDroplets(b));
         addChild(advancedHelper, "show_recipe_id", "show", "hide", configs.isShowRecipeId(), (_, b) -> configs.setShowRecipeId(b));
-        addChild(advancedHelper, "local_fallback", "enabled", "disabled", configs.localFallbackAllowed(), (_, b) -> configs.setLocalFallbackAllowed(b));
+        addChild(advancedHelper, "local_fallback", configs.localFallbackAllowed(), LocalFallback.values(), (_, b) -> configs.setLocalFallbackAllowed(b));
 
         Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (_) -> RRVClientUtil.setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
         if (Configs.CATEGORIES.CATEGORIES.isEmpty()) {

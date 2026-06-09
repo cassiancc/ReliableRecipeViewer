@@ -1,32 +1,23 @@
 package cc.cassian.rrv.neoforge;
 
 //? neoforge {
-/*import cc.cassian.rrv.common.Platform;
-import cc.cassian.rrv.common.resolver.RRVClientResolver;
+/*import cc.cassian.rrv.common.RRVPlatform;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.loading.LoadingModList;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
-public class NeoforgePlatformImpl implements Platform {
+public class NeoforgePlatformImpl implements RRVPlatform {
 
     @Override
     public boolean isModLoaded(String modid) {
@@ -44,8 +35,8 @@ public class NeoforgePlatformImpl implements Platform {
         Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(namespace);
         if (modContainer.isPresent()) {
             return modContainer.get().getModInfo().getDisplayName();
-        } else if (I18n.exists(key)) {
-            return I18n.get(key);
+        } else if (RrvUtil.has(key)) {
+            return RrvUtil.get(key);
         } else {
             return WordUtils.capitalize(namespace);
         }
@@ -69,11 +60,6 @@ public class NeoforgePlatformImpl implements Platform {
         ArrayList<String> ids = new ArrayList<>();
         ModList.get().getMods().forEach(mod -> ids.add(mod.getModId()));
         return ids;
-    }
-
-    @Override
-    public RRVClientResolver.UVInfo getUVInfo(TextureAtlasSprite sprite) {
-        return new RRVClientResolver.UVInfo(sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
     }
 
     @Override

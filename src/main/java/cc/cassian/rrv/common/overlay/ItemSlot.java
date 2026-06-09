@@ -24,9 +24,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Representation of one slot later rendered in the overlay
- */
+/// Representation of one slot later rendered in the overlay
 public class ItemSlot {
 
     private static final Identifier SLOT_HIGHLIGHT_BACK_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_back");
@@ -51,19 +49,15 @@ public class ItemSlot {
     public void changeCheatmodeCount(int change) {
         this.currentCheatmodeCount += change;
 
-        this.currentCheatmodeCount = Math.max(1, Math.min(this.currentCheatmodeCount, this.stack.getMaxStackSize()));
+        this.currentCheatmodeCount = Math.clamp(this.currentCheatmodeCount, 1, this.stack.getMaxStackSize());
     }
 
-    /**
-     * @return The itemStack that is currently hold by this slot
-     */
+    /// @return The [ItemStack] that is currently hold by this slot
     public ItemStack getStack() {
         return this.stack;
     }
 
-    /**
-     * Renders the slot
-     */
+    /// Renders the slot
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.hovered = this.isMouseOver(mouseX, mouseY);
 
@@ -101,6 +95,8 @@ public class ItemSlot {
 
         }
         guiGraphics.fakeItem(this.stack, this.x + 2, this.y + 2);
+
+        // render recipe
         if (recipe != null) {
             guiGraphics.itemDecorations(mc.font, this.stack, this.x+2, this.y+2);
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_stack_highlight"), this.x + 3, this.y + 2, 16, 16);
@@ -110,9 +106,7 @@ public class ItemSlot {
             guiGraphics.setComponentTooltipForNextFrame(mc.font, tooltip, mouseX, mouseY);
     }
 
-    /**
-     * Called on a mouse click in any inventory
-     */
+    /// Called on a mouse click in any inventory
     public void onClicked(MouseButtonEvent event) {
         var mouseButton = event.button();
 
@@ -153,5 +147,13 @@ public class ItemSlot {
 
     public boolean isHovered() {
         return this.hovered;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }

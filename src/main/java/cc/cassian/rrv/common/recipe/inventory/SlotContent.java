@@ -1,40 +1,26 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
-import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
-import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-import com.mojang.datafixers.util.Either;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
-import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-//? fabric {
-import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
-import net.fabricmc.fabric.api.recipe.v1.ingredient.FabricIngredient;
-import net.fabricmc.fabric.impl.recipe.ingredient.builtin.ComponentsIngredient;
-import cc.cassian.rrv.fabric.mixin.ComponentsIngredientAccessor;
-//?} else {
+//? neoforge {
 /*import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
-import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 *///?}
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.context.ContextKeySet;
-import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;

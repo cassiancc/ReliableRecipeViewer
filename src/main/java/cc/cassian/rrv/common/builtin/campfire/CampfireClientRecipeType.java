@@ -68,7 +68,7 @@ public class CampfireClientRecipeType implements ReliableClientRecipeType {
         return List.of(new ItemStack(Items.CAMPFIRE));
     }
 
-    public ButtonData placeRecipeShareButton(int guiLeft, int guiTop) {
-        return new ButtonData(guiLeft + getDisplayWidth() - 16, guiTop + getDisplayHeight() - 16, true);
+    public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+        return new ButtonData(info.guiLeft() + getDisplayWidth() - 16, info.guiTop() + getDisplayHeight() - 16, true);
     }
 }

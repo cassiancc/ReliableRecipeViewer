@@ -1,28 +1,22 @@
 package cc.cassian.rrv.fabric;
 
 //? fabric {
-import cc.cassian.rrv.client.util.RRVClientUtil;
-import cc.cassian.rrv.common.Platform;
-import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import cc.cassian.rrv.common.resolver.RRVClientResolver;
+import cc.cassian.rrv.common.RRVPlatform;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class FabricPlatformImpl implements Platform {
+public class FabricPlatformImpl implements RRVPlatform {
 
     @Override
     public boolean isModLoaded(String modid) {
@@ -40,8 +34,8 @@ public class FabricPlatformImpl implements Platform {
         Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer(namespace);
         if (modContainer.isPresent()) {
             return modContainer.get().getMetadata().getName();
-        } else if (I18n.exists(key)) {
-            return I18n.get(key);
+        } else if (RrvUtil.has(key)) {
+            return RrvUtil.get(key);
         } else {
             return WordUtils.capitalize(namespace);
         }
@@ -65,12 +59,6 @@ public class FabricPlatformImpl implements Platform {
         ArrayList<String> modContainers = new ArrayList<>();
         FabricLoader.getInstance().getAllMods().forEach((mod)-> modContainers.add(mod.getMetadata().getId()));
         return modContainers;
-    }
-
-
-    @Override
-    public RRVClientResolver.UVInfo getUVInfo(TextureAtlasSprite sprite) {
-        return new RRVClientResolver.UVInfo(sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
     }
 
     @Override

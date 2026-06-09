@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common;
 
+import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import com.google.gson.Gson;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.Random;
 
 public class ReliableRecipeViewer {
 
@@ -19,11 +19,9 @@ public class ReliableRecipeViewer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("Reliable Recipe Viewer");
 
-    public static final Path CONFIG_PATH = Platform.INSTANCE.getConfigDirectory().resolve("rrv");
+    public static final Path CONFIG_PATH = RRVPlatform.INSTANCE.getConfigDirectory().resolve("rrv");
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
-    public static final Random RANDOM = new Random();
 
     public static final MenuType<RecipeViewMenu> RECIPE_VIEW_MENU = new MenuType<>(RecipeViewMenu::new, FeatureFlagSet.of());
 
@@ -33,6 +31,14 @@ public class ReliableRecipeViewer {
 
     public static Identifier of(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    }
+
+    public static void loadServerConfigs() {
+        ServerConfigs.SERVER_SETTINGS.load();
+    }
+
+    public static void saveServerConfigs() {
+        ServerConfigs.SERVER_SETTINGS.save();
     }
 
 }

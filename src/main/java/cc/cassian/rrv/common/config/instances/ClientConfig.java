@@ -23,7 +23,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean showButtons = true;
 	private boolean recipeBookButton = false;
 	private boolean recipeBookTheme = true;
-	private boolean localFallback = false;
+	private LocalFallback localFallback = LocalFallback.WHEN_NEEDED;
 	private boolean recipeSharing = true;
 	private TutorialState tutorial = TutorialState.ALWAYS;
 
@@ -159,11 +159,11 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.recipeBookTheme = recipeBookTheme;
 	}
 
-	public boolean localFallbackAllowed() {
+	public LocalFallback localFallbackAllowed() {
 		return localFallback;
 	}
 
-	public void setLocalFallbackAllowed(boolean localFallback) {
+	public void setLocalFallbackAllowed(LocalFallback localFallback) {
 		this.localFallback = localFallback;
 	}
 
@@ -207,7 +207,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.showRecipeId = load("showRecipeId", this.showRecipeId);
 		this.recipeBookButton = load("recipeBookButton", this.recipeBookButton);
 		this.recipeBookTheme = load("recipeBookTheme", this.recipeBookTheme);
-		this.localFallback = load("localFallback", this.localFallback);
+		this.localFallback = load("localFallback", this.localFallback, LocalFallback.CODEC);
 		this.wrapScrolling = load("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
 		this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
@@ -233,7 +233,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("recipeBookTheme", this.recipeBookTheme);
 		save("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
 		save("sidePanel", this.sidePanel, SidePanel.CODEC);
-		save("localFallback", this.localFallback);
+		save("localFallback", this.localFallback, LocalFallback.CODEC);
 		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		save("recipeSharing", this.recipeSharing);
 		save("tutorialState", this.tutorial, TutorialState.CODEC);

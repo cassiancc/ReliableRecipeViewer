@@ -1,11 +1,12 @@
 package cc.cassian.rrv.client.extra;
 
+import cc.cassian.rrv.client.util.UVInfo;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.extra.FluidStack;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.serialization.MapCodec;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
-import cc.cassian.rrv.common.resolver.RRVClientResolver;
 //? fabric {
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -50,7 +51,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         FluidModel fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
         TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
         int color = getColor(fluidStack, fluid, fluidModel);
-        RRVClientResolver.UVInfo uvInfo = ReliableRecipeViewerClient.resolver().getUVInfo(sprite);
+        UVInfo uvInfo = UVInfo.getUVInfo(sprite);
 
         float u0 = uvInfo.u0();
         float u1 = uvInfo.u1();
@@ -84,7 +85,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         //? fabric {
         var handler = FluidVariantRendering.getHandler(fluid);
         if (handler != null) {
-            return handler.getColor(FluidVariant.of(fluid), null, null);
+            return handler.getColor(FluidVariant.of(fluid, fluidStack.patch()), null, null);
         }
         BlockTintSource blockTintSource = fluidModel.tintSource();
         if (blockTintSource != null) {

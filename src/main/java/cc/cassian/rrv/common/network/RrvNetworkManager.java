@@ -2,10 +2,8 @@ package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ClientNetworkManager;
-import cc.cassian.rrv.client.recipe.ClientRecipeCache;
-import cc.cassian.rrv.client.sharing.RecipeSharing;
-import cc.cassian.rrv.common.Platform;
-import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.RRVPlatform;
+import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
@@ -23,7 +21,6 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.cache.LowEndRecipeCache;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
-import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 //?} else {
@@ -32,9 +29,6 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 *///?}
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -107,7 +101,7 @@ public class RrvNetworkManager {
     public static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, ClientNetworkManager.PayloadHandler<ClientNetworkManager.ClientContext, T> clientHandler) {
         //? fabric {
         registerClientboundPayload(type, codec);
-        if (Platform.INSTANCE.isClientSide()) {
+        if (RRVPlatform.INSTANCE.isClientSide()) {
             ClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
         }
         //?} else {
@@ -245,17 +239,16 @@ public class RrvNetworkManager {
 
 
         registerServerbound(ServerboundShareRecipePayload.TYPE, ServerboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
+            if (!ServerConfigs.SERVER_SETTINGS.isRecipeSharing()) {
+                context.sender().sendSystemMessage(Component.translatable("rrv.sharing.denied"));
+                return;
+            }
             context.server().getPlayerList().getPlayers().forEach(player -> {
-                this.sendPacket(player, new ClientboundShareRecipePayload(payload.recipeId(), context.sender().getUUID()));
+                this.sendPacket(player, new ClientboundShareRecipePayload(payload.recipeId(), context.sender.getStringUUID(), context.sender().getDisplayName()));
             });
         });
 
-        registerClientbound(ClientboundShareRecipePayload.TYPE, ClientboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
-            if (!Configs.CLIENT_SETTINGS.isRecipeSharing()) return;
-            LocalPlayer player = context.client().orElse(Minecraft.getInstance()).player;
-            if (player == null) return;
-            RecipeSharing.shareRecipe(ClientRecipeCache.INSTANCE.getRecipes(payload.recipeId()).getFirst(), player);
-        });
+        registerClientbound(ClientboundShareRecipePayload.TYPE, ClientboundShareRecipePayload.STREAM_CODEC, ClientNetworkManager::handleClientboundRecipeSharingPayload);
 
 
         return this;

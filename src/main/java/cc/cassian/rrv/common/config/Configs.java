@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.config;
 import cc.cassian.rrv.common.config.instances.BookmarkConfig;
 import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.instances.RecipeCategoryConfig;
+import cc.cassian.rrv.common.config.instances.ServerConfig;
 
 public class Configs {
 
