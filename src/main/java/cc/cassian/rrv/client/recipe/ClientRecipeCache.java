@@ -163,15 +163,12 @@ public class ClientRecipeCache {
     public void buildRecipeCache(boolean rebuildFromSynchronizedRecipes) {
         ReliableRecipeViewer.LOGGER.info("RRV: Rebuilding client recipe cache {}", rebuildFromSynchronizedRecipes ? "from synchronized recipes." : "from client recipe folder.");
 
-        //? fabric
         if (localCacheBuilt && !rebuildFromSynchronizedRecipes) return;
 
         if (rebuildFromSynchronizedRecipes)
             InternalRecipeManager.INSTANCE.setRecipesSynced(true);
         else if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED) || Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.WHEN_NEEDED)) {
-            //? fabric {
             ResourceRecipeManager.getLocalRecipes();
-            //?}
             localCacheBuilt = true;
         }
 

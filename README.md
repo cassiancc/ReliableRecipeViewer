@@ -10,7 +10,7 @@ A recipe viewer for the latest versions of Minecraft, rebuilt from [EIV](https:/
 ## Features
 
 * **Recipe Viewing:** See recipes for all vanilla recipe types, as well as [supported modded recipe types](https://modrinth.com/collection/divCExF5) as well!
-* **Local Recipe Support**: On vanilla servers, RRV will automatically pull recipe data from the client's `recipe` folder. Requires Fabric Loader, and if possible RRV should still be installed on the server.
+* **Local Recipe Support**: On vanilla servers, RRV will automatically pull recipe data from the client's `recipe` folder. Note that if possible RRV should still be installed on the server.
 * **Powerful Configuration:** Reorder and disable recipe types, rearrange the item index, rearrange the overlays, and more config options to fit your needs.
 * **Bookmarking and Craftables Panel:** Bookmark items and recipes with the `A` key, or use the side panel to see what you can craft with the items in your inventory.
 * **Recipe Transfer:** Click the transfer button on supported recipes to quickly transfer items from your inventory to the workstation.

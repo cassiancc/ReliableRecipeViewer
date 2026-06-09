@@ -384,7 +384,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (!InternalRecipeManager.INSTANCE.isRecipesSynced() && !warned) {
             Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
             warned = true;
-            if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.WHEN_NEEDED)) {
+            if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.WHEN_NEEDED) || Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED)) {
                 ClientRecipeCache.INSTANCE.buildRecipeCache(false);
             }
         }

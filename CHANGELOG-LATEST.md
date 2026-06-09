@@ -1,9 +1,5 @@
-### Changed
-- Craftables panel now responds to the search bar.
-- Client fallback mode is now automatically initialized when on a server without RRV installed.
-- Recipe transfer and sharing features are now properly hidden on vanilla servers, rather than being nonfunctional.
+### Added
+- Recipe fallback feature is now available for NeoForge.
 
 ### Fixed
-- Fluid stacks now handle data component patches.
-- Client integration no longer assumes fluids have buckets.
-- Crash rendering entities on 26.2.
+- NeoForge now shows proper warning when connecting to a vanilla server.

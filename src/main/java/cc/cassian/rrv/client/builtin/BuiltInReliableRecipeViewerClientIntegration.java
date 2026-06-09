@@ -90,6 +90,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     @Override
     public void onIntegrationInitialize() {
         ItemView.addClientReloadCallback(() -> {
+            //? neoforge
+            //ItemView.excludeItems(Items.AIR);
             excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
             excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
