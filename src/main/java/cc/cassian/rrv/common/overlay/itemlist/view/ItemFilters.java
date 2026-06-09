@@ -102,7 +102,7 @@ public class ItemFilters {
         }
 
 		List<ItemStack> results = new ArrayList<>(firstPrio);
-        secondPrio.stream().filter(results::contains).forEach(results::add);
+        secondPrio.stream().filter(o -> !results.contains(o)).forEach(results::add);
 
         return results;
     }
