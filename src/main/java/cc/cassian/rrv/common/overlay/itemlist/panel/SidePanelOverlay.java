@@ -152,27 +152,34 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
             }
             case CRAFTABLES -> {
-              
-            // when searching, use the last unfiltered list rather than constantly querying the recipe manager
-            if (!reason.equals(Reason.SEARCH)) {
-                  Minecraft client = Minecraft.getInstance();
-                LocalPlayer player = client.player;
-                if (player == null) {
-                    return;
-                }
-                this.inventory = player.getInventory().getNonEquipmentItems();
+                // when searching, use the last unfiltered list rather than constantly querying the recipe manager
+                if (!reason.equals(Reason.SEARCH)) {
+                    Minecraft client = Minecraft.getInstance();
+                    LocalPlayer player = client.player;
+                    if (player == null) {
+                        return;
+                    }
+                    this.inventory = player.getInventory().getNonEquipmentItems();
 
-                if (!(screen instanceof CreativeModeInventoryScreen))
-                    inventory.forEach(inventoryItem -> {
-                        List<ReliableClientRecipe> recipesForCraftingInput = ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem);
-                        recipesForCraftingInput.forEach(recipe -> updateRecipes(recipe, inventory, true));
-                    });
-        
-            }
-                // save last available items for when searching occurs
-                this.lastAvailableItems = new ArrayList<>(availableItems);
-            } else {
-                this.availableItems = new ArrayList<>(lastAvailableItems);
+                    if (!(screen instanceof CreativeModeInventoryScreen))
+                        inventory.forEach(inventoryItem -> {
+                            List<ReliableClientRecipe> recipesForCraftingInput = ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem);
+                            recipesForCraftingInput.forEach(recipe -> updateRecipes(recipe, inventory, true));
+                        });
+                    if (this.availableItems.isEmpty()) {
+                        try {
+                            inventory.forEach(inventoryItem -> {
+                                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
+                            });
+                        } catch (ConcurrentModificationException ignored) {}
+                    }
+                    // save last available items for when searching occurs
+                    this.lastAvailableItems = new ArrayList<>(availableItems);
+                } else {
+                    this.availableItems = new ArrayList<>(lastAvailableItems);
+                }
+                filter();
+                this.availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
             }
             case UNLOCKED -> {
                 if (!(screen instanceof CreativeModeInventoryScreen))
@@ -190,13 +197,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 }
             }
             case DISABLED -> {}
-
-            
-
-            filter();
-            this.availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
-        } else {
-            this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
         }
 
         this.updateSlots();
