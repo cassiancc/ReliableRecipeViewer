@@ -37,7 +37,6 @@ public class ReliableRecipeViewer {
         ServerConfigs.SERVER_SETTINGS.load();
     }
 
-    /// This is currently called whenever the server config changes as it is only used for recipe sharing, need to find a better target in MinecraftServer.
     public static void saveServerConfigs() {
         ServerConfigs.SERVER_SETTINGS.save();
     }

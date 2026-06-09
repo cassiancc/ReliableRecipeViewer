@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin;
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
+import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
@@ -137,27 +138,16 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
 
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ShapedRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ShapelessRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(DyeRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ImbueRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(TransmuteRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(DecoratedPotRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(BookCloningRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(MapExtendingRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(FireworkRocketRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(FireworkStarRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(FireworkStarFadeRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(BannerDuplicateRecipe.SERIALIZER, RecipeType.CRAFTING); // TODO
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(ShieldDecorationRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(RepairItemRecipe.SERIALIZER, RecipeType.CRAFTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(SmeltingRecipe.SERIALIZER, RecipeType.SMELTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(BlastingRecipe.SERIALIZER, RecipeType.BLASTING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(CampfireCookingRecipe.SERIALIZER, RecipeType.CAMPFIRE_COOKING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(SmokingRecipe.SERIALIZER, RecipeType.SMOKING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(StonecutterRecipe.SERIALIZER, RecipeType.SMITHING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(SmithingTrimRecipe.SERIALIZER, RecipeType.SMITHING);
-        ServerRecipeManager.INSTANCE.synchronizeRecipeType(SmithingTransformRecipe.SERIALIZER, RecipeType.SMITHING);
+        //? fabric {
+        for (Identifier serializer : ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeSerializers()) {
+            ServerRecipeManager.INSTANCE.synchronizeRecipeType(BuiltInRegistries.RECIPE_SERIALIZER.getValue(serializer), null);
+        }
+        //?} else {
+        /*for (Identifier type : ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeTypes()) {
+            ServerRecipeManager.INSTANCE.synchronizeRecipeType(null, BuiltInRegistries.RECIPE_TYPE.getValue(type));
+        }
+        *///?}
+
 
         //Trading
         VillagerServerRecipe.registerDefaultProcessors();

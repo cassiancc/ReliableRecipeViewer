@@ -13,11 +13,22 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.commands.Commands.argument;
 
@@ -55,6 +66,11 @@ public class RrvCommand {
                 Commands.literal("rrv_admin")
                         .requires(RrvUtil::hasPermission)
                         .then(RrvCommand.shareRecipeConfig())
+                        //? fabric {
+                        .then(RrvCommand.syncRecipeSerializer())
+                        //?} else {
+                        /*.then(RrvCommand.syncRecipeType())
+                        *///?}
 //                        .then(Commands.literal("reloadRecipes").executes(RrvCommand::reloadRecipes)) removed as there's not much use post RRV 8
                         .then(Commands.literal("reload_stack_sensitives").executes(RrvCommand::reloadStackSensitives))
         );
@@ -86,10 +102,79 @@ public class RrvCommand {
                 .executes(context -> {
                     final boolean enabled = BoolArgumentType.getBool(context, "enabled");
                     ServerConfigs.SERVER_SETTINGS.setRecipeSharing(enabled);
-                    ReliableRecipeViewer.saveServerConfigs();
                     context.getSource().sendSuccess(()-> Component.literal("Recipe sharing has been %s on this server".formatted(enabled ? "enabled" : "disabled")), true);
                     return 1;
                 }));
     }
+
+    //? fabric {
+    private static ArgumentBuilder<CommandSourceStack, ?> syncRecipeSerializer() {
+        return Commands.literal("sync_recipe_serializer").then(argument("serializer", IdentifierArgument.id())
+                .suggests(new RecipeSerializerSuggestionProvider())
+                .executes(context -> {
+                    final Identifier enabled = IdentifierArgument.getId(context, "serializer");
+
+                    if (ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeSerializers().contains(enabled)) {
+                        context.getSource().sendSuccess(()-> Component.literal("Recipe serializer %s is already synchronized on this server.".formatted(enabled)), true);
+                    } else if (BuiltInRegistries.RECIPE_SERIALIZER.get(enabled).isPresent()) {
+                        ServerConfigs.SERVER_SETTINGS.addRecipeSerializer(enabled);
+                        context.getSource().sendSuccess(()-> Component.literal("Recipe serializer %s is now synchronized on this server.".formatted(enabled)), true);
+                    } else {
+                        context.getSource().sendFailure(Component.literal("Recipe serializer %s is not present on this server.".formatted(enabled)));
+                    }
+                    return 1;
+                }));
+    }
+
+    public static class RecipeSerializerSuggestionProvider implements SuggestionProvider<CommandSourceStack> {
+        @Override
+        public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+
+            Set<Identifier> recipeSerializers = BuiltInRegistries.RECIPE_SERIALIZER.keySet();
+
+            for (Identifier serializer : recipeSerializers) {
+                builder.suggest(serializer.toString());
+            }
+
+            // Lock the suggestions after we've modified them.
+            return builder.buildFuture();
+        }
+    }
+
+    //?} else {
+    /*private static ArgumentBuilder<CommandSourceStack, ?> syncRecipeType() {
+        return Commands.literal("sync_recipe_type").then(argument("type", IdentifierArgument.id())
+                .suggests(new RecipeTypeSuggestionProvider())
+                .executes(context -> {
+                    final Identifier enabled = IdentifierArgument.getId(context, "type");
+
+                    if (ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeTypes().contains(enabled)) {
+                        context.getSource().sendSuccess(()-> Component.literal("Recipe type %s is already synchronized on this server.".formatted(enabled)), true);
+                    } else if (BuiltInRegistries.RECIPE_SERIALIZER.get(enabled).isPresent()) {
+                        ServerConfigs.SERVER_SETTINGS.addRecipeType(enabled);
+                        context.getSource().sendSuccess(()-> Component.literal("Recipe type %s is now synchronized on this server.".formatted(enabled)), true);
+                    } else {
+                        context.getSource().sendFailure(Component.literal("Recipe type %s is not present on this server.".formatted(enabled)));
+                    }
+                    return 1;
+                }));
+    }
+
+    public static class RecipeTypeSuggestionProvider implements SuggestionProvider<CommandSourceStack> {
+        @Override
+        public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+
+            Set<Identifier> recipeSerializers = BuiltInRegistries.RECIPE_TYPE.keySet();
+
+            for (Identifier type : recipeSerializers) {
+                builder.suggest(type.toString());
+            }
+
+            // Lock the suggestions after we've modified them.
+            return builder.buildFuture();
+        }
+    }
+
+    *///?}
 
 }
