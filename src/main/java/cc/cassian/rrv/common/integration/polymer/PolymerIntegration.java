@@ -1,8 +1,7 @@
 //? fabric {
 package cc.cassian.rrv.common.integration.polymer;
 
-import cc.cassian.rrv.api.ActionType;
-import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.api.ItemViewRemoveModifier;
@@ -18,8 +17,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +37,7 @@ public class PolymerIntegration {
 
 		RegistrySyncUtils.setServerEntry(BuiltInRegistries.MENU, ReliableRecipeViewer.RECIPE_VIEW_MENU);
 
-		if (Platform.INSTANCE.isClientSide()) {
+		if (RRVPlatform.INSTANCE.isClientSide()) {
 			PolymerMenuUtils.registerType(ReliableRecipeViewer.RECIPE_VIEW_MENU);
 		}
 		PolymerResourcePackUtils.addModAssets("rrv");

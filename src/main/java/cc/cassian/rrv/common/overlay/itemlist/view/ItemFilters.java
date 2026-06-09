@@ -2,7 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
-import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -88,7 +88,7 @@ public class ItemFilters {
 
         for (ItemStack stack : fullStackList()) {
 
-            String modNamespace = ReliableRecipeViewerClient.resolver().getModNamespaceForItem(stack);
+            String modNamespace = RRVPlatform.INSTANCE.getModNamespaceForItem(stack);
             if (modNamespace == null)
                 continue;
 
@@ -118,7 +118,7 @@ public class ItemFilters {
     /// @param query The query
     /// @return Whether the item stack matches the mod name
     public static boolean modNamespace(ItemStack stack, String query) {
-        String modNamespace = ReliableRecipeViewerClient.resolver().getModNamespaceForItem(stack);
+        String modNamespace = RRVPlatform.INSTANCE.getModNamespaceForItem(stack);
         if (modNamespace == null)
             return false;
 
@@ -231,7 +231,7 @@ public class ItemFilters {
     }
 
     public static void exportFullStackList(Button button) {
-        try (var output = Files.newOutputStream(Platform.INSTANCE.getDataDirectory().resolve("rrv_index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
+        try (var output = Files.newOutputStream(RRVPlatform.INSTANCE.getDataDirectory().resolve("rrv_index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
             JsonObject index = new JsonObject();
             JsonArray encodedStacks = new JsonArray();
             JsonObject encodedAliases = new JsonObject();
@@ -259,7 +259,7 @@ public class ItemFilters {
             index.add("aliases", encodedAliases);
             ReliableRecipeViewer.GSON.toJson(index, writer);
             button.setMessage(ClientConfigScreen.clientSetting("export_item_view.success"));
-            Util.getPlatform().openPath(Platform.INSTANCE.getDataDirectory());
+            Util.getPlatform().openPath(RRVPlatform.INSTANCE.getDataDirectory());
         } catch (Exception e) {
             button.setMessage(ClientConfigScreen.clientSetting("export_item_view.failed"));
             ReliableRecipeViewer.LOGGER.error("Unable to export full stack list!", e);
