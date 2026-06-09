@@ -1,8 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.panel;
 
 import cc.cassian.rrv.api.overlay.OverlayView;
-import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.client.recipe.ClientUnlockManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.RRVPlatform;
@@ -14,10 +12,7 @@ import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
-import cc.cassian.rrv.common.recipe.unlocking.ServerUnlockManager;
-import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
-import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
@@ -25,27 +20,16 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import org.jspecify.annotations.NonNull;
 
 import java.awt.*;
-import java.util.Comparator;
-import java.util.ConcurrentModificationException;
-import java.util.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
@@ -58,8 +42,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     private static final int HEADER_HEIGHT = 30;
     private static final int FOOTER_HEIGHT = 20;
-    private NonNullList<ItemStack> inventory;
-    private List<ItemStack> lastAvailableItems = availableItems;
 
     public SidePanelOverlay() {
         super(-1, -1, -1, -1);
@@ -147,106 +129,8 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
         if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
         this.availableItems.clear();
-        switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
-            case BOOKMARKS -> {
-                this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
-            }
-            case CRAFTABLES -> {
-                // when searching, use the last unfiltered list rather than constantly querying the recipe manager
-                if (!reason.equals(Reason.SEARCH)) {
-                    Minecraft client = Minecraft.getInstance();
-                    LocalPlayer player = client.player;
-                    if (player == null) {
-                        return;
-                    }
-                    this.inventory = player.getInventory().getNonEquipmentItems();
-
-                    if (!(screen instanceof CreativeModeInventoryScreen))
-                        inventory.forEach(inventoryItem -> {
-                            List<ReliableClientRecipe> recipesForCraftingInput = ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem);
-                            recipesForCraftingInput.forEach(recipe -> updateRecipes(recipe, inventory, true));
-                        });
-                    if (this.availableItems.isEmpty()) {
-                        try {
-                            inventory.forEach(inventoryItem -> {
-                                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
-                            });
-                        } catch (ConcurrentModificationException ignored) {}
-                    }
-                    // save last available items for when searching occurs
-                    this.lastAvailableItems = new ArrayList<>(availableItems);
-                } else {
-                    this.availableItems = new ArrayList<>(lastAvailableItems);
-                }
-                filter();
-                this.availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
-            }
-            case UNLOCKED -> {
-                if (!(screen instanceof CreativeModeInventoryScreen))
-                    ClientRecipeCache.INSTANCE.getRecipes().stream().filter((recipe)-> RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())).sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
-                        ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
-                        ClientUnlockManager.INSTANCE.unlockItem(stack);
-                        setResultAndAdd(recipe, stack);
-                    });
-                if (this.availableItems.isEmpty()) {
-                    ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
-                        ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
-                        ClientUnlockManager.INSTANCE.unlockItem(stack);
-                        setResultAndAdd(recipe, stack);
-                    });
-                }
-            }
-            case DISABLED -> {}
-        }
-
+        availableItems.addAll(SidePanel.populateSlots(reason, screen));
         this.updateSlots();
-    }
-
-    private void filter() {
-        for (String query : ItemViewOverlay.INSTANCE.getCurrentQueries()) {
-            if (query.startsWith("@")) {
-                this.availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
-            }
-            else if (query.startsWith(":")) {
-                this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
-            }
-            else if (query.startsWith("#")) {
-                this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
-            }
-            else {
-                this.availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)));
-            }
-        }
-    }
-
-    void updateRecipes(ReliableClientRecipe recipe, NonNullList<ItemStack> inventory, boolean b) {
-        if (recipe.isVisualOnly() || !Configs.CATEGORIES.enabled(recipe.getType())) return;
-        Minecraft client = Minecraft.getInstance();
-        if (b && !RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())) return;
-        AtomicInteger foundIngredientCount = new AtomicInteger();
-        int requiredIngredientCount = recipe.getIngredients().size();
-        recipe.getIngredients().forEach(ingredient -> {
-            if (client.player.getInventory().hasAnyMatching(inv->ingredient.hasItem(inv.getItem()))) {
-                foundIngredientCount.getAndIncrement();
-            }
-        });
-        if (foundIngredientCount.get() == requiredIngredientCount) {
-            recipe.getResults().forEach(result -> {
-                result.getValidContents().forEach(ingredient -> setResultAndAdd(recipe, ingredient));
-            });
-        }
-    }
-
-    private void setResultAndAdd(ReliableClientRecipe recipe, ItemStack ingredient) {
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putString("rrv_result", recipe.entryId().toString());
-        ingredient.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag));
-        this.availableItems.stream().filter(ingredient1-> ItemStack.isSameItem(ingredient1, ingredient)).findFirst().ifPresentOrElse(stack->{
-            CompoundTag compoundTag1 = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            compoundTag1.remove("rrv_result");
-            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag1));
-        }, ()-> this.availableItems.add(ingredient));
-
     }
 
 
