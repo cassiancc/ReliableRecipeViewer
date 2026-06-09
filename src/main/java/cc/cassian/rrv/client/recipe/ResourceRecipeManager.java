@@ -15,7 +15,9 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 //? fabric {
 import net.fabricmc.loader.api.FabricLoader;
-//?}
+//?} else {
+/*import net.neoforged.fml.ModList;
+*///?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -190,16 +192,41 @@ public class ResourceRecipeManager {
 	}
 
 	/// Client fallback for when a server did not provide recipes.
-	/// Fabric-exclusive, as Neo does not provide NIO paths for mods.
 	public static void getLocalRecipes() {
 		HashMap<Identifier, RecipeHolder<?>> objects = new HashMap<>();
 		//? fabric {
 		FabricLoader.getInstance().getAllMods().forEach(mod->{
 			var rootPath = mod.getRootPaths().getFirst();
 			String modId = mod.getMetadata().getId();
-			getCachedRecipesFromMod(rootPath, modId, objects);
+			var path = rootPath.resolve("data/%s/recipe".formatted(modId));
+			if (Files.exists(path)) {
+				try (Stream<Path> files = Files.walk(path)) {
+					files.forEach(recipePath->{
+						if (Files.isDirectory(recipePath)) return;
+						try (BufferedReader tagReader = Files.newBufferedReader(recipePath)) {
+							readRecipe(tagReader, objects, recipePath.getFileName().toString(), modId);
+						} catch (Exception e) {
+							LOGGER.error("Error loading local recipe: {}", recipePath);
+						}
+					});
+				} catch (Exception e) {
+					LOGGER.error("Error loading local recipes from mod: {}", modId);
+				}
+			}
 		});
-		//?}
+		//?} else {
+		/*ModList.get().getMods().forEach(mod -> {
+			var modid = mod.getModId();
+			mod.getOwningFile().getFile().getContents().visitContent("data/%s/recipe".formatted(modid), (name, jarResource)->{
+				var recipePath = Arrays.asList(name.split("recipe/")).getLast();
+				try {
+					readRecipe(jarResource.bufferedReader(), objects, recipePath, modid);
+				} catch (Exception e) {
+					LOGGER.debug("Error loading local recipe: {}", recipePath); // downgraded to debug as neo is throwing errors from common tags not being loaded
+				}
+			});
+		});
+		*///?}
 		try {
 			ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(objects.values());
 		} catch (Exception e) {
@@ -208,29 +235,15 @@ public class ResourceRecipeManager {
 
 	}
 
-	private static void getCachedRecipesFromMod(Path rootPath, String modId, Map<Identifier, RecipeHolder<?>> objects) {
-		var path = rootPath.resolve("data/%s/recipe".formatted(modId));
-		if (Files.exists(path)) {
-			try (Stream<Path> files = Files.walk(path)) {
-				files.forEach(recipePath->{
-					if (Files.isDirectory(recipePath)) return;
-					try (BufferedReader tagReader = Files.newBufferedReader(recipePath)) {
-						String id = recipePath.getFileName().toString().replace(".json", "");
-						JsonElement jsonElement = GSON.fromJson(tagReader, JsonElement.class);
-						JsonObject recipeObject = jsonElement.getAsJsonObject();
-						if (!recipeObject.has("type")) return;
-						Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
-						Identifier recipeId = Identifier.fromNamespaceAndPath(modId, id);
-						if (!objects.containsKey(recipeId))
-							objects.put(recipeId, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), recipe));
-					} catch (Exception e) {
-						LOGGER.error("Error loading local recipe: {}", recipePath);
-					}
-				});
-			} catch (Exception e) {
-				LOGGER.error("Error loading local recipes from mod: {}", modId);
-			}
-		}
+	private static void readRecipe(BufferedReader tagReader, Map<Identifier, RecipeHolder<?>> objects, String recipePath, String modId) {
+		String id = recipePath.replace(".json", "");
+		JsonElement jsonElement = GSON.fromJson(tagReader, JsonElement.class);
+		JsonObject recipeObject = jsonElement.getAsJsonObject();
+		if (!recipeObject.has("type")) return;
+		Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
+		Identifier recipeId = Identifier.fromNamespaceAndPath(modId, id);
+		if (!objects.containsKey(recipeId))
+			objects.put(recipeId, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), recipe));
 	}
 
 	private static void findAndAddStack(List<ItemStack> results, JsonObject itemObject, String key, int offset) {

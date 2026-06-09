@@ -3,7 +3,7 @@ package cc.cassian.rrv.client.sharing;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.recipe.ClientUnlockManager;
-import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -64,10 +64,10 @@ public class RecipeSharing {
         public List<Component> getTooltipLines() {
             return List.of(
 					Component.translatable("rrv.sharing.recipe_type", recipeType.copy().withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD),
-					Component.literal(Platform.INSTANCE.getModNameForNamespace(recipeTypeNamespace)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC),
+					Component.literal(RRVPlatform.INSTANCE.getModNameForNamespace(recipeTypeNamespace)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC),
 					Component.empty(),
 					Component.translatable("rrv.sharing.recipe_for", result.getHoverName().copy().withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD),
-					Component.literal(Platform.INSTANCE.getModNameForItem(result)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)
+					Component.literal(RRVPlatform.INSTANCE.getModNameForItem(result)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)
 			);
         }
 	}

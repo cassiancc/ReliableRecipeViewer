@@ -1,6 +1,6 @@
 package cc.cassian.rrv.client;
 
-import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.options.NamespaceTooltip;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -50,11 +50,6 @@ public class ReliableRecipeViewerClient {
         OverlayManager.registerOverlay(SidePanelOverlay.INSTANCE);
     }
 
-    public static Platform resolver() {
-        return Platform.INSTANCE;
-    }
-
-
     public static void loadConfigs() {
         Configs.CLIENT_SETTINGS.load();
         Configs.BOOKMARKS.load();
@@ -94,6 +89,6 @@ public class ReliableRecipeViewerClient {
     }
 
     public static Component addNamespaceTooltip(ItemStack stack, List<Component> tooltip, boolean inItemView) {
-        return addNamespaceTooltip(Platform.INSTANCE.getModNameForItem(stack), tooltip, inItemView, false);
+        return addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForItem(stack), tooltip, inItemView, false);
     }
 }

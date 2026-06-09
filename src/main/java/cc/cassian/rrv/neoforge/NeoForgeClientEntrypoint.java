@@ -7,6 +7,8 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
+import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.core.registries.Registries;
@@ -23,7 +25,10 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.Optional;
@@ -90,7 +95,11 @@ public class NeoForgeClientEntrypoint {
     @SubscribeEvent
     public static void receiveRecipes(RecipesReceivedEvent event) {
         ReliableRecipeViewerClient.LOCAL_RECIPES = event.getRecipeMap();
-        ClientRecipeCache.INSTANCE.buildRecipeCache(true);
+		if (!event.getRecipeTypes().isEmpty())
+			ClientRecipeCache.INSTANCE.buildRecipeCache(true);
+		else if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED)) {
+			ClientRecipeCache.INSTANCE.buildRecipeCache(false);
+		}
     }
 
     @SubscribeEvent

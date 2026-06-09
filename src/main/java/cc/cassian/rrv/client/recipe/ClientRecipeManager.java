@@ -2,7 +2,6 @@ package cc.cassian.rrv.client.recipe;
 
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.Platform;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import com.mojang.serialization.DynamicOps;
 import net.minecraft.client.Minecraft;

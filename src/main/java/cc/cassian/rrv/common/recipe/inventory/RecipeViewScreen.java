@@ -4,7 +4,7 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -243,51 +243,52 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.shareButtons.forEach(this::removeWidget);
         this.shareButtons.clear();
 
+        if (!ItemViewOverlay.INSTANCE.wasWarned()) {
+            int guiLeft = this.leftPos + menu.guiOffsetLeft();
 
-        int guiLeft = this.leftPos + menu.guiOffsetLeft();
+            for (int i = 0; i < menu.getCurrentDisplay().size(); i++) {
+                final ReliableClientRecipe currentRecipe = menu.getCurrentDisplay().get(i);
+                ReliableClientRecipeType type = currentRecipe.getType();
+                int guiTop = getTopPos() + menu.guiOffsetTop(i);
+                int finalI = i;
+                RecipeViewMenu.DisplayInfo info = new RecipeViewMenu.DisplayInfo(guiLeft, guiTop, type.getDisplayWidth(), type.getDisplayHeight());
 
-        for (int i = 0; i < menu.getCurrentDisplay().size(); i++) {
-            final ReliableClientRecipe currentRecipe = menu.getCurrentDisplay().get(i);
-            ReliableClientRecipeType type = currentRecipe.getType();
-            int guiTop = getTopPos() + menu.guiOffsetTop(i);
-            int finalI = i;
-            RecipeViewMenu.DisplayInfo info = new RecipeViewMenu.DisplayInfo(guiLeft, guiTop, type.getDisplayWidth(), type.getDisplayHeight());
+                // transfer button
+                var transferButtonData = type.placeRecipeTransferButton(info);
+                Button transferButton = new ReliablePlainButton(Component.literal("+"),
+                        button1 -> menu.quickCraft(currentRecipe, finalI),
+                        transferButtonData.x(), transferButtonData.y(),
+                        12, 12);
 
-            // transfer button
-            var transferButtonData = type.placeRecipeTransferButton(info);
-            Button transferButton = new ReliablePlainButton(Component.literal("+"),
-                    button1 -> menu.quickCraft(currentRecipe, finalI),
-                    transferButtonData.x(), transferButtonData.y(),
-                    12, 12);
+                RecipeTransferData data = menu.getTransferData().get(i);
+                transferButton.active = data.isSuccess() && currentRecipe.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentRecipe, menu.getParentScreen()) && currentRecipe.canTransferToScreen((AbstractContainerScreen<?>) menu.getParentScreen());
+                transferButton.visible = currentRecipe.supportsItemTransfer() && transferButtonData.visible();
 
-            RecipeTransferData data = menu.getTransferData().get(i);
-            transferButton.active = data.isSuccess() && currentRecipe.supportsItemTransfer() && RRVClientUtil.matchesAnyTransferClass(currentRecipe, menu.getParentScreen()) && currentRecipe.canTransferToScreen((AbstractContainerScreen<?>) menu.getParentScreen());
-            transferButton.visible = currentRecipe.supportsItemTransfer() && transferButtonData.visible();
+                this.addRenderableWidget(transferButton);
+                this.transferButtons.add(transferButton);
 
-            this.addRenderableWidget(transferButton);
-            this.transferButtons.add(transferButton);
+                // share button
+                var shareButtonData = type.placeRecipeShareButton(info);
+                Button shareButton = new ReliableSpriteIconButton(12,
+                        Component.literal(">"),
+                        12,
+                        ReliableRecipeViewer.of("widget/share"),
+                        button1 -> {
+                            RecipeSharing.shareRecipe(currentRecipe);
+                            RRVClientUtil.setScreen(this.getMenu().getParentScreen());
+                        }
+                );
+                shareButton.setX(shareButtonData.x());
+                shareButton.setY(shareButtonData.y());
+                shareButton.setTooltip(Tooltip.create(Component.translatable("rrv.sharing.share", Component.literal(currentRecipe.entryId().toString()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD)));
 
-            // share button
-            var shareButtonData = type.placeRecipeShareButton(info);
-            Button shareButton = new ReliableSpriteIconButton(12,
-                    Component.literal(">"),
-                    12,
-                    ReliableRecipeViewer.of("widget/share"),
-                    button1 -> {
-                        RecipeSharing.shareRecipe(currentRecipe);
-                        RRVClientUtil.setScreen(this.getMenu().getParentScreen());
-                    }
-                    );
-            shareButton.setX(shareButtonData.x());
-            shareButton.setY(shareButtonData.y());
-            shareButton.setTooltip(Tooltip.create(Component.translatable("rrv.sharing.share", Component.literal(currentRecipe.entryId().toString()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD)));
+                shareButton.active = true;
+                shareButton.visible = shareButtonData.visible() && Configs.CLIENT_SETTINGS.isRecipeSharing();
 
-            shareButton.active = true;
-            shareButton.visible = shareButtonData.visible() && Configs.CLIENT_SETTINGS.isRecipeSharing();
+                this.shareButtons.add(shareButton);
+                this.addRenderableWidget(shareButton);
 
-            this.shareButtons.add(shareButton);
-            this.addRenderableWidget(shareButton);
-
+            }
         }
 
         updateRecipeTypeButtons();
@@ -423,7 +424,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
 
         // Add tag namespace
-        ReliableRecipeViewerClient.addNamespaceTooltip(Platform.INSTANCE.getModNameForNamespace(tagId.getNamespace()), tooltip, true, true);
+        ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(tagId.getNamespace()), tooltip, true, true);
     }
 
 
@@ -621,15 +622,14 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
 
     private void renderInvalidSlots(GuiGraphicsExtractor guiGraphics, int displayId) {
+        if (this.transferButtons.isEmpty()) return;
         Button button = this.transferButtons.get(displayId);
-        if (!button.isHovered())
-            return;
+        if (!button.isHovered()) return;
 
         ReliableClientRecipe current = this.getMenu().getCurrentDisplay().get(displayId);
 
         RecipeTransferData data = this.getMenu().getTransferData().get(displayId);
-        if (data.isSuccess())
-            return;
+        if (data.isSuccess()) return;
 
         for (int slotId : data.getSlotResults().keySet()) {
 
@@ -676,7 +676,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 tooltip.add(Component.literal(this.recipeType.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
             }
             guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
-            tooltip.add(Component.literal(Platform.INSTANCE.getModNameForNamespace(this.recipeType.getId().getNamespace())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
+            tooltip.add(Component.literal(RRVPlatform.INSTANCE.getModNameForNamespace(this.recipeType.getId().getNamespace())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
             guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
         }
 

@@ -165,6 +165,7 @@
   "rrv.client_settings.local_fallback": "Local Fallback",
   "rrv.client_settings.local_fallback.tooltip": "Enable a local fallback mode for vanilla servers that pulls recipes from your client's recipe folder. Will be inaccurate on servers with datapacks or server mods.",
   "rrv.client_settings.local_fallback.enabled": "Enabled",
+  "rrv.client_settings.local_fallback.when_needed": "When Needed",
   "rrv.client_settings.local_fallback.disabled": "Disabled",
   "rrv.client_settings.general": "General",
   "rrv.client_settings.advanced": "Advanced",

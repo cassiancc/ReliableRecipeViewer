@@ -1,5 +1,7 @@
 package cc.cassian.rrv.common.mixin.server;
 
+import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.server.*;
 import net.minecraft.server.players.PlayerList;
@@ -15,5 +17,10 @@ public abstract class MixinMinecraftServer {
     @Inject(method = "setPlayerList", at = @At("RETURN"))
     private void rrv$setServer(PlayerList $$0, CallbackInfo ci) {
         ServerRecipeManager.INSTANCE.setServer((MinecraftServer) (Object) this);
+    }
+
+    @Inject(method = "stopServer", at = @At("HEAD"))
+    private void rrv$saveServerConfigs(CallbackInfo ci) {
+        ReliableRecipeViewer.saveServerConfigs();
     }
 }

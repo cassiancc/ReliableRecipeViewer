@@ -84,6 +84,10 @@ public abstract class AbstractRrvConfig {
         this.data().addProperty(key, newValue);
     }
 
+    protected void save(String key, int newValue) {
+        this.data().addProperty(key, newValue);
+    }
+
     protected <T> T load(String key, T defaultValue, Codec<T> codec) {
         if (this.data().has(key))
             return codec.decode(JsonOps.INSTANCE, this.data().get(key)).mapOrElse(Pair::getFirst, (e)->defaultValue);
@@ -93,6 +97,13 @@ public abstract class AbstractRrvConfig {
     protected boolean load(String key, boolean defaultValue) {
         if (this.data().has(key))
             return this.data().get(key).getAsBoolean();
+        return defaultValue;
+    }
+
+
+    protected int load(String key, int defaultValue) {
+        if (this.data().has(key))
+            return this.data().get(key).getAsInt();
         return defaultValue;
     }
 

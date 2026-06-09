@@ -31,6 +31,7 @@ import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
@@ -59,6 +60,7 @@ import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.entity.PotDecorations;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 //? neoforge
@@ -88,6 +90,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     @Override
     public void onIntegrationInitialize() {
         ItemView.addClientReloadCallback(() -> {
+            //? neoforge
+            //ItemView.excludeItems(Items.AIR);
             excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
             excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
@@ -349,35 +353,44 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         var axes = SlotContent.of(ItemTags.AXES);
         var shovels = SlotContent.of(ItemTags.SHOVELS);
-        BuiltInRegistries.BLOCK.entrySet().forEach((entry -> {
-            var block = entry.getValue();
-            var id = entry.getKey().identifier();
-            if (block instanceof WeatheringCopper) {
-                Optional<Block> next = WeatheringCopper.getNext(block);
-                next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_oxidizing"), SlotContent.of(block), WorldInteractionClientRecipe.TIME, SlotContent.of(value.asItem()))));
 
-                Optional<Block> previous = WeatheringCopper.getPrevious(block);
-                previous.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_reverse_oxidizing"), SlotContent.of(block), axes, SlotContent.of(value.asItem()))));
+        BuiltInRegistries.ITEM.entrySet().forEach(itemEntry -> {
+            if (itemEntry.getValue() instanceof FluidItem fluidItem) {
+                Item bucket = fluidItem.getFluid().getBucket();
+                if (bucket == null || bucket.getDefaultInstance().isEmpty()) return;
+                worldInteractionRecipes.add(new WorldInteractionClientRecipe(itemEntry.getKey().identifier().withPath("/world_interaction/%s_bucketing"::formatted), SlotContent.of(new FluidStack(fluidItem.getFluid())), SlotContent.of(Optional.ofNullable(bucket.getCraftingRemainder()).orElse(new ItemStackTemplate(Items.BUCKET))), SlotContent.of(bucket)));
             }
-            if (block instanceof TallFlowerBlock || block instanceof FlowerBedBlock) {
-                worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_bone_meal"), SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
-            }
-            //? neoforge {
-                /*Holder.Reference<Block> blockReference = block.builtInRegistryHolder();
-                if (blockReference.getData(NeoForgeDataMaps.WAXABLES) != null) {
-                    SlotContent waxed = SlotContent.of(blockReference.getData(NeoForgeDataMaps.WAXABLES).waxed());
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_off_", block), waxed, axes, SlotContent.of(block)));
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_", block), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), waxed));
-                }
-                if (blockReference.getData(NeoForgeDataMaps.STRIPPABLES) != null) {
-                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/strip_", block), SlotContent.of(block), axes, SlotContent.of(blockReference.getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
-                }
-                *///?}
 
-            if (block instanceof ConcretePowderBlock concretePowderBlock) {
-                worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_solidify"), SlotContent.of(block), SlotContent.of(new FluidStack(Fluids.WATER)), SlotContent.of(((ConcretePowderBlockAccessor) concretePowderBlock).getConcrete())));
+            if (itemEntry.getValue() instanceof BlockItem blockItem) {
+                var block = blockItem.getBlock();
+                var id = itemEntry.getKey().identifier();
+                if (block instanceof WeatheringCopper) {
+                    Optional<Block> next = WeatheringCopper.getNext(block);
+                    next.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_oxidizing"), SlotContent.of(block), WorldInteractionClientRecipe.TIME, SlotContent.of(value.asItem()))));
+
+                    Optional<Block> previous = WeatheringCopper.getPrevious(block);
+                    previous.ifPresent(value -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_reverse_oxidizing"), SlotContent.of(block), axes, SlotContent.of(value.asItem()))));
+                }
+                if (block instanceof TallFlowerBlock || block instanceof FlowerBedBlock) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_bone_meal"), SlotContent.of(block), SlotContent.of(Items.BONE_MEAL), SlotContent.of(new ItemStack(block, 2))));
+                }
+                //? neoforge {
+                    /*Holder.Reference<Block> blockReference = block.builtInRegistryHolder();
+                    if (blockReference.getData(NeoForgeDataMaps.WAXABLES) != null) {
+                        SlotContent waxed = SlotContent.of(blockReference.getData(NeoForgeDataMaps.WAXABLES).waxed());
+                        worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_off_", block), waxed, axes, SlotContent.of(block)));
+                        worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_", block), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), waxed));
+                    }
+                    if (blockReference.getData(NeoForgeDataMaps.STRIPPABLES) != null) {
+                        worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/strip_", block), SlotContent.of(block), axes, SlotContent.of(blockReference.getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
+                    }
+                    *///?}
+
+                if (block instanceof ConcretePowderBlock concretePowderBlock) {
+                    worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_solidify"), SlotContent.of(block), SlotContent.of(new FluidStack(Fluids.WATER)), SlotContent.of(((ConcretePowderBlockAccessor) concretePowderBlock).getConcrete())));
+                }
             }
-        }));
+        });
 
         // honeycomb
         //? fabric {
@@ -398,11 +411,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/glass_bottle_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
 
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/water_filling"), SlotContent.of(new FluidStack(Fluids.WATER, 333)), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(PotionContents.createItemStack(Items.POTION, Potions.WATER))));
-
-        BuiltInRegistries.FLUID.entrySet().forEach(fluidEntry -> {
-            Item bucket = fluidEntry.getValue().getBucket();
-            worldInteractionRecipes.add(new WorldInteractionClientRecipe(fluidEntry.getKey().identifier().withPath("/world_interaction/%s_bucketing"::formatted), SlotContent.of(new FluidStack(fluidEntry.getValue())), SlotContent.of(Optional.ofNullable(bucket.getCraftingRemainder()).orElse(new ItemStackTemplate(Items.BUCKET))), SlotContent.of(bucket)));
-        });
 
         return worldInteractionRecipes;
     }

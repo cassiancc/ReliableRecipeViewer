@@ -2,7 +2,9 @@ package cc.cassian.rrv.common.extra;
 
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -11,39 +13,40 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-/**
- * A representation of a fluid-item including its fluid type and stored fluid amount
- */
-public record FluidStack(Fluid fluid, int amount) {
+/// A representation of a [FluidItem] including its fluid type, data components, and stored fluid amount
+public record FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
 
     public static final int AMOUNT_FULL = 1000;
-    public static final FluidStack EMPTY = new FluidStack(Fluids.EMPTY, 0);
+    public static final FluidStack EMPTY = new FluidStack(Fluids.EMPTY, 0, DataComponentPatch.EMPTY);
 
     public FluidStack(final Fluid fluid) {
-        this(fluid, AMOUNT_FULL);
+        this(fluid, AMOUNT_FULL, DataComponentPatch.EMPTY);
     }
 
-    /**
-     * The fluid this stack holds
-     */
+    public FluidStack(final Fluid fluid, int amount) {
+        this(fluid, amount, DataComponentPatch.EMPTY);
+    }
+
+    /// The fluid this stack holds
     @Override
     public Fluid fluid() {
         return this.fluid;
     }
 
-    /**
-     * @return The amount of fluid this stack holds
-     */
+    /// @return The amount of fluid this stack holds
     @Override
     public int amount() {
         return this.amount;
     }
 
-    /**
-     * Creates a FluidStack from an ItemStack
-     * @param stack An ItemStack representing a fluid
-     * @return A FluidStack.
-     */
+    /// @return The data components associated with this Fluid Stack.
+    public DataComponentPatch patch() {
+        return this.patch;
+    }
+
+    /// Creates a FluidStack from an ItemStack
+    /// @param stack An ItemStack representing a fluid
+    /// @return A FluidStack.
     public static FluidStack fromItemStack(ItemStack stack) {
         if (!(stack.getItem() instanceof FluidItem fluidItem))
             return FluidStack.EMPTY;
@@ -53,7 +56,7 @@ public record FluidStack(Fluid fluid, int amount) {
         if (tag.contains("fluidAmount"))
             amount = tag.getInt("fluidAmount").orElseGet(() -> FluidStack.AMOUNT_FULL);
 
-        return new FluidStack(fluidItem.getFluid(), amount);
+        return new FluidStack(fluidItem.getFluid(), amount, stack.getComponentsPatch());
     }
 
 
@@ -62,7 +65,7 @@ public record FluidStack(Fluid fluid, int amount) {
     /// @param stack: A NeoForge Fluid Stack
     /// @return A RRV Fluid Stack
     public static FluidStack fromFluidStack(net.neoforged.neoforge.fluids.FluidStack stack) {
-        return new FluidStack(stack.getFluid(), stack.getAmount());
+        return new FluidStack(stack.getFluid(), stack.getAmount(), stack.getComponentsPatch());
     }
 
     /// Creates an RRV FluidStack from a NeoForge FluidStackTemplate
@@ -75,7 +78,7 @@ public record FluidStack(Fluid fluid, int amount) {
     /// Creates a NeoForge FluidStack from an RRV FluidStack
     /// @return A NeoForge Fluid Stack
     public net.neoforged.neoforge.fluids.FluidStack toLoaderFluidStack() {
-        return new net.neoforged.neoforge.fluids.FluidStack(this.fluid, this.amount);
+        return new net.neoforged.neoforge.fluids.FluidStack(this.fluid, this.amount, this.patch);
     }
 
     /// Creates a NeoForge FluidStack from an RRV FluidStack
@@ -85,15 +88,13 @@ public record FluidStack(Fluid fluid, int amount) {
     }
     *///?}
 
-    /**
-     * Creates an ItemStack from this FluidStack
-     */
+    /// Creates an [ItemStack] from this FluidStack.
     public ItemStack createItemStack() {
         Item item = ItemViewRecipes.INSTANCE.itemForFluid(this.fluid);
         if (item == Items.AIR)
             return ItemStack.EMPTY;
 
-        ItemStack stack = new ItemStack(item);
+        ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.wrapAsHolder(item), 1, patch);
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         tag.putInt("fluidAmount", this.amount);
         CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);

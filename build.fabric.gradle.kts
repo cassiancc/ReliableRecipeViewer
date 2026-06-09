@@ -111,6 +111,7 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     compileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
+    localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         exclude(group = "maven.modrinth")
@@ -122,9 +123,7 @@ dependencies {
     compileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
     compileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
     compileOnly("eu.pb4:polydex:${property("deps.polydex")}")
-    compileOnly("maven.modrinth:jade:${property("deps.jade")}") {
-        isTransitive = false;
-    }
+    compileOnly("maven.modrinth:jade:${property("deps.jade")}")
     compileOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
     if (hasProperty("deps.badpackets")) {
         runtimeOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
@@ -140,12 +139,12 @@ dependencies {
     }
 
     if (stonecutter.eval(mcVersion, "=26.1")) {
-        localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 //        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-virtual-entity:0.16.2+26.1.1")
+        localRuntime("maven.modrinth:jade:${property("deps.jade")}")
     }
 }
 

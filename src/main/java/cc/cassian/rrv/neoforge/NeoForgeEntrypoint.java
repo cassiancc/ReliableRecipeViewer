@@ -61,7 +61,7 @@ public class NeoForgeEntrypoint {
     }
 
     @SubscribeEvent
-    public static void registerPayloads(OnDatapackSyncEvent event) {
+    public static void sendRecipes(OnDatapackSyncEvent event) {
         SYNCHRONIZED_RECIPES.forEach(event::sendRecipes);
     }
 }
