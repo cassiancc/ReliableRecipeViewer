@@ -48,7 +48,7 @@ public class NeoforgePlatformImpl implements RRVPlatform {
         if (Minecraft.getInstance().level != null) {
             namespace = stack.getItem().getCreatorModId(Minecraft.getInstance().level.registryAccess(), stack);
             var holderNamespace = stack.typeHolder().unwrapKey().orElseThrow().identifier().getNamespace();
-            if (holderNamespace.equals(namespace) && stack.has(DataComponents.ITEM_MODEL)) {
+            if (holderNamespace.equals(namespace) && stack.hasNonDefault(DataComponents.ITEM_MODEL)) {
                 namespace = stack.get(DataComponents.ITEM_MODEL).getNamespace();
             }
         }
