@@ -46,7 +46,6 @@ public class ServerConfig extends AbstractRrvConfig {
 				SmithingTrimRecipe.SERIALIZER,
 				SmithingTransformRecipe.SERIALIZER
 		).map(BuiltInRegistries.RECIPE_SERIALIZER::getKey).toList();
-		System.out.println(list);
 		return list;
 	}
 	public void addRecipeSerializer(Identifier newSerializer) {

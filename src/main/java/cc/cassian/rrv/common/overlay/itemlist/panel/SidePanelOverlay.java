@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.SpriteIconButton;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -57,6 +58,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     private static final int FOOTER_HEIGHT = 20;
     private NonNullList<ItemStack> inventory;
     private List<ItemStack> lastAvailableItems = availableItems;
+    private Screen currentScreen;
 
     public SidePanelOverlay() {
         super(-1, -1, -1, -1);
@@ -97,6 +99,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         super.onScreenChanged(info);
         this.updateSidePanelIndex(Reason.SCREEN_CHANGE);
         this.createButtons(OverlayManager.INSTANCE.currentInfo());
+        this.currentScreen = info.screen();
     }
 
 
@@ -143,8 +146,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 		Util.backgroundExecutor().execute(() -> {
             var screen = RRVClientUtil.currentScreen();
             if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-            if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
+            if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
             this.availableItems.clear();
+            var availableItems = new ArrayList<ItemStack>();
             if (showCraftables()) {
                 Minecraft client = Minecraft.getInstance();
                 LocalPlayer player = client.player;
@@ -158,14 +162,14 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                     // search by what craftables the workstation supports
                     if (!(screen instanceof CreativeModeInventoryScreen))
                         inventory.forEach(inventoryItem -> {
-                            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
+                            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, availableItems, true));
                         });
 
                     // if the workstation is not supported, search by what craftables exist
-                    if (this.availableItems.isEmpty()) {
+                    if (availableItems.isEmpty()) {
                         try {
                             inventory.forEach(inventoryItem -> {
-                                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
+                                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, availableItems, false));
                             });
                         } catch (ConcurrentModificationException ignored) {}
                     }
@@ -173,37 +177,42 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                     // save last available items for when searching occurs
                     this.lastAvailableItems = new ArrayList<>(availableItems);
                 } else {
-                    this.availableItems = new ArrayList<>(lastAvailableItems);
+					availableItems.addAll(lastAvailableItems);
                 }
 
-                filter();
-                this.availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
+                filter(availableItems);
+                availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
             } else {
-                this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
+                availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
+            }
+            if (screen == this.currentScreen && this.availableItems.isEmpty()) {
+                this.availableItems.addAll(availableItems);
+                this.updateSlots();
             }
 
-            this.updateSlots();
         });
     }
 
-    private void filter() {
+
+
+    private void filter(List<ItemStack> availableItems) {
         for (String query : ItemViewOverlay.INSTANCE.getCurrentQueries()) {
             if (query.startsWith("@")) {
-                this.availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
+                availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
             }
             else if (query.startsWith(":")) {
-                this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
+                availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
             }
             else if (query.startsWith("#")) {
-                this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
+                availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
             }
             else {
-                this.availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)));
+                availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)));
             }
         }
     }
 
-    void updateRecipes(ReliableClientRecipe recipe, NonNullList<ItemStack> inventory, boolean b) {
+    void updateRecipes(ReliableClientRecipe recipe, ArrayList<ItemStack> availableItems, boolean b) {
         if (recipe.isVisualOnly() || !Configs.CATEGORIES.enabled(recipe.getType())) return;
         Minecraft client = Minecraft.getInstance();
         if (b && !RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())) return;
@@ -218,10 +227,20 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             recipe.getResults().forEach(result -> {
                 result.getValidContents().forEach(ingredient -> {
                     CompoundTag compoundTag = new CompoundTag();
-                    compoundTag.putString("rrv_result", recipe.entryId().toString());
+                    String recipeId = recipe.entryId().toString();
+                    compoundTag.putString("rrv_result", recipeId);
                     ingredient.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag));
-                    if (!this.availableItems.contains(ingredient)) {
-                        this.availableItems.add(ingredient);
+                    Optional<ItemStack> first = availableItems.stream().filter(i-> {
+                        if (i.has(DataComponents.CUSTOM_DATA)) {
+                            var data = i.get(DataComponents.CUSTOM_DATA).copyTag();
+                            if (data.contains("rrv_result")) {
+								return data.getString("rrv_result").orElseThrow().equals(recipeId);
+                            }
+                        }
+                        return false;
+                    }).findFirst();
+                    if (first.isEmpty()) {
+                        availableItems.add(ingredient);
                     }
                 });
             });
@@ -314,6 +333,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
         Minecraft client = Minecraft.getInstance();
+        var screen = RRVClientUtil.currentScreen();
         Font font = client.font;
 
 
@@ -336,10 +356,12 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, colour);
 		}
 
+        try {
+            for (ItemSlot slot : this.itemSlots()) {
+                slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+            }
+        } catch (ConcurrentModificationException ignored) {}
 
-        for (ItemSlot slot : this.itemSlots()) {
-            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-        }
 
 
         drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
