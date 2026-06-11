@@ -33,6 +33,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -139,48 +140,50 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(Reason reason) {
-        var screen = RRVClientUtil.currentScreen();
-        if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
-        this.availableItems.clear();
-        if (showCraftables()) {
-            Minecraft client = Minecraft.getInstance();
-            LocalPlayer player = client.player;
-            if (player == null) {
-                return;
-            }
-            // when searching, use the last unfiltered list rather than constantly querying the recipe manager
-            if (!reason.equals(Reason.SEARCH)) {
-                this.inventory = player.getInventory().getNonEquipmentItems();
+		Util.backgroundExecutor().execute(() -> {
+            var screen = RRVClientUtil.currentScreen();
+            if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
+            if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
+            this.availableItems.clear();
+            if (showCraftables()) {
+                Minecraft client = Minecraft.getInstance();
+                LocalPlayer player = client.player;
+                if (player == null) {
+                    return;
+                }
+                // when searching, use the last unfiltered list rather than constantly querying the recipe manager
+                if (!reason.equals(Reason.SEARCH)) {
+                    this.inventory = player.getInventory().getNonEquipmentItems();
 
-                // search by what craftables the workstation supports
-                if (!(screen instanceof CreativeModeInventoryScreen))
-                    inventory.forEach(inventoryItem -> {
-                        ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
-                    });
-
-                // if the workstation is not supported, search by what craftables exist
-                if (this.availableItems.isEmpty()) {
-                    try {
+                    // search by what craftables the workstation supports
+                    if (!(screen instanceof CreativeModeInventoryScreen))
                         inventory.forEach(inventoryItem -> {
-                            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
+                            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, true));
                         });
-                    } catch (ConcurrentModificationException ignored) {}
+
+                    // if the workstation is not supported, search by what craftables exist
+                    if (this.availableItems.isEmpty()) {
+                        try {
+                            inventory.forEach(inventoryItem -> {
+                                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, inventory, false));
+                            });
+                        } catch (ConcurrentModificationException ignored) {}
+                    }
+
+                    // save last available items for when searching occurs
+                    this.lastAvailableItems = new ArrayList<>(availableItems);
+                } else {
+                    this.availableItems = new ArrayList<>(lastAvailableItems);
                 }
 
-                // save last available items for when searching occurs
-                this.lastAvailableItems = new ArrayList<>(availableItems);
+                filter();
+                this.availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
             } else {
-                this.availableItems = new ArrayList<>(lastAvailableItems);
+                this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
             }
 
-            filter();
-            this.availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
-        } else {
-            this.availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
-        }
-
-        this.updateSlots();
+            this.updateSlots();
+        });
     }
 
     private void filter() {
