@@ -2,8 +2,8 @@ package cc.cassian.rrv.common.network;
 
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.ClientNetworkManager;
-import cc.cassian.rrv.common.Platform;
-import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.RRVPlatform;
+import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
@@ -101,7 +101,7 @@ public class RrvNetworkManager {
     public static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, ClientNetworkManager.PayloadHandler<ClientNetworkManager.ClientContext, T> clientHandler) {
         //? fabric {
         registerClientboundPayload(type, codec);
-        if (Platform.INSTANCE.isClientSide()) {
+        if (RRVPlatform.INSTANCE.isClientSide()) {
             ClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
         }
         //?} else {
@@ -239,7 +239,7 @@ public class RrvNetworkManager {
 
 
         registerServerbound(ServerboundShareRecipePayload.TYPE, ServerboundShareRecipePayload.STREAM_CODEC, (context, payload) -> {
-            if (!Configs.SERVER_SETTINGS.isRecipeSharing()) {
+            if (!ServerConfigs.SERVER_SETTINGS.isRecipeSharing()) {
                 context.sender().sendSystemMessage(Component.translatable("rrv.sharing.denied"));
                 return;
             }

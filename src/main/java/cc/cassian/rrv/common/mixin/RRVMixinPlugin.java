@@ -1,6 +1,6 @@
 package cc.cassian.rrv.common.mixin;
 
-import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.RRVPlatform;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -22,7 +22,7 @@ public class RRVMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (mixinClassName.toLowerCase(Locale.ROOT).contains("controlify") && !Platform.INSTANCE.isLoadingLoaded("controlify")) return false;
+		if (mixinClassName.toLowerCase(Locale.ROOT).contains("controlify") && !RRVPlatform.INSTANCE.isLoadingLoaded("controlify")) return false;
 		return true;
 	}
 

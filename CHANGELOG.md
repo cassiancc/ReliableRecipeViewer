@@ -1,3 +1,53 @@
+## [8.3.1]
+
+### Added
+- Recipe fallback feature is now available for NeoForge.
+- Built-in synchronized recipe types (NeoForge) and recipe serializers (Fabric) are now config and command driven. This allows for modpack authors to add additional recipe serializers or recipe types to mods that have fully functional recipes, but did not opt to synchronize their recipes themselves.
+
+### Fixed
+- NeoForge now shows proper warning when connecting to a vanilla server.
+- Bug causing namespace search to be overly strict.
+- Namespace tooltips not displaying in recipe view screens with Jade present.
+- Out of bounds exception when using Inventory Item Groups (thanks @Fox2Code!)
+
+## [8.3.0]
+
+### Changed
+- Craftables panel now responds to the search bar.
+- Client fallback mode is now automatically initialized when on a server without RRV installed.
+- Recipe transfer and sharing features are now properly hidden on vanilla servers, rather than being nonfunctional.
+
+### Fixed
+- Fluid stacks now handle data component patches.
+- Client integration no longer assumes fluids have buckets.
+- Crash rendering entities on 26.2.
+
+## [8.2.1]
+
+### Fixed
+- Potential crash from Jade causing client configs to load on the server.
+
+## [8.2.0]
+
+### Added
+- Search aliases, used to allow for mods wanting to make their items searchable from other names.
+- Recipe sharing, all recipes types now have a button used to share the recipe to the chat.
+  - The recipe sharing button can be manually positioned by overriding `placeRecipeShareButton` in your `ReliableClientRecipeType`.
+  - Recipes can also be shared via the `/rrv share_recipe` command.
+  - Recipe sharing has a serverside opt-out via the `/rrv_admin recipe_sharing false` command.
+- The recipe transfer button can now be manually positioned by overriding `placeRecipeTransferButton` in your `ReliableClientRecipeType`.
+
+### Changed
+- Recipe type backgrounds have been retextured to add stronger borders.
+- RRV commands are now snake cased, and subcommands requiring administrator permissions are now under `rrv_admin`.
+
+### Fixed
+- Workstation slot is no longer offscreen when using the Center Recipe Screen config.
+- Switching to a new page of recipe types now changes the current screen.
+- Log spam caused by unbinding the cheatmode.
+- Shortened tag translations are now supported.
+- Rewrote tag search for performance benefits and deduplication.
+
 ## [8.1.3]
 
 ### Added

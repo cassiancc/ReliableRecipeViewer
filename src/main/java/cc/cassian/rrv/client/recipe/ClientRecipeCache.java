@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import net.minecraft.resources.Identifier;
@@ -162,15 +163,12 @@ public class ClientRecipeCache {
     public void buildRecipeCache(boolean rebuildFromSynchronizedRecipes) {
         ReliableRecipeViewer.LOGGER.info("RRV: Rebuilding client recipe cache {}", rebuildFromSynchronizedRecipes ? "from synchronized recipes." : "from client recipe folder.");
 
-        //? fabric
         if (localCacheBuilt && !rebuildFromSynchronizedRecipes) return;
 
         if (rebuildFromSynchronizedRecipes)
             InternalRecipeManager.INSTANCE.setRecipesSynced(true);
-        else if (Configs.CLIENT_SETTINGS.localFallbackAllowed()) {
-            //? fabric {
+        else if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED) || Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.WHEN_NEEDED)) {
             ResourceRecipeManager.getLocalRecipes();
-            //?}
             localCacheBuilt = true;
         }
 

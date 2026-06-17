@@ -1,13 +1,11 @@
 package cc.cassian.rrv.fabric;
 
 //? fabric {
-import cc.cassian.rrv.common.Platform;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-import cc.cassian.rrv.common.resolver.RRVClientResolver;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -18,7 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class FabricPlatformImpl implements Platform {
+public class FabricPlatformImpl implements RRVPlatform {
 
     @Override
     public boolean isModLoaded(String modid) {
@@ -50,7 +48,7 @@ public class FabricPlatformImpl implements Platform {
             return "";
         }
         String creatorNamespace = stack.getCreatorNamespace();
-        if (holderNamespace.equals(creatorNamespace) && stack.has(DataComponents.ITEM_MODEL)) {
+        if (holderNamespace.equals(creatorNamespace) && stack.hasNonDefault(DataComponents.ITEM_MODEL)) {
             return stack.get(DataComponents.ITEM_MODEL).getNamespace();
         }
         return creatorNamespace;
@@ -61,12 +59,6 @@ public class FabricPlatformImpl implements Platform {
         ArrayList<String> modContainers = new ArrayList<>();
         FabricLoader.getInstance().getAllMods().forEach((mod)-> modContainers.add(mod.getMetadata().getId()));
         return modContainers;
-    }
-
-
-    @Override
-    public RRVClientResolver.UVInfo getUVInfo(TextureAtlasSprite sprite) {
-        return new RRVClientResolver.UVInfo(sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
     }
 
     @Override
