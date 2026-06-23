@@ -227,7 +227,12 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     ingredients.put(7, SlotContent.of(accessor.getFrontPattern()));
 
                     List<ItemStack> results = new ArrayList<>();
-                    for (Item ingredient : getItemsFromIngredient(accessor.getFrontPattern())) {
+                    for (Item item : getItemsFromIngredient(accessor.getFrontPattern())) {
+                        //? if >26.2 {
+                        /*var ingredient = Optional.of(new ItemStackTemplate(item));
+                        *///?} else {
+                        var ingredient = item;
+                        //?}
                         PotDecorations decorations = new PotDecorations(ingredient, ingredient, ingredient, ingredient);
                         DataComponentPatch components = DataComponentPatch.builder().set(DataComponents.POT_DECORATIONS, decorations).build();
                         results.add(accessor.getResult().apply(components));
