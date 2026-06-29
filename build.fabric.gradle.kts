@@ -207,6 +207,8 @@ publishMods {
         minecraftVersions.add(property("publish.curseforge_minecraft_version").toString())
         minecraftVersions.addAll(additionalVersions)
         requires("fabric-api")
+        client = true
+        server = true
     }
 }
 

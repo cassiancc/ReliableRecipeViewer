@@ -12,6 +12,7 @@ import org.joml.Vector3f;
 
 public class RrvGuiRenderHelper {
 
+    @SuppressWarnings("all") // geckolib causes entity render state to be erroneuously null
     public static void renderEntityOnScreen(GuiGraphicsExtractor guiGraphics, LivingEntity livingEntity, int x0, int y0, int x1, int y1, float scale, Vector3f translation, Quaternionf rotation, Quaternionf cameraAngleOverride) {
         //? >26.1 {
         /*livingEntity.setId(1);
@@ -20,6 +21,10 @@ public class RrvGuiRenderHelper {
         EntityRenderer<LivingEntity, EntityRenderState> entityRenderer = (EntityRenderer<LivingEntity, EntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
 
         EntityRenderState entityRenderState = entityRenderer.createRenderState();
+        if (entityRenderState == null) {
+            entityRenderState = new LivingEntityRenderState();
+        }
+
         entityRenderer.extractRenderState(livingEntity, entityRenderState, 1.0F);
         IRrvWrappedRenderState wrappedState = (IRrvWrappedRenderState) entityRenderState;
         wrappedState.rrv$enableMultiRendering();
