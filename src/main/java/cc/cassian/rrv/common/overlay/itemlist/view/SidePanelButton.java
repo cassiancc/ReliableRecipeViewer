@@ -14,6 +14,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Locale;
+
 import static cc.cassian.rrv.common.config.options.SidePanel.*;
 
 public class SidePanelButton extends ReliableSpriteIconButton {
@@ -44,11 +46,11 @@ public class SidePanelButton extends ReliableSpriteIconButton {
     }
 
     private static MutableComponent getTooltip() {
-        return Component.translatable("rrv.side_panel.btn", Component.translatable("rrv.client_settings.sidepanel." + Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase()));
+        return Component.translatable("rrv.side_panel.btn", Component.translatable("rrv.client_settings.sidepanel." + Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase(Locale.ROOT)));
     }
 
     @Override
     protected void extractSprite(final GuiGraphicsExtractor graphics, final int x, final int y) {
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("side_panel_"+ Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase()), x, y, this.spriteWidth, this.spriteHeight, this.alpha);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("side_panel_"+ Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase(Locale.ROOT)), x, y, this.spriteWidth, this.spriteHeight, this.alpha);
     }
 }

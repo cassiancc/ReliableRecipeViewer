@@ -48,12 +48,13 @@ public class ItemFilters {
 
         for (ItemStack stack : fullStackList()) {
 
-            String itemName = stack.getDisplayName().getString().toLowerCase();
+            String itemName = stack.getDisplayName().getString().toLowerCase(Locale.ROOT);
             Set<String> aliases = ALIASES.get(stack.getItem());
 
-            if (itemName.startsWith(query.toLowerCase()))
+            String lowerCaseQuery = query.toLowerCase(Locale.ROOT);
+            if (itemName.startsWith(lowerCaseQuery))
                 firstPrio.add(stack);
-            else if (itemName.contains(query.toLowerCase()))
+            else if (itemName.contains(lowerCaseQuery))
                 secondPrio.add(stack);
             else if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
@@ -63,7 +64,7 @@ public class ItemFilters {
                     thirdPrio.add(stack);
             } else if (!aliases.isEmpty()) {
                 aliases.forEach(alias -> {
-                    if (alias.toLowerCase().contains(query.toLowerCase())) {
+                    if (alias.toLowerCase(Locale.ROOT).contains(lowerCaseQuery)) {
                         if (!secondPrio.contains(stack))
                             secondPrio.add(stack);
                     }
@@ -92,11 +93,11 @@ public class ItemFilters {
             if (modNamespace == null)
                 continue;
 
-            modNamespace = modNamespace.toLowerCase();
+            modNamespace = modNamespace.toLowerCase(Locale.ROOT);
 
-            if (modNamespace.startsWith(query.toLowerCase()))
+            if (modNamespace.startsWith(query.toLowerCase(Locale.ROOT)))
                 add(firstPrio, stack);
-            else if (modNamespace.contains(query.toLowerCase()))
+            else if (modNamespace.contains(query.toLowerCase(Locale.ROOT)))
                 add(secondPrio, stack);
 
         }
@@ -122,9 +123,9 @@ public class ItemFilters {
         if (modNamespace == null)
             return false;
 
-        modNamespace = modNamespace.toLowerCase();
+        modNamespace = modNamespace.toLowerCase(Locale.ROOT);
 
-        return modNamespace.startsWith(query.toLowerCase()) || modNamespace.contains(query.toLowerCase());
+        return modNamespace.startsWith(query.toLowerCase(Locale.ROOT)) || modNamespace.contains(query.toLowerCase(Locale.ROOT));
     }
 
     /// Filters by Identifier (item id)
@@ -136,11 +137,11 @@ public class ItemFilters {
 
         for (ItemStack stack : fullStackList()) {
 
-            String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase();
+            String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase(Locale.ROOT);
 
-            if (itemId.startsWith(query.toLowerCase()))
+            if (itemId.startsWith(query.toLowerCase(Locale.ROOT)))
                 add(firstPrio, stack);
-            else if (itemId.contains(query.toLowerCase()))
+            else if (itemId.contains(query.toLowerCase(Locale.ROOT)))
                 add(secondPrio, stack);
         }
 
@@ -154,8 +155,8 @@ public class ItemFilters {
     /// @param query The query
     /// @return Whether the item stack matches the item id
     public static boolean id(ItemStack stack, String query) {
-        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase();
-        return itemId.startsWith(query.toLowerCase()) || itemId.contains(query.toLowerCase());
+        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase(Locale.ROOT);
+        return itemId.startsWith(query.toLowerCase(Locale.ROOT)) || itemId.contains(query.toLowerCase(Locale.ROOT));
     }
 
     /// Filters by an item's tags
@@ -165,7 +166,7 @@ public class ItemFilters {
         List<ItemStack> results = new ArrayList<>();
 
         for (ItemStack itemStack : fullStackList()) {
-            if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {
+            if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))) {
                 results.add(itemStack);
             }
         }
@@ -180,7 +181,7 @@ public class ItemFilters {
     public static boolean tag(ItemStack itemStack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
-        if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {
+        if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))) {
             result.set(true);
         }
 
@@ -200,10 +201,10 @@ public class ItemFilters {
 
         for (Component line : lore) {
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase().startsWith(query.toLowerCase()))
+            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT).startsWith(query.toLowerCase(Locale.ROOT)))
                 return 1;
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase().contains(query.toLowerCase()))
+            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))
                 return 2;
         }
 
