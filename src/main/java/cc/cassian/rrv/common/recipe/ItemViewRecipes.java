@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -198,6 +199,22 @@ public class ItemViewRecipes {
         return enchantments.keySet().stream().allMatch(enchantment -> {
             return stackEnchantments.getLevel(enchantment) == enchantments.getLevel(enchantment);
         }) && stackEnchantments.size() == enchantments.size();
+    }
+
+    /**
+     * @return Whether the trims of two itemStacks match
+     */
+    public static boolean makeTrimCheck(ItemStack stack1, ItemStack stack2) {
+        if (!(stack1.has(DataComponents.TRIM) && stack2.has(DataComponents.TRIM)))
+            return true;
+
+        ArmorTrim contents = stack1.get(DataComponents.TRIM);
+        ArmorTrim stackContents = stack2.get(DataComponents.TRIM);
+
+        if (contents == null || stackContents == null)
+            return true;
+
+        return stackContents.material() == contents.material() && stackContents.pattern() == contents.pattern();
     }
 
     /**

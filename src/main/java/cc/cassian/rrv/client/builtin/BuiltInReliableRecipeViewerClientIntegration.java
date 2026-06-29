@@ -305,7 +305,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 if (smithingRecipe instanceof SmithingTrimRecipe trimRecipe) {
                     recipeList.add(SmithingClientRecipe.trimRecipe(smithingRecipeRecipeHolder.id().identifier(),
                             trimRecipe.additionIngredient().orElse(null), trimRecipe.baseIngredient(),
-                            trimRecipe.templateIngredient().orElse(null), trimRecipe.pattern.value()));
+                            trimRecipe.templateIngredient().orElse(null), trimRecipe.pattern));
                 } else if (smithingRecipe instanceof SmithingTransformRecipe transformRecipe) {
                     recipeList.add(SmithingClientRecipe.transformationRecipe(smithingRecipeRecipeHolder.id().identifier(),
                             transformRecipe.additionIngredient().orElse(null), transformRecipe.baseIngredient(),

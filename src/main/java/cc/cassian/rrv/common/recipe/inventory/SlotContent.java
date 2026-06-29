@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.Block;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 
 public class SlotContent {
 
@@ -175,6 +176,10 @@ public class SlotContent {
         return this.getByIndex(this.index());
     }
 
+    public ItemStack current() {
+        return this.getByIndex(this.index());
+    }
+
     public void resetPointer() {
         this.current = 0;
         this.itemOrigin = ItemStack.EMPTY;
@@ -203,6 +208,10 @@ public class SlotContent {
     }
 
     public int getNextMatching(ItemStack origin) {
+        return getNextMatching(origin, (origin2, stack)-> ItemViewRecipes.makePotionCheck(origin2, stack) && ItemViewRecipes.makeEnchantmentCheck(origin2, stack));
+    }
+
+    public int getNextMatching(ItemStack origin, BiPredicate<ItemStack, ItemStack> predicate) {
 
         for (int i = this.current; i < this.content.size() + this.current; i++) {
             int index = i < this.content.size() ? i : i - this.content.size();
@@ -212,16 +221,12 @@ public class SlotContent {
             if (stack.getItem() != origin.getItem())
                 continue;
 
-            boolean potionCheck = ItemViewRecipes.makePotionCheck(origin, stack);
-            boolean enchantCheck = ItemViewRecipes.makeEnchantmentCheck(origin, stack);
-
-            if(potionCheck && enchantCheck)
+            if (predicate.test(origin, stack))
                 return index;
         }
 
         return this.current;
     }
-
 
     public Optional<TagKey<Item>> itemTag() {
         return this.itemTag == null ? Optional.empty() : Optional.of(this.itemTag);
