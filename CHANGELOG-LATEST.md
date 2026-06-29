@@ -1,4 +1,2 @@
-### Fixed
-- Trim recipes do not show the correct output.
-- Crash when opening an RRV screen on a non-English locale.
-- Crash when attempting to view a GeckoLib entity.
+### Added
+- `ItemView#hideItemStack` can now be used to hide a distinct `ItemStack` from the index, rather than using `ItemView#hideItem` which excludes all itemstacks of that item's type.

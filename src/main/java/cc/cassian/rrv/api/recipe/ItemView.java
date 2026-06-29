@@ -26,6 +26,7 @@ import net.minecraft.world.entity.EntityType;
 //import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -42,6 +43,9 @@ public class ItemView {
 
     /// A list of client-side excluded items that won't show up in the ItemView overlay
     private static final List<Item> EXCLUDED_ITEMS = new ArrayList<>();
+
+    /// A list of client-side excluded item stacks that won't show up in the ItemView overlay
+    private static final List<ItemStackTemplate> EXCLUDED_ITEM_STACKS = new ArrayList<>();
 
     /// A list of client-side excluded enchantments that won't show up in the ItemView overlay
     private static final List<ResourceKey<Enchantment>> EXCLUDED_ENCHANTMENTS = new ArrayList<>();
@@ -122,6 +126,39 @@ public class ItemView {
         excludeItems(item);
     }
 
+
+    /// A method used to exclude an item stack from the ItemView index. To hide all item stacks of a certain item, use [ItemView#excludeItem] or the convention tag.
+    ///
+    /// **Note**: This does not hide the item from recipes, only the index.
+    ///
+    /// **Example**:
+    /// ```
+    /// ItemView.excludeItemStack(Items.STONE.getDefaultInstance))
+    /// ```
+    ///
+    /// @param item The excluded item
+    public static void excludeItemStack(ItemStack... item) {
+        for (ItemStack itemStack : item) {
+            if (!itemStack.isEmpty())
+                EXCLUDED_ITEM_STACKS.add(ItemStackTemplate.fromNonEmptyStack(itemStack));
+        }
+    }
+
+
+    /// A method used to exclude an item stack from the ItemView index. To hide all item stacks of a certain item, use [ItemView#excludeItem] or the convention tag.
+    ///
+    /// **Note**: This does not hide the item from recipes, only the index.
+    ///
+    /// **Example**:
+    /// ```
+    /// ItemView.excludeItemStack(Items.STONE.getDefaultInstance))
+    /// ```
+    ///
+    /// @param item The excluded item
+    public static void excludeItemStack(ItemStackTemplate... item) {
+		EXCLUDED_ITEM_STACKS.addAll(Arrays.asList(item));
+    }
+
     /// A method used to exclude a recipe from the recipe screen.
     ///
     /// **Example**:
@@ -196,7 +233,7 @@ public class ItemView {
     ///
     /// **Example**:
     /// ```
-    /// ItemView.excludeItem(Enchantments.MENDING))
+    /// ItemView.excludeEnchantment(Enchantments.MENDING))
     /// ```
     ///
     /// @param item The excluded item
@@ -225,7 +262,7 @@ public class ItemView {
     ///
     /// **Example**:
     /// ```
-    /// ItemView.excludeItem(Potions.MUNDANE))
+    /// ItemView.excludePotion(Potions.MUNDANE))
     /// ```
     ///
     /// @param item The excluded item
@@ -392,6 +429,7 @@ public class ItemView {
     }
 
     public static boolean isExcludedItem(ItemStack stack) {
+        if (stack.isEmpty() || EXCLUDED_ITEM_STACKS.contains(ItemStackTemplate.fromNonEmptyStack(stack))) return true;
         if (stack.has(DataComponents.POTION_CONTENTS)) {
             Optional<Holder<Potion>> potion = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
             if (potion.isPresent()) {

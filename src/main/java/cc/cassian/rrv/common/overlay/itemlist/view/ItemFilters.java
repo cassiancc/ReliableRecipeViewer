@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemFilters {
 
-    private static final List<Item> EXCLUDED_ITEMS = List.of(Items.POTION, Items.TIPPED_ARROW, Items.ENCHANTED_BOOK);
     public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
 
     /// Filters just by the items display name and tooltip
@@ -218,8 +217,7 @@ public class ItemFilters {
         List<ItemStack> results = new ArrayList<>();
 
         BuiltInRegistries.ITEM.forEach(item -> {
-            if (!EXCLUDED_ITEMS.contains(item))
-                results.add(new ItemStack(item));
+            results.add(new ItemStack(item));
             results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
         });
 
