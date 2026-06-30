@@ -9,8 +9,6 @@ accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe pattern Ln
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe result Lnet/minecraft/world/item/ItemStackTemplate;
 accessible class net/minecraft/world/item/alchemy/PotionBrewing$Mix
 
-accessible class net/minecraft/client/resources/model/ModelBakery$ModelBakerImpl
-
 accessible field net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen recipeBookComponent Lnet/minecraft/client/gui/screens/recipebook/RecipeBookComponent;
 accessible method net/minecraft/client/gui/screens/recipebook/RecipeBookComponent getXOrigin ()I
 accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platform/InputConstants$Key;
@@ -21,10 +19,6 @@ accessible method net/minecraft/world/inventory/MenuType <init> (Lnet/minecraft/
 accessible class net/minecraft/world/inventory/MenuType$MenuSupplier
 mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
 mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
-
-# World Interaction
-accessible field net/minecraft/world/item/ShovelItem FLATTENABLES Ljava/util/Map;
-accessible field net/minecraft/world/item/AxeItem STRIPPABLES Ljava/util/Map;
 
 # Recipe Sharing
 extend-enum net/minecraft/network/chat/HoverEvent$Action RRV_SHOW_RECIPE

@@ -33,13 +33,19 @@ import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-//? fabric
+//? fabric {
+import cc.cassian.rrv.common.recipe.util.WorldInteractionRecipeUtil;
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
+//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+//? if >26.2 {
+/*import net.minecraft.core.component.BlockTransformer;
+import net.minecraft.world.item.component.BlockTransformerMappings;
+*///?}
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -60,7 +66,6 @@ import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.entity.PotDecorations;
-import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 //? neoforge
@@ -359,6 +364,13 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         var axes = SlotContent.of(ItemTags.AXES);
         var shovels = SlotContent.of(ItemTags.SHOVELS);
+        var hoes = SlotContent.of(ItemTags.HOES);
+
+        //? if >26.2 {
+        /*WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.AXE.transforms(), worldInteractionRecipes, axes);
+        WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.SHOVEL.transforms(), worldInteractionRecipes, shovels);
+        WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.HOE.transforms(), worldInteractionRecipes, hoes);
+        *///?}
 
         BuiltInRegistries.ITEM.entrySet().forEach(itemEntry -> {
             if (itemEntry.getValue() instanceof FluidItem fluidItem) {
@@ -396,23 +408,36 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_solidify"), SlotContent.of(block), SlotContent.of(new FluidStack(Fluids.WATER)), SlotContent.of(((ConcretePowderBlockAccessor) concretePowderBlock).getConcrete())));
                 }
             }
+            //? if >26.2 {
+            /*ItemStack stack = itemEntry.getValue().getDefaultInstance();
+            if (stack.has(DataComponents.BLOCK_TRANSFORMER)) {
+                List<BlockTransformer.BlockTransformData> transforms = stack.get(DataComponents.BLOCK_TRANSFORMER).transforms();
+                if (!transforms.equals(BlockTransformerMappings.AXE.transforms()) && !transforms.equals(BlockTransformerMappings.SHOVEL.transforms()) && !transforms.equals(BlockTransformerMappings.HOE.transforms())) {
+                    WorldInteractionRecipeUtil.addTransformerRecipes(transforms, worldInteractionRecipes, SlotContent.of(stack));
+                }
+            }
+            *///?}
         });
 
         // honeycomb
         //? fabric {
         HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_", block), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2)))));
         HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_off_",block), SlotContent.of(block), axes, SlotContent.of(block2)))));
+        //? if <26.3
         AxeItem.STRIPPABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/strip_", block), SlotContent.of(block), axes, SlotContent.of(state)))));
         //?}
 
         // flattenables
+        //? if <26.3
         ShovelItem.FLATTENABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/shovel_path"), SlotContent.of(block), shovels, SlotContent.of(state.getBlock())))));
 
         // hoes
-        var hoes = SlotContent.of(ItemTags.HOES);
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_farmland"), SlotContent.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH), hoes, SlotContent.of(Items.FARMLAND)));
+        //? if <26.3 {
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_dirt"),SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.DIRT)));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_farmland"), SlotContent.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH), hoes, SlotContent.of(Items.FARMLAND)));
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_hanging_roots"),SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.HANGING_ROOTS)));
+        //?}
+
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/shearing_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/glass_bottle_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
 

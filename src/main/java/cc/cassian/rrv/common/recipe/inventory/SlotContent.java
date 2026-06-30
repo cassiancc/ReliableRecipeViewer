@@ -263,6 +263,13 @@ public class SlotContent {
         return SlotContent.of(stacks);
     }
 
+    public static SlotContent ofBlockList(List<Block> blocks) {
+        if (blocks == null) return SlotContent.of();
+        List<ItemStack> stacks = new ArrayList<>();
+        blocks.forEach(block -> stacks.add(new ItemStack(block)));
+        return SlotContent.of(stacks);
+    }
+
     public static SlotContent of(FluidStack fluidStack) {
         if (fluidStack == null) return SlotContent.of();
         return new SlotContent(List.of(fluidStack.createItemStack()));

@@ -1,2 +1,3 @@
 ### Added
-- `ItemView#hideItemStack` can now be used to hide a distinct `ItemStack` from the index, rather than using `ItemView#hideItem` which excludes all itemstacks of that item's type.
+- Support for 26.3-snapshot-2.
+- Component-driven block transformers now automatically generate world interaction recipes.

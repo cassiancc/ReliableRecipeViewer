@@ -33,10 +33,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? if >26.1 {
-/*import cc.cassian.rrv.common.mixin.EntityPredicateAccessor;
+/*import cc.cassian.rrv.common.mixin.world.level.predicates.EntityPredicateAccessor;
 import net.minecraft.advancements.predicates.entity.EntityPartialComponentsPredicate;
 import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
-import net.minecraft.advancements.predicates.entity.EntitySubPredicates;
 *///?}
 import net.minecraft.ChatFormatting;
 

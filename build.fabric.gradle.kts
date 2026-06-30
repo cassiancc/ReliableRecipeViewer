@@ -33,7 +33,7 @@ version = "${property("mod.version")}+${property("deps.minecraft")}-fabric"
 base.archivesName = "reliable-recipe-viewer"
 
 loom {
-    accessWidenerPath = rootProject.file("src/main/resources/${property("mod.id")}.classtweaker")
+    accessWidenerPath = file("src/main/resources/${property("mod.id")}.classtweaker")
 }
 
 jsonlang {

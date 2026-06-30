@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.mixin;
+package cc.cassian.rrv.common.mixin.world.level.predicates;
 
 import com.mojang.serialization.Codec;
 import org.spongepowered.asm.mixin.Mixin;
