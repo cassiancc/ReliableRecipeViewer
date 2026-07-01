@@ -114,6 +114,7 @@ dependencies {
 
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         exclude(group = "maven.modrinth")
+        exclude(group = "net.caffeinemc")
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 
@@ -125,8 +126,8 @@ dependencies {
     compileOnly("maven.modrinth:jade:${property("deps.jade")}")
     compileOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
     if (hasProperty("deps.badpackets")) {
-        runtimeOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
-        runtimeOnly("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
+        localRuntime("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
+        localRuntime("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
     }
     compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
         exclude(group = "mcp.mobius.waila")
@@ -144,7 +145,7 @@ dependencies {
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
-        localRuntime("eu.pb4:polymer-virtual-entity:0.16.2+26.1.1")
+        localRuntime("eu.pb4:polymer-virtual-entity:${property("deps.polymer")}")
         localRuntime("maven.modrinth:jade:${property("deps.jade")}")
     }
 }

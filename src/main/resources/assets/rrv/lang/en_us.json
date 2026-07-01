@@ -153,6 +153,8 @@
   "rrv.client_settings.index_source": "Index Source",
   "rrv.client_settings.index_source.creative": "Creative",
   "rrv.client_settings.index_source.registry": "Registry",
+  "rrv.client_settings.index_source.creative_and_registry": "Creative and Registry",
+  "rrv.client_settings.index_source.tooltip": "What items to display in the Item View. 'Creative' ",
   "rrv.client_settings.wrap_scrolling": "Wrap Scrolling",
   "rrv.client_settings.wrap_scrolling.tooltip": "Determines how the mod should handle attempting to scroll past the end of the list.",
   "rrv.client_settings.wrap_scrolling.enabled": "Enabled",

@@ -14,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.level.material.Fluid;
@@ -21,33 +22,24 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
-/**
- * Internal (intermediate) class that connects {@link ItemView} (Api-class) with RRV logic
- * <br>
- * <br>
- * Also contains some helper functions
- */
+/// Internal (intermediate) class that connects [ItemView] (Api-class) with RRV logic
+///
+/// Also contains some helper functions
 public class ItemViewRecipes {
 
     public static final ItemViewRecipes INSTANCE = new ItemViewRecipes();
 
-
-    /**
-     * A map of recipe wrappers
-     */
+    /// A map of recipe wrappers on the client side.
     private final HashMap<ReliableServerRecipeType<?>, ClientRecipeWrapper<?>> clientRecipeWrappers;
 
-    /**
-     * A map of recipe providers
-     */
+    /// A map of recipe providers on the server side.
     private final List<ServerRecipeProvider> serverRecipeProviders;
 
 
-    /**
-     * A map of recipe providers
-     */
+    /// A map of recipe providers on the client side.
     private final List<ClientRecipeProvider> clientRecipeProviders;
 
     /**
@@ -64,39 +56,30 @@ public class ItemViewRecipes {
     }
 
 
-    /**
-     * Internal way to register recipe wrappers
-     * <br>
-     * <br>
-     * Will be removed soon
-     * @param recipeType
-     * @param wrapper
-     * @param <T>
-     */
+    /// Internal way to register recipe wrappers
+    ///
+    /// Will be removed soon
+    /// @param recipeType
+    /// @param wrapper
+    /// @param <T>
     @Deprecated
     public <T extends ReliableServerRecipe> void registerRecipeWrapper(ReliableServerRecipeType<T> recipeType, ClientRecipeWrapper<T> wrapper) {
         this.clientRecipeWrappers.put(recipeType, wrapper);
     }
 
-    /**
-     * Old way to register server recipe providers
-     * <br>
-     * <br>
-     * Will be removed soon
-     * @param provider
-     */
+    /// Old way to register server recipe providers
+    ///
+    /// Will be removed soon
+    /// @param provider
     @Deprecated
     public void addServerRecipeProvider(ServerRecipeProvider provider) {
         this.serverRecipeProviders.add(provider);
     }
 
-    /**
-     * Internal way to register client recipe providers
-     * <br>
-     * <br>
-     * Will be removed soon
-     * @param provider
-     */
+    /// Internal way to register client recipe providers
+    ///
+    /// Will be removed soon
+    /// @param provider
     @Deprecated
     public void addClientRecipeProvider(ClientRecipeProvider provider) {
         this.clientRecipeProviders.add(provider);
@@ -129,20 +112,14 @@ public class ItemViewRecipes {
         return this.fluidItemMap.getOrDefault(fluid, Items.AIR);
     }
 
-    /**
-     *
-     * @return Whether any of the listed SlotContents contains an itemStack matching the potion of the given stack
-     */
-    public static boolean makePotionRedirectCheck(ItemStack stack, List<SlotContent> slotContents) {
-        if (!stack.has(DataComponents.POTION_CONTENTS))
-            return true;
-
-        for (SlotContent slotContent : slotContents) {
+    /// @return Whether any of the provided [SlotContent]s contain an [ItemStack] matching the components of the given stack
+    public static boolean makeDefaultChecks(ItemStack stack, List<SlotContent> slots) {
+        for (SlotContent slotContent : slots) {
             for (ItemStack validStack : slotContent.getValidContents()) {
                 if (!stack.is(validStack.getItem()))
                     continue;
 
-                if (ItemViewRecipes.makePotionCheck(stack, validStack))
+                if (ItemViewRecipes.makeDefaultChecks(stack, validStack))
                     return true;
             }
         }
@@ -150,27 +127,12 @@ public class ItemViewRecipes {
         return false;
     }
 
-    /**
-     *
-     * @return Whether any of the listed SlotContents contains an itemStack matching the enchantments of the given stack
-     */
-    public static boolean makeEnchantedRedirectCheck(ItemStack stack, List<SlotContent> slotContents) {
-        if (!stack.has(DataComponents.STORED_ENCHANTMENTS))
-            return true;
-
-        for (SlotContent slotContent : slotContents) {
-            for (ItemStack validStack : slotContent.getValidContents()) {
-
-                if (!stack.is(validStack.getItem()))
-                    continue;
-
-                if (ItemViewRecipes.makeEnchantmentCheck(stack, validStack))
-                    return true;
-            }
-
-        }
-
-        return false;
+    /// @return Whether the provided [ItemStack] matches the components of the given stack
+    public static boolean makeDefaultChecks(ItemStack stack, ItemStack ingredient) {
+        boolean potionRedirectCheck = ItemViewRecipes.makePotionCheck(stack, ingredient);
+        boolean enchantmentRedirectCheck = ItemViewRecipes.makeEnchantmentCheck(stack, ingredient);
+        boolean stewRedirectCheck = ItemViewRecipes.makeStewCheck(stack, ingredient);
+        return potionRedirectCheck && enchantmentRedirectCheck && stewRedirectCheck;
     }
 
     /**
@@ -184,6 +146,19 @@ public class ItemViewRecipes {
         PotionContents stackContents = stack2.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
 
         return contents.potion().isPresent() && stackContents.potion().isPresent() && contents.is(stackContents.potion().orElseThrow());
+    }
+
+    /**
+     * @return Whether the potion component of two itemStacks matches
+     */
+    public static boolean makeStewCheck(ItemStack stack1, ItemStack stack2) {
+        if (!(stack1.has(DataComponents.SUSPICIOUS_STEW_EFFECTS) && stack2.has(DataComponents.SUSPICIOUS_STEW_EFFECTS)))
+            return true;
+
+        SuspiciousStewEffects contents = stack1.getOrDefault(DataComponents.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffects.EMPTY);
+        SuspiciousStewEffects stackContents = stack2.getOrDefault(DataComponents.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffects.EMPTY);
+
+        return new HashSet<>(contents.effects()).containsAll(stackContents.effects());
     }
 
     /**
@@ -217,17 +192,11 @@ public class ItemViewRecipes {
         return stackContents.material() == contents.material() && stackContents.pattern() == contents.pattern();
     }
 
-    /**
-     * A list of mob drops to be added to the index.
-     */
+    /// A list of mob drops to be added to the index.
     public static final LinkedHashMultimap<EntityType<?>, SlotContent> MOB_DROPS = LinkedHashMultimap.create();
-    /**
-     * A list of world interaction recipes to be added to the index.
-     */
+    /// A list of world interaction recipes to be added to the index.
     public static final List<WorldInteractionClientRecipe> WORLD_INTERACTION_RECIPES = new ArrayList<>();
-    /**
-     * A list of info recipes to be added to the index.
-     */
+    /// A list of info recipes to be added to the index.
     public static final List<InfoClientRecipe> INFO_RECIPES = new ArrayList<>();
 
     public static void addAllWorldInteractionRecipes(ArrayList<WorldInteractionClientRecipe> worldInteractionRecipes) {

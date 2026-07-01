@@ -23,6 +23,8 @@ import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
+import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.recipe.ConcretePowderBlockAccessor;
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
@@ -97,7 +99,9 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemView.addClientReloadCallback(() -> {
             //? neoforge
             //ItemView.excludeItems(Items.AIR);
-            ItemView.excludeItemStack(new ItemStack(Items.POTION), new ItemStack(Items.SPLASH_POTION), new ItemStack(Items.LINGERING_POTION), new ItemStack(Items.ENCHANTED_BOOK));
+            ItemView.excludeItemStack(new ItemStack(Items.POTION), new ItemStack(Items.SPLASH_POTION), new ItemStack(Items.LINGERING_POTION), new ItemStack(Items.ENCHANTED_BOOK), new ItemStack(Items.TIPPED_ARROW), new ItemStack(Items.SUSPICIOUS_STEW));
+            if (!Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.REGISTRY))
+                ItemView.excludeItemStack(new ItemStack(Items.SUSPICIOUS_STEW));
             excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
             excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);

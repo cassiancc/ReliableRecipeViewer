@@ -488,6 +488,10 @@ public class ItemView {
             return stack.copy();
         }
 
+        public ItemStackTemplate template() {
+            return ItemStackTemplate.fromNonEmptyStack(stack);
+        }
+
 
     }
 }

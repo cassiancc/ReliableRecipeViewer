@@ -1,3 +1,9 @@
 ### Added
-- Support for 26.3-snapshot-2.
-- Component-driven block transformers now automatically generate world interaction recipes.
+- RRV's index is now populated from both the creative mode search tab and the registry.
+- Suspicious stew recipes now show up correctly.
+
+### Changed
+- Internal changes have been made to unify `ItemStack` comparisons. An API for adding checks will be added later.
+
+### Fixed
+- Component-less versions of Suspicious Stew and Tipped Arrows no longer appear in the index.

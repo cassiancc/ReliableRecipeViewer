@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.config.instances;
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 
 public class ClientConfig extends AbstractRrvConfig {
 
@@ -25,6 +26,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean recipeBookTheme = true;
 	private LocalFallback localFallback = LocalFallback.WHEN_NEEDED;
 	private boolean recipeSharing = true;
+	private IndexSource indexSource = IndexSource.CREATIVE_AND_REGISTRY;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -166,6 +168,31 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.localFallback = localFallback;
 	}
 
+	public WorkstationDisplay getWorkstationDisplay() {
+		return workstationDisplay;
+	}
+
+	public void setWorkstationDisplay(WorkstationDisplay workstationDisplay) {
+		this.workstationDisplay = workstationDisplay;
+	}
+
+	public boolean isRecipeSharing() {
+		return recipeSharing;
+	}
+
+	public void setRecipeSharing(boolean recipeSharing) {
+		this.recipeSharing = recipeSharing;
+	}
+
+	public IndexSource getIndexSource() {
+		return indexSource;
+	}
+
+	public void setIndexSource(IndexSource indexSource) {
+		this.indexSource = indexSource;
+		ItemFilters.cached = false;
+	}
+
 	@Override
 	protected void loadData() {
 		this.showItemView = load("enabled", this.showItemView, OverlayDisplay.CODEC);
@@ -211,20 +238,4 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		save("recipeSharing", this.recipeSharing);
 	}
-
-	public WorkstationDisplay getWorkstationDisplay() {
-		return workstationDisplay;
-	}
-
-	public void setWorkstationDisplay(WorkstationDisplay workstationDisplay) {
-		this.workstationDisplay = workstationDisplay;
-	}
-
-    public boolean isRecipeSharing() {
-        return recipeSharing;
-    }
-
-    public void setRecipeSharing(boolean recipeSharing) {
-        this.recipeSharing = recipeSharing;
-    }
 }

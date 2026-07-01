@@ -208,7 +208,7 @@ public class SlotContent {
     }
 
     public int getNextMatching(ItemStack origin) {
-        return getNextMatching(origin, (origin2, stack)-> ItemViewRecipes.makePotionCheck(origin2, stack) && ItemViewRecipes.makeEnchantmentCheck(origin2, stack));
+        return getNextMatching(origin, ItemViewRecipes::makeDefaultChecks);
     }
 
     public int getNextMatching(ItemStack origin, BiPredicate<ItemStack, ItemStack> predicate) {
