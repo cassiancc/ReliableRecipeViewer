@@ -557,5 +557,29 @@
   "tag.block.minecraft.wooden_stairs": "Wooden Stairs",
   "tag.block.minecraft.wooden_trapdoors": "Wooden Trapdoors",
   "tag.block.minecraft.wool": "Wool",
-  "tag.block.minecraft.wool_carpets": "Wool Carpets"
+  "tag.block.minecraft.wool_carpets": "Wool Carpets",
+
+  "rrv.client_settings.stack_groups": "Stack Groups",
+  "rrv.client_settings.stack_groups.tooltip": "Group similar items (e.g. spawn eggs, minecarts) into expandable entries.",
+  "rrv.client_settings.stack_groups.enabled": "Enabled",
+  "rrv.client_settings.stack_groups.disabled": "Disabled",
+  "rrv.client_settings.configure_stack_groups.title": "Configure Stack Groups",
+  "rrv.client_settings.configure_stack_groups.tooltip": "Manage individual stack groups and reorder their contents.",
+  "rrv.stack_group_settings.group": "Stack Group",
+  "rrv.stack_group_settings.state": "State",
+  "rrv.stack_group_settings.enabled": "Enabled",
+  "rrv.stack_group_settings.disabled": "Disabled",
+  "rrv.tag_recipe.stack_group.enabled": "Disable Tag Stack Group",
+  "rrv.tag_recipe.stack_group.disabled": "Enable Tag Stack Group",
+  "rrv.stack_group.tooltip.count": "%s items",
+  "rrv.stack_group.tooltip.expand": "Click to expand",
+  "rrv.stack_group.tooltip.collapse": "Click to collapse",
+
+  "stackgroup.rrv.spawn_eggs": "Spawn Eggs",
+  "stackgroup.rrv.pressure_plates": "Pressure Plates",
+  "stackgroup.rrv.minecarts": "Minecarts",
+  "stackgroup.rrv.infested_blocks": "Infested Blocks",
+  "stackgroup.rrv.copper_blocks": "Copper Blocks",
+  "stackgroup.rrv.banner_patterns": "Banner Patterns",
+  "stackgroup.rrv.animal_armors": "Animal Armor"
 }

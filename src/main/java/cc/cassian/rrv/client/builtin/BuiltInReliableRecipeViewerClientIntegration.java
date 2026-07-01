@@ -34,6 +34,7 @@ import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
 import cc.cassian.rrv.common.recipe.util.WorldInteractionRecipeUtil;
@@ -106,6 +107,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
             hideRecipes();
+            StackGroupManager.reload();
         });
 
         //Wrapper

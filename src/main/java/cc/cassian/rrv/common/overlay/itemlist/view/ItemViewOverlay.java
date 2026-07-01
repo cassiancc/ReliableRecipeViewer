@@ -15,6 +15,7 @@ import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
@@ -62,6 +63,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     private String currentQuery;
     boolean itemFilterMode;
     private boolean warned = false;
+    private final List<ItemStack> filteredItems = new ArrayList<>();
 
     public ItemViewOverlay() {
         super(-1, -1, -1, -1);
@@ -188,38 +190,52 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 }
             }
 
-            this.availableItems = ItemFilters.defaultFilter(String.join(" ", objects));
+            this.filteredItems.clear();
+            this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects)));
 
             for (String query : newQuery.split(" ")) {
                 if (query.startsWith("@")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
+                    this.filteredItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
                 }
                 else if (query.startsWith(":")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
+                    this.filteredItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
                 }
                 else if (query.startsWith("#")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
+                    this.filteredItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
                 }
             }
         // standard filtering
         } else {
+            this.filteredItems.clear();
             if (newQuery.startsWith("@"))
-                this.availableItems = ItemFilters.modNamespace(newQuery.substring(1));
+                this.filteredItems.addAll(ItemFilters.modNamespace(newQuery.substring(1)));
             else if (newQuery.startsWith(":"))
-                this.availableItems = ItemFilters.id(newQuery.substring(1));
+                this.filteredItems.addAll(ItemFilters.id(newQuery.substring(1)));
             else if (newQuery.startsWith("#"))
-                this.availableItems = ItemFilters.tag(newQuery.substring(1));
+                this.filteredItems.addAll(ItemFilters.tag(newQuery.substring(1)));
             else
-                this.availableItems = ItemFilters.defaultFilter(newQuery);
+                this.filteredItems.addAll(ItemFilters.defaultFilter(newQuery));
         }
 
-        this.availableItems().removeIf(ItemView::isExcludedItem);
+        this.filteredItems.removeIf(ItemView::isExcludedItem);
+
+        this.updateDisplayedItems();
 
         SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
 
-        this.updateSlots();
-
         this.updateButtons();
+    }
+
+    public void updateDisplayedItems() {
+        List<ItemStack> items = this.filteredItems;
+        if (Configs.CLIENT_SETTINGS.areStackGroupsEnabled()) {
+            if (this.currentQuery != null && !this.currentQuery.isEmpty()) {
+                items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
+            }
+            items = StackGroupManager.applyGrouping(items);
+        }
+        this.availableItems = items;
+        this.updateSlots();
     }
 
 	private void updateButtons() {
@@ -284,9 +300,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 
 
+        ItemSlot.currentFrameSlots = this.itemSlots();
         for (ItemSlot slot : this.itemSlots()) {
             slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         }
+        ItemSlot.currentFrameSlots = null;
 
 
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);

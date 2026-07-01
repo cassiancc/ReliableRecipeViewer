@@ -445,5 +445,29 @@
   "tag.block.minecraft.wooden_stairs": "木楼梯",
   "tag.block.minecraft.wooden_trapdoors": "木质活板门",
   "tag.block.minecraft.wool": "羊毛",
-  "tag.block.minecraft.wool_carpets": "羊毛地毯"
+  "tag.block.minecraft.wool_carpets": "羊毛地毯",
+
+  "rrv.client_settings.stack_groups": "堆叠组",
+  "rrv.client_settings.stack_groups.tooltip": "将类似的物品（例如刷怪蛋，矿车）归纳成可折叠的卡槽。",
+  "rrv.client_settings.stack_groups.enabled": "已启用",
+  "rrv.client_settings.stack_groups.disabled": "已禁用",
+  "rrv.client_settings.configure_stack_groups.title": "配置堆叠组",
+  "rrv.client_settings.configure_stack_groups.tooltip": "管理具体的堆叠组以及调整其内部物品的排列顺序。",
+  "rrv.stack_group_settings.group": "堆叠组",
+  "rrv.stack_group_settings.state": "状态",
+  "rrv.stack_group_settings.enabled": "已启用",
+  "rrv.stack_group_settings.disabled": "已禁用",
+  "rrv.tag_recipe.stack_group.enabled": "禁用标签堆叠组",
+  "rrv.tag_recipe.stack_group.disabled": "启用标签堆叠组",
+  "rrv.stack_group.tooltip.count": "%s 个物品",
+  "rrv.stack_group.tooltip.expand": "点击展开",
+  "rrv.stack_group.tooltip.collapse": "点击折叠",
+
+  "stackgroup.rrv.spawn_eggs": "刷怪蛋",
+  "stackgroup.rrv.pressure_plates": "压力板",
+  "stackgroup.rrv.minecarts": "矿车",
+  "stackgroup.rrv.infested_blocks": "被虫蚀的方块",
+  "stackgroup.rrv.copper_blocks": "铜方块",
+  "stackgroup.rrv.banner_patterns": "旗帜图案",
+  "stackgroup.rrv.animal_armors": "狼铠"
 }

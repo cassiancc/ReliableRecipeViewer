@@ -4,6 +4,11 @@ import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import com.mojang.serialization.Codec;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ClientConfig extends AbstractRrvConfig {
 
@@ -27,6 +32,10 @@ public class ClientConfig extends AbstractRrvConfig {
 	private LocalFallback localFallback = LocalFallback.WHEN_NEEDED;
 	private boolean recipeSharing = true;
 	private IndexSource indexSource = IndexSource.CREATIVE_AND_REGISTRY;
+	private boolean stackGroups = true;
+	private List<String> disabledStackGroups = new ArrayList<>();
+	private List<String> expandedStackGroups = new ArrayList<>();
+	private Map<String, List<String>> stackGroupItemOrder = new HashMap<>();
 
 	public ClientConfig() {
 		super("client_settings");
@@ -193,6 +202,35 @@ public class ClientConfig extends AbstractRrvConfig {
 		ItemFilters.cached = false;
 	}
 
+	public boolean areStackGroupsEnabled() {
+		return this.stackGroups;
+	}
+
+	public void setStackGroupsEnabled(boolean enabled) {
+		this.stackGroups = enabled;
+	}
+
+	public List<String> getDisabledStackGroups() {
+		if (!(this.disabledStackGroups instanceof ArrayList)) {
+			this.disabledStackGroups = new ArrayList<>(this.disabledStackGroups);
+		}
+		return this.disabledStackGroups;
+	}
+
+	public List<String> getExpandedStackGroups() {
+		if (!(this.expandedStackGroups instanceof ArrayList)) {
+			this.expandedStackGroups = new ArrayList<>(this.expandedStackGroups);
+		}
+		return this.expandedStackGroups;
+	}
+
+	public Map<String, List<String>> getStackGroupItemOrder() {
+		if (!(this.stackGroupItemOrder instanceof HashMap)) {
+			this.stackGroupItemOrder = new HashMap<>(this.stackGroupItemOrder);
+		}
+		return this.stackGroupItemOrder;
+	}
+
 	@Override
 	protected void loadData() {
 		this.showItemView = load("enabled", this.showItemView, OverlayDisplay.CODEC);
@@ -214,6 +252,10 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
 		this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		this.recipeSharing = load("recipeSharing", this.recipeSharing);
+		this.stackGroups = load("stackGroups", this.stackGroups);
+		this.disabledStackGroups = load("disabledStackGroups", this.disabledStackGroups, Codec.STRING.listOf());
+		this.expandedStackGroups = load("expandedStackGroups", this.expandedStackGroups, Codec.STRING.listOf());
+		this.stackGroupItemOrder = load("stackGroupItemOrder", this.stackGroupItemOrder, Codec.unboundedMap(Codec.STRING, Codec.STRING.listOf()));
 	}
 
 	@Override
@@ -237,5 +279,9 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("localFallback", this.localFallback, LocalFallback.CODEC);
 		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		save("recipeSharing", this.recipeSharing);
+		save("stackGroups", this.stackGroups);
+		save("disabledStackGroups", this.disabledStackGroups, Codec.STRING.listOf());
+		save("expandedStackGroups", this.expandedStackGroups, Codec.STRING.listOf());
+		save("stackGroupItemOrder", this.stackGroupItemOrder, Codec.unboundedMap(Codec.STRING, Codec.STRING.listOf()));
 	}
 }

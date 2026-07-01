@@ -357,15 +357,14 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 		}
 
         try {
+            ItemSlot.currentFrameSlots = this.itemSlots();
             for (ItemSlot slot : this.itemSlots()) {
                 slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
             }
+            ItemSlot.currentFrameSlots = null;
         } catch (ConcurrentModificationException ignored) {}
 
-
-
         drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
-
     }
 
     public void createButtons(InventoryPositionInfo info){
@@ -390,7 +389,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
         back.setPosition(itemStartX+2, buttonY);
         next.setPosition(buttonEnd, buttonY);
-
 
         next.visible = false;
         back.visible = false;
