@@ -183,34 +183,19 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             ArrayList<String> objects = new ArrayList<>();
 
             for (String query : newQuery.split(" ")) {
-                if (!query.startsWith("@") && !query.startsWith(":") && !query.startsWith("#")) {
+                if (!PrefixedFilter.startsWithPrefix(query)) {
                     objects.add(query);
                 }
             }
 
-            this.availableItems = ItemFilters.defaultFilter(String.join(" ", objects));
+            this.availableItems = ItemFilters.defaultFilter(String.join(" ", objects).strip());
 
-            for (String query : newQuery.split(" ")) {
-                if (query.startsWith("@")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
-                }
-                else if (query.startsWith(":")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
-                }
-                else if (query.startsWith("#")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
-                }
+            for (String query : getCurrentQueries()) {
+                ItemFilters.advancedFilter(availableItems, query);
             }
         // standard filtering
         } else {
-            if (newQuery.startsWith("@"))
-                this.availableItems = ItemFilters.modNamespace(newQuery.substring(1));
-            else if (newQuery.startsWith(":"))
-                this.availableItems = ItemFilters.id(newQuery.substring(1));
-            else if (newQuery.startsWith("#"))
-                this.availableItems = ItemFilters.tag(newQuery.substring(1));
-            else
-                this.availableItems = ItemFilters.defaultFilter(newQuery);
+            this.availableItems = ItemFilters.filter(newQuery);
         }
 
         this.availableItems().removeIf(ItemView::isExcludedItem);

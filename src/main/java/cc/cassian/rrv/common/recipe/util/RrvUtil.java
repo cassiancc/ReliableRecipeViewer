@@ -28,6 +28,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
@@ -135,5 +136,9 @@ public class RrvUtil {
     /// Replaces I18n.exists - removed in 26.2.
     public static boolean has(String key) {
         return Language.getInstance().has(key);
+    }
+
+    public static String lowercaseSubstring(String newQuery) {
+        return !newQuery.isEmpty() ? newQuery.substring(1).toLowerCase(Locale.ROOT) : newQuery.toLowerCase(Locale.ROOT);
     }
 }

@@ -16,7 +16,9 @@ import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.overlay.itemlist.view.PrefixedFilter;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -187,7 +189,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             }
             if (screen == this.currentScreen && this.availableItems.isEmpty()) {
                 this.availableItems.addAll(availableItems);
-                this.updateSlots();
+                Minecraft.getInstance().execute(this::updateSlots);
             }
 
         });
@@ -197,17 +199,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     private void filter(List<ItemStack> availableItems) {
         for (String query : ItemViewOverlay.INSTANCE.getCurrentQueries()) {
-            if (query.startsWith("@")) {
-                availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
-            }
-            else if (query.startsWith(":")) {
-                availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
-            }
-            else if (query.startsWith("#")) {
-                availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
-            }
-            else {
-                availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)));
+            String substring = RrvUtil.lowercaseSubstring(query);
+            if (!ItemFilters.advancedFilter(availableItems, query)) {
+                availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(substring));
             }
         }
     }

@@ -16,6 +16,7 @@ import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,10 +28,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -42,10 +40,32 @@ public class ItemFilters {
 
     public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
 
+    public static List<ItemStack> filter(String newQuery) {
+        String query = RrvUtil.lowercaseSubstring(newQuery);
+        for (PrefixedFilter value : PrefixedFilter.values()) {
+            if (newQuery.startsWith(value.prefix())) {
+                return value.filter.apply(query);
+            }
+        }
+        return ItemFilters.defaultFilter(newQuery);
+    }
+
+    public static boolean advancedFilter(List<ItemStack> availableItems, String newQuery) {
+        boolean filtered = false;
+        String query = RrvUtil.lowercaseSubstring(newQuery);
+        for (PrefixedFilter value : PrefixedFilter.values()) {
+            if (newQuery.startsWith(value.prefix())) {
+                availableItems.removeIf(stack-> !value.advancedFilter.apply(stack, query));
+                filtered = true;
+            }
+        }
+        return filtered;
+    }
+
     /// Filters just by the items display name and tooltip
     /// @param query The query
     /// @return A list of matching item stacks
-    protected static List<ItemStack> defaultFilter(String query) {
+    public static List<ItemStack> defaultFilter(String query) {
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
         List<ItemStack> thirdPrio = new ArrayList<>();
@@ -86,7 +106,7 @@ public class ItemFilters {
     /// Filters by mod namespace
     /// @param query The query
     /// @return A list of matching item stacks
-    protected static List<ItemStack> modNamespace(String query) {
+    public static List<ItemStack> modNamespace(String query) {
 
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
@@ -99,9 +119,9 @@ public class ItemFilters {
 
             modNamespace = modNamespace.toLowerCase(Locale.ROOT);
 
-            if (modNamespace.startsWith(query.toLowerCase(Locale.ROOT)))
+            if (modNamespace.startsWith(query))
                 add(firstPrio, stack);
-            else if (modNamespace.contains(query.toLowerCase(Locale.ROOT)))
+            else if (modNamespace.contains(query))
                 add(secondPrio, stack);
 
         }
@@ -129,13 +149,13 @@ public class ItemFilters {
 
         modNamespace = modNamespace.toLowerCase(Locale.ROOT);
 
-        return modNamespace.startsWith(query.toLowerCase(Locale.ROOT)) || modNamespace.contains(query.toLowerCase(Locale.ROOT));
+        return modNamespace.startsWith(query) || modNamespace.contains(query);
     }
 
     /// Filters by Identifier (item id)
     /// @param query The query
     /// @return A list of matching item stacks
-    protected static List<ItemStack> id(String query) {
+    public static List<ItemStack> id(String query) {
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
 
@@ -143,14 +163,14 @@ public class ItemFilters {
 
             String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase(Locale.ROOT);
 
-            if (itemId.startsWith(query.toLowerCase(Locale.ROOT)))
+            if (itemId.startsWith(query))
                 add(firstPrio, stack);
-            else if (itemId.contains(query.toLowerCase(Locale.ROOT)))
+            else if (itemId.contains(query))
                 add(secondPrio, stack);
         }
 
         List<ItemStack> results = new ArrayList<>(firstPrio);
-        secondPrio.stream().filter(results::contains).forEach(results::add);
+        secondPrio.stream().filter(o -> !results.contains(o)).forEach(results::add);
         return results;
     }
 
@@ -159,18 +179,43 @@ public class ItemFilters {
     /// @param query The query
     /// @return Whether the item stack matches the item id
     public static boolean id(ItemStack stack, String query) {
-        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase(Locale.ROOT);
-        return itemId.startsWith(query.toLowerCase(Locale.ROOT)) || itemId.contains(query.toLowerCase(Locale.ROOT));
+        return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase(Locale.ROOT).contains(query);
+    }
+
+    /// Filters by [CreativeModeTab] (creative tab)
+    /// @param query The query
+    /// @return A list of item stacks from all creative groups with matching names.
+    public static List<ItemStack> creativeTab(String query) {
+        ArrayList<ItemStack> stacks = new ArrayList<>();
+        for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
+            if (tab.getType() != CreativeModeTab.Type.SEARCH && tab.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query)) {
+                stacks.addAll(tab.getDisplayItems());
+            }
+        }
+        return stacks;
+    }
+
+    /// Filters by [CreativeModeTab] (creative tab)
+    /// @param stack The item stack
+    /// @param query The query
+    /// @return Whether the item stack matches the item id
+    public static boolean creativeTab(ItemStack stack, String query) {
+        for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
+            if (tab.getType() != CreativeModeTab.Type.SEARCH && tab.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query) && tab.contains(stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// Filters by an item's tags
     /// @param query The query
     /// @return A list of matching item stacks
-    protected static List<ItemStack> tag(String query) {
+    public static List<ItemStack> tag(String query) {
         List<ItemStack> results = new ArrayList<>();
 
         for (ItemStack itemStack : fullStackList()) {
-            if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))) {
+            if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query))) {
                 results.add(itemStack);
             }
         }
@@ -185,7 +230,7 @@ public class ItemFilters {
     public static boolean tag(ItemStack itemStack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
-        if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))) {
+        if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query))) {
             result.set(true);
         }
 
@@ -194,7 +239,7 @@ public class ItemFilters {
 
     /// Returns the matching level of the item stack's tooltip with the query
     ///
-    /// @param stack The itemstack
+    /// @param stack The item stack
     /// @param query The query
     /// @return 0 means no match; 1 means first priority; 2 means second priority
     ///
@@ -204,12 +249,16 @@ public class ItemFilters {
         List<Component> lore = Screen.getTooltipFromItem(Minecraft.getInstance(), stack);
 
         for (Component line : lore) {
+            if (line.getContents() instanceof TranslatableContents translatableContents) {
+                var key = RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT);
+                if (key.startsWith(query))
+                    return 1;
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT).startsWith(query.toLowerCase(Locale.ROOT)))
-                return 1;
+                if (key.contains(query))
+                    return 2;
+            }
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))
-                return 2;
+
         }
 
         return 0;
