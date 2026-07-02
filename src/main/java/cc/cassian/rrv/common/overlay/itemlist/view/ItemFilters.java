@@ -244,7 +244,7 @@ public class ItemFilters {
     /// @return 0 means no match; 1 means first priority; 2 means second priority
     ///
     /// Used for correct listing of item stacks by match accuracy
-    private static int getTooltipMatch(ItemStack stack, String query) {
+    protected static int getTooltipMatch(ItemStack stack, String query) {
 
         List<Component> lore = Screen.getTooltipFromItem(Minecraft.getInstance(), stack);
 

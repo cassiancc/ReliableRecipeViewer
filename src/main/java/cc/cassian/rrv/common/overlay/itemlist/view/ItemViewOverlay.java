@@ -294,7 +294,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
-            if (!slot.hasItem() || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())) {
+
+            if (!slot.hasItem()
+                    || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())
+                    && ItemFilters.getTooltipMatch(slot.getItem(), this.currentQuery) == 0) {
                 guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
             }
             guiGraphics.pose().popMatrix();
