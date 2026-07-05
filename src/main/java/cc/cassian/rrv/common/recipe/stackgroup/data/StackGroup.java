@@ -35,6 +35,9 @@ public abstract class StackGroup {
         if (Language.getInstance().has(key)) {
             return Component.translatable(key);
         }
-        return Component.translatable(fallbackKey);
+        if (Language.getInstance().has(fallbackKey)) {
+            return Component.translatable(fallbackKey);
+        }
+        return Component.literal(key);
     }
 }

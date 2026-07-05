@@ -105,7 +105,7 @@ public class ClientConfigScreen extends Screen {
         addChild(advancedHelper, "index_source", configs.getIndexSource(), IndexSource.values(), (_, b) -> configs.setIndexSource(b));
 
         Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (_) -> RRVClientUtil.setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
-        if (Configs.CATEGORIES.CATEGORIES.isEmpty()) {
+        if (Minecraft.getInstance().level == null) {
             recipeCategorySettings.active = false;
             recipeCategorySettings.setTooltip(Tooltip.create(Component.translatable("rrv.category_settings.needs_initial_load")));
         } else {
@@ -115,6 +115,12 @@ public class ClientConfigScreen extends Screen {
 
         Button stackGroupSettings = Button.builder(Component.translatable("rrv.client_settings.configure_stack_groups.title"), (_) -> RRVClientUtil.setScreen(new StackGroupConfigScreen(this))).size(buttonWidth, 20).build();
         stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.tooltip")));
+        if (Minecraft.getInstance().level == null) {
+            stackGroupSettings.active = false;
+            stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.needs_world")));
+        } else {
+            stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.tooltip")));
+        }
         advancedHelper.addChild(stackGroupSettings);
 
         Button exportItemViewButton = Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(buttonWidth, 20).build();

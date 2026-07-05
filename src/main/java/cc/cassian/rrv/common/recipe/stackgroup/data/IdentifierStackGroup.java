@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.recipe.stackgroup.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
@@ -22,20 +23,22 @@ import java.util.regex.Pattern;
 public class IdentifierStackGroup extends StackGroup {
     private final Set<Identifier> targetItems = new HashSet<>();
     private final Set<TagKey<Item>> targetTags = new HashSet<>();
+    private final Set<DataComponentType<?>> targetComponents = new HashSet<>();
     private final Set<Identifier> excludedItems = new HashSet<>();
     private final List<Pattern> regexes = new ArrayList<>();
 
-    public IdentifierStackGroup(Identifier id, Set<Identifier> targetItems, Set<TagKey<Item>> targetTags, Set<Identifier> excludedItems, List<Pattern> regexes, Component name) {
+    public IdentifierStackGroup(Identifier id, Set<Identifier> targetItems, Set<TagKey<Item>> targetTags, Set<DataComponentType<?>> targetComponents, Set<Identifier> excludedItems, List<Pattern> regexes, Component name) {
         super(id, name);
         if (targetItems != null) this.targetItems.addAll(targetItems);
         if (targetTags != null) this.targetTags.addAll(targetTags);
+        if (targetComponents != null) this.targetComponents.addAll(targetComponents);
         if (excludedItems != null) this.excludedItems.addAll(excludedItems);
         if (regexes != null) this.regexes.addAll(regexes);
     }
 
     public static IdentifierStackGroup parse(JsonElement json, Identifier filenameId) {
         try {
-            if (!(json instanceof JsonObject obj)) throw new IllegalArgumentException("Not a JSON object");
+            if (!(json instanceof JsonObject obj)) throw new IllegalArgumentException(filenameId + " Not a JSON object");
 
             Identifier finalId = obj.has("id")
                     ? Identifier.parse(GsonHelper.getAsString(obj, "id"))
@@ -48,6 +51,7 @@ public class IdentifierStackGroup extends StackGroup {
 
             Set<Identifier> targetItems = new HashSet<>();
             Set<TagKey<Item>> targetTags = new HashSet<>();
+            Set<DataComponentType<?>> targetComponents = new HashSet<>();
 
             if (obj.has("tag")) {
                 String tagName = GsonHelper.getAsString(obj, "tag");
@@ -57,6 +61,13 @@ public class IdentifierStackGroup extends StackGroup {
                         Identifier.parse(tagName)
                 );
                 targetTags.add(tagKey);
+            }
+
+            if (obj.has("component")) {
+                String tagName = GsonHelper.getAsString(obj, "component");
+                BuiltInRegistries.DATA_COMPONENT_TYPE.getOptional(Identifier.tryParse(tagName)).ifPresentOrElse(targetComponents::add, ()-> {
+                    throw new IllegalArgumentException("%s references data component %s which does not exist in the registry!".formatted(filenameId, tagName));
+                });
             }
 
             if (GsonHelper.isArrayNode(obj, "contents")) {
@@ -88,7 +99,7 @@ public class IdentifierStackGroup extends StackGroup {
                 }
             }
 
-            IdentifierStackGroup group = new IdentifierStackGroup(finalId, targetItems, targetTags, excluded, regexes, customName);
+            IdentifierStackGroup group = new IdentifierStackGroup(finalId, targetItems, targetTags, targetComponents, excluded, regexes, customName);
             group.priority = priority;
             return group;
         } catch (Exception e) {
@@ -119,7 +130,7 @@ public class IdentifierStackGroup extends StackGroup {
 
     @Override
     public Set<Identifier> getOptimizedIds() {
-        if (!regexes.isEmpty() || !targetTags.isEmpty()) {
+        if (!regexes.isEmpty() || !targetTags.isEmpty() || !targetComponents.isEmpty()) {
             return null;
         }
         return targetItems;
@@ -164,6 +175,10 @@ public class IdentifierStackGroup extends StackGroup {
 
         for (TagKey<Item> tag : targetTags) {
             if (stack.is(tag)) return true;
+        }
+
+        for (DataComponentType<?> tag : targetComponents) {
+            if (stack.has(tag)) return true;
         }
 
         return false;

@@ -1,7 +1,9 @@
 package cc.cassian.rrv.common.recipe.stackgroup;
 
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.stackgroup.data.IdentifierStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.RegexStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.StackGroup;
@@ -10,6 +12,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -36,14 +39,13 @@ public class StackGroupManager {
     static {
         registerType("rrv:group", (id, json) -> IdentifierStackGroup.parse(json, id));
         registerType("rrv:tag", StackGroupManager::parseTagGroup);
+        registerType("rrv:component", StackGroupManager::parseComponentGroup);
         registerType("rrv:regex", StackGroupManager::parseRegexGroup);
-        registerType("rrv:spawn_eggs", (_, _) -> new SpawnEggItemGroup());
         registerType("rrv:pressure_plates", (_, _) -> new PressurePlateItemGroup());
         registerType("rrv:minecarts", (_, _) -> new MinecartItemGroup());
         registerType("rrv:infested_blocks", (_, _) -> new InfestedBlockItemGroup());
         registerType("rrv:copper_blocks", (_, _) -> new CopperBlockItemGroup());
-        registerType("rrv:banner_patterns", (_, _) -> new BannerPatternItemGroup());
-        registerType("rrv:animal_armors", (_, _) -> new AnimalArmorItemGroup());
+        registerType("rrv:coral", (_, _) -> new CoralItemGroup());
     }
 
     public static void registerType(String type, BiFunction<Identifier, JsonObject, StackGroup> factory) {
@@ -57,7 +59,20 @@ public class StackGroupManager {
         Component customName = nameKey != null ? Component.translatable(nameKey) : null;
         int priority = json.has("priority") ? GsonHelper.getAsInt(json, "priority", 0) : 0;
 
-        IdentifierStackGroup group = new IdentifierStackGroup(id, Set.of(), Set.of(tagKey), Set.of(), List.of(), customName);
+        IdentifierStackGroup group = new IdentifierStackGroup(id, Set.of(), Set.of(tagKey), Set.of(), Set.of(), List.of(), customName);
+        group.priority = priority;
+        return group;
+    }
+
+    private static StackGroup parseComponentGroup(Identifier id, JsonObject json) {
+        String tagName = GsonHelper.getAsString(json, "component");
+        DataComponentType<?> dataComponent = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(Identifier.parse(tagName));
+        if (dataComponent == null) throw new IllegalArgumentException("%s references data component %s which does not exist in the registry!".formatted(id, tagName));
+        String nameKey = json.has("name") ? GsonHelper.getAsString(json, "name") : null;
+        Component customName = nameKey != null ? Component.translatable(nameKey) : null;
+        int priority = json.has("priority") ? GsonHelper.getAsInt(json, "priority", 0) : 0;
+
+        IdentifierStackGroup group = new IdentifierStackGroup(id, Set.of(), Set.of(), Set.of(dataComponent), Set.of(), List.of(), customName);
         group.priority = priority;
         return group;
     }
@@ -128,24 +143,22 @@ public class StackGroupManager {
 
         if (!Configs.CLIENT_SETTINGS.areStackGroupsEnabled()) return;
 
-        stackGroups.add(new SpawnEggItemGroup());
         stackGroups.add(new PressurePlateItemGroup());
         stackGroups.add(new MinecartItemGroup());
         stackGroups.add(new InfestedBlockItemGroup());
         stackGroups.add(new CopperBlockItemGroup());
-        stackGroups.add(new BannerPatternItemGroup());
-        stackGroups.add(new AnimalArmorItemGroup());
+        stackGroups.add(new CoralItemGroup());
 
         Map<Identifier, StackGroup> loaded = new LinkedHashMap<>();
 
         try {
             var resourceManager = Minecraft.getInstance().getResourceManager();
-            var resources = resourceManager.listResources("stack_groups", loc -> loc.getPath().endsWith(".json"));
+            var resources = resourceManager.listResources("rrv/stack_groups", loc -> loc.getPath().endsWith(".json"));
             for (var entry : resources.entrySet()) {
                 var location = entry.getKey();
                 var resource = entry.getValue();
                 String namespace = location.getNamespace();
-                String path = location.getPath().substring("stack_groups/".length());
+                String path = location.getPath().substring("rrv/stack_groups/".length());
                 path = path.substring(0, path.length() - ".json".length());
                 Identifier id = Identifier.fromNamespaceAndPath(namespace, path);
                 try (var reader = resource.openAsReader()) {
@@ -161,8 +174,10 @@ public class StackGroupManager {
                 stream.filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".json")).forEach(path -> {
                     try (var reader = Files.newBufferedReader(path)) {
                         JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
-                        String idString = json.has("id") ? json.get("id").getAsString()
-                                : json.has("tag") ? json.get("tag").getAsString() : null;
+                        String idString;
+						if (json.has("id")) idString = json.get("id").getAsString();
+                        else if (json.has("tag")) idString = json.get("tag").getAsString();
+                        else idString = json.has("component") ? json.get("component").getAsString() : null;
                         if (idString != null) {
                             loadGroup(Identifier.parse(idString), json, loaded);
                         }

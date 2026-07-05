@@ -235,6 +235,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             items = StackGroupManager.applyGrouping(items);
         }
         this.availableItems = items;
+        this.availableItems.removeIf(ItemView::isExcludedItem);
         this.updateSlots();
     }
 
