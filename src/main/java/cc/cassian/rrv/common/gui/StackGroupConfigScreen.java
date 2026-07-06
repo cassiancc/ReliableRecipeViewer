@@ -2,80 +2,109 @@ package cc.cassian.rrv.common.gui;
 
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.gui.list.StackGroupGridList;
+import cc.cassian.rrv.common.config.options.ConfiguredStackGroup;
+import cc.cassian.rrv.common.config.widgets.IntegerEditBox;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashSet;
-import java.util.Locale;
+import java.util.List;
 import java.util.Set;
 
-public class StackGroupConfigScreen extends Screen {
-    private static final Component TITLE = Component.translatable("rrv.client_settings.configure_stack_groups.title");
+public class StackGroupConfigScreen extends ClientConfigScreen {
+
+    private static final Component TITLE = Component.translatable("rrv.client_settings.stack_groups");
+    private static final Component ENABLED = Component.translatable("rrv.stack_group_settings.enabled").withStyle(ChatFormatting.GREEN);
+    private static final Component DISABLED = Component.translatable("rrv.stack_group_settings.disabled").withStyle(ChatFormatting.RED);
+
+
     private final Screen lastScreen;
-    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 36, 36);
-    private final Set<String> disabledGroups = new HashSet<>();
-    private StackGroupGridList list;
-    private EditBox searchBox;
+
+    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
 
     public StackGroupConfigScreen(Screen lastScreen) {
-        super(TITLE);
+        super(TITLE, lastScreen);
+
         this.lastScreen = lastScreen;
-        this.disabledGroups.addAll(Configs.CLIENT_SETTINGS.getDisabledStackGroups());
     }
 
     @Override
     protected void init() {
-        this.searchBox = new EditBox(this.font, this.width / 2 - 100, 22, 200, 14, Component.translatable("selectWorld.search"));
-        this.searchBox.setResponder(text -> {
-            if (this.list != null) {
-                this.list.setSearchQuery(text.toLowerCase(Locale.ROOT));
-                this.list.refreshList();
-            }
+
+        // setup
+        StringWidget stringWidget = this.layout.addToHeader(new StringWidget(TITLE, this.font));
+        this.addRenderableWidget(stringWidget);
+        LinearLayout linearLayout = LinearLayout.vertical().spacing(2);
+
+        // general
+        GridLayout general = createGridLayout();
+        GridLayout.RowHelper helper = general.createRowHelper(3);
+
+        int column1 = (int) (this.width / 2.5);
+        int column2 = 100;
+        int column3 = 20;
+
+        // headers
+        helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatable("rrv.category_settings.category").withStyle(ChatFormatting.UNDERLINE), font));
+        helper.addChild(new StringWidget(column2, font.lineHeight, Component.translatable("rrv.category_settings.state").withStyle(ChatFormatting.UNDERLINE), font));
+        MutableComponent priorityText = Component.translatable("rrv.category_settings.priority");
+        helper.addChild(new StringWidget(font.width(priorityText), font.lineHeight, priorityText.withStyle(ChatFormatting.UNDERLINE), font));
+//        helper.addChild(new SpacerElement(5, 5));
+        // spacers
+        helper.addChild(new SpacerElement(5, 5));
+        helper.addChild(new SpacerElement(5, 5));
+        helper.addChild(new SpacerElement(5, 5));
+//        helper.addChild(new SpacerElement(5, 5));
+
+        StackGroupManager.stackGroups.forEach((group) -> {
+            Identifier id = group.getId();
+            // name
+            helper.addChild(new StringWidget(column1, font.lineHeight, Component.literal(id.toString()), font));
+            // enable
+            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, group.isEnabled).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id.toString()), (_, value) -> {
+                Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), value, false, group.priority, List.of()));
+			});
+            helper.addChild(button1);
+            // priority
+            IntegerEditBox priorityBox = new IntegerEditBox(font, 0, 0, column2, 20, null);
+            priorityBox.setResponder(newPriority->{
+                try {
+                    int value = Integer.parseInt(newPriority);
+                    Configs.STACK_GROUPS.set(id, new ConfiguredStackGroup(group.getId(), group.isEnabled, false, value, List.of()));
+                } catch (NumberFormatException ignored) {}
+            });
+            priorityBox.setValue(String.valueOf(group.priority));
+            helper.addChild(priorityBox);
         });
-        this.addRenderableWidget(this.searchBox);
 
-        this.list = new StackGroupGridList(this, this.disabledGroups);
-        this.list.refreshList();
-        this.layout.addToContents(this.list);
+        linearLayout.addChild(general);
 
-        StringWidget titleWidget = new StringWidget(TITLE, this.font);
-        this.layout.addToHeader(titleWidget);
+        // done
 
-        Button doneButton = Button.builder(CommonComponents.GUI_DONE, _ -> {
-            save();
-            onClose();
-        }).width(200).build();
-        this.layout.addToFooter(doneButton);
+        finalizeLayout(linearLayout, layout, this);
+    }
 
-        this.layout.visitWidgets(this::addRenderableWidget);
-        repositionElements();
+    private GridLayout createGridLayout() {
+        var gridLayout = new GridLayout();
+        gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
+        return gridLayout;
     }
 
     private void save() {
-        Configs.CLIENT_SETTINGS.getDisabledStackGroups().clear();
-        Configs.CLIENT_SETTINGS.getDisabledStackGroups().addAll(this.disabledGroups);
-        Configs.CLIENT_SETTINGS.save();
+        Configs.STACK_GROUPS.save();
         StackGroupManager.reload();
         ItemFilters.cached = false;
-    }
-
-    protected void repositionElements() {
-        if (this.list != null) {
-            this.list.updateSize(this.width, this.layout);
-        }
-        this.layout.arrangeElements();
-        if (this.searchBox != null) {
-            this.searchBox.setX(this.width / 2 - 100);
-            this.searchBox.setY(30);
-        }
     }
 
     @Override

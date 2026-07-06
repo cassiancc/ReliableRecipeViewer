@@ -3,6 +3,8 @@ package cc.cassian.rrv.common.recipe.stackgroup;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.instances.StackGroupConfig;
+import cc.cassian.rrv.common.config.options.ConfiguredStackGroup;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.stackgroup.data.IdentifierStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.RegexStackGroup;
@@ -141,7 +143,7 @@ public class StackGroupManager {
         stackGroups.clear();
         itemToGroupCache.clear();
 
-        if (!Configs.CLIENT_SETTINGS.areStackGroupsEnabled()) return;
+        if (!Configs.STACK_GROUPS.areStackGroupsEnabled()) return;
 
         stackGroups.add(new PressurePlateItemGroup());
         stackGroups.add(new MinecartItemGroup());
@@ -195,7 +197,8 @@ public class StackGroupManager {
         }
 
         for (StackGroup stackGroup : stackGroups) {
-            stackGroup.isEnabled = !Configs.CLIENT_SETTINGS.getDisabledStackGroups().contains(stackGroup.getId().toString());
+            stackGroup.isEnabled = Configs.STACK_GROUPS.getOrDefault(stackGroup.getId()).enabled();
+            stackGroup.priority = Configs.STACK_GROUPS.getOrDefault(stackGroup.getId()).priority();
         }
 
         stackGroups.sort(Comparator.<StackGroup>comparingInt(g -> -g.priority).thenComparing(stackGroup -> stackGroup.getId().toString()));
@@ -240,21 +243,17 @@ public class StackGroupManager {
         return null;
     }
 
-    public static boolean isExpanded(String groupId) {
-        return Configs.CLIENT_SETTINGS.getExpandedStackGroups().contains(groupId);
+    public static boolean isExpanded(Identifier groupId) {
+        return Configs.STACK_GROUPS.getOrDefault(groupId).expanded();
     }
 
-    public static void toggleGroup(String groupId) {
-        if (isExpanded(groupId)) {
-            Configs.CLIENT_SETTINGS.getExpandedStackGroups().remove(groupId);
-        } else {
-            Configs.CLIENT_SETTINGS.getExpandedStackGroups().add(groupId);
-        }
-        Configs.CLIENT_SETTINGS.save();
+    public static void toggleGroup(Identifier groupId) {
+        Configs.STACK_GROUPS.set(groupId, Configs.STACK_GROUPS.getOrDefault(groupId).toggle());
+        Configs.STACK_GROUPS.save();
     }
 
     public static List<ItemStack> applyGrouping(List<ItemStack> source) {
-        if (!Configs.CLIENT_SETTINGS.areStackGroupsEnabled() || source == null || source.isEmpty()) {
+        if (!Configs.STACK_GROUPS.areStackGroupsEnabled() || source == null || source.isEmpty()) {
             return source;
         }
 
@@ -274,8 +273,8 @@ public class StackGroupManager {
 
         // Second pass: sort matches according to configuration
         for (Map.Entry<StackGroup, List<ItemStack>> entry : groupMatches.entrySet()) {
-            String groupId = entry.getKey().getId().toString();
-            List<String> savedOrder = Configs.CLIENT_SETTINGS.getStackGroupItemOrder().get(groupId);
+            Identifier groupId = entry.getKey().getId();
+            List<String> savedOrder = Configs.STACK_GROUPS.getOrDefault(groupId).order();
             if (savedOrder != null && !savedOrder.isEmpty()) {
                 entry.getValue().sort((a, b) -> {
                     String idA = BuiltInRegistries.ITEM.getKey(a.getItem()).toString();
@@ -307,7 +306,7 @@ public class StackGroupManager {
                     if (addedGroups.add(group)) {
                         ItemStack repStack = createGroupRepresentativeStack(group, matches);
                         result.add(repStack);
-                        if (isExpanded(group.getId().toString())) {
+                        if (isExpanded(group.getId())) {
                             result.addAll(matches);
                         }
                     }
@@ -339,7 +338,7 @@ public class StackGroupManager {
                     }
                 });
 
-                List<String> savedOrder = Configs.CLIENT_SETTINGS.getStackGroupItemOrder().get(groupId);
+                List<String> savedOrder = Configs.STACK_GROUPS.getOrDefault(Identifier.parse(groupId)).order();
                 if (savedOrder != null && !savedOrder.isEmpty()) {
                     items.sort((a, b) -> {
                         String idA = BuiltInRegistries.ITEM.getKey(a.getItem()).toString();
@@ -359,7 +358,7 @@ public class StackGroupManager {
     }
 
     public static List<ItemStack> appendMatchingGroups(String query, List<ItemStack> results) {
-        if (!Configs.CLIENT_SETTINGS.areStackGroupsEnabled()) return results;
+        if (!Configs.STACK_GROUPS.areStackGroupsEnabled()) return results;
 
         String lower = query.toLowerCase(Locale.ROOT);
         List<ItemStack> extendedResults = new ArrayList<>(results);

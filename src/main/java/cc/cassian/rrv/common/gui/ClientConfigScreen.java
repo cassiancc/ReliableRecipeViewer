@@ -65,8 +65,8 @@ public class ClientConfigScreen extends Screen {
         addChild(behaviorHelper, "wrap_scrolling", configs.isWrapScrolling(), WrapScrolling.values(), (_, sidePanel)-> configs.setWrapScrolling(sidePanel));
         addChild(behaviorHelper, "recipe_book_button", "toggles_overlay", "toggles_recipe_book", configs.isRecipeBookButton(), (_, b) -> configs.setRecipeBookButton(b));
         addChild(behaviorHelper, "recipe_sharing", "enabled", "disabled", configs.isRecipeSharing(), (_, b) -> configs.setRecipeSharing(b));
-        addChild(behaviorHelper, "stack_groups", "enabled", "disabled", configs.areStackGroupsEnabled(), (_, b) -> {
-            configs.setStackGroupsEnabled(b);
+        addChild(behaviorHelper, "stack_groups", "enabled", "disabled", Configs.STACK_GROUPS.areStackGroupsEnabled(), (_, b) -> {
+            Configs.STACK_GROUPS.setStackGroupsEnabled(b);
             ItemFilters.cached = false;
         });
 
@@ -187,6 +187,7 @@ public class ClientConfigScreen extends Screen {
     @Override
     public void onClose() {
         Configs.CLIENT_SETTINGS.save();
+        Configs.STACK_GROUPS.save();
         RRVClientUtil.setScreen(this.lastScreen);
     }
 }

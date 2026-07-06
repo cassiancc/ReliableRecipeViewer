@@ -77,7 +77,7 @@ public class ItemSlot {
                 StackGroup otherGroup = otherGroupId != null ? StackGroupManager.getGroup(otherGroupId) : StackGroupManager.getGroupForItem(slot.getStack());
                 if (otherGroup != null && otherGroup.getId().equals(group.getId()) && otherGroup.isEnabled) {
                     if (otherGroupId != null) {
-                        return StackGroupManager.isExpanded(otherGroupId);
+                        return StackGroupManager.isExpanded(Identifier.parse(otherGroupId));
                     }
                     return true;
                 }
@@ -111,7 +111,7 @@ public class ItemSlot {
 
         if (stackGroupId != null) {
             List<ItemStack> items = StackGroupManager.getGroupItems(stackGroupId);
-            boolean expanded = StackGroupManager.isExpanded(stackGroupId);
+            boolean expanded = StackGroupManager.isExpanded(Identifier.parse(stackGroupId));
 
             if (this.isHovered()) {
                 StackGroup group = StackGroupManager.getGroup(stackGroupId);
@@ -175,7 +175,7 @@ public class ItemSlot {
         }
 
         StackGroup itemGroup = StackGroupManager.getGroupForItem(this.stack);
-        boolean inExpandedGroup = itemGroup != null && itemGroup.isEnabled && StackGroupManager.isExpanded(itemGroup.getId().toString());
+        boolean inExpandedGroup = itemGroup != null && itemGroup.isEnabled && StackGroupManager.isExpanded(itemGroup.getId());
 
         if (inExpandedGroup) {
             guiGraphics.fill(this.x + 1, this.y + 1, this.x + ITEM_ENTRY_SIZE - 1, this.y + ITEM_ENTRY_SIZE - 1, 0x1AFFFFFF);
@@ -239,7 +239,7 @@ public class ItemSlot {
             CompoundTag compoundTag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
             if (compoundTag.contains("rrv_stack_group_id")) {
                 String groupId = compoundTag.get("rrv_stack_group_id").asString().get();
-                StackGroupManager.toggleGroup(groupId);
+                StackGroupManager.toggleGroup(Identifier.parse(groupId));
                 ItemViewOverlay.INSTANCE.updateDisplayedItems();
                 return;
             }

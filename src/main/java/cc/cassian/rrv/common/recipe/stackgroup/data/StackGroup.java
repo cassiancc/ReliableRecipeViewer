@@ -1,9 +1,12 @@
 package cc.cassian.rrv.common.recipe.stackgroup.data;
 
+import cc.cassian.rrv.common.config.options.ConfiguredStackGroup;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 import java.util.Set;
 
 public abstract class StackGroup {
@@ -40,4 +43,8 @@ public abstract class StackGroup {
         }
         return Component.literal(key);
     }
+
+	public ConfiguredStackGroup asConfiguredGroup() {
+		return new ConfiguredStackGroup(this.getId(), this.isEnabled, false, this.priority, List.of());
+	}
 }

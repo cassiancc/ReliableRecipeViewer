@@ -228,7 +228,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void updateDisplayedItems() {
         List<ItemStack> items = this.filteredItems;
-        if (Configs.CLIENT_SETTINGS.areStackGroupsEnabled()) {
+        if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
             if (this.currentQuery != null && !this.currentQuery.isEmpty()) {
                 items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
             }
