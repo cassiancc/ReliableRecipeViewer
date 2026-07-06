@@ -32,12 +32,12 @@ public abstract class StackGroup {
 
     public Component getName() {
         if (name != null) return name;
-        String path = id.getPath();
+        String path = id.getPath().replace("/", ".");
         String key = "stackgroup.rrv." + path;
-        String fallbackKey = "stackgroup.emixx." + path;
         if (Language.getInstance().has(key)) {
             return Component.translatable(key);
         }
+        String fallbackKey = "stackgroup.emixx." + path;
         if (Language.getInstance().has(fallbackKey)) {
             return Component.translatable(fallbackKey);
         }

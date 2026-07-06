@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.recipe.stackgroup.data;
 
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.core.component.DataComponentType;
@@ -139,18 +140,18 @@ public class IdentifierStackGroup extends StackGroup {
     @Override
     public Component getName() {
         if (name != null) return name;
-        String path = getId().getPath();
+        String path = getId().getPath().replace("/", ".");
         String key = "stackgroup.rrv." + path;
-        String fallbackKey = "stackgroup.emixx." + path;
         if (Language.getInstance().has(key)) {
             return Component.translatable(key);
         }
+        String fallbackKey = "stackgroup.emixx." + path;
         if (Language.getInstance().has(fallbackKey)) {
             return Component.translatable(fallbackKey);
         }
         if (!targetTags.isEmpty()) {
             TagKey<Item> tag = targetTags.iterator().next();
-            String tagKey = "tag.item." + tag.location().getNamespace() + "." + tag.location().getPath();
+            String tagKey = RrvUtil.getTranslationKey(tag);
             if (Language.getInstance().has(tagKey)) {
                 return Component.translatable(tagKey);
             }

@@ -136,4 +136,35 @@ public class RrvUtil {
     public static boolean has(String key) {
         return Language.getInstance().has(key);
     }
+
+    /// Use this to get a TagKey's translation key safely on any side.
+    ///
+    /// Format for vanilla registry TagKeys is:
+    /// `tag.(registry_path).(tag_namespace).(tag_path)`
+    ///
+    /// Format for modded registry TagKeys is:
+    /// `tag.(registry_namespace).(registry_path).(tag_namespace).(tag_path)`
+    ///
+    /// The registry's path and tag path's slashes will be converted to periods.
+    ///
+    /// @return the translation key for a TagKey
+    public static String getTranslationKey(TagKey<Item> tagKey) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("tag.");
+        Identifier registryIdentifier = tagKey.registry().identifier();
+        Identifier tagIdentifier = tagKey.location();
+
+        if (!registryIdentifier.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+            stringBuilder.append(registryIdentifier.getNamespace())
+                    .append(".");
+        }
+
+        stringBuilder.append(registryIdentifier.getPath().replace("/", "."))
+                .append(".")
+                .append(tagIdentifier.getNamespace())
+                .append(".")
+                .append(tagIdentifier.getPath().replace("/", ".").replace(":", "."));
+
+        return stringBuilder.toString();
+	}
 }
