@@ -18,6 +18,7 @@ import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetPotionF
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.EntityType;
 //? if >26.1 {
 /*import net.minecraft.world.entity.EntityTypes;
  *///?}
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.core.HolderLookup;
@@ -78,7 +80,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
 
-                    if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder)) {
+                    if (isBrewablePotion(potionHolder)) {
                         ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
                         tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
                         ItemView.addStackSensitive(tipped);
@@ -167,6 +169,14 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
     }
+
+	private boolean isBrewablePotion(Holder<Potion> potionHolder) {
+        //? if >26.2 {
+        /*return ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION).listElements().anyMatch((potion) -> potion.value().isEnabled(FeatureFlags.VANILLA_SET) && potion.value().equals(potionHolder.value()));
+        *///?} else {
+        return ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder);
+        //?}
+	}
 
     private static LootTable getLootTable(ResourceKey<LootTable> key) {
         return ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().getLootTable(key);

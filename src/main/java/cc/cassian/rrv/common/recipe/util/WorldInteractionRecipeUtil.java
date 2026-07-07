@@ -4,10 +4,8 @@ package cc.cassian.rrv.common.recipe.util;
 /*import net.minecraft.core.component.BlockTransformer;
 
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
-import cc.cassian.rrv.common.mixin.world.level.predicates.CopyPropertiesProviderAccessor;
 import cc.cassian.rrv.common.mixin.world.level.predicates.MatchingBlockTagPredicateAccessor;
 import cc.cassian.rrv.common.mixin.world.level.predicates.MatchingBlocksPredicateAccessor;
-import cc.cassian.rrv.common.mixin.world.level.predicates.RuleBasedStateProviderAccessor;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
@@ -33,7 +31,7 @@ public class WorldInteractionRecipeUtil {
 			BlockStateProvider blockStateProvider = transform.blockStateProvider();
 
 			if (blockStateProvider instanceof RuleBasedStateProvider ruleBasedStateProvider) {
-				for (RuleBasedStateProvider.Rule rule : ((RuleBasedStateProviderAccessor) ruleBasedStateProvider).getRules()) {
+				for (RuleBasedStateProvider.Rule rule : ruleBasedStateProvider.rules()) {
 					BlockPredicate predicate = rule.ifTrue();
 					if (predicate instanceof MatchingBlocksPredicate matchingBlocksPredicate) {
 						var before = SlotContent.ofBlockList(((MatchingBlocksPredicateAccessor) matchingBlocksPredicate).getBlocks().stream().map(Holder::value).toList());
@@ -51,8 +49,8 @@ public class WorldInteractionRecipeUtil {
 	private static void createTransformerRecipeFromRule(ArrayList<WorldInteractionClientRecipe> recipeList, SlotContent tool, RuleBasedStateProvider.Rule rule, SlotContent before) {
 		if (rule.then() instanceof SimpleStateProvider simpleStateProvider) {
 			createTransformerRecipe(recipeList, tool, simpleStateProvider, before);
-		} else if (rule.then() instanceof CopyPropertiesProvider copyPropertiesProvider) {
-			createTransformerRecipe(recipeList, tool, ((CopyPropertiesProviderAccessor) copyPropertiesProvider).callGetBaseBlockState(), before);
+		} else if (rule.then() instanceof CopyPropertiesProvider(BlockStateProvider source)) {
+			createTransformerRecipe(recipeList, tool, source, before);
 		}
 	}
 

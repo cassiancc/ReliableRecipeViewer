@@ -5,6 +5,8 @@ import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
@@ -20,16 +22,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 import static net.minecraft.server.permissions.Permissions.*;
@@ -141,4 +140,21 @@ public class RrvUtil {
     public static String lowercaseSubstring(String newQuery) {
         return !newQuery.isEmpty() ? newQuery.substring(1).toLowerCase(Locale.ROOT) : newQuery.toLowerCase(Locale.ROOT);
     }
+
+    /// Creates a recipe map from a collection of recipes - constructor removed in 26.3. Might eventually be swapped out for an abstraction layer.
+	public static RecipeMap createRecipeMap(Collection<RecipeHolder<?>> recipes) {
+        //? if >26.2 {
+        /*ImmutableMultimap.Builder<RecipeType<?>, RecipeHolder<?>> byType = ImmutableMultimap.builder();
+        ImmutableMap.Builder<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey = ImmutableMap.builder();
+
+        for (RecipeHolder<?> recipe : recipes) {
+            byType.put(recipe.value().getType(), recipe);
+            byKey.put(recipe.id(), recipe);
+        }
+
+        return new RecipeMap(byType.build(), byKey.build());
+        *///?} else {
+        return RecipeMap.create(recipes);
+        //?}
+	}
 }
