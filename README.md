@@ -11,7 +11,7 @@ A recipe viewer for the latest versions of Minecraft, rebuilt from [EIV](https:/
 
 * **Recipe Viewing:** See recipes for all vanilla recipe types, as well as [supported modded recipe types](https://modrinth.com/collection/divCExF5) as well!
 * **Local Recipe Support**: On vanilla servers, RRV will automatically pull recipe data from the client's `recipe` folder. Note that if possible RRV should still be installed on the server.
-* **Powerful Configuration:** Reorder and disable recipe types, rearrange the item index, rearrange the overlays, and more config options to fit your needs.
+* **Powerful Configuration:** Reorder and disable recipe types, rearrange the item index, rearrange the overlays, group similar items with stack groups, and more config options to fit your needs.
 * **Bookmarking and Craftables Panel:** Bookmark items and recipes with the `A` key, or use the side panel to see what you can craft with the items in your inventory.
 * **Recipe Transfer:** Click the transfer button on supported recipes to quickly transfer items from your inventory to the workstation.
 
@@ -27,7 +27,7 @@ Reliable Recipe Viewer is a fork of [Extended Item View](https://modrinth.com/mo
 - New API options to hide recipes, recipe categories, enchantments, potions, and more.
 - Ability to bookmark individual recipes, rather than only stacks.
 - An option to show craftable items from your inventory.
-- Additional configuration options, including switching the side of the item index, centering the search bar, reorganizing and hiding recipe categories, editing the index, and much, much more.
+- Additional configuration options, including switching the side of the item index, centering the search bar, reorganizing and hiding recipe categories, editing the index, grouping similar items into Stack Groups, and much, much more.
 - Additional GUI improvements, like a scroll bar for the item index, a way to see all recipes by clicking on the recipe type, buttons to change the item index page, and more.
 - Additional recipe types for special crafting recipes, item tags, repairing, and resource pack-driven info, world interaction, and anvil combining recipes.
 - Compatibility improvements, showing mod name translations, tag translations, support for component ingredients, and more.

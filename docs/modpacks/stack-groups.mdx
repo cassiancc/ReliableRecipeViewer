@@ -1,0 +1,145 @@
+# Stack Groups
+
+Stack Groups let RRV collapse sets of near-identical items - like spawn eggs, minecarts, or potions - into a single expandable entry in the item list, so the index isn't cluttered with dozens of variants of the same item. Players can turn the feature on or off entirely from the "Stack Groups" client setting, and can enable, disable, or reprioritize individual groups from the "Configure Stack Groups" screen. A group is only ever collapsed when 2 or more of its matching items are actually present in the index.
+
+## Via Resource Packs
+
+Stack groups can be added by creating JSON files in `assets/<namespace>/rrv/stack_groups`. A group's id is derived from its file path (e.g. `assets/rrv/rrv/stack_groups/foo/bar.json` becomes `rrv:foo/bar`) unless overridden with `id`. The format is as follows:
+
+- `type`: The type of group being defined. Defaults to `rrv:group`. See [Group Types](#group-types) below.
+- `id`: An optional override for the group's id.
+- `name`: An optional translation key used as the group's display name. If omitted, RRV looks for a translation under `stackgroup.rrv.<path>`, falling back to the raw id.
+- `priority`: An optional integer controlling match and sort order among groups. Higher priority groups are checked, and displayed, before lower priority ones. Defaults to `0`.
+- `enabled`: An optional boolean. Set to `false` to remove a previously defined group - see [Disabling a Group](#disabling-a-group).
+
+### Group Types
+
+- `rrv:group`: A general-purpose group that can match items by any combination of:
+    - `contents`: An array of items and/or tags to include, e.g. `"minecraft:water"`, `"#minecraft:logs"`, or `{ "type": "item"|"tag", "id": "..." }`.
+    - `tag`: A single item tag to match, e.g. `"minecraft:logs"`. Can be paired with `registry` (defaults to `minecraft:item`) to match a tag from a different registry.
+    - `component`: A single data component id, e.g. `"minecraft:entity_data"`. Any item stack carrying this component is matched, regardless of its item id. Referencing a component that doesn't exist in the registry will throw an error.
+    - `regex` / `regexes`: A single regular expression, or an array of them, matched against the item's full registry id.
+    - `exclusions`: An array of items and/or tags (same format as `contents`) to always exclude from the group, even if they'd otherwise match.
+- `rrv:tag`: Shorthand for a group matching a single item tag. Just needs `tag`.
+- `rrv:component`: Shorthand for a group matching a single data component. Just needs `component`.
+- `rrv:regex`: Shorthand for a group matching a single regular expression. Just needs `regex`.
+
+At least one of `contents`, `tag`, `component`, or `regex`/`regexes` should be provided, otherwise the group will never match any items.
+
+## Examples
+
+### Grouping by Tag
+
+Groups every item in the `minecraft:logs` tag under one entry.
+
+Group file - `assets/minecraft/rrv/stack_groups/logs.json`
+```json
+{
+  "type": "rrv:tag",
+  "tag": "minecraft:logs"
+}
+```
+
+### Grouping by Data Component
+
+Groups every item stack carrying a given data component, regardless of item id. This is how RRV groups spawn eggs - every spawn egg variant carries a `minecraft:entity_data` component by default, so matching on the component catches all of them, including ones added by other mods, without listing each one individually.
+
+Group file - `assets/minecraft/rrv/stack_groups/spawn_eggs.json`
+```json
+{
+  "type": "rrv:component",
+  "component": "minecraft:entity_data"
+}
+```
+
+### Grouping Specific Items
+
+`contents` accepts a mix of items and tags in the same list.
+
+```json
+{
+  "type": "rrv:group",
+  "contents": [
+    "minecraft:water",
+    "#c:buckets",
+    { "type": "item", "id": "minecraft:milk_bucket" }
+  ]
+}
+```
+
+### Grouping by Regex
+
+Groups every item whose registry id matches a pattern - useful for modded items that follow a naming convention.
+
+```json
+{
+  "type": "rrv:regex",
+  "regex": "examplemod:.*_ingot"
+}
+```
+
+### Excluding Items From a Group
+
+`exclusions` can be combined with any matching condition to carve out exceptions.
+
+```json
+{
+  "type": "rrv:group",
+  "tag": "c:ores",
+  "exclusions": [
+    "minecraft:ancient_debris",
+    "#examplemod:rare_ores"
+  ]
+}
+```
+
+### Custom Display Name
+
+`name` overrides the `stackgroup.rrv.<path>` fallback with a translation key of your choice.
+
+Group file - `assets/examplemod/rrv/stack_groups/example_ingots.json`
+```json
+{
+  "type": "rrv:regex",
+  "regex": "examplemod:.*_ingot",
+  "name": "stackgroup.examplemod.ingots"
+}
+```
+
+Lang file - `assets/examplemod/lang/en_us.json`
+```json
+{
+  "stackgroup.examplemod.ingots": "Ingots"
+}
+```
+
+### Priority
+
+Higher priority groups are matched, and listed, before lower priority ones - useful when an item could otherwise belong to more than one group.
+
+```json
+{
+  "type": "rrv:tag",
+  "tag": "examplemod:special_ingots",
+  "priority": 10
+}
+```
+
+### Disabling a Group
+
+Setting `enabled` to `false` removes a group entirely, including one shipped by RRV or another resource pack.
+
+`assets/minecraft/rrv/stack_groups/logs.json`
+```json
+{
+  "enabled": false
+}
+```
+
+## Built-In Groups
+
+RRV ships several groups with matching logic that can't be expressed in JSON: `Minecarts`, `Pressure Plates`, `Infested Blocks`, `Copper Blocks`, and `Coral`. These are always active and can't be removed with an `enabled: false` override: instead, they can be disabled individually from the "Configure Stack Groups" screen in the client settings.
+
+## Tag Groups From Recipes
+
+Whenever a recipe shows an ingredient represented by an item tag, RRV adds a small button to quickly enable or disable a `rrv:tag` stack group for that tag directly from the recipe screen, without needing to make a resource pack.
