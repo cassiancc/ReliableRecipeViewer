@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class StackGroup {
-    public final Component name;
+    protected final Component name;
     private final Identifier id;
     public boolean isEnabled = true;
     public int priority = 0;

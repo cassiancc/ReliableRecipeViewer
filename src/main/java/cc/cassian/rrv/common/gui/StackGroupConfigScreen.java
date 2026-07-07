@@ -15,7 +15,9 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
 import java.util.HashSet;
@@ -56,7 +58,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
         int column3 = 20;
 
         // headers
-        helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatable("rrv.category_settings.category").withStyle(ChatFormatting.UNDERLINE), font));
+        helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatable("rrv.stack_group_settings.group").withStyle(ChatFormatting.UNDERLINE), font));
         helper.addChild(new StringWidget(column2, font.lineHeight, Component.translatable("rrv.category_settings.state").withStyle(ChatFormatting.UNDERLINE), font));
         MutableComponent priorityText = Component.translatable("rrv.category_settings.priority");
         helper.addChild(new StringWidget(font.width(priorityText), font.lineHeight, priorityText.withStyle(ChatFormatting.UNDERLINE), font));
@@ -70,7 +72,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
         StackGroupManager.stackGroups.forEach((group) -> {
             Identifier id = group.getId();
             // name
-            helper.addChild(new StringWidget(column1, font.lineHeight, Component.literal(id.toString()), font));
+            helper.addChild(new StringWidget(column1, font.lineHeight, group.getName().copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(id.toString())))), font));
             // enable
             CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, group.isEnabled).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id.toString()), (_, value) -> {
                 Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), value, false, group.priority, List.of()));

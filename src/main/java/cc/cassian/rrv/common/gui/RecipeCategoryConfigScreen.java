@@ -12,7 +12,9 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
 import java.util.Comparator;
@@ -64,7 +66,7 @@ public class RecipeCategoryConfigScreen extends ClientConfigScreen {
         Configs.CATEGORIES.CATEGORIES.values().stream().sorted(Comparator.comparingInt(RecipeCategoryConfig.ConfiguredRecipeCategory::priority)).forEach((category) -> {
             Identifier id = category.id();
             // name
-            helper.addChild(new StringWidget(column1, font.lineHeight, Component.literal(id.toString()), font));
+            helper.addChild(new StringWidget(column1, font.lineHeight, category.name().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(id.toString())))), font));
             // enable
             CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, category.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id.toString()), (_, value) -> Configs.CATEGORIES.setEnabled(id, value));
             helper.addChild(button1);
