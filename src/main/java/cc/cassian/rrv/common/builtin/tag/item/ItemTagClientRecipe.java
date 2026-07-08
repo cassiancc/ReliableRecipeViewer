@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -21,7 +22,7 @@ public class ItemTagClientRecipe implements ReliableClientRecipe {
 	private final Identifier id;
 
 	public ItemTagClientRecipe(TagKey<Item> serverRecipe) {
-		this.id = serverRecipe.location().withSuffix("_item_tag");
+		this.id = serverRecipe.location().withPrefix("/item_tag/");
 		this.tagKey = serverRecipe;
 
 		List<SlotContent> drops = new ArrayList<>();
@@ -43,6 +44,11 @@ public class ItemTagClientRecipe implements ReliableClientRecipe {
 	@Override
 	public ReliableClientRecipeType getType() {
 		return ItemTagClientRecipeType.INSTANCE;
+	}
+
+	@Override
+	public int getPriority() {
+		return StackGroupManager.hasGroup(tagKey.location()) ? 0 : 1;
 	}
 
 	@Override
