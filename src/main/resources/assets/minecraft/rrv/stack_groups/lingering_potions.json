@@ -1,0 +1,9 @@
+{
+  "type": "rrv:group",
+  "contents": [
+    {
+      "type": "item",
+      "id": "minecraft:lingering_potion"
+    }
+  ]
+}

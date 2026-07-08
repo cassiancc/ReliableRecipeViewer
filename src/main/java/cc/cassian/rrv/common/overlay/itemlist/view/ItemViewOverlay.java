@@ -15,6 +15,7 @@ import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
@@ -62,6 +63,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     private String currentQuery;
     boolean itemFilterMode;
     private boolean warned = false;
+    private final List<ItemStack> filteredItems = new ArrayList<>();
 
     public ItemViewOverlay() {
         super(-1, -1, -1, -1);
@@ -188,23 +190,38 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 }
             }
 
-            this.availableItems = ItemFilters.defaultFilter(String.join(" ", objects).strip());
+            this.filteredItems.clear();
+            this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects).strip()));
 
             for (String query : getCurrentQueries()) {
-                ItemFilters.advancedFilter(availableItems, query);
+                ItemFilters.advancedFilter(filteredItems, query);
             }
         // standard filtering
         } else {
-            this.availableItems = ItemFilters.filter(newQuery);
+            this.filteredItems.clear();
+            this.filteredItems.addAll(ItemFilters.filter(newQuery));
         }
 
-        this.availableItems().removeIf(ItemView::isExcludedItem);
+        this.filteredItems.removeIf(ItemView::isExcludedItem);
+
+        this.updateDisplayedItems();
 
         SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
 
-        this.updateSlots();
-
         this.updateButtons();
+    }
+
+    public void updateDisplayedItems() {
+        List<ItemStack> items = this.filteredItems;
+        if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
+            if (this.currentQuery != null && !this.currentQuery.isEmpty()) {
+                items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
+            }
+            items = StackGroupManager.applyGrouping(items);
+        }
+        this.availableItems = items;
+        this.availableItems.removeIf(ItemView::isExcludedItem);
+        this.updateSlots();
     }
 
 	private void updateButtons() {
@@ -269,9 +286,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 
 
+        ItemSlot.currentFrameSlots = this.itemSlots();
         for (ItemSlot slot : this.itemSlots()) {
             slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         }
+        ItemSlot.currentFrameSlots = null;
 
 
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);

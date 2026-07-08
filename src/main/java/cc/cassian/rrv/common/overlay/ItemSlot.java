@@ -6,6 +6,8 @@ import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
+import cc.cassian.rrv.common.recipe.stackgroup.data.StackGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -57,6 +59,33 @@ public class ItemSlot {
         return this.stack;
     }
 
+    public static List<ItemSlot> currentFrameSlots = null;
+
+    private boolean hasGroupNeighbor(int dx, int dy, StackGroup group) {
+        if (currentFrameSlots == null || group == null) return false;
+        int targetX = this.x + dx;
+        int targetY = this.y + dy;
+        for (ItemSlot slot : currentFrameSlots) {
+            if (slot.x == targetX && slot.y == targetY) {
+                String otherGroupId = null;
+                if (slot.stack.has(DataComponents.CUSTOM_DATA)) {
+                    CompoundTag compoundTag = slot.stack.get(DataComponents.CUSTOM_DATA).copyTag();
+                    if (compoundTag.contains("rrv_stack_group_id")) {
+                        otherGroupId = compoundTag.get("rrv_stack_group_id").asString().get();
+                    }
+                }
+                StackGroup otherGroup = otherGroupId != null ? StackGroupManager.getGroup(otherGroupId) : StackGroupManager.getGroupForItem(slot.getStack());
+                if (otherGroup != null && otherGroup.getId().equals(group.getId()) && otherGroup.isEnabled) {
+                    if (otherGroupId != null) {
+                        return StackGroupManager.isExpanded(Identifier.parse(otherGroupId));
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /// Renders the slot
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.hovered = this.isMouseOver(mouseX, mouseY);
@@ -68,11 +97,101 @@ public class ItemSlot {
         List<Component> tooltip = new ArrayList<>();
 
         String recipe = null;
+        String stackGroupId = null;
 
         if (stack.has(DataComponents.CUSTOM_DATA)) {
             CompoundTag compoundTag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
             if (compoundTag.contains("rrv_result")) {
                 recipe = compoundTag.get("rrv_result").asString().get();
+            }
+            if (compoundTag.contains("rrv_stack_group_id")) {
+                stackGroupId = compoundTag.get("rrv_stack_group_id").asString().get();
+            }
+        }
+
+        if (stackGroupId != null) {
+            List<ItemStack> items = StackGroupManager.getGroupItems(stackGroupId);
+            boolean expanded = StackGroupManager.isExpanded(Identifier.parse(stackGroupId));
+
+            if (this.isHovered()) {
+                StackGroup group = StackGroupManager.getGroup(stackGroupId);
+                if (group != null) {
+                    tooltip.add(group.getName().copy().withStyle(ChatFormatting.BLUE));
+                    tooltip.add(Component.translatable("rrv.stack_group.tooltip.count", items.size()).withStyle(ChatFormatting.GRAY));
+                }
+                tooltip.add(Component.translatable(expanded ? "rrv.stack_group.tooltip.collapse" : "rrv.stack_group.tooltip.expand").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
+                guiGraphics.fill(this.x, this.y, this.x + ITEM_ENTRY_SIZE, this.y + ITEM_ENTRY_SIZE, new Color(255, 255, 255, 32).getRGB());
+            }
+
+            if (expanded) {
+                guiGraphics.fill(this.x + 1, this.y + 1, this.x + ITEM_ENTRY_SIZE - 1, this.y + ITEM_ENTRY_SIZE - 1, 0x1AFFFFFF);
+
+                StackGroup group = StackGroupManager.getGroup(stackGroupId);
+                if (group != null) {
+                    int borderCol = 0x66FFFFFF;
+                    if (!hasGroupNeighbor(0, -19, group)) {
+                        guiGraphics.fill(this.x + 1, this.y + 1, this.x + ITEM_ENTRY_SIZE - 1, this.y + 2, borderCol);
+                    }
+                    if (!hasGroupNeighbor(-19, 0, group)) {
+                        guiGraphics.fill(this.x + 1, this.y + 1, this.x + 2, this.y + ITEM_ENTRY_SIZE - 1, borderCol);
+                    }
+                    if (!hasGroupNeighbor(19, 0, group)) {
+                        guiGraphics.fill(this.x + ITEM_ENTRY_SIZE - 2, this.y + 1, this.x + ITEM_ENTRY_SIZE - 1, this.y + ITEM_ENTRY_SIZE - 1, borderCol);
+                    }
+                    if (!hasGroupNeighbor(0, 19, group)) {
+                        guiGraphics.fill(this.x + 1, this.y + ITEM_ENTRY_SIZE - 2, this.x + ITEM_ENTRY_SIZE - 1, this.y + ITEM_ENTRY_SIZE - 1, borderCol);
+                    }
+                }
+
+                guiGraphics.fakeItem(this.stack, this.x + 2, this.y + 2);
+            } else {
+                guiGraphics.pose().pushMatrix();
+                guiGraphics.pose().translate(this.x + 2 + 1.6F, this.y + 2 + 1.6F);
+                guiGraphics.pose().scale(0.8F, 0.8F);
+
+                if (items.size() == 1) {
+                    guiGraphics.fakeItem(items.getFirst(), 0, 0);
+                } else if (items.size() == 2) {
+                    guiGraphics.pose().translate(0.5F, 0F);
+                    guiGraphics.fakeItem(items.get(1), 1, -1);
+                    guiGraphics.pose().translate(0F, 0F);
+                    guiGraphics.fakeItem(items.get(0), -2, 1);
+                } else if (items.size() >= 3) {
+                    guiGraphics.fakeItem(items.get(2), 3, -2);
+                    guiGraphics.pose().translate(0F, 0F);
+                    guiGraphics.fakeItem(items.get(1), 0, 0);
+                    guiGraphics.pose().translate(0F, 0F);
+                    guiGraphics.fakeItem(items.get(0), -3, 2);
+                }
+                guiGraphics.pose().popMatrix();
+            }
+
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of(expanded ? "minus" : "plus"), this.x + 19 - 7, this.y + 19 - 7, 7, 7);
+
+            if (this.isHovered()) {
+                guiGraphics.setComponentTooltipForNextFrame(mc.font, tooltip, mouseX, mouseY);
+            }
+            return;
+        }
+
+        StackGroup itemGroup = StackGroupManager.getGroupForItem(this.stack);
+        boolean inExpandedGroup = itemGroup != null && itemGroup.isEnabled && StackGroupManager.isExpanded(itemGroup.getId());
+
+        if (inExpandedGroup) {
+            guiGraphics.fill(this.x + 1, this.y + 1, this.x + ITEM_ENTRY_SIZE - 1, this.y + ITEM_ENTRY_SIZE - 1, 0x1AFFFFFF);
+
+            int borderCol = 0x66FFFFFF;
+            if (!hasGroupNeighbor(0, -19, itemGroup)) {
+                guiGraphics.fill(this.x + 1, this.y + 1, this.x + ITEM_ENTRY_SIZE - 1, this.y + 2, borderCol);
+            }
+            if (!hasGroupNeighbor(-19, 0, itemGroup)) {
+                guiGraphics.fill(this.x + 1, this.y + 1, this.x + 2, this.y + ITEM_ENTRY_SIZE - 1, borderCol);
+            }
+            if (!hasGroupNeighbor(19, 0, itemGroup)) {
+                guiGraphics.fill(this.x + ITEM_ENTRY_SIZE - 2, this.y + 1, this.x + ITEM_ENTRY_SIZE - 1, this.y + ITEM_ENTRY_SIZE - 1, borderCol);
+            }
+            if (!hasGroupNeighbor(0, 19, itemGroup)) {
+                guiGraphics.fill(this.x + 1, this.y + ITEM_ENTRY_SIZE - 2, this.x + ITEM_ENTRY_SIZE - 1, this.y + ITEM_ENTRY_SIZE - 1, borderCol);
             }
         }
 
@@ -115,6 +234,16 @@ public class ItemSlot {
 
         if (clientPlayer == null)
             return;
+
+        if (stack.has(DataComponents.CUSTOM_DATA)) {
+            CompoundTag compoundTag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+            if (compoundTag.contains("rrv_stack_group_id")) {
+                String groupId = compoundTag.get("rrv_stack_group_id").asString().get();
+                StackGroupManager.toggleGroup(Identifier.parse(groupId));
+                ItemViewOverlay.INSTANCE.updateDisplayedItems();
+                return;
+            }
+        }
 
         if (mouseButton == 2 && ReliableRecipeViewerClient.isCheatmodeActive()) {
             this.currentCheatmodeCount = this.stack.getMaxStackSize();

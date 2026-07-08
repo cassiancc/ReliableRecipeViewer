@@ -1,0 +1,9 @@
+{
+  "type": "rrv:group",
+  "contents": [
+    {
+      "type": "item",
+      "id": "minecraft:suspicious_stew"
+    }
+  ]
+}

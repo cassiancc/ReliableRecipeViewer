@@ -1,0 +1,8 @@
+{
+  "type": "rrv:group",
+  "contents": [
+    "#c:armors/horse",
+    "#c:armors/wolf",
+    "#c:armors/nautilus"
+  ]
+}

@@ -65,6 +65,10 @@ public class ClientConfigScreen extends Screen {
         addChild(behaviorHelper, "wrap_scrolling", configs.isWrapScrolling(), WrapScrolling.values(), (_, sidePanel)-> configs.setWrapScrolling(sidePanel));
         addChild(behaviorHelper, "recipe_book_button", "toggles_overlay", "toggles_recipe_book", configs.isRecipeBookButton(), (_, b) -> configs.setRecipeBookButton(b));
         addChild(behaviorHelper, "recipe_sharing", "enabled", "disabled", configs.isRecipeSharing(), (_, b) -> configs.setRecipeSharing(b));
+        addChild(behaviorHelper, "stack_groups", "enabled", "disabled", Configs.STACK_GROUPS.areStackGroupsEnabled(), (_, b) -> {
+            Configs.STACK_GROUPS.setStackGroupsEnabled(b);
+            ItemFilters.cached = false;
+        });
 
         linearLayout.addChild(behavior);
 
@@ -101,13 +105,23 @@ public class ClientConfigScreen extends Screen {
         addChild(advancedHelper, "index_source", configs.getIndexSource(), IndexSource.values(), (_, b) -> configs.setIndexSource(b));
 
         Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (_) -> RRVClientUtil.setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
-        if (Configs.CATEGORIES.CATEGORIES.isEmpty()) {
+        if (Minecraft.getInstance().level == null) {
             recipeCategorySettings.active = false;
             recipeCategorySettings.setTooltip(Tooltip.create(Component.translatable("rrv.category_settings.needs_initial_load")));
         } else {
             recipeCategorySettings.setTooltip(Tooltip.create(Component.translatable("rrv.category_settings.tooltip")));
         }
         advancedHelper.addChild(recipeCategorySettings);
+
+        Button stackGroupSettings = Button.builder(Component.translatable("rrv.client_settings.configure_stack_groups.title"), (_) -> RRVClientUtil.setScreen(new StackGroupConfigScreen(this))).size(buttonWidth, 20).build();
+        stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.tooltip")));
+        if (Minecraft.getInstance().level == null) {
+            stackGroupSettings.active = false;
+            stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.needs_world")));
+        } else {
+            stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.tooltip")));
+        }
+        advancedHelper.addChild(stackGroupSettings);
 
         Button exportItemViewButton = Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(buttonWidth, 20).build();
         if (Minecraft.getInstance().level == null) {
@@ -173,6 +187,7 @@ public class ClientConfigScreen extends Screen {
     @Override
     public void onClose() {
         Configs.CLIENT_SETTINGS.save();
+        Configs.STACK_GROUPS.save();
         RRVClientUtil.setScreen(this.lastScreen);
     }
 }
