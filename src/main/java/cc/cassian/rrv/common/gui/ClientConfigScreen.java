@@ -6,24 +6,29 @@ import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 
 public class ClientConfigScreen extends Screen {
 
     private static final Component TITLE = clientSetting("title");
+    public static final int PADDING = 4;
 
     private final Screen lastScreen;
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
     public int buttonWidth;
+    private ScrollableLayout scrollableLayout;
 
     public ClientConfigScreen(Screen lastScreen) {
         this(TITLE, lastScreen);
@@ -33,6 +38,41 @@ public class ClientConfigScreen extends Screen {
         super(title);
 
         this.lastScreen = lastScreen;
+    }
+
+    @Override
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
+        extractListBackground(graphics);
+        extractListSeparators(graphics);
+    }
+
+    private static final Identifier MENU_LIST_BACKGROUND = Identifier.withDefaultNamespace("textures/gui/menu_list_background.png");
+    private static final Identifier INWORLD_MENU_LIST_BACKGROUND = Identifier.withDefaultNamespace("textures/gui/inworld_menu_list_background.png");
+
+
+    protected void extractListBackground(final GuiGraphicsExtractor graphics) {
+        Identifier menuListBackground = this.minecraft.level == null ? MENU_LIST_BACKGROUND : INWORLD_MENU_LIST_BACKGROUND;
+        graphics.blit(
+                RenderPipelines.GUI_TEXTURED,
+                menuListBackground,
+                0,
+                scrollableLayout.getY()-PADDING,
+                (float)scrollableLayout.getX()+scrollableLayout.getWidth(),
+                (float)(scrollableLayout.getY()+scrollableLayout.getHeight() + (int)scrollableLayout.container.scrollAmount()),
+                this.width,
+                scrollableLayout.getHeight()+ PADDING,
+                32,
+                32
+        );
+    }
+
+
+    protected void extractListSeparators(final GuiGraphicsExtractor graphics) {
+        Identifier headerSeparator = this.minecraft.level == null ? Screen.HEADER_SEPARATOR : Screen.INWORLD_HEADER_SEPARATOR;
+        Identifier footerSeparator = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, headerSeparator, 0, scrollableLayout.getY() - PADDING - 2, 0.0F, 0.0F, this.width, 2, 32, 2);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, footerSeparator, 0, scrollableLayout.getY()+ scrollableLayout.getHeight(), 0.0F, 0.0F, this.width, 2, 32, 2);
     }
 
     @Override
@@ -146,10 +186,10 @@ public class ClientConfigScreen extends Screen {
     static void finalizeLayout(LinearLayout linearLayout, HeaderAndFooterLayout layout, ClientConfigScreen screen) {
         screen.addRenderableWidget(layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, _ -> screen.onClose()).size(100, 20).build()));
 
-        ScrollableLayout scrollableLayout = layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, screen.layout.getContentHeight()));
-        scrollableLayout.arrangeElements();
+        screen.scrollableLayout = layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, screen.layout.getContentHeight()) {});
+        screen.scrollableLayout.arrangeElements();
 
-        scrollableLayout.visitWidgets(screen::addRenderableWidget);
+        screen.scrollableLayout.visitWidgets(screen::addRenderableWidget);
         layout.arrangeElements();
     }
 

@@ -16,5 +16,9 @@ accessible class net/minecraft/world/inventory/MenuType$MenuSupplier
 mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
 mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
 
+# Screens
+accessible field net/minecraft/client/gui/components/ScrollableLayout container Lnet/minecraft/client/gui/components/ScrollableLayout$Container;
+accessible class net/minecraft/client/gui/components/ScrollableLayout$Container
+
 # Recipe Sharing
 extend-enum net/minecraft/network/chat/HoverEvent$Action RRV_SHOW_RECIPE
