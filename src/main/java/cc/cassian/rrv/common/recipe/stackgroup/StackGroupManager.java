@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.stackgroup;
 
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.instances.StackGroupConfig;
@@ -333,6 +334,10 @@ public class StackGroupManager {
                 List<ItemStack> items = new ArrayList<>();
                 BuiltInRegistries.ITEM.forEach(item -> {
                     ItemStack stack = new ItemStack(item);
+                    ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).forEach(e -> {
+                        if (group.match(e))
+                            items.add(e);
+                    });
                     if (group.match(stack)) {
                         items.add(stack);
                     }

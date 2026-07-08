@@ -44,7 +44,7 @@ public class StackGroupConfig extends AbstractRrvConfig {
 				try {
 					ConfiguredStackGroup encodedItem = ConfiguredStackGroup.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
 					Identifier id = Identifier.parse(key);
-					STACK_GROUPS.put(id, encodedItem);
+					STACK_GROUPS.put(id, new ConfiguredStackGroup(encodedItem.id(), encodedItem.enabled(), false, encodedItem.priority(), encodedItem.order()));
 				} catch (Exception e) {
 					ReliableRecipeViewer.LOGGER.error("Failed to load stack group from json: {}", key);
 				}

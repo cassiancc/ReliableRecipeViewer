@@ -2,6 +2,7 @@
 - Support for 26.3-snapshot-3 and its data-driven brewing recipes.
 - RRV's index is now populated from both the creative mode search tab and the registry.
 - Creative mode tabs can now be used as a search parameter via the `%` prefix.
+- Similar stacks are now grouped. Groups can be unfolded by clicking on the group, and groups can be customized with the config/resource packs.
 - Suspicious stew recipes now show up correctly.
 
 ### Changed
