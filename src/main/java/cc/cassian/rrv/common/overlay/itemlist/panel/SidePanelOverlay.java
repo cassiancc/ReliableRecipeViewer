@@ -145,11 +145,12 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(Reason reason) {
+        var screen = RRVClientUtil.currentScreen();
+        if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
+        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
+        this.availableItems.clear();
+
 		Util.backgroundExecutor().execute(() -> {
-            var screen = RRVClientUtil.currentScreen();
-            if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-            if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
-            this.availableItems.clear();
             var availableItems = new ArrayList<ItemStack>();
             if (showCraftables()) {
                 Minecraft client = Minecraft.getInstance();
@@ -179,20 +180,21 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                     // save last available items for when searching occurs
                     this.lastAvailableItems = new ArrayList<>(availableItems);
                 } else {
-					availableItems.addAll(lastAvailableItems);
+                    availableItems.addAll(lastAvailableItems);
                 }
 
                 filter(availableItems);
                 availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
-            } else {
-                availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
+                if (screen == this.currentScreen && this.availableItems.isEmpty()) {
+                    this.availableItems.addAll(availableItems);
+                    Minecraft.getInstance().execute(this::updateSlots);
+                }
             }
-            if (screen == this.currentScreen && this.availableItems.isEmpty()) {
-                this.availableItems.addAll(availableItems);
-                Minecraft.getInstance().execute(this::updateSlots);
-            }
-
         });
+        if (!showCraftables()) {
+            availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
+            Minecraft.getInstance().execute(this::updateSlots);
+        }
     }
 
 
