@@ -373,7 +373,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             buttonEnd-=13;
         }
 
-        back.setPosition(itemStartX+2, buttonY);
+        back.setPosition(checkedX()+10, buttonY);
         next.setPosition(buttonEnd, buttonY);
 
         updateButtons();

@@ -13,7 +13,8 @@ import java.util.*;
 
 public class StackGroupConfig extends AbstractRrvConfig {
 
-	private boolean enabled = true;
+	private int version = 1;
+	private boolean enabled = false;
 	private final LinkedHashMap<Identifier, ConfiguredStackGroup> STACK_GROUPS = new LinkedHashMap<>();
 
 	public ConfiguredStackGroup getOrDefault(Identifier groupId) {
@@ -38,22 +39,28 @@ public class StackGroupConfig extends AbstractRrvConfig {
 
 	@Override
 	protected void loadData() {
-		this.enabled = load("enabled", this.enabled);
-		if (this.data().has("stack_groups")) {
-			this.data().getAsJsonObject("stack_groups").asMap().forEach((key, element) -> {
-				try {
-					ConfiguredStackGroup encodedItem = ConfiguredStackGroup.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
-					Identifier id = Identifier.parse(key);
-					STACK_GROUPS.put(id, new ConfiguredStackGroup(encodedItem.id(), encodedItem.enabled(), false, encodedItem.priority(), encodedItem.order()));
-				} catch (Exception e) {
-					ReliableRecipeViewer.LOGGER.error("Failed to load stack group from json: {}", key);
-				}
-			});
+		int newVersion = load("config_version_do_not_touch", this.version);
+		if (newVersion == this.version) {
+			this.enabled = load("enabled", this.enabled);
+			if (this.data().has("stack_groups")) {
+				this.data().getAsJsonObject("stack_groups").asMap().forEach((key, element) -> {
+					try {
+						ConfiguredStackGroup encodedItem = ConfiguredStackGroup.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
+						Identifier id = Identifier.parse(key);
+						STACK_GROUPS.put(id, new ConfiguredStackGroup(encodedItem.id(), encodedItem.enabled(), false, encodedItem.priority(), encodedItem.order()));
+					} catch (Exception e) {
+						ReliableRecipeViewer.LOGGER.error("Failed to load stack group from json: {}", key);
+					}
+				});
+			}
+		} else {
+			ReliableRecipeViewer.LOGGER.error("Failed to read stack group config! It claimed to be version {}, when the correct version is {}.", newVersion, this.version);
 		}
 	}
 
 	@Override
 	protected void saveData() {
+		save("config_version_do_not_touch", this.version);
 		save("enabled", this.enabled);
 		JsonObject itemList = new JsonObject();
 
