@@ -1,11 +1,11 @@
 package cc.cassian.rrv.common.recipe.stackgroup.data.groups;
 
-import cc.cassian.rrv.common.recipe.stackgroup.data.StackGroup;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
-public class CopperBlockItemGroup extends StackGroup {
+public class CopperBlockItemGroup extends AbstractStackGroup {
 
     public CopperBlockItemGroup() {
         super(Identifier.withDefaultNamespace("copper_blocks"), null);

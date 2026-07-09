@@ -9,13 +9,13 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 import java.util.Set;
 
-public abstract class StackGroup {
+public abstract class AbstractStackGroup {
     protected final Component name;
     private final Identifier id;
     public boolean isEnabled = true;
     public int priority = 0;
 
-    protected StackGroup(Identifier id, Component name) {
+    protected AbstractStackGroup(Identifier id, Component name) {
         this.id = id;
         this.name = name;
     }
@@ -45,6 +45,6 @@ public abstract class StackGroup {
     }
 
 	public ConfiguredStackGroup asConfiguredGroup() {
-		return new ConfiguredStackGroup(this.getId(), this.isEnabled, false, this.priority, List.of());
+		return new ConfiguredStackGroup(this.getId(), this.isEnabled, this.priority, List.of());
 	}
 }

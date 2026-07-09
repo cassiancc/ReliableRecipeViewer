@@ -1,11 +1,11 @@
 package cc.cassian.rrv.common.recipe.stackgroup.data.groups;
 
-import cc.cassian.rrv.common.recipe.stackgroup.data.StackGroup;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MinecartItem;
 
-public class MinecartItemGroup extends StackGroup {
+public class MinecartItemGroup extends AbstractStackGroup {
     public MinecartItemGroup() {
         super(Identifier.withDefaultNamespace("minecarts"), null);
     }

@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.regex.Pattern;
 
-public class RegexStackGroup extends StackGroup {
+public class RegexStackGroup extends AbstractStackGroup {
     private final Pattern pattern;
 
     public RegexStackGroup(Identifier id, Pattern pattern, Component name) {

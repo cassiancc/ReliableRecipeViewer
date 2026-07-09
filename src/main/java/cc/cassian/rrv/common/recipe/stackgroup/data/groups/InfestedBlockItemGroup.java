@@ -1,13 +1,13 @@
 package cc.cassian.rrv.common.recipe.stackgroup.data.groups;
 
-import cc.cassian.rrv.common.recipe.stackgroup.data.StackGroup;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.InfestedBlock;
 
-public class InfestedBlockItemGroup extends StackGroup {
+public class InfestedBlockItemGroup extends AbstractStackGroup {
     public InfestedBlockItemGroup() {
         super(Identifier.withDefaultNamespace("infested_blocks"), null);
     }

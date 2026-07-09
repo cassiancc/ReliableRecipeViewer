@@ -1,15 +1,13 @@
 package cc.cassian.rrv.common.recipe.stackgroup.data.groups;
 
-import cc.cassian.rrv.common.recipe.stackgroup.data.StackGroup;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.BaseCoralFanBlock;
 import net.minecraft.world.level.block.BaseCoralPlantTypeBlock;
-import net.minecraft.world.level.block.BasePressurePlateBlock;
 
-public class CoralItemGroup extends StackGroup {
+public class CoralItemGroup extends AbstractStackGroup {
     public CoralItemGroup() {
         super(Identifier.withDefaultNamespace("coral"), null);
     }

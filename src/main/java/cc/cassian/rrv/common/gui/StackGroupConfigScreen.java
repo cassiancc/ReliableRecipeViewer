@@ -75,7 +75,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
             helper.addChild(new StringWidget(column1, font.lineHeight, group.getName().copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(id.toString())))), font));
             // enable
             CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, group.isEnabled).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id.toString()), (_, value) -> {
-                Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), value, false, group.priority, List.of()));
+                Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), value, group.priority, List.of()));
 			});
             helper.addChild(button1);
             // priority
@@ -83,7 +83,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
             priorityBox.setResponder(newPriority->{
                 try {
                     int value = Integer.parseInt(newPriority);
-                    Configs.STACK_GROUPS.set(id, new ConfiguredStackGroup(group.getId(), group.isEnabled, false, value, List.of()));
+                    Configs.STACK_GROUPS.set(id, new ConfiguredStackGroup(group.getId(), group.isEnabled, value, List.of()));
                 } catch (NumberFormatException ignored) {}
             });
             priorityBox.setValue(String.valueOf(group.priority));

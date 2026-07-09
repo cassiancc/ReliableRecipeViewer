@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class IdentifierStackGroup extends StackGroup {
+public class IdentifierStackGroup extends AbstractStackGroup {
     private final Set<Identifier> targetItems = new HashSet<>();
     private final Set<TagKey<Item>> targetTags = new HashSet<>();
     private final Set<DataComponentType<?>> targetComponents = new HashSet<>();

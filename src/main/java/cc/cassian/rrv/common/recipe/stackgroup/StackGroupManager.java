@@ -1,14 +1,10 @@
 package cc.cassian.rrv.common.recipe.stackgroup;
 
-import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.config.instances.StackGroupConfig;
-import cc.cassian.rrv.common.config.options.ConfiguredStackGroup;
-import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.stackgroup.data.IdentifierStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.RegexStackGroup;
-import cc.cassian.rrv.common.recipe.stackgroup.data.StackGroup;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.groups.*;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -34,9 +30,11 @@ import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 public class StackGroupManager {
-    public static final List<StackGroup> stackGroups = new ArrayList<>();
-    private static final Map<Item, StackGroup> itemToGroupCache = new IdentityHashMap<>();
-    private static final Map<String, BiFunction<Identifier, JsonObject, StackGroup>> typeRegistry = new HashMap<>();
+    public static final List<AbstractStackGroup> stackGroups = new ArrayList<>();
+    private static final Map<Item, AbstractStackGroup> itemToGroupCache = new IdentityHashMap<>();
+    private static final Map<String, BiFunction<Identifier, JsonObject, AbstractStackGroup>> typeRegistry = new HashMap<>();
+    private static final Set<Identifier> expandedGroups = new HashSet<>();
+    private static final Map<Item, Integer> registryOrderCache = new IdentityHashMap<>();
 
     static {
         registerType("rrv:group", (id, json) -> IdentifierStackGroup.parse(json, id));
@@ -50,11 +48,11 @@ public class StackGroupManager {
         registerType("rrv:coral", (_, _) -> new CoralItemGroup());
     }
 
-    public static void registerType(String type, BiFunction<Identifier, JsonObject, StackGroup> factory) {
+    public static void registerType(String type, BiFunction<Identifier, JsonObject, AbstractStackGroup> factory) {
         typeRegistry.put(type, factory);
     }
 
-    private static StackGroup parseTagGroup(Identifier id, JsonObject json) {
+    private static AbstractStackGroup parseTagGroup(Identifier id, JsonObject json) {
         String tagName = GsonHelper.getAsString(json, "tag");
         TagKey<Item> tagKey = TagKey.create(Registries.ITEM, Identifier.parse(tagName));
         String nameKey = json.has("name") ? GsonHelper.getAsString(json, "name") : null;
@@ -66,10 +64,11 @@ public class StackGroupManager {
         return group;
     }
 
-    private static StackGroup parseComponentGroup(Identifier id, JsonObject json) {
+    private static AbstractStackGroup parseComponentGroup(Identifier id, JsonObject json) {
         String tagName = GsonHelper.getAsString(json, "component");
         DataComponentType<?> dataComponent = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(Identifier.parse(tagName));
-        if (dataComponent == null) throw new IllegalArgumentException("%s references data component %s which does not exist in the registry!".formatted(id, tagName));
+        if (dataComponent == null)
+            throw new IllegalArgumentException("%s references data component %s which does not exist in the registry!".formatted(id, tagName));
         String nameKey = json.has("name") ? GsonHelper.getAsString(json, "name") : null;
         Component customName = nameKey != null ? Component.translatable(nameKey) : null;
         int priority = json.has("priority") ? GsonHelper.getAsInt(json, "priority", 0) : 0;
@@ -79,7 +78,7 @@ public class StackGroupManager {
         return group;
     }
 
-    private static StackGroup parseRegexGroup(Identifier id, JsonObject json) {
+    private static AbstractStackGroup parseRegexGroup(Identifier id, JsonObject json) {
         String regexString = GsonHelper.getAsString(json, "regex");
         String nameKey = json.has("name") ? GsonHelper.getAsString(json, "name") : null;
         Component customName = nameKey != null ? Component.translatable(nameKey) : null;
@@ -97,14 +96,14 @@ public class StackGroupManager {
     }
 
     public static boolean hasGroup(Identifier tag) {
-        for (StackGroup g : stackGroups) {
+        for (AbstractStackGroup g : stackGroups) {
             if (g.getId().equals(tag)) return true;
         }
         return false;
     }
 
-    public static StackGroup getGroup(String id) {
-        for (StackGroup group : stackGroups) {
+    public static AbstractStackGroup getGroup(String id) {
+        for (AbstractStackGroup group : stackGroups) {
             if (group.getId().toString().equals(id)) {
                 return group;
             }
@@ -142,6 +141,8 @@ public class StackGroupManager {
     public static void reload() {
         stackGroups.clear();
         itemToGroupCache.clear();
+        expandedGroups.clear();
+        registryOrderCache.clear();
 
         if (!Configs.STACK_GROUPS.areStackGroupsEnabled()) return;
 
@@ -151,7 +152,7 @@ public class StackGroupManager {
         stackGroups.add(new CopperBlockItemGroup());
         stackGroups.add(new CoralItemGroup());
 
-        Map<Identifier, StackGroup> loaded = new LinkedHashMap<>();
+        Map<Identifier, AbstractStackGroup> loaded = new LinkedHashMap<>();
 
         try {
             var resourceManager = Minecraft.getInstance().getResourceManager();
@@ -177,7 +178,7 @@ public class StackGroupManager {
                     try (var reader = Files.newBufferedReader(path)) {
                         JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
                         String idString;
-						if (json.has("id")) idString = json.get("id").getAsString();
+                        if (json.has("id")) idString = json.get("id").getAsString();
                         else if (json.has("tag")) idString = json.get("tag").getAsString();
                         else idString = json.has("component") ? json.get("component").getAsString() : null;
                         if (idString != null) {
@@ -190,21 +191,21 @@ public class StackGroupManager {
             }
         }
 
-        for (StackGroup stackGroup : loaded.values()) {
+        for (AbstractStackGroup stackGroup : loaded.values()) {
             if (stackGroups.stream().noneMatch(existing -> existing.getId().equals(stackGroup.getId()))) {
                 stackGroups.add(stackGroup);
             }
         }
 
-        for (StackGroup stackGroup : stackGroups) {
+        for (AbstractStackGroup stackGroup : stackGroups) {
             stackGroup.isEnabled = Configs.STACK_GROUPS.getOrDefault(stackGroup.getId()).enabled();
             stackGroup.priority = Configs.STACK_GROUPS.getOrDefault(stackGroup.getId()).priority();
         }
 
-        stackGroups.sort(Comparator.<StackGroup>comparingInt(g -> -g.priority).thenComparing(stackGroup -> stackGroup.getId().toString()));
+        stackGroups.sort(Comparator.<AbstractStackGroup>comparingInt(g -> -g.priority).thenComparing(stackGroup -> stackGroup.getId().toString()));
     }
 
-    private static void loadGroup(Identifier id, JsonObject json, Map<Identifier, StackGroup> loaded) {
+    private static void loadGroup(Identifier id, JsonObject json, Map<Identifier, AbstractStackGroup> loaded) {
         try {
             boolean enabled = GsonHelper.getAsBoolean(json, "enabled", true);
             if (!enabled) {
@@ -213,10 +214,10 @@ public class StackGroupManager {
             }
 
             String type = GsonHelper.getAsString(json, "type", "rrv:group");
-            BiFunction<Identifier, JsonObject, StackGroup> factory = typeRegistry.get(type);
+            BiFunction<Identifier, JsonObject, AbstractStackGroup> factory = typeRegistry.get(type);
 
             if (factory != null) {
-                StackGroup group = factory.apply(id, json);
+                AbstractStackGroup group = factory.apply(id, json);
                 if (group != null) {
                     loaded.put(id, group);
                 }
@@ -225,14 +226,14 @@ public class StackGroupManager {
         }
     }
 
-    public static StackGroup getGroupForItem(ItemStack stack) {
+    public static AbstractStackGroup getGroupForItem(ItemStack stack) {
         if (stack.isEmpty()) return null;
         Item item = stack.getItem();
         if (itemToGroupCache.containsKey(item)) {
             return itemToGroupCache.get(item);
         }
 
-        for (StackGroup group : stackGroups) {
+        for (AbstractStackGroup group : stackGroups) {
             if (group.match(stack)) {
                 itemToGroupCache.put(item, group);
                 return group;
@@ -244,12 +245,65 @@ public class StackGroupManager {
     }
 
     public static boolean isExpanded(Identifier groupId) {
-        return Configs.STACK_GROUPS.getOrDefault(groupId).expanded();
+        return expandedGroups.contains(groupId);
     }
 
     public static void toggleGroup(Identifier groupId) {
-        Configs.STACK_GROUPS.set(groupId, Configs.STACK_GROUPS.getOrDefault(groupId).toggle());
-        Configs.STACK_GROUPS.save();
+        if (!expandedGroups.remove(groupId)) {
+            expandedGroups.add(groupId);
+        }
+    }
+
+    /// Index of an item's registration in the item registry, used as the default (unconfigured) display order for stack groups
+    private static int registryOrderIndex(Item item) {
+        if (registryOrderCache.isEmpty()) {
+            int i = 0;
+            for (Item registered : BuiltInRegistries.ITEM) {
+                registryOrderCache.put(registered, i++);
+            }
+        }
+        return registryOrderCache.getOrDefault(item, Integer.MAX_VALUE);
+    }
+
+    /// Sorts items belonging to a stack group by the user-configured order, falling back to registry order
+    private static void sortByGroupOrder(List<ItemStack> items, Identifier groupId) {
+        List<String> savedOrder = Configs.STACK_GROUPS.getOrDefault(groupId).order();
+        if (!savedOrder.isEmpty()) {
+            items.sort((a, b) -> {
+                String idA = BuiltInRegistries.ITEM.getKey(a.getItem()).toString();
+                String idB = BuiltInRegistries.ITEM.getKey(b.getItem()).toString();
+                int idxA = savedOrder.indexOf(idA);
+                int idxB = savedOrder.indexOf(idB);
+                if (idxA == -1 && idxB == -1) return 0;
+                if (idxA == -1) return 1;
+                if (idxB == -1) return -1;
+                return Integer.compare(idxA, idxB);
+            });
+        } else {
+            items.sort(Comparator.comparingInt(stack -> registryOrderIndex(stack.getItem())));
+        }
+    }
+
+    /// Expands any stack-group representative stacks in the given list into their group's contents when that group is currently expanded
+    public static List<ItemStack> expandGroupsInList(List<ItemStack> source) {
+        if (!Configs.STACK_GROUPS.areStackGroupsEnabled() || source == null || source.isEmpty()) {
+            return source;
+        }
+
+        List<ItemStack> result = new ArrayList<>();
+        for (ItemStack stack : source) {
+            result.add(stack);
+            if (stack.has(DataComponents.CUSTOM_DATA)) {
+                CompoundTag data = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+                if (data.contains("rrv_stack_group_id")) {
+                    String groupId = data.getString("rrv_stack_group_id").orElse(null);
+                    if (groupId != null && isExpanded(Identifier.parse(groupId))) {
+                        result.addAll(getGroupItems(groupId));
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     public static List<ItemStack> applyGrouping(List<ItemStack> source) {
@@ -258,40 +312,27 @@ public class StackGroupManager {
         }
 
         // First pass: count matches
-        Map<StackGroup, List<ItemStack>> groupMatches = new IdentityHashMap<>();
+        Map<AbstractStackGroup, List<ItemStack>> groupMatches = new IdentityHashMap<>();
         for (ItemStack stack : source) {
             if (stack.has(DataComponents.CUSTOM_DATA)) {
                 CompoundTag data = stack.get(DataComponents.CUSTOM_DATA).copyTag();
                 if (data.contains("rrv_stack_group_id")) continue;
             }
 
-            StackGroup group = getGroupForItem(stack);
+            AbstractStackGroup group = getGroupForItem(stack);
             if (group != null && group.isEnabled) {
                 groupMatches.computeIfAbsent(group, _ -> new ArrayList<>()).add(stack);
             }
         }
 
         // Second pass: sort matches according to configuration
-        for (Map.Entry<StackGroup, List<ItemStack>> entry : groupMatches.entrySet()) {
-            Identifier groupId = entry.getKey().getId();
-            List<String> savedOrder = Configs.STACK_GROUPS.getOrDefault(groupId).order();
-            if (savedOrder != null && !savedOrder.isEmpty()) {
-                entry.getValue().sort((a, b) -> {
-                    String idA = BuiltInRegistries.ITEM.getKey(a.getItem()).toString();
-                    String idB = BuiltInRegistries.ITEM.getKey(b.getItem()).toString();
-                    int idxA = savedOrder.indexOf(idA);
-                    int idxB = savedOrder.indexOf(idB);
-                    if (idxA == -1 && idxB == -1) return 0;
-                    if (idxA == -1) return 1;
-                    if (idxB == -1) return -1;
-                    return Integer.compare(idxA, idxB);
-                });
-            }
+        for (Map.Entry<AbstractStackGroup, List<ItemStack>> entry : groupMatches.entrySet()) {
+            sortByGroupOrder(entry.getValue(), entry.getKey().getId());
         }
 
         // Third pass: build displayed list
         List<ItemStack> result = new ArrayList<>();
-        Set<StackGroup> addedGroups = Collections.newSetFromMap(new IdentityHashMap<>());
+        Set<AbstractStackGroup> addedGroups = Collections.newSetFromMap(new IdentityHashMap<>());
 
         for (ItemStack stack : source) {
             if (stack.has(DataComponents.CUSTOM_DATA)) {
@@ -299,7 +340,7 @@ public class StackGroupManager {
                 if (data.contains("rrv_stack_group_id")) continue;
             }
 
-            StackGroup group = getGroupForItem(stack);
+            AbstractStackGroup group = getGroupForItem(stack);
             if (group != null && group.isEnabled) {
                 List<ItemStack> matches = groupMatches.get(group);
                 if (matches != null && matches.size() >= 2) {
@@ -318,7 +359,7 @@ public class StackGroupManager {
         return result;
     }
 
-    private static ItemStack createGroupRepresentativeStack(StackGroup group, List<ItemStack> matches) {
+    private static ItemStack createGroupRepresentativeStack(AbstractStackGroup group, List<ItemStack> matches) {
         ItemStack stack = matches.getFirst().copy();
         stack.setCount(1);
         CompoundTag tag = new CompoundTag();
@@ -328,7 +369,7 @@ public class StackGroupManager {
     }
 
     public static List<ItemStack> getGroupItems(String groupId) {
-        for (StackGroup group : stackGroups) {
+        for (AbstractStackGroup group : stackGroups) {
             if (group.getId().toString().equals(groupId)) {
                 List<ItemStack> items = new ArrayList<>();
                 BuiltInRegistries.ITEM.forEach(item -> {
@@ -338,19 +379,7 @@ public class StackGroupManager {
                     }
                 });
 
-                List<String> savedOrder = Configs.STACK_GROUPS.getOrDefault(Identifier.parse(groupId)).order();
-                if (savedOrder != null && !savedOrder.isEmpty()) {
-                    items.sort((a, b) -> {
-                        String idA = BuiltInRegistries.ITEM.getKey(a.getItem()).toString();
-                        String idB = BuiltInRegistries.ITEM.getKey(b.getItem()).toString();
-                        int idxA = savedOrder.indexOf(idA);
-                        int idxB = savedOrder.indexOf(idB);
-                        if (idxA == -1 && idxB == -1) return 0;
-                        if (idxA == -1) return 1;
-                        if (idxB == -1) return -1;
-                        return Integer.compare(idxA, idxB);
-                    });
-                }
+                sortByGroupOrder(items, Identifier.parse(groupId));
                 return items;
             }
         }
@@ -363,7 +392,7 @@ public class StackGroupManager {
         String lower = query.toLowerCase(Locale.ROOT);
         List<ItemStack> extendedResults = new ArrayList<>(results);
 
-        for (StackGroup group : stackGroups) {
+        for (AbstractStackGroup group : stackGroups) {
             boolean match = false;
             if (group.getId().toString().toLowerCase(Locale.ROOT).contains(lower)) {
                 match = true;

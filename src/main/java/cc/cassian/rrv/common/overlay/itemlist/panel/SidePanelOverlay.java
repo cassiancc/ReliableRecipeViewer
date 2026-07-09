@@ -17,6 +17,7 @@ import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -185,8 +186,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             } else {
                 availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
             }
+            List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(availableItems);
             if (screen == this.currentScreen && this.availableItems.isEmpty()) {
-                this.availableItems.addAll(availableItems);
+                this.availableItems.addAll(expandedItems);
                 this.updateSlots();
             }
 
