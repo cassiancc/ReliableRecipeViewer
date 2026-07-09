@@ -4,10 +4,15 @@ import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.ConfiguredStackGroup;
 import cc.cassian.rrv.common.config.widgets.IntegerEditBox;
+import cc.cassian.rrv.common.gui.widgets.StackGroupNameWidget;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -15,14 +20,9 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.jspecify.annotations.NonNull;
 
 public class StackGroupConfigScreen extends ClientConfigScreen {
 
@@ -30,10 +30,13 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
     private static final Component ENABLED = Component.translatable("rrv.stack_group_settings.enabled").withStyle(ChatFormatting.GREEN);
     private static final Component DISABLED = Component.translatable("rrv.stack_group_settings.disabled").withStyle(ChatFormatting.RED);
 
-
     private final Screen lastScreen;
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
+    private Identifier expandedGroupId;
+    private StackGroupNameWidget expandedWidget;
+    private AbstractContainerWidget scrollArea;
+    private double pendingScrollAmount = 0;
 
     public StackGroupConfigScreen(Screen lastScreen) {
         super(TITLE, lastScreen);
@@ -43,6 +46,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
 
     @Override
     protected void init() {
+        expandedWidget = null;
 
         // setup
         StringWidget stringWidget = this.layout.addToHeader(new StringWidget(TITLE, this.font));
@@ -70,31 +74,84 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
 //        helper.addChild(new SpacerElement(5, 5));
 
         StackGroupManager.stackGroups.forEach((group) -> {
-            Identifier id = group.getId();
+            ConfiguredStackGroup current = Configs.STACK_GROUPS.getOrDefault(group.getId());
+            boolean expanded = group.getId().equals(expandedGroupId);
+
             // name
-            helper.addChild(new StringWidget(column1, font.lineHeight, group.getName().copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(id.toString())))), font));
+            StackGroupNameWidget nameWidget = new StackGroupNameWidget(font, column1, 20, group, expanded, () -> toggleExpand(group.getId()));
+            if (expanded) expandedWidget = nameWidget;
+            helper.addChild(nameWidget);
             // enable
-            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, group.isEnabled).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id.toString()), (_, value) -> {
-                Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), value, group.priority, List.of()));
+            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, current.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(group.getId().toString()), (_, value) -> {
+                ConfiguredStackGroup latest = Configs.STACK_GROUPS.getOrDefault(group.getId());
+                Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), value, latest.priority(), latest.order()));
 			});
             helper.addChild(button1);
             // priority
-            IntegerEditBox priorityBox = new IntegerEditBox(font, 0, 0, column2, 20, null);
-            priorityBox.setResponder(newPriority->{
-                try {
-                    int value = Integer.parseInt(newPriority);
-                    Configs.STACK_GROUPS.set(id, new ConfiguredStackGroup(group.getId(), group.isEnabled, value, List.of()));
-                } catch (NumberFormatException ignored) {}
-            });
-            priorityBox.setValue(String.valueOf(group.priority));
+            IntegerEditBox priorityBox = getPriorityBox(group, column2, current);
             helper.addChild(priorityBox);
+
+            // reserve extra row height below the expanded group so this row's controls don't get covered by its dropdown
+            if (expanded) {
+                int itemCount = StackGroupManager.getGroupItems(group.getId().toString()).size();
+                int dropdownHeight = StackGroupNameWidget.dropdownHeightFor(itemCount, column1);
+                if (dropdownHeight > 0) {
+                    helper.addChild(new SpacerElement(1, dropdownHeight));
+                    helper.addChild(new SpacerElement(1, dropdownHeight));
+                    helper.addChild(new SpacerElement(1, dropdownHeight));
+                }
+            }
         });
 
         linearLayout.addChild(general);
 
-        // done
+        ScrollableLayout scrollableLayout = finalizeLayout(linearLayout, layout, this);
+        scrollArea = null;
+        scrollableLayout.visitWidgets(widget -> {
+            if (widget instanceof AbstractContainerWidget containerWidget) {
+                scrollArea = containerWidget;
+            }
+        });
+        if (scrollArea != null) {
+            scrollArea.setScrollAmount(pendingScrollAmount);
+        }
+    }
 
-        finalizeLayout(linearLayout, layout, this);
+    private @NonNull IntegerEditBox getPriorityBox(AbstractStackGroup group, int column2, ConfiguredStackGroup current) {
+        IntegerEditBox priorityBox = new IntegerEditBox(font, 0, 0, column2, 20, null);
+        priorityBox.setResponder(newPriority->{
+            try {
+                int value = Integer.parseInt(newPriority);
+                ConfiguredStackGroup latest = Configs.STACK_GROUPS.getOrDefault(group.getId());
+                Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), latest.enabled(), value, latest.order()));
+            } catch (NumberFormatException ignored) {}
+        });
+        priorityBox.setValue(String.valueOf(current.priority()));
+        return priorityBox;
+    }
+
+    private void toggleExpand(Identifier groupId) {
+        if (scrollArea != null) {
+            pendingScrollAmount = scrollArea.scrollAmount();
+        }
+        expandedGroupId = groupId.equals(expandedGroupId) ? null : groupId;
+        this.rebuildWidgets();
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        if (expandedWidget != null) {
+            guiGraphics.nextStratum();
+            boolean clipped = scrollArea != null;
+            if (clipped) {
+                guiGraphics.enableScissor(scrollArea.getX(), scrollArea.getY(), scrollArea.getX() + scrollArea.getWidth(), scrollArea.getY() + scrollArea.getHeight());
+            }
+            expandedWidget.renderDropdownOverlay(guiGraphics, mouseX, mouseY);
+            if (clipped) {
+                guiGraphics.disableScissor();
+            }
+        }
     }
 
     private GridLayout createGridLayout() {

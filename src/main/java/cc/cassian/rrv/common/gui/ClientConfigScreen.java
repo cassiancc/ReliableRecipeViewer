@@ -143,7 +143,7 @@ public class ClientConfigScreen extends Screen {
         finalizeLayout(linearLayout, layout, this);
     }
 
-    static void finalizeLayout(LinearLayout linearLayout, HeaderAndFooterLayout layout, ClientConfigScreen screen) {
+    static ScrollableLayout finalizeLayout(LinearLayout linearLayout, HeaderAndFooterLayout layout, ClientConfigScreen screen) {
         screen.addRenderableWidget(layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, _ -> screen.onClose()).size(100, 20).build()));
 
         ScrollableLayout scrollableLayout = layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, 175));
@@ -151,6 +151,7 @@ public class ClientConfigScreen extends Screen {
 
         scrollableLayout.visitWidgets(screen::addRenderableWidget);
         layout.arrangeElements();
+        return scrollableLayout;
     }
 
     private GridLayout createGridLayout() {
