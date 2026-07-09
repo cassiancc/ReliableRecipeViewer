@@ -15,6 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @ApiStatus.Internal
 public class ClientRecipeCache {
@@ -62,6 +63,10 @@ public class ClientRecipeCache {
 
     public List<ItemView.StackSensitive> getStackSensitives(Item item) {
         return this.stackSensitives.getOrDefault(item, new ArrayList<>());
+    }
+
+    public Stream<ItemStack> streamStackSensitives(Item item) {
+        return getStackSensitives(item).stream().map(ItemView.StackSensitive::stack);
     }
 
     /// Prefer [ClientRecipeCache#getRecipes(Identifier)] when using recipe ids provided by users or client recipes.

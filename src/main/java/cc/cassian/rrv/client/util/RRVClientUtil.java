@@ -1,6 +1,8 @@
 package cc.cassian.rrv.client.util;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -52,5 +54,12 @@ public class RRVClientUtil {
     public static List<Component> getTooltipFromItem(final Minecraft minecraft, final ItemStack itemStack) {
         ExtendedTooltipFlag tooltipFlag = minecraft.options.advancedItemTooltips ? ExtendedTooltipFlag.ADVANCED : ExtendedTooltipFlag.NORMAL;
         return itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, tooltipFlag);
+    }
+
+    public static ItemStack applyPolymerCheck(ItemStack i) {
+        if (ModCompat.POLYMER && ClientPolymerItemUtils.isPolyItem(i)) {
+            return ClientPolymerItemUtils.getServerItem(i);
+        }
+        return i;
     }
 }

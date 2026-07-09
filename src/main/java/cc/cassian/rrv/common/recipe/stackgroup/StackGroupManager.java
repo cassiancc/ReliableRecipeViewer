@@ -334,7 +334,7 @@ public class StackGroupManager {
                 List<ItemStack> items = new ArrayList<>();
                 BuiltInRegistries.ITEM.forEach(item -> {
                     ItemStack stack = new ItemStack(item);
-                    ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).forEach(e -> {
+                    ClientRecipeCache.INSTANCE.streamStackSensitives(item).forEach(e -> {
                         if (group.match(e))
                             items.add(e);
                     });

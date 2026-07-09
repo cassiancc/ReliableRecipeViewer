@@ -1,7 +1,5 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
-import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -13,21 +11,22 @@ import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
+//? fabric {
+import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+//?}
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.*;
 
@@ -276,15 +275,21 @@ public class ItemFilters {
 		if (Configs.CLIENT_SETTINGS.getIndexSource() == IndexSource.REGISTRY) {
 			BuiltInRegistries.ITEM.forEach(item -> {
 				results.add(new ItemStack(item));
-				results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
+				results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).toList());
 			});
 		} else {
 			Minecraft mc = Minecraft.getInstance();
-			if (!cached && !mc.player.hasInfiniteMaterials()) {
-				CreativeModeTabs.tryRebuildTabContents(FeatureFlags.VANILLA_SET, false, mc.level.registryAccess());
+            LocalPlayer player = mc.player;
+            if (!cached && player != null && !player.hasInfiniteMaterials()) {
+				CreativeModeTabs.tryRebuildTabContents(FeatureFlags.VANILLA_SET, false, player.registryAccess());
 			}
 
-			results.addAll(CreativeModeTabs.searchTab().getSearchTabDisplayItems());
+			results.addAll(CreativeModeTabs.searchTab().getSearchTabDisplayItems().stream()
+                            //? fabric {
+                            .map(RRVClientUtil::applyPolymerCheck)
+                    //?}
+                    .toList()
+            );
 
 			BuiltInRegistries.ITEM.forEach(item -> {
                 if (Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.CREATIVE_AND_REGISTRY)) {
@@ -292,7 +297,7 @@ public class ItemFilters {
                     if (results.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, e)))
                         results.add(e);
                 }
-				results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
+				results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
 			});
 		}
 
