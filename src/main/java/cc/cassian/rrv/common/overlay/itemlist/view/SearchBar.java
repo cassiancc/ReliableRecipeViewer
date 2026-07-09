@@ -21,12 +21,9 @@ public class SearchBar extends EditBox {
 			ChatFormatting style = color;
 			MutableComponent component = Component.empty();
 			for (String s : text.splitWithDelimiters(" ", 0)) {
-				if (s.contains("@")) {
-					style = ChatFormatting.GOLD;
-				} else if (s.contains("#")) {
-					style = ChatFormatting.GREEN;
-				} else if (s.contains(":")) {
-					style = ChatFormatting.LIGHT_PURPLE;
+				var filter = PrefixedFilter.findFilterInQuery(s);
+				if (filter != null) {
+					style = filter.color();
 				} else if (offset == 0 || s.contains(" ")) {
 					style = ChatFormatting.WHITE;
 				}

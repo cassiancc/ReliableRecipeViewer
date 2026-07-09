@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
@@ -13,17 +14,24 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 /*import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 *///?}
+//? fabric {
+import net.fabricmc.fabric.api.recipe.v1.ingredient.DefaultCustomIngredients;
+//?}
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.predicates.PotionsPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -34,6 +42,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.function.UnaryOperator;
 
 public class SlotContent {
 
@@ -61,12 +70,7 @@ public class SlotContent {
         List<ItemStack> copied = new ArrayList<>();
         content.stream().map(ItemStack::copy)
         //? fabric {
-        .map(i->{
-            if (ModCompat.POLYMER && ClientPolymerItemUtils.isPolyItem(i)) {
-                return ClientPolymerItemUtils.getServerItem(i);
-            }
-            return i;
-        })
+        .map(RRVClientUtil::applyPolymerCheck)
         //?}
         .forEach(copied::add);
 
@@ -269,6 +273,25 @@ public class SlotContent {
         blocks.forEach(block -> stacks.add(new ItemStack(block)));
         return SlotContent.of(stacks);
     }
+
+    //? if >26.2 {
+    /*public static SlotContent of(net.minecraft.world.item.crafting.PotionIngredient potionIngredient) {
+        if (potionIngredient == null) return SlotContent.of();
+
+        var patch = DataComponentPatch.builder();
+        potionIngredient.potions().flatMap(PotionsPredicate::potions).ifPresent(p -> {
+			p.forEach(potionHolder -> {
+				patch.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
+			});
+		});
+
+        if (patch.build().isEmpty()) {
+            return SlotContent.of(potionIngredient.ingredient());
+        }
+
+        return SlotContent.of(DefaultCustomIngredients.components(potionIngredient.ingredient(), patch.build()));
+    }
+    *///?}
 
     public static SlotContent of(FluidStack fluidStack) {
         if (fluidStack == null) return SlotContent.of();

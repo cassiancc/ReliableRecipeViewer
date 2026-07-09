@@ -219,6 +219,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
 		this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		this.recipeSharing = load("recipeSharing", this.recipeSharing);
+		this.indexSource = load("indexSource", this.indexSource, IndexSource.CODEC);
 	}
 
 	@Override
@@ -242,5 +243,6 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("localFallback", this.localFallback, LocalFallback.CODEC);
 		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		save("recipeSharing", this.recipeSharing);
+		save("indexSource", this.indexSource, IndexSource.CODEC);
 	}
 }

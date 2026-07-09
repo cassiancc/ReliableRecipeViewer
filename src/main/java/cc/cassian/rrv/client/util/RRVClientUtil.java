@@ -1,11 +1,19 @@
 package cc.cassian.rrv.client.util;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.List;
 
 @ApiStatus.Internal
 public class RRVClientUtil {
@@ -41,4 +49,17 @@ public class RRVClientUtil {
 	public static Level level() {
 		return Minecraft.getInstance().level;
 	}
+
+    /// Modified copy of [Screen#getTooltipFromItem] that supports extended tooltip flags.
+    public static List<Component> getTooltipFromItem(final Minecraft minecraft, final ItemStack itemStack) {
+        ExtendedTooltipFlag tooltipFlag = minecraft.options.advancedItemTooltips ? ExtendedTooltipFlag.ADVANCED : ExtendedTooltipFlag.NORMAL;
+        return itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, tooltipFlag);
+    }
+
+    public static ItemStack applyPolymerCheck(ItemStack i) {
+        if (ModCompat.POLYMER && ClientPolymerItemUtils.isPolyItem(i)) {
+            return ClientPolymerItemUtils.getServerItem(i);
+        }
+        return i;
+    }
 }

@@ -6,11 +6,9 @@
   "minVersion": "0.8",
   "mixins": [
     "world.level.predicates.CombiningPredicateAccessor",
-    "world.level.predicates.CopyPropertiesProviderAccessor",
     "world.level.predicates.EntityPredicateAccessor",
     "world.level.predicates.MatchingBlocksPredicateAccessor",
     "world.level.predicates.MatchingBlockTagPredicateAccessor",
-    "world.level.predicates.RuleBasedStateProviderAccessor",
     "advancements.criterion.MixinInventoryChangeTrigger",
     "chat.HoverEventActionMixin",
     "recipe.ConcretePowderBlockAccessor",

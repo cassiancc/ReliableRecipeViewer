@@ -16,8 +16,10 @@ import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.overlay.itemlist.view.PrefixedFilter;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -144,11 +146,12 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(Reason reason) {
+        var screen = RRVClientUtil.currentScreen();
+        if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
+        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
+        this.availableItems.clear();
+
 		Util.backgroundExecutor().execute(() -> {
-            var screen = RRVClientUtil.currentScreen();
-            if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-            if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
-            this.availableItems.clear();
             var availableItems = new ArrayList<ItemStack>();
             if (showCraftables()) {
                 Minecraft client = Minecraft.getInstance();
@@ -178,13 +181,15 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                     // save last available items for when searching occurs
                     this.lastAvailableItems = new ArrayList<>(availableItems);
                 } else {
-					availableItems.addAll(lastAvailableItems);
+                    availableItems.addAll(lastAvailableItems);
                 }
 
                 filter(availableItems);
                 availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
-            } else {
-                availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
+                if (screen == this.currentScreen && this.availableItems.isEmpty()) {
+                    this.availableItems.addAll(availableItems);
+                    Minecraft.getInstance().execute(this::updateSlots);
+                }
             }
             List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(availableItems);
             if (screen == this.currentScreen && this.availableItems.isEmpty()) {
@@ -193,23 +198,19 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             }
 
         });
+        if (!showCraftables()) {
+            availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
+            Minecraft.getInstance().execute(this::updateSlots);
+        }
     }
 
 
 
     private void filter(List<ItemStack> availableItems) {
         for (String query : ItemViewOverlay.INSTANCE.getCurrentQueries()) {
-            if (query.startsWith("@")) {
-                availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
-            }
-            else if (query.startsWith(":")) {
-                availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
-            }
-            else if (query.startsWith("#")) {
-                availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
-            }
-            else {
-                availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)));
+            String substring = RrvUtil.lowercaseSubstring(query);
+            if (!ItemFilters.advancedFilter(availableItems, query)) {
+                availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(substring));
             }
         }
     }

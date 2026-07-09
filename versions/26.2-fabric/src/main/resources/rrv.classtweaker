@@ -9,11 +9,7 @@ accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe pattern Ln
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe result Lnet/minecraft/world/item/ItemStackTemplate;
 accessible class net/minecraft/world/item/alchemy/PotionBrewing$Mix
 
-accessible field net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen recipeBookComponent Lnet/minecraft/client/gui/screens/recipebook/RecipeBookComponent;
-accessible method net/minecraft/client/gui/screens/recipebook/RecipeBookComponent getXOrigin ()I
 accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platform/InputConstants$Key;
-accessible field net/minecraft/client/KeyMapping ALL Ljava/util/Map;
-accessible field net/minecraft/client/KeyMapping MAP Ljava/util/Map;
 
 accessible method net/minecraft/world/inventory/MenuType <init> (Lnet/minecraft/world/inventory/MenuType$MenuSupplier;Lnet/minecraft/world/flag/FeatureFlagSet;)V
 accessible class net/minecraft/world/inventory/MenuType$MenuSupplier
@@ -23,6 +19,10 @@ mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen
 # World Interaction
 accessible field net/minecraft/world/item/ShovelItem FLATTENABLES Ljava/util/Map;
 accessible field net/minecraft/world/item/AxeItem STRIPPABLES Ljava/util/Map;
+
+# Screens
+accessible field net/minecraft/client/gui/components/ScrollableLayout container Lnet/minecraft/client/gui/components/ScrollableLayout$Container;
+accessible class net/minecraft/client/gui/components/ScrollableLayout$Container
 
 # Recipe Sharing
 extend-enum net/minecraft/network/chat/HoverEvent$Action RRV_SHOW_RECIPE

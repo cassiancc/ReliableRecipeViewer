@@ -59,7 +59,9 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
+//? if <26.3 {
 import net.minecraft.world.item.alchemy.PotionBrewing;
+//?}
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.DyedItemColor;
@@ -333,6 +335,16 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addBrewingRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
+        //? if >26.2 {
+        /*ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.BREWING).forEach(holder -> {
+            var recipe = holder.value();
+			recipeList.add(new BrewingClientRecipe(holder.id().identifier(),
+                    SlotContent.of(recipe.getOutput()),
+                    SlotContent.of(recipe.getReagent()),
+                    SlotContent.of(recipe.getInput())
+            ));
+		});
+        *///?} else {
         PotionBrewing potionBrewing = level.potionBrewing();
         List<PotionBrewing.Mix<Potion>> potionMixes = ((PotionBrewingAccessor) potionBrewing).getPotionMixes();
         List<PotionBrewing.Mix<Item>> containerMixes = ((PotionBrewingAccessor) potionBrewing).getContainerMixes();
@@ -346,6 +358,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             recipeList.add(new BrewingClientRecipe(id.withSuffix("_lingering_potion"+RrvUtil.ingredientSuffix(potionMix.ingredient())), PotionContents.createItemStack(Items.LINGERING_POTION, potionMix.to()), potionMix.ingredient(), PotionContents.createItemStack(Items.LINGERING_POTION, potionMix.from())));
 
         });
+        //?}
     }
 
     private static void addRepairingRecipes(List<ReliableClientRecipe> recipeList) {

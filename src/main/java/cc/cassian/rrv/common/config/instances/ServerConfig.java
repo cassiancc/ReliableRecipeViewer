@@ -16,14 +16,14 @@ public class ServerConfig extends AbstractRrvConfig {
 		super("server_settings");
 	}
 
-	private int version = 1;
+	private int version = 2;
 	private boolean recipeSharing = true;
 
 	//? fabric {
 	private List<Identifier> synchronizedRecipeSerializers = addVanillaRecipeSerializers();
 
 	private List<Identifier> addVanillaRecipeSerializers() {
-		var list = Stream.of(
+		return Stream.of(
 				ShapedRecipe.SERIALIZER,
 				ShapelessRecipe.SERIALIZER,
 				DyeRecipe.SERIALIZER,
@@ -45,8 +45,9 @@ public class ServerConfig extends AbstractRrvConfig {
 				StonecutterRecipe.SERIALIZER,
 				SmithingTrimRecipe.SERIALIZER,
 				SmithingTransformRecipe.SERIALIZER
+				//? if >26.2
+				//, BrewingRecipe.SERIALIZER
 		).map(BuiltInRegistries.RECIPE_SERIALIZER::getKey).toList();
-		return list;
 	}
 	public void addRecipeSerializer(Identifier newSerializer) {
 		var list = new ArrayList<>(synchronizedRecipeSerializers);
@@ -58,7 +59,10 @@ public class ServerConfig extends AbstractRrvConfig {
 	/*private List<Identifier> synchronizedRecipeTypes = addVanillaRecipeTypes();
 
 	private List<Identifier> addVanillaRecipeTypes() {
-		return Stream.of(RecipeType.CRAFTING, RecipeType.SMELTING, RecipeType.BLASTING, RecipeType.CAMPFIRE_COOKING, RecipeType.SMOKING, RecipeType.SMITHING).map(BuiltInRegistries.RECIPE_TYPE::getKey).toList();
+		return Stream.of(RecipeType.CRAFTING, RecipeType.SMELTING, RecipeType.BLASTING, RecipeType.CAMPFIRE_COOKING, RecipeType.SMOKING, RecipeType.SMITHING
+		//? if >26.2
+		//, RecipeType.BREWING
+		).map(BuiltInRegistries.RECIPE_TYPE::getKey).toList();
 	}
 
 	public void addRecipeType(Identifier newType) {

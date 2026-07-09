@@ -185,36 +185,21 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             ArrayList<String> objects = new ArrayList<>();
 
             for (String query : newQuery.split(" ")) {
-                if (!query.startsWith("@") && !query.startsWith(":") && !query.startsWith("#")) {
+                if (!PrefixedFilter.startsWithPrefix(query)) {
                     objects.add(query);
                 }
             }
 
             this.filteredItems.clear();
-            this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects)));
+            this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects).strip()));
 
-            for (String query : newQuery.split(" ")) {
-                if (query.startsWith("@")) {
-                    this.filteredItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
-                }
-                else if (query.startsWith(":")) {
-                    this.filteredItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
-                }
-                else if (query.startsWith("#")) {
-                    this.filteredItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
-                }
+            for (String query : getCurrentQueries()) {
+                ItemFilters.advancedFilter(filteredItems, query);
             }
         // standard filtering
         } else {
             this.filteredItems.clear();
-            if (newQuery.startsWith("@"))
-                this.filteredItems.addAll(ItemFilters.modNamespace(newQuery.substring(1)));
-            else if (newQuery.startsWith(":"))
-                this.filteredItems.addAll(ItemFilters.id(newQuery.substring(1)));
-            else if (newQuery.startsWith("#"))
-                this.filteredItems.addAll(ItemFilters.tag(newQuery.substring(1)));
-            else
-                this.filteredItems.addAll(ItemFilters.defaultFilter(newQuery));
+            this.filteredItems.addAll(ItemFilters.filter(newQuery));
         }
 
         this.filteredItems.removeIf(ItemView::isExcludedItem);
@@ -328,7 +313,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
-            if (!slot.hasItem() || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())) {
+
+            if (!slot.hasItem()
+                    || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())
+                    && ItemFilters.getTooltipMatch(slot.getItem(), this.currentQuery) == 0) {
                 guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
             }
             guiGraphics.pose().popMatrix();
@@ -385,7 +373,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             buttonEnd-=13;
         }
 
-        back.setPosition(itemStartX+2, buttonY);
+        back.setPosition(checkedX()+10, buttonY);
         next.setPosition(buttonEnd, buttonY);
 
         updateButtons();

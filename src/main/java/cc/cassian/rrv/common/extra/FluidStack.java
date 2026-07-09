@@ -2,6 +2,8 @@ package cc.cassian.rrv.common.extra;
 
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
+//? fabric
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -86,7 +88,26 @@ public record FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
     public net.neoforged.neoforge.fluids.FluidStack toLoaderFluidStack(FluidStack stack) {
         return stack.toLoaderFluidStack();
     }
-    *///?}
+    *///?} else {
+    /// Creates an RRV FluidStack from a Fabric FluidVariant
+    /// @param stack: A Fabric Fluid Variant
+    /// @return A RRV Fluid Stack
+    public static FluidStack fromFluidVariant(FluidVariant stack) {
+        return new FluidStack(stack.getFluid(), AMOUNT_FULL, stack.getComponentsPatch());
+    }
+
+    /// Creates a Fabric FluidVariant from an RRV FluidStack
+    /// @return A Fabric Fluid Variant
+    public FluidVariant toFluidVariant() {
+        return FluidVariant.of(this.fluid, this.patch);
+    }
+
+    /// Creates a Fabric FluidVariant from an RRV FluidStack
+    /// @return A Fabric Fluid Variant
+    public FluidVariant toFluidVariant(FluidStack stack) {
+        return stack.toFluidVariant();
+    }
+    //?}
 
     /// Creates an [ItemStack] from this FluidStack.
     public ItemStack createItemStack() {

@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.integration.polymer.recipe;
 
+import cc.cassian.rrv.api.overlay.ButtonData;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import net.minecraft.network.chat.Component;
@@ -50,6 +51,11 @@ public class PolydexClientRecipeType implements ReliableClientRecipeType {
 	@Override
 	public Identifier getId() {
 		return Identifier.fromNamespaceAndPath("polydex", "bridge");
+	}
+
+	@Override
+	public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
+		return ButtonData.DISABLED;
 	}
 
 	@Override

@@ -290,7 +290,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 this.shareButtons.add(shareButton);
                 this.addRenderableWidget(shareButton);
 
-                if (currentRecipe instanceof ItemTagClientRecipe tagRecipe) {
+                if (currentRecipe instanceof ItemTagClientRecipe tagRecipe && Configs.STACK_GROUPS.areStackGroupsEnabled()) {
                     Identifier tagId = tagRecipe.getTagKey().location();
                     boolean exists = StackGroupManager.hasGroup(tagId);
 

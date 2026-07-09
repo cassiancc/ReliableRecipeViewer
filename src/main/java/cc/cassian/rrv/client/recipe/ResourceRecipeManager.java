@@ -228,7 +228,7 @@ public class ResourceRecipeManager {
 		});
 		*///?}
 		try {
-			ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(objects.values());
+			ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(objects.values());
 		} catch (Exception e) {
 			LOGGER.error("Could not get local recipes due to an exception: ", e);
 		}

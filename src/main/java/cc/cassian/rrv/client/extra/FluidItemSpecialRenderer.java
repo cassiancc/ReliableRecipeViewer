@@ -1,7 +1,6 @@
 package cc.cassian.rrv.client.extra;
 
 import cc.cassian.rrv.client.util.UVInfo;
-import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.extra.FluidStack;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.serialization.MapCodec;
@@ -9,7 +8,6 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 //? fabric {
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 //?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSource;
@@ -85,7 +83,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         //? fabric {
         var handler = FluidVariantRendering.getHandler(fluid);
         if (handler != null) {
-            return handler.getColor(FluidVariant.of(fluid, fluidStack.patch()), null, null);
+            return handler.getColor(fluidStack.toFluidVariant(), null, null);
         }
         BlockTintSource blockTintSource = fluidModel.tintSource();
         if (blockTintSource != null) {
