@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
@@ -246,7 +247,7 @@ public class ItemFilters {
     /// Used for correct listing of item stacks by match accuracy
     protected static int getTooltipMatch(ItemStack stack, String query) {
 
-        List<Component> lore = Screen.getTooltipFromItem(Minecraft.getInstance(), stack);
+        List<Component> lore = RRVClientUtil.getTooltipFromItem(Minecraft.getInstance(), stack);
 
         for (Component line : lore) {
             if (line.getContents() instanceof TranslatableContents translatableContents) {
