@@ -48,9 +48,9 @@ public class RRVClientUtil {
 		return Minecraft.getInstance().level;
 	}
 
-    /// Modified copy of [Screen#getTooltipFromItem].
-    /// TODO: In the future, this will support NeoForge's [TooltipFlag] extension for recipe viewers ([#3286](https://github.com/neoforged/NeoForge/pull/3286)).
+    /// Modified copy of [Screen#getTooltipFromItem] that supports extended tooltip flags.
     public static List<Component> getTooltipFromItem(final Minecraft minecraft, final ItemStack itemStack) {
-        return itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
+        ExtendedTooltipFlag tooltipFlag = minecraft.options.advancedItemTooltips ? ExtendedTooltipFlag.ADVANCED : ExtendedTooltipFlag.NORMAL;
+        return itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, tooltipFlag);
     }
 }
