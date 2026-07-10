@@ -214,10 +214,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void updateDisplayedItems() {
         List<ItemStack> items = this.filteredItems;
         if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
-            if (this.currentQuery != null && !this.currentQuery.isEmpty()) {
+            boolean isSearching = this.currentQuery != null && !this.currentQuery.isEmpty();
+            if (isSearching) {
                 items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
             }
-            items = StackGroupManager.applyGrouping(items);
+            items = StackGroupManager.applyGrouping(items, isSearching);
         }
         this.availableItems = items;
         this.availableItems.removeIf(ItemView::isExcludedItem);

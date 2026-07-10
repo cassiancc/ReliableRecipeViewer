@@ -1,12 +1,11 @@
 package cc.cassian.rrv.common.recipe.stackgroup;
 
-import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.IdentifierStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.RegexStackGroup;
-import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.groups.*;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -37,6 +36,8 @@ public class StackGroupManager {
     private static final Map<String, BiFunction<Identifier, JsonObject, AbstractStackGroup>> typeRegistry = new HashMap<>();
     private static final Set<Identifier> expandedGroups = new HashSet<>();
     private static final Map<Item, Integer> registryOrderCache = new IdentityHashMap<>();
+    private static final Set<Identifier> nameMatchedGroups = new HashSet<>();
+    private static boolean searchExpandActive = false;
 
     static {
         registerType("rrv:group", (id, json) -> IdentifierStackGroup.parse(json, id));
@@ -250,6 +251,15 @@ public class StackGroupManager {
         return expandedGroups.contains(groupId);
     }
 
+    /// Whether a group should be rendered as expanded, accounting for both the persisted per-group preference and an active search forcing matched groups open
+    public static boolean isEffectivelyExpanded(Identifier groupId) {
+        return searchExpandActive || isExpanded(groupId);
+    }
+
+    public static boolean isSearchExpandActive() {
+        return searchExpandActive;
+    }
+
     public static void toggleGroup(Identifier groupId) {
         if (!expandedGroups.remove(groupId)) {
             expandedGroups.add(groupId);
@@ -309,6 +319,13 @@ public class StackGroupManager {
     }
 
     public static List<ItemStack> applyGrouping(List<ItemStack> source) {
+        return applyGrouping(source, false);
+    }
+
+    /// @param forceExpand When true (e.g. an active search), any stack group with matching members is shown expanded regardless of its persisted expanded state
+    public static List<ItemStack> applyGrouping(List<ItemStack> source, boolean forceExpand) {
+        searchExpandActive = forceExpand;
+
         if (!Configs.STACK_GROUPS.areStackGroupsEnabled() || source == null || source.isEmpty()) {
             return source;
         }
@@ -343,13 +360,14 @@ public class StackGroupManager {
             }
 
             AbstractStackGroup group = getGroupForItem(stack);
-            if (group != null && group.isEnabled) {
+            boolean showAsGroup = group != null && group.isEnabled && (!forceExpand || nameMatchedGroups.contains(group.getId()));
+            if (showAsGroup) {
                 List<ItemStack> matches = groupMatches.get(group);
                 if (matches != null && matches.size() >= 2) {
                     if (addedGroups.add(group)) {
                         ItemStack repStack = createGroupRepresentativeStack(group, matches);
                         result.add(repStack);
-                        if (isExpanded(group.getId())) {
+                        if (isEffectivelyExpanded(group.getId())) {
                             result.addAll(matches);
                         }
                     }
@@ -393,6 +411,7 @@ public class StackGroupManager {
     }
 
     public static List<ItemStack> appendMatchingGroups(String query, List<ItemStack> results) {
+        nameMatchedGroups.clear();
         if (!Configs.STACK_GROUPS.areStackGroupsEnabled()) return results;
 
         String lower = query.toLowerCase(Locale.ROOT);
@@ -410,6 +429,7 @@ public class StackGroupManager {
             }
 
             if (match) {
+                nameMatchedGroups.add(group.getId());
                 List<ItemStack> groupContents = getGroupItems(group.getId().toString());
                 for (ItemStack stack : groupContents) {
                     if (extendedResults.stream().noneMatch(existing -> ItemStack.isSameItemSameComponents(existing, stack))) {

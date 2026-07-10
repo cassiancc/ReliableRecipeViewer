@@ -77,7 +77,7 @@ public class ItemSlot {
                 AbstractStackGroup otherGroup = otherGroupId != null ? StackGroupManager.getGroup(otherGroupId) : StackGroupManager.getGroupForItem(slot.getStack());
                 if (otherGroup != null && otherGroup.getId().equals(group.getId()) && otherGroup.isEnabled) {
                     if (otherGroupId != null) {
-                        return StackGroupManager.isExpanded(Identifier.parse(otherGroupId));
+                        return StackGroupManager.isEffectivelyExpanded(Identifier.parse(otherGroupId));
                     }
                     return true;
                 }
@@ -88,6 +88,7 @@ public class ItemSlot {
 
     private void drawGroupBackgroundAndBorders(GuiGraphicsExtractor guiGraphics, AbstractStackGroup group) {
         if (group == null) return;
+        if (StackGroupManager.isSearchExpandActive()) return;
         if (ItemSlot.currentFrameSlots != ItemViewOverlay.INSTANCE.itemSlots()) return;
 
         boolean hasTop = hasGroupNeighbor(0, -ITEM_ENTRY_SIZE, group);
@@ -142,7 +143,7 @@ public class ItemSlot {
 
         if (stackGroupId != null) {
             List<ItemStack> items = StackGroupManager.getGroupItems(stackGroupId);
-            boolean expanded = StackGroupManager.isExpanded(Identifier.parse(stackGroupId));
+            boolean expanded = StackGroupManager.isEffectivelyExpanded(Identifier.parse(stackGroupId));
 
             if (this.isHovered()) {
                 AbstractStackGroup group = StackGroupManager.getGroup(stackGroupId);
@@ -187,7 +188,7 @@ public class ItemSlot {
         }
 
         AbstractStackGroup itemGroup = StackGroupManager.getGroupForItem(this.stack);
-        boolean inExpandedGroup = itemGroup != null && itemGroup.isEnabled && StackGroupManager.isExpanded(itemGroup.getId());
+        boolean inExpandedGroup = itemGroup != null && itemGroup.isEnabled && StackGroupManager.isEffectivelyExpanded(itemGroup.getId());
 
         if (inExpandedGroup) {
             drawGroupBackgroundAndBorders(guiGraphics, itemGroup);
@@ -233,11 +234,13 @@ public class ItemSlot {
         if (stack.has(DataComponents.CUSTOM_DATA)) {
             CompoundTag compoundTag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
             if (compoundTag.contains("rrv_stack_group_id")) {
-                String groupId = compoundTag.get("rrv_stack_group_id").asString().get();
-                StackGroupManager.toggleGroup(Identifier.parse(groupId));
-                ItemViewOverlay.INSTANCE.updateDisplayedItems();
-                if (SidePanelOverlay.INSTANCE.isEnabled()) {
-                    SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.OTHER);
+                if (!StackGroupManager.isSearchExpandActive()) {
+                    String groupId = compoundTag.get("rrv_stack_group_id").asString().get();
+                    StackGroupManager.toggleGroup(Identifier.parse(groupId));
+                    ItemViewOverlay.INSTANCE.updateDisplayedItems();
+                    if (SidePanelOverlay.INSTANCE.isEnabled()) {
+                        SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.OTHER);
+                    }
                 }
                 return;
             }
