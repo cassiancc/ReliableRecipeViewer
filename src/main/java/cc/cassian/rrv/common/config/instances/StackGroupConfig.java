@@ -13,8 +13,8 @@ import java.util.*;
 
 public class StackGroupConfig extends AbstractRrvConfig {
 
-	private int version = 1;
-	private boolean enabled = false;
+	private int version = 2;
+	private boolean enabled = true;
 	private final LinkedHashMap<Identifier, ConfiguredStackGroup> STACK_GROUPS = new LinkedHashMap<>();
 
 	public ConfiguredStackGroup getOrDefault(Identifier groupId) {
@@ -47,7 +47,7 @@ public class StackGroupConfig extends AbstractRrvConfig {
 					try {
 						ConfiguredStackGroup encodedItem = ConfiguredStackGroup.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
 						Identifier id = Identifier.parse(key);
-						STACK_GROUPS.put(id, new ConfiguredStackGroup(encodedItem.id(), encodedItem.enabled(), false, encodedItem.priority(), encodedItem.order()));
+						STACK_GROUPS.put(id, new ConfiguredStackGroup(encodedItem.id(), encodedItem.enabled(), encodedItem.priority(), encodedItem.order()));
 					} catch (Exception e) {
 						ReliableRecipeViewer.LOGGER.error("Failed to load stack group from json: {}", key);
 					}

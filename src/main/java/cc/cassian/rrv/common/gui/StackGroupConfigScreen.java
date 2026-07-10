@@ -105,7 +105,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
 
         linearLayout.addChild(general);
 
-        ScrollableLayout scrollableLayout = finalizeLayout(linearLayout, layout, this);
+        finalizeLayout(linearLayout, layout, this);
         scrollArea = null;
         scrollableLayout.visitWidgets(widget -> {
             if (widget instanceof AbstractContainerWidget containerWidget) {
