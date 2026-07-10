@@ -199,7 +199,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
         });
         if (!showCraftables()) {
-            availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
+            availableItems.addAll(StackGroupManager.expandGroupsInList(BookmarkManager.INSTANCE.displayItems()));
             Minecraft.getInstance().execute(this::updateSlots);
         }
     }
