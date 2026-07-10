@@ -14,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
@@ -132,7 +133,8 @@ public class ItemViewRecipes {
         boolean potionRedirectCheck = ItemViewRecipes.makePotionCheck(stack, ingredient);
         boolean enchantmentRedirectCheck = ItemViewRecipes.makeEnchantmentCheck(stack, ingredient);
         boolean stewRedirectCheck = ItemViewRecipes.makeStewCheck(stack, ingredient);
-        return potionRedirectCheck && enchantmentRedirectCheck && stewRedirectCheck;
+        boolean fireworkRocketRedirectCheck = ItemViewRecipes.makeFireworkRocketCheck(stack, ingredient);
+        return potionRedirectCheck && enchantmentRedirectCheck && stewRedirectCheck && fireworkRocketRedirectCheck;
     }
 
     /**
@@ -149,7 +151,7 @@ public class ItemViewRecipes {
     }
 
     /**
-     * @return Whether the potion component of two itemStacks matches
+     * @return Whether the suspicious stew component of two itemStacks matches
      */
     public static boolean makeStewCheck(ItemStack stack1, ItemStack stack2) {
         if (!(stack1.has(DataComponents.SUSPICIOUS_STEW_EFFECTS) && stack2.has(DataComponents.SUSPICIOUS_STEW_EFFECTS)))
@@ -159,6 +161,19 @@ public class ItemViewRecipes {
         SuspiciousStewEffects stackContents = stack2.getOrDefault(DataComponents.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffects.EMPTY);
 
         return new HashSet<>(contents.effects()).containsAll(stackContents.effects());
+    }
+
+    /**
+     * @return Whether the firework component of two itemStacks matches
+     */
+    public static boolean makeFireworkRocketCheck(ItemStack stack1, ItemStack stack2) {
+        if (!(stack1.has(DataComponents.FIREWORKS) && stack2.has(DataComponents.FIREWORKS)))
+            return true;
+
+        Fireworks contents = stack1.getOrDefault(DataComponents.FIREWORKS, new Fireworks(0, List.of()));
+        Fireworks stackContents = stack2.getOrDefault(DataComponents.FIREWORKS, new Fireworks(0, List.of()));
+
+        return contents.flightDuration() == stackContents.flightDuration() && new HashSet<>(contents.explosions()).containsAll(stackContents.explosions());
     }
 
     /**

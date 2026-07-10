@@ -47,7 +47,6 @@ public class StackGroupManager {
         registerType("rrv:pressure_plates", (_, _) -> new PressurePlateItemGroup());
         registerType("rrv:minecarts", (_, _) -> new MinecartItemGroup());
         registerType("rrv:infested_blocks", (_, _) -> new InfestedBlockItemGroup());
-        registerType("rrv:copper_blocks", (_, _) -> new CopperBlockItemGroup());
         registerType("rrv:coral", (_, _) -> new CoralItemGroup());
     }
 
@@ -152,7 +151,6 @@ public class StackGroupManager {
         stackGroups.add(new PressurePlateItemGroup());
         stackGroups.add(new MinecartItemGroup());
         stackGroups.add(new InfestedBlockItemGroup());
-        stackGroups.add(new CopperBlockItemGroup());
         stackGroups.add(new CoralItemGroup());
 
         Map<Identifier, AbstractStackGroup> loaded = new LinkedHashMap<>();

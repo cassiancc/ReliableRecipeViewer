@@ -5,6 +5,10 @@ import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+//? if >26.2 {
+/*import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+*///?}
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
