@@ -678,12 +678,12 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     private void returnToCache(HashMap<Integer, ItemStack> usedPlayerSlots, NonNullList<ItemStack> stackSupply) {
         usedPlayerSlots.forEach((playerSlot, stack) -> {
-
-            if (stackSupply.get(playerSlot).isEmpty())
-                stackSupply.set(playerSlot, stack);
-            else
-                stackSupply.get(playerSlot).setCount(stackSupply.get(playerSlot).getCount() + stack.getCount());
-
+            if (stackSupply.size() > playerSlot) {
+                if (stackSupply.get(playerSlot).isEmpty())
+                    stackSupply.set(playerSlot, stack);
+                else
+                    stackSupply.get(playerSlot).setCount(stackSupply.get(playerSlot).getCount() + stack.getCount());
+            }
         });
     }
 

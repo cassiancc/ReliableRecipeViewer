@@ -27,6 +27,7 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -214,7 +215,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void updateDisplayedItems() {
         List<ItemStack> items = this.filteredItems;
         if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
-            boolean isSearching = this.currentQuery != null && !this.currentQuery.isEmpty();
+            boolean isSearching = isSearchingStackGroups();
             if (isSearching) {
                 items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
             }
@@ -225,7 +226,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.updateSlots();
     }
 
-	private void updateButtons() {
+    private void updateButtons() {
         if (back != null) {
             back.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
             next.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
@@ -466,17 +467,25 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         return this.searchbar;
     }
 
+    ///  Whether the user is currently using the search bar to filter their inventory.
     public boolean isItemFilterMode() {
         return this.itemFilterMode;
     }
 
+    ///  The current value in the search bar.
     public String getCurrentQuery() {
         return this.currentQuery;
     }
 
+    ///  Whether the search bar contains a value.
 	public boolean isSearching() {
 		return searchbar != null && searchbar.isVisible() && !searchbar.getValue().isEmpty();
 	}
+
+    /// Stack groups are always expanded when the user is searching.
+    public boolean isSearchingStackGroups() {
+        return this.currentQuery != null && !this.currentQuery.isEmpty();
+    }
 
     public void setButtonVisibility(boolean b) {
         searchbar.visible = b;
@@ -484,10 +493,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         back.visible = b;
     }
 
+    ///  Set the status of whether the user was shown a warning that they're connected to an incompatible/vanilla server.
     public void setWarned(boolean b) {
         warned = b;
     }
 
+    ///  Whether the user was shown a warning that they're connected to an incompatible/vanilla server.
     public boolean wasWarned() {
         return warned;
     }

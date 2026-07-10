@@ -5,6 +5,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -41,7 +42,7 @@ public abstract class AbstractStackGroup {
         if (Language.getInstance().has(fallbackKey)) {
             return Component.translatable(fallbackKey);
         }
-        return Component.literal(key);
+        return Component.literal(WordUtils.capitalize(path.replace("_", " ")));
     }
 
 	public ConfiguredStackGroup asConfiguredGroup() {

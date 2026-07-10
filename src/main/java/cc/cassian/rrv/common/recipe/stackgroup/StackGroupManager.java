@@ -391,23 +391,27 @@ public class StackGroupManager {
     public static List<ItemStack> getGroupItems(String groupId) {
         for (AbstractStackGroup group : stackGroups) {
             if (group.getId().toString().equals(groupId)) {
-                List<ItemStack> items = new ArrayList<>();
-                BuiltInRegistries.ITEM.forEach(item -> {
-                    ItemStack stack = new ItemStack(item);
-                    ClientRecipeCache.INSTANCE.streamStackSensitives(item).forEach(e -> {
-                        if (group.match(e))
-                            items.add(e);
-                    });
-                    if (group.match(stack)) {
-                        items.add(stack);
-                    }
-                });
-
-                sortByGroupOrder(items, Identifier.parse(groupId));
-                return items;
+                return getGroupItems(group);
             }
         }
         return Collections.emptyList();
+    }
+
+    public static List<ItemStack> getGroupItems(AbstractStackGroup group) {
+        List<ItemStack> items = new ArrayList<>();
+        BuiltInRegistries.ITEM.forEach(item -> {
+            ItemStack stack = new ItemStack(item);
+            ClientRecipeCache.INSTANCE.streamStackSensitives(item).forEach(e -> {
+                if (group.match(e))
+                    items.add(e);
+            });
+            if (group.match(stack)) {
+                items.add(stack);
+            }
+        });
+
+        sortByGroupOrder(items, group.getId());
+        return items;
     }
 
     public static List<ItemStack> appendMatchingGroups(String query, List<ItemStack> results) {

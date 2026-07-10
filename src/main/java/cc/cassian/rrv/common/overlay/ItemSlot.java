@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.overlay;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -150,8 +151,10 @@ public class ItemSlot {
                 if (group != null) {
                     tooltip.add(group.getName().copy().withStyle(ChatFormatting.BLUE));
                     tooltip.add(Component.translatable("rrv.stack_group.tooltip.count", items.size()).withStyle(ChatFormatting.GRAY));
+                    if (!ItemViewOverlay.INSTANCE.isSearchingStackGroups())
+                        tooltip.add(Component.translatable(expanded ? "rrv.stack_group.tooltip.collapse" : "rrv.stack_group.tooltip.expand").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
+                    ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(group.getId().getNamespace()), tooltip, true);
                 }
-                tooltip.add(Component.translatable(expanded ? "rrv.stack_group.tooltip.collapse" : "rrv.stack_group.tooltip.expand").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
                 guiGraphics.fill(this.x, this.y, this.x + ITEM_ENTRY_SIZE, this.y + ITEM_ENTRY_SIZE, new Color(255, 255, 255, 32).getRGB());
             }
 
