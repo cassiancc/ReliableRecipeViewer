@@ -3,5 +3,5 @@
 
 ### Fixed
 - Creative index source causing Polymer items to be added to the index incorrectly.
-- Log spam and potential broken behaviour on 26.3
+- Log spam and potential broken behaviour on 26.3.
 - Firework rocket recipe displays are now more accurate.

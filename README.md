@@ -10,9 +10,11 @@ A recipe viewer for the latest versions of Minecraft, rebuilt from [EIV](https:/
 ## Features
 
 * **Recipe Viewing:** See recipes for all vanilla recipe types, as well as [supported modded recipe types](https://modrinth.com/collection/divCExF5) as well!
-* **Local Recipe Support**: On vanilla servers, RRV will automatically pull recipe data from the client's `recipe` folder. Note that if possible RRV should still be installed on the server.
-* **Powerful Configuration:** Reorder and disable recipe types, rearrange the item index, rearrange the overlays, group similar items with stack groups, and more config options to fit your needs.
+  * **Synchronized Recipe Support**: On **Fabric** or **NeoForge** servers with RRV installed, or on servers using a plugin like [JEI Recipe Fix](https://modrinth.com/plugin/jeirecipefix), recipes will be automatically synced from the client to the server.
+  * **Local Recipe Support**: On **vanilla** servers, RRV will automatically pull recipe data from the client's `recipe` folder. If possible RRV should still be installed on the server.
+* **Powerful Configuration:** Reorder and disable recipe types, rearrange the item index, rearrange the overlays, and more config options to fit your needs.
 * **Bookmarking and Craftables Panel:** Bookmark items and recipes with the `A` key, or use the side panel to see what you can craft with the items in your inventory.
+* **Stack Groups**: Similar items are grouped together in the index to make browsing easier. As always, highly configurable!
 * **Recipe Transfer:** Click the transfer button on supported recipes to quickly transfer items from your inventory to the workstation.
 
 Reliable Recipe Viewer is a fork of [Extended Item View](https://modrinth.com/mod/eiv). A summary of changes made from the original project can be found below.
