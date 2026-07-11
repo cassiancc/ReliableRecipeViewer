@@ -30,9 +30,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NonNull;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
@@ -86,7 +89,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         super.onScreenChanged(info);
         this.updateSidePanelIndex(Reason.SCREEN_CHANGE);
         this.createButtons(OverlayManager.INSTANCE.currentInfo());
-        this.currentScreen = info.screen();
+        SidePanel.currentScreen = info.screen();
     }
 
 

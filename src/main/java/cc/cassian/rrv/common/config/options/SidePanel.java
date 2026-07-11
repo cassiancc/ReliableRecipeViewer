@@ -9,16 +9,21 @@ import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.Util;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -63,7 +68,9 @@ public enum SidePanel implements StringRepresentable {
 		Configs.CLIENT_SETTINGS.setSidePanel(get(id1));
     }
 
-	private static List<ItemStack> lastAvailableItems = List.of();
+	public static ArrayList<ItemStack> lastAvailableItems = new ArrayList<>();
+	public static @Nullable AbstractContainerScreen<? extends AbstractContainerMenu> currentScreen = null;
+
 
 	public static List<ItemStack> populateSlots(SidePanelOverlay.Reason reason, Screen screen) {
 		ArrayList<ItemStack> availableItems = new ArrayList<>();
@@ -72,34 +79,50 @@ public enum SidePanel implements StringRepresentable {
 				availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
 			}
 			case CRAFTABLES -> {
-				// when searching, use the last unfiltered list rather than constantly querying the recipe manager
-				if (!reason.equals(SidePanelOverlay.Reason.SEARCH)) {
+				Util.backgroundExecutor().execute(() -> {
 					Minecraft client = Minecraft.getInstance();
 					LocalPlayer player = client.player;
 					if (player == null) {
-						return List.of();
+						return;
 					}
-					var inventory = player.getInventory().getNonEquipmentItems();
+					// when searching, use the last unfiltered list rather than constantly querying the recipe manager
+					if (!reason.equals(SidePanelOverlay.Reason.SEARCH)) {
+						var inventory = player.getInventory().getNonEquipmentItems();
 
-					if (!(screen instanceof CreativeModeInventoryScreen))
-						inventory.forEach(inventoryItem -> {
-							List<ReliableClientRecipe> recipesForCraftingInput = ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem);
-							recipesForCraftingInput.forEach(recipe -> updateRecipes(recipe, true, availableItems));
-						});
-					if (availableItems.isEmpty()) {
-						try {
+						// search by what craftables the workstation supports
+						if (!(screen instanceof CreativeModeInventoryScreen))
 							inventory.forEach(inventoryItem -> {
-								ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, false, availableItems));
+								ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, true, availableItems));
 							});
-						} catch (ConcurrentModificationException ignored) {}
+
+						// if the workstation is not supported, search by what craftables exist
+						if (availableItems.isEmpty()) {
+							try {
+								inventory.forEach(inventoryItem -> {
+									ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, false, availableItems));
+								});
+							} catch (ConcurrentModificationException ignored) {}
+						}
+
+						// save last available items for when searching occurs
+						SidePanel.lastAvailableItems = new ArrayList<>(availableItems);
+					} else {
+						availableItems.addAll(SidePanel.lastAvailableItems);
 					}
-					// save last available items for when searching occurs
-					lastAvailableItems = new ArrayList<>(availableItems);
-				} else {
-					availableItems.addAll(lastAvailableItems);
-				}
-				filter(availableItems);
-				availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
+
+					filter(availableItems);
+					availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
+					if (screen == SidePanel.currentScreen && SidePanelOverlay.INSTANCE.availableItems().isEmpty()) {
+						SidePanelOverlay.INSTANCE.availableItems().addAll(availableItems);
+						Minecraft.getInstance().execute(SidePanelOverlay.INSTANCE::updateSlots);
+					}
+					List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(availableItems);
+					if (screen == SidePanel.currentScreen && SidePanelOverlay.INSTANCE.availableItems().isEmpty()) {
+						SidePanelOverlay.INSTANCE.availableItems().addAll(expandedItems);
+						SidePanelOverlay.INSTANCE.updateSlots();
+					}
+
+				});
 			}
 			case UNLOCKED -> {
 				if (!(screen instanceof CreativeModeInventoryScreen))
@@ -138,10 +161,10 @@ public enum SidePanel implements StringRepresentable {
 		}
 	}
 
-	static void updateRecipes(ReliableClientRecipe recipe, boolean b, List<ItemStack> availableItems) {
+	static void updateRecipes(ReliableClientRecipe recipe, boolean requireWorkstationScreenOpen, List<ItemStack> availableItems) {
 		if (recipe.isVisualOnly() || !Configs.CATEGORIES.enabled(recipe.getType())) return;
 		Minecraft client = Minecraft.getInstance();
-		if (b && !RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())) return;
+		if (requireWorkstationScreenOpen && !RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())) return;
 		AtomicInteger foundIngredientCount = new AtomicInteger();
 		int requiredIngredientCount = recipe.getIngredients().size();
 		recipe.getIngredients().forEach(ingredient -> {
