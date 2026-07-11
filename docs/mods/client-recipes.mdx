@@ -11,7 +11,7 @@ Note that [SlotContent](utilities#slotcontent) is used rather than displaying th
 public class UpgradingClientRecipe implements ReliableClientRecipe {
 
     private final Identifier id;
-    private final SlotContent baseItem, upgradeItem, output;
+    private final SlotContent baseItem, upgradeItem, resultItem;
 
 
     //You can design your constructor to suit your needs
@@ -26,7 +26,7 @@ public class UpgradingClientRecipe implements ReliableClientRecipe {
     // Prior to RRV 8.0.0, this was `getViewType`.
     @Override
     public ReliableClientRecipeType getType() {
-        return ExampleModClientRecipeType.INSTANCE; //Here you need your client recipe type's instance you created before
+        return ExampleModClientRecipeType.INSTANCE; // Here you need your client recipe type's instance you created before
     }
 
     // The identifier of this recipe, used for clientside operations like recipe hiding. Only available/required since v8.0.0.
@@ -51,18 +51,18 @@ public class UpgradingClientRecipe implements ReliableClientRecipe {
         // You can also bind a slot as "optional" and provide it with a valid SlotRenderer to ensure a slot
         // is only rendered if there's an item in it
         // The default SlotRenderer is used for rendering Minecraft's default slot texture
-        slotFillContext.bindOptionalSlot(0, this.result, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
+        slotFillContext.bindOptionalSlot(0, this.resultItem, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
 
     }
 
     @Override
     public List<SlotContent> getIngredients() {
-        return List.of(this.baseItem, this.upgradeItem); //Return all of your inputs here
+        return List.of(this.baseItem, this.upgradeItem); // Return all of your inputs here
     }
 
     @Override
     public List<SlotContent> getResults() {
-        return List.of(this.resultItem); //Return all of your outputs here
+        return List.of(this.resultItem); // Return all of your outputs here
     }
 
     // Recipes with more complicated displays can override `renderRecipe`.
@@ -116,7 +116,7 @@ To be able to shift items from the players inventory into the workstation's GUI,
 
     @Override
     public void mapRecipeItems(RecipeTransferMap map) {
-        //Link your recipe slots to the corresponding slots in the destination inventory (the crafting inventory)
+        // Link your recipe slots to the corresponding slots in the destination inventory (the crafting inventory)
         map.linkSlots(0, 1);
         map.linkSlots(1, 2);
     }
