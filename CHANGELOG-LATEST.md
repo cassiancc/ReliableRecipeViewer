@@ -1,7 +1,7 @@
 ### Added
-- Recipe fallback feature is now available for NeoForge.
-- Built-in synchronized recipe types (NeoForge) and recipe serializers (Fabric) are now config and command driven. This allows for modpack authors to add additional recipe serializers or recipe types to mods that have fully functional recipes, but did not opt to synchronize their recipes themselves.
+- Stack groups, a new way to group similar items together to make navigating the index easier. Stack groups are highly configurable, and have their own config screen. (thanks @evanbones!)
 
 ### Fixed
-- NeoForge now shows proper warning when connecting to a vanilla server.
-- Bug causing namespace search to be overly strict.
+- Creative index source causing Polymer items to be added to the index incorrectly.
+- Log spam and potential broken behaviour on 26.3.
+- Firework rocket recipe displays are now more accurate.

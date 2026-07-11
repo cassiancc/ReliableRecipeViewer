@@ -185,6 +185,8 @@ publishMods {
         accessToken = env.CURSEFORGE_API_KEY.orNull()
         minecraftVersions.add(property("publish.curseforge_minecraft_version").toString())
         minecraftVersions.addAll(additionalVersions)
+        client = true
+        server = true
     }
 }
 publishing {

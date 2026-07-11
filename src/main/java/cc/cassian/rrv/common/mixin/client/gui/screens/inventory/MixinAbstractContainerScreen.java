@@ -24,7 +24,6 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import org.jspecify.annotations.Nullable;
@@ -100,7 +99,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo((AbstractContainerScreen<? extends AbstractContainerMenu>) (Object) this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
 
         OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
-                Identifier.withDefaultNamespace("container"),
+                RRVClientUtil.CONTAINER,
                 info.leftPos(),
                 info.topPos(),
                 info.imageWidth(),

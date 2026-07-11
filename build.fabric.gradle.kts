@@ -33,7 +33,7 @@ version = "${property("mod.version")}+${property("deps.minecraft")}-fabric"
 base.archivesName = "reliable-recipe-viewer"
 
 loom {
-    accessWidenerPath = rootProject.file("src/main/resources/${property("mod.id")}.classtweaker")
+    accessWidenerPath = file("src/main/resources/${property("mod.id")}.classtweaker")
 }
 
 jsonlang {
@@ -111,10 +111,10 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     compileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
-    localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         exclude(group = "maven.modrinth")
+        exclude(group = "net.caffeinemc")
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 
@@ -126,24 +126,26 @@ dependencies {
     compileOnly("maven.modrinth:jade:${property("deps.jade")}")
     compileOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
     if (hasProperty("deps.badpackets")) {
-        runtimeOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
-        runtimeOnly("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
+        localRuntime("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
+        localRuntime("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
     }
     compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
         exclude(group = "mcp.mobius.waila")
         exclude(group = "lol.bai")
     }
-    localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
-        exclude(group = "mcp.mobius.waila")
-        exclude(group = "lol.bai")
-    }
 
-    if (stonecutter.eval(mcVersion, "=26.1")) {
+
+    if (stonecutter.eval(mcVersion, "<26.3")) {
+        localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+            exclude(group = "mcp.mobius.waila")
+            exclude(group = "lol.bai")
+        }
+        localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
 //        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
-        localRuntime("eu.pb4:polymer-virtual-entity:0.16.2+26.1.1")
+        localRuntime("eu.pb4:polymer-virtual-entity:${property("deps.polymer")}")
         localRuntime("maven.modrinth:jade:${property("deps.jade")}")
     }
 }
@@ -206,6 +208,8 @@ publishMods {
         minecraftVersions.add(property("publish.curseforge_minecraft_version").toString())
         minecraftVersions.addAll(additionalVersions)
         requires("fabric-api")
+        client = true
+        server = true
     }
 }
 

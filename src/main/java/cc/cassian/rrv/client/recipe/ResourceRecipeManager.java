@@ -48,7 +48,7 @@ public class ResourceRecipeManager {
 	public static final String REPLACE_KEY = "replace";
 
 	private static Map<Identifier, Resource> getIdentifierResourceMap(String path) {
-		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> true);
+		return Minecraft.getInstance().getResourceManager().listResources(path, (identifier) -> identifier.getPath().endsWith(".json"));
 	}
 
 	/// Hides recipes from the recipe screen.
@@ -228,7 +228,7 @@ public class ResourceRecipeManager {
 		});
 		*///?}
 		try {
-			ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(objects.values());
+			ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(objects.values());
 		} catch (Exception e) {
 			LOGGER.error("Could not get local recipes due to an exception: ", e);
 		}

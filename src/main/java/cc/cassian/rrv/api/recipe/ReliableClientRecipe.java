@@ -42,38 +42,28 @@ public interface ReliableClientRecipe {
             }
     );
 
-    /**
-     * Renamed to {@link ReliableClientRecipe#getType()} in 8.0.0
-     * @return The client recipe type of this recipe
-     */
+    /// Renamed to [ReliableClientRecipe#getType()] in 8.0.0
+    /// @return The client recipe type of this recipe
     @Deprecated(since = "8.0.0")
     default ReliableClientRecipeType getViewType() {
         return getType();
     }
 
-    /**
-     * Provides the {@link ReliableClientRecipeType} of this client recipe.
-     * @return The client recipe type of this recipe
-     */
+    /// Provides the [ReliableClientRecipeType] of this client recipe.
+    /// @return The client recipe type of this recipe
     default ReliableClientRecipeType getType() {
         return getViewType();
     }
 
-    /**
-     * Bind the SlotContents of the recipe to the according slots
-     *
-     * @param slotFillContext The context the {@link SlotContent}s is bound to
-     */
+    /// Bind the SlotContents of the recipe to the according slots
+    ///
+    /// @param slotFillContext The context the [SlotContent]s is bound to
     void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext);
 
-    /**
-     * @return A list of {@link SlotContent}s, representing the ingredients of this recipe
-     */
+    /// @return A list of [SlotContent]s, representing the ingredients of this recipe
     List<SlotContent> getIngredients();
 
-    /**
-     * @return A list of {@link SlotContent}s, representing the results of this recipe
-     */
+    /// @return A list of [SlotContent]s, representing the results of this recipe
     List<SlotContent> getResults();
 
 	/**
@@ -84,83 +74,59 @@ public interface ReliableClientRecipe {
         return false;
     }
 
-    /**
-     * @param stack The ItemStack that is checked
-     * @return Whether this specific ItemStack can redirect as an ingredient (mainly used for component checks)
-     */
+    /// @param stack The ItemStack that is checked
+    /// @return Whether this specific ItemStack can redirect as an ingredient (mainly used for component checks)
     default boolean redirectsAsIngredient(ItemStack stack) {
-
-        boolean potionRedirectCheck = ItemViewRecipes.makePotionRedirectCheck(stack, this.getIngredients());
-        boolean enchantmentRedirectCheck = ItemViewRecipes.makeEnchantedRedirectCheck(stack, this.getIngredients());
-
-        return potionRedirectCheck && enchantmentRedirectCheck;
+        return ItemViewRecipes.makeDefaultChecks(stack, this.getIngredients());
     }
 
-    /**
-     * @param stack The ItemStack that is checked
-     * @return Whether this specific ItemStack can redirect as a result (mainly used for component checks)
-     */
+    /// @param stack The ItemStack that is checked
+    /// @return Whether this specific ItemStack can redirect as a result (mainly used for component checks)
     default boolean redirectsAsResult(ItemStack stack) {
-        boolean potionRedirectCheck = ItemViewRecipes.makePotionRedirectCheck(stack, this.getResults());
-        boolean enchantmentRedirectCheck = ItemViewRecipes.makeEnchantedRedirectCheck(stack, this.getResults());
-
-        return potionRedirectCheck && enchantmentRedirectCheck;
+        return ItemViewRecipes.makeDefaultChecks(stack, this.getResults());
     }
 
-    /**
-     * @return The priority of this recipe (The higher the priority, the earlier a recipe is displayed in the view)
-     */
+    /// @return The priority of this recipe (The higher the priority, the earlier a recipe is displayed in the view)
     default int getPriority() {
         return 0;
     }
 
-    /**
-     * The identifier of this recipe, used for clientside operations like recipe hiding and favoriting.<br>
-     * If this recipe does not have a file associated with it, prefix the path with {@code '} e.g. {@code minecraft:/code_driven_recipe} so that users do not look for a nonexistent file.
-     */
+    /// The identifier of this recipe, used for clientside operations like recipe hiding and favoriting.
+    ///
+    /// If this recipe does not have a file associated with it, prefix the path with `/` e.g. `minecraft:/code_driven_recipe` so that users do not look for a nonexistent file.
     default Identifier getId() {
         return null;
     }
 
-    /**
-     * @return A list of {@link AnimationTicker}s; Useful for rendering animations
-     */
+    /// @return A list of [AnimationTicker]s; Useful for rendering animations
     default List<AnimationTicker> getAnimationTickers() {
         return List.of();
     }
 
-    /**
-     * @param screen       The current viewScreen
-     * @param guiGraphics  The guiGraphics supplied by Minecraft
-     * @param mouseX       The current x-position of the mouse <b>relative to the position of the rendered recipe</b>
-     * @param mouseY       The current y-position of the mouse <b>relative to the position of the rendered recipe</b>
-     * @param partialTicks partialTicks
-     */
+    /// @param screen       The current recipe screen
+    /// @param guiGraphics  The [GuiGraphicsExtractor] supplied by Minecraft
+    /// @param mouseX       The current x-position of the mouse **relative to the position of the rendered recipe**
+    /// @param mouseY       The current y-position of the mouse **relative to the position of the rendered recipe**
+    /// @param partialTicks partialTicks
     default void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
     }
 
-    /**
-     * Called on every gameTick
-     */
+    /// Called on every game tick
     default void tick() {
 
     }
 
-    /**
-     * Called when this recipe pop's up in the recipe screen
-     * <br>
-     * Useful for setting things up like entities for rendering etc...
-     */
+    /// Called when this recipe pops up in the recipe screen
+    ///
+    /// Useful for setting things up like entities for rendering etc...
     default void initRecipe() {
 
     }
 
-    /**
-     * Called when this recipe pop's out of the recipe screen
-     * <br>
-     * Useful for performance reasons, to remove entities etc...
-     */
+    /// Called when this recipe pops out of the recipe screen
+    ///
+    /// Useful for performance reasons, to remove entities etc...
     default void fadeRecipe() {
 
     }
@@ -172,56 +138,45 @@ public interface ReliableClientRecipe {
         return false;
     }
 
-    /**
-     * Deprecated: Use <b>getTransferClasses();</b>
-     *
-     * @return A class associated with the recipe to determine whether an item transfer should be possible or not
-     */
+    /// Deprecated: Use **getTransferClasses();**
+    ///
+    /// @return A class associated with the recipe to determine whether an item transfer should be possible or not
     @Deprecated
     default Class<? extends AbstractContainerScreen<?>> getTransferClass() {
         return null;
     }
 
-    /**
-     * @return A list of classes associated with the recipe to determine whether an item transfer should be possible
-     */
+    /// @return A list of classes associated with the recipe to determine whether an item transfer should be possible
     default List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
         return this.getTransferClass() == null ? List.of() : List.of(this.getTransferClass());
     }
 
-    /**
-     * @param screen The current gui screen the player was in before opening the recipe view
-     * @return Whether the screen is compatible with this specific recipe
-     * <br>
-     * <b>Example</b>: Shaped crafting recipes can only be transferred to the survival inventory when the grid is not larger than 2x2
-     */
+    /// @param screen The current gui screen the player was in before opening the recipe view
+    /// @return Whether the screen is compatible with this specific recipe
+    ///
+    /// **Example**: Shaped crafting recipes can only be transferred to the survival inventory when the grid is not larger than 2x2
     default boolean canTransferToScreen(AbstractContainerScreen<?> screen) {
         return true;
     }
 
-    /**
-     * Map the recipe's slots to the destination inventory's slots (sometimes they might be different)
-     *
-     * @param transferMap An empty transferMap
-     * @param screen      The current containerScreen, the items should be transferred to
-     */
+    /// Map the recipe's slots to the destination inventory's slots (sometimes they might be different)
+    ///
+    /// @param transferMap An empty transferMap
+    /// @param screen      The current containerScreen, the items should be transferred to
     default void mapRecipeItems(RecipeTransferMap transferMap, AbstractContainerScreen<?> screen) {
     }
 
 
-    /**
-     * Provides a recipe ID that is guaranteed to not be null.<br><br>
-     * Added for backwards compatibility: All client recipes added after RRV 8.0.0 should not provide null as an ID.
-     */
+    /// Provides a recipe ID that is guaranteed to not be null.
+    ///
+    /// Added for backwards compatibility: All client recipes added after RRV 8.0.0 should not provide null as an ID.
     @Deprecated
     default Identifier entryId() {
         return Objects.requireNonNullElse(getId(), getType().getId().withSuffix("/" + getResults().hashCode()));
     }
 
 
-    /**
-     * A representation of a TransferMap
-     */
+    /// A representation of a TransferMap
     class RecipeTransferMap {
 
         private final HashMap<Integer, Integer> map;
@@ -240,16 +195,14 @@ public interface ReliableClientRecipe {
     }
 
 
-    /**
-     * A data object containing information about the current render dimensions of the recipe
-     * <br><br>
-     * <b>Reason</b>: Since minecraft changed things like tooltip and entity rendering,
-     * we cannot render these things within a previously moved matrix anymore
-     * @param left
-     * @param top
-     * @param width
-     * @param height
-     */
+    /// A data object containing information about the current render dimensions of the recipe
+    ///
+    /// **Reason**: Since Minecraft changed things like tooltip and entity rendering,
+    /// we cannot render these things within a previously moved matrix anymore
+    /// @param left
+    /// @param top
+    /// @param width
+    /// @param height
     record RecipePosition(int left, int top, int width, int height) {
 
     }

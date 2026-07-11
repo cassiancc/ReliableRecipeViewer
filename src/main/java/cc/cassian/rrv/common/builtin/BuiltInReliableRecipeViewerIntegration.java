@@ -18,6 +18,7 @@ import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetPotionF
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,6 +32,8 @@ import net.minecraft.world.entity.EntityType;
 //? if >26.1 {
 /*import net.minecraft.world.entity.EntityTypes;
  *///?}
+import net.minecraft.world.entity.decoration.painting.PaintingVariant;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.core.HolderLookup;
@@ -55,6 +58,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 
 import static cc.cassian.rrv.common.ReliableRecipeViewer.*;
+
 @NullMarked
 public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
 
@@ -78,7 +82,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.SPLASH_POTION, potionHolder));
                     ItemView.addStackSensitive(PotionContents.createItemStack(Items.LINGERING_POTION, potionHolder));
 
-                    if (ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder)) {
+                    if (isBrewablePotion(potionHolder)) {
                         ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
                         tipped.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
                         ItemView.addStackSensitive(tipped);
@@ -103,12 +107,21 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
             ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.INSTRUMENT).asHolderIdMap().iterator().forEachRemaining(instrument->{
                 if (instrument.is(InstrumentTags.GOAT_HORNS)) {
+                    ItemView.addStackSensitive(InstrumentItem.create(Items.GOAT_HORN, instrument));
                     ItemStack stack = InstrumentItem.create(Items.GOAT_HORN, instrument);
                     stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.goat_horn").setStyle(Style.EMPTY.applyFormat(ChatFormatting.GRAY))));
                     ItemView.addMobDrops(EntityType.GOAT, SlotContent.of(stack));
                 }
             });
             ItemView.addMobDrops(EntityType.WITHER, SlotContent.of(Items.NETHER_STAR));
+
+            Registry<PaintingVariant> paintingVariantRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT);
+            paintingVariantRegistry.forEach(paintingVariant -> {
+                var paintingVariantHolder = paintingVariantRegistry.wrapAsHolder(paintingVariant);
+                ItemStack stack = new ItemStack(Items.PAINTING);
+                stack.set(DataComponents.PAINTING_VARIANT, paintingVariantHolder);
+                ItemView.addStackSensitive(stack);
+            });
         });
 
         //providers
@@ -167,6 +180,14 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
     }
+
+	private boolean isBrewablePotion(Holder<Potion> potionHolder) {
+        //? if >26.2 {
+        /*return ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.POTION).listElements().anyMatch((potion) -> potion.value().isEnabled(FeatureFlags.VANILLA_SET) && potion.value().equals(potionHolder.value()));
+        *///?} else {
+        return ServerRecipeManager.INSTANCE.getServer().potionBrewing().isBrewablePotion(potionHolder);
+        //?}
+	}
 
     private static LootTable getLootTable(ResourceKey<LootTable> key) {
         return ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().getLootTable(key);

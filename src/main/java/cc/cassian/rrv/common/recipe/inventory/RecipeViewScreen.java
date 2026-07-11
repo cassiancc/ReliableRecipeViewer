@@ -8,6 +8,7 @@ import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
@@ -17,6 +18,7 @@ import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.ChatFormatting;
@@ -288,6 +290,35 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 this.shareButtons.add(shareButton);
                 this.addRenderableWidget(shareButton);
 
+                if (currentRecipe instanceof ItemTagClientRecipe tagRecipe && Configs.STACK_GROUPS.areStackGroupsEnabled()) {
+                    Identifier tagId = tagRecipe.getTagKey().location();
+                    boolean exists = StackGroupManager.hasGroup(tagId);
+
+                    Identifier base = ReliableRecipeViewer.of(exists ? "widget/tag_stack_group_enabled" : "widget/tag_stack_group_disabled");
+                    Identifier hovered = ReliableRecipeViewer.of(exists ? "widget/tag_stack_group_enabled_highlighted" : "widget/tag_stack_group_disabled_highlighted");
+
+                    Button tagGroupButton = new ReliableSpriteIconButton(12,
+                            Component.empty(),
+                            12,
+                            base,
+                            hovered,
+                            _ -> {
+                                StackGroupManager.toggleTagGroup(tagId);
+                                ItemViewOverlay.INSTANCE.updateDisplayedItems();
+                                this.checkGui();
+                            }
+                    );
+                    tagGroupButton.setX(shareButtonData.x() - 14);
+                    tagGroupButton.setY(shareButtonData.y());
+                    tagGroupButton.setTooltip(Tooltip.create(Component.translatable(exists ? "rrv.tag_recipe.stack_group.enabled" : "rrv.tag_recipe.stack_group.disabled").withStyle(ChatFormatting.GOLD)));
+
+                    tagGroupButton.active = true;
+                    tagGroupButton.visible = true;
+
+                    this.addRenderableWidget(tagGroupButton);
+                    this.widgets.add(tagGroupButton);
+                }
+
             }
         }
 
@@ -364,7 +395,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     protected @NonNull List<Component> getTooltipFromContainerItem(@NonNull ItemStack itemStack) {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
-        Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, true);
+        Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, false);
         var index = component != null ? tooltip.indexOf(component) : tooltip.size();
 
         CompoundTag customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
@@ -424,7 +455,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
 
         // Add tag namespace
-        ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(tagId.getNamespace()), tooltip, true, true);
+        ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(tagId.getNamespace()), tooltip, true);
     }
 
 

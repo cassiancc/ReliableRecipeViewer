@@ -1,11 +1,10 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
-import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.api.recipe.ItemView;
-import cc.cassian.rrv.client.recipe.ClientUnlockManager;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
@@ -13,22 +12,24 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.unlocking.ServerUnlockManager;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
+//? fabric {
+import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+//?}
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.*;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -38,25 +39,47 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemFilters {
 
-    private static final List<Item> EXCLUDED_ITEMS = List.of(Items.POTION, Items.TIPPED_ARROW, Items.ENCHANTED_BOOK);
     public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
+
+    public static List<ItemStack> filter(String newQuery) {
+        String query = RrvUtil.lowercaseSubstring(newQuery);
+        for (PrefixedFilter value : PrefixedFilter.values()) {
+            if (newQuery.startsWith(value.prefix())) {
+                return value.filter.apply(query);
+            }
+        }
+        return ItemFilters.defaultFilter(newQuery);
+    }
+
+    public static boolean advancedFilter(List<ItemStack> availableItems, String newQuery) {
+        boolean filtered = false;
+        String query = RrvUtil.lowercaseSubstring(newQuery);
+        for (PrefixedFilter value : PrefixedFilter.values()) {
+            if (newQuery.startsWith(value.prefix())) {
+                availableItems.removeIf(stack-> !value.advancedFilter.apply(stack, query));
+                filtered = true;
+            }
+        }
+        return filtered;
+    }
 
     /// Filters just by the items display name and tooltip
     /// @param query The query
     /// @return A list of matching item stacks
-    protected static List<ItemStack> defaultFilter(String query) {
+    public static List<ItemStack> defaultFilter(String query) {
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
         List<ItemStack> thirdPrio = new ArrayList<>();
 
         for (ItemStack stack : fullStackList()) {
 
-            String itemName = stack.getDisplayName().getString().toLowerCase();
+            String itemName = stack.getDisplayName().getString().toLowerCase(Locale.ROOT);
             Set<String> aliases = ALIASES.get(stack.getItem());
 
-            if (itemName.startsWith(query.toLowerCase()))
+            String lowerCaseQuery = query.toLowerCase(Locale.ROOT);
+            if (itemName.startsWith(lowerCaseQuery))
                 firstPrio.add(stack);
-            else if (itemName.contains(query.toLowerCase()))
+            else if (itemName.contains(lowerCaseQuery))
                 secondPrio.add(stack);
             else if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
@@ -66,7 +89,7 @@ public class ItemFilters {
                     thirdPrio.add(stack);
             } else if (!aliases.isEmpty()) {
                 aliases.forEach(alias -> {
-                    if (alias.toLowerCase().contains(query.toLowerCase())) {
+                    if (alias.toLowerCase(Locale.ROOT).contains(lowerCaseQuery)) {
                         if (!secondPrio.contains(stack))
                             secondPrio.add(stack);
                     }
@@ -84,7 +107,7 @@ public class ItemFilters {
     /// Filters by mod namespace
     /// @param query The query
     /// @return A list of matching item stacks
-    protected static List<ItemStack> modNamespace(String query) {
+    public static List<ItemStack> modNamespace(String query) {
 
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
@@ -95,11 +118,11 @@ public class ItemFilters {
             if (modNamespace == null)
                 continue;
 
-            modNamespace = modNamespace.toLowerCase();
+            modNamespace = modNamespace.toLowerCase(Locale.ROOT);
 
-            if (modNamespace.startsWith(query.toLowerCase()))
+            if (modNamespace.startsWith(query))
                 add(firstPrio, stack);
-            else if (modNamespace.contains(query.toLowerCase()))
+            else if (modNamespace.contains(query))
                 add(secondPrio, stack);
 
         }
@@ -125,30 +148,30 @@ public class ItemFilters {
         if (modNamespace == null)
             return false;
 
-        modNamespace = modNamespace.toLowerCase();
+        modNamespace = modNamespace.toLowerCase(Locale.ROOT);
 
-        return modNamespace.startsWith(query.toLowerCase()) || modNamespace.contains(query.toLowerCase());
+        return modNamespace.startsWith(query) || modNamespace.contains(query);
     }
 
     /// Filters by Identifier (item id)
     /// @param query The query
     /// @return A list of matching item stacks
-    protected static List<ItemStack> id(String query) {
+    public static List<ItemStack> id(String query) {
         List<ItemStack> firstPrio = new ArrayList<>();
         List<ItemStack> secondPrio = new ArrayList<>();
 
         for (ItemStack stack : fullStackList()) {
 
-            String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase();
+            String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase(Locale.ROOT);
 
-            if (itemId.startsWith(query.toLowerCase()))
+            if (itemId.startsWith(query))
                 add(firstPrio, stack);
-            else if (itemId.contains(query.toLowerCase()))
+            else if (itemId.contains(query))
                 add(secondPrio, stack);
         }
 
         List<ItemStack> results = new ArrayList<>(firstPrio);
-        secondPrio.stream().filter(results::contains).forEach(results::add);
+        secondPrio.stream().filter(o -> !results.contains(o)).forEach(results::add);
         return results;
     }
 
@@ -157,18 +180,43 @@ public class ItemFilters {
     /// @param query The query
     /// @return Whether the item stack matches the item id
     public static boolean id(ItemStack stack, String query) {
-        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase();
-        return itemId.startsWith(query.toLowerCase()) || itemId.contains(query.toLowerCase());
+        return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase(Locale.ROOT).contains(query);
+    }
+
+    /// Filters by [CreativeModeTab] (creative tab)
+    /// @param query The query
+    /// @return A list of item stacks from all creative groups with matching names.
+    public static List<ItemStack> creativeTab(String query) {
+        ArrayList<ItemStack> stacks = new ArrayList<>();
+        for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
+            if (tab.getType() != CreativeModeTab.Type.SEARCH && tab.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query)) {
+                stacks.addAll(tab.getDisplayItems());
+            }
+        }
+        return stacks;
+    }
+
+    /// Filters by [CreativeModeTab] (creative tab)
+    /// @param stack The item stack
+    /// @param query The query
+    /// @return Whether the item stack matches the item id
+    public static boolean creativeTab(ItemStack stack, String query) {
+        for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
+            if (tab.getType() != CreativeModeTab.Type.SEARCH && tab.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query) && tab.contains(stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// Filters by an item's tags
     /// @param query The query
     /// @return A list of matching item stacks
-    protected static List<ItemStack> tag(String query) {
+    public static List<ItemStack> tag(String query) {
         List<ItemStack> results = new ArrayList<>();
 
         for (ItemStack itemStack : fullStackList()) {
-            if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {
+            if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query))) {
                 results.add(itemStack);
             }
         }
@@ -183,7 +231,7 @@ public class ItemFilters {
     public static boolean tag(ItemStack itemStack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
-        if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase().contains(query.toLowerCase()))) {
+        if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query))) {
             result.set(true);
         }
 
@@ -192,26 +240,32 @@ public class ItemFilters {
 
     /// Returns the matching level of the item stack's tooltip with the query
     ///
-    /// @param stack The itemstack
+    /// @param stack The item stack
     /// @param query The query
     /// @return 0 means no match; 1 means first priority; 2 means second priority
     ///
     /// Used for correct listing of item stacks by match accuracy
-    private static int getTooltipMatch(ItemStack stack, String query) {
+    protected static int getTooltipMatch(ItemStack stack, String query) {
 
-        List<Component> lore = Screen.getTooltipFromItem(Minecraft.getInstance(), stack);
+        List<Component> lore = RRVClientUtil.getTooltipFromItem(Minecraft.getInstance(), stack);
 
         for (Component line : lore) {
+            if (line.getContents() instanceof TranslatableContents translatableContents) {
+                var key = RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT);
+                if (key.startsWith(query))
+                    return 1;
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase().startsWith(query.toLowerCase()))
-                return 1;
+                if (key.contains(query))
+                    return 2;
+            }
 
-            if (line.getContents() instanceof TranslatableContents translatableContents && RrvUtil.get(translatableContents.getKey()).toLowerCase().contains(query.toLowerCase()))
-                return 2;
+
         }
 
         return 0;
     }
+
+    public static boolean cached;
 
     /// @return A list of all items that can be displayed in the ViewOverlay
     ///
@@ -219,18 +273,37 @@ public class ItemFilters {
     private static List<ItemStack> fullStackList() {
         List<ItemStack> results = new ArrayList<>();
 
+		if (Configs.CLIENT_SETTINGS.getIndexSource() == IndexSource.REGISTRY) {
+			BuiltInRegistries.ITEM.forEach(item -> {
+				results.add(new ItemStack(item));
+				results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).toList());
+			});
+		} else {
+			Minecraft mc = Minecraft.getInstance();
+            LocalPlayer player = mc.player;
+            if (!cached && player != null && !player.hasInfiniteMaterials()) {
+				CreativeModeTabs.tryRebuildTabContents(FeatureFlags.VANILLA_SET, false, player.registryAccess());
+			}
 
-        if (Configs.UNLOCKS.indexShowsUnlockedItems()) {
-            results.addAll(ClientUnlockManager.INSTANCE.displayItems());
-        } else {
-            BuiltInRegistries.ITEM.forEach(item -> {
-                if (!EXCLUDED_ITEMS.contains(item))
-                    results.add(new ItemStack(item));
-                results.addAll(ClientRecipeCache.INSTANCE.getStackSensitives(item).stream().map(ItemView.StackSensitive::stack).toList());
-            });
-        }
+			results.addAll(CreativeModeTabs.searchTab().getSearchTabDisplayItems().stream()
+                            //? fabric {
+                            .map(RRVClientUtil::applyPolymerCheck)
+                    //?}
+                    .toList()
+            );
 
-        if (ModCompat.POLYMER)
+			BuiltInRegistries.ITEM.forEach(item -> {
+                if (Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.CREATIVE_AND_REGISTRY)) {
+                    ItemStack e = new ItemStack(item);
+                    if (results.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, e)))
+                        results.add(e);
+                }
+				results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
+			});
+		}
+
+
+		if (ModCompat.POLYMER)
             PolymerHelpers.polymerFilter(results);
 
         ResourceRecipeManager.replaceIndex(results);

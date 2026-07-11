@@ -1,3 +1,61 @@
+## [8.5.0]
+
+### Added
+- Support for 26.3-snapshot-3 and its data-driven brewing recipes.
+- RRV's index is now populated from both the creative mode search tab and the registry.
+- Creative mode tabs can now be used as a search parameter via the `%` prefix.
+- Suspicious stew recipes now show up correctly.
+- Config screens now display a background and are more correctly sized on lower GUI scales.
+
+### Changed
+- Internal changes have been made to unify `ItemStack` comparisons. An API for adding checks will be added later.
+- Internal changes have been made to unify searching between the Item View and Side Panel.
+- Item and block recipe IDs have been changed.
+
+### Fixed
+- Component-less versions of Suspicious Stew and Tipped Arrows no longer appear in the index.
+- Overly strict ID search.
+- Filtering the inventory now accounts for enchanted books and other items with tooltips (thanks @Maganoos!)
+- Crashing from updating item slots off thread.
+- Incorrectly placed previous tab button in Cut resize mode.
+
+## [8.4.2]
+
+### Added
+- Support for 26.3-snapshot-2.
+- Component-driven block transformers now automatically generate world interaction recipes.
+- `ItemView#hideItemStack` can now be used to hide a distinct `ItemStack` from the index, rather than using `ItemView#hideItem` which excludes all itemstacks of that item's type.
+
+## [8.4.1]
+
+### Fixed
+- Trim recipes do not show the correct output.
+- Crash when opening an RRV screen on a non-English locale.
+- Crash when attempting to view a GeckoLib entity.
+
+## [8.4.0]
+
+### Added
+- Support for 26.2 NeoForge
+
+### Changed
+- Craftables logic has been moved off-thread to improve performance.
+
+### Fixed
+- Issues with namespace tooltips.
+
+## [8.3.1]
+
+### Added
+- Recipe fallback feature is now available for NeoForge.
+- Built-in synchronized recipe types (NeoForge) and recipe serializers (Fabric) are now config and command driven. This allows for modpack authors to add additional recipe serializers or recipe types to mods that have fully functional recipes, but did not opt to synchronize their recipes themselves.
+
+### Fixed
+- NeoForge now shows proper warning when connecting to a vanilla server.
+- Bug causing namespace search to be overly strict.
+- Namespace tooltips not displaying in recipe view screens with Jade present.
+- Out of bounds exception when using Inventory Item Groups (thanks @Fox2Code!)
+
 ## [8.3.0]
 
 ### Changed

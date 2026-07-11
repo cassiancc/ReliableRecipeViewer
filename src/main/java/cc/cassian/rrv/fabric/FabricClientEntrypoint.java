@@ -12,6 +12,7 @@ import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.PolymerClientIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -56,7 +57,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
 
         ClientRecipeSynchronizedEvent.EVENT.register((client, recipes) -> {
-            ReliableRecipeViewerClient.LOCAL_RECIPES = RecipeMap.create(recipes.recipes());
+            ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(recipes.recipes());
             ClientRecipeCache.INSTANCE.buildRecipeCache(true);
         });
 

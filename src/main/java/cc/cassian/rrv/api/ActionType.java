@@ -8,6 +8,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 
+import java.util.Locale;
+
 public enum ActionType implements StringRepresentable {
 	INPUT(0),
 	RESULT(1),
@@ -34,7 +36,7 @@ public enum ActionType implements StringRepresentable {
 
 	@Override
 	public String getSerializedName() {
-		return this.name().toLowerCase();
+		return this.name().toLowerCase(Locale.ROOT);
 	}
 
 	public int getId() {

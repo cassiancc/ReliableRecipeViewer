@@ -48,7 +48,7 @@ public class FabricPlatformImpl implements RRVPlatform {
             return "";
         }
         String creatorNamespace = stack.getCreatorNamespace();
-        if (holderNamespace.equals(creatorNamespace) && stack.has(DataComponents.ITEM_MODEL)) {
+        if (holderNamespace.equals(creatorNamespace) && stack.hasNonDefault(DataComponents.ITEM_MODEL)) {
             return stack.get(DataComponents.ITEM_MODEL).getNamespace();
         }
         return creatorNamespace;

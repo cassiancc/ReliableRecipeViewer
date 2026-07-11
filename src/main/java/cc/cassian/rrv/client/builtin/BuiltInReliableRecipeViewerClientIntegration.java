@@ -23,6 +23,8 @@ import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
+import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.recipe.ConcretePowderBlockAccessor;
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
@@ -32,14 +34,21 @@ import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-//? fabric
+//? fabric {
+import cc.cassian.rrv.common.recipe.util.WorldInteractionRecipeUtil;
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
+//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+//? if >26.2 {
+/*import net.minecraft.core.component.BlockTransformer;
+import net.minecraft.world.item.component.BlockTransformerMappings;
+*///?}
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -50,7 +59,9 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
+//? if <26.3 {
 import net.minecraft.world.item.alchemy.PotionBrewing;
+//?}
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.DyedItemColor;
@@ -60,7 +71,6 @@ import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.entity.PotDecorations;
-import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 //? neoforge
@@ -92,10 +102,14 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemView.addClientReloadCallback(() -> {
             //? neoforge
             //ItemView.excludeItems(Items.AIR);
+            ItemView.excludeItemStack(new ItemStack(Items.POTION), new ItemStack(Items.SPLASH_POTION), new ItemStack(Items.LINGERING_POTION), new ItemStack(Items.ENCHANTED_BOOK), new ItemStack(Items.TIPPED_ARROW), new ItemStack(Items.SUSPICIOUS_STEW));
+            if (!Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.REGISTRY))
+                ItemView.excludeItemStack(new ItemStack(Items.SUSPICIOUS_STEW));
             excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
             excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
             hideRecipes();
+            StackGroupManager.reload();
         });
 
         //Wrapper
@@ -158,111 +172,132 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             var id = craftingRecipeHolder.id().identifier();
             var recipe = craftingRecipeHolder.value();
             try {
-                if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-                    recipeList.add(new CraftingClientRecipe.Builder(id, shapelessRecipe.ingredients.stream()
-                            .map(SlotContent::of).toList()).setResult(shapelessRecipe.result).build());
-                } else if (recipe instanceof ShapedRecipe shapedRecipe) {
-                    HashMap<Integer, SlotContent> ingredients = new HashMap<>();
-                    int i = 0;
-                    for (int y = 0; y < 3; y++) {
-                        for (int x = 0; x < 3; x++) {
+				switch (recipe) {
+					case ShapelessRecipe shapelessRecipe ->
+							recipeList.add(new CraftingClientRecipe.Builder(id, shapelessRecipe.ingredients.stream()
+									.map(SlotContent::of).toList()).setResult(shapelessRecipe.result).build());
+					case ShapedRecipe shapedRecipe -> {
+						HashMap<Integer, SlotContent> ingredients = new HashMap<>();
+						int i = 0;
+						for (int y = 0; y < 3; y++) {
+							for (int x = 0; x < 3; x++) {
 
-                            if (x >= shapedRecipe.getWidth() || y >= shapedRecipe.getHeight()) {
-                                continue;
-                            }
+								if (x >= shapedRecipe.getWidth() || y >= shapedRecipe.getHeight()) {
+									continue;
+								}
 
-                            if (shapedRecipe.getIngredients().get(i).isPresent())
-                                ingredients.put(x + y * 3, SlotContent.of(shapedRecipe.getIngredients().get(i).get()));
+								if (shapedRecipe.getIngredients().get(i).isPresent())
+									ingredients.put(x + y * 3, SlotContent.of(shapedRecipe.getIngredients().get(i).get()));
 
-                            i++;
-                        }
-                    }
-                    recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setSize(shapedRecipe.getWidth(), shapedRecipe.getHeight()).setResult(shapedRecipe.result).build());
-                } else if (recipe instanceof TransmuteRecipe) {
-                    TransmuteRecipeAccessor accessor = (TransmuteRecipeAccessor) recipe;
+								i++;
+							}
+						}
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setSize(shapedRecipe.getWidth(), shapedRecipe.getHeight()).setResult(shapedRecipe.result).build());
+					}
+					case TransmuteRecipe transmuteRecipe -> {
+						TransmuteRecipeAccessor accessor = (TransmuteRecipeAccessor) recipe;
 
-                    List<ItemStackTemplate> results = new ArrayList<>();
+						List<ItemStackTemplate> results = new ArrayList<>();
 
-                    var ingredients = getItemsFromIngredient(accessor.getInput());
+						var ingredients = getItemsFromIngredient(accessor.getInput());
 
-                    ingredients.forEach(_ -> results.add(accessor.getResult()));
+						ingredients.forEach(_ -> results.add(accessor.getResult()));
 
-                    if (!ingredients.isEmpty() && !results.isEmpty())
-                        recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getInput(), accessor.getMaterial()).setResult(results).build());
+						if (!ingredients.isEmpty() && !results.isEmpty())
+							recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getInput(), accessor.getMaterial()).setResult(results).build());
 
-                } else if (recipe instanceof DyeRecipe) {
-                    DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
+					}
+					case DyeRecipe dyeRecipe -> {
+						DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
 
-                    List<Item> ingredients = getItemsFromIngredient(accessor.getTarget());
+						List<Item> ingredients = getItemsFromIngredient(accessor.getTarget());
 
-                    List<ItemStackTemplate> results = new ArrayList<>();
-                    for (Item ingredient : ingredients) {
-                        for (DyeColor dyeColor : DyeColor.values()) {
-                            results.add(ItemStackTemplate.fromNonEmptyStack(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor))));
-                        }
-                    }
+						List<ItemStackTemplate> results = new ArrayList<>();
+						for (Item ingredient : ingredients) {
+							for (DyeColor dyeColor : DyeColor.values()) {
+								results.add(ItemStackTemplate.fromNonEmptyStack(DyedItemColor.applyDyes(ingredient.getDefaultInstance(), Collections.singletonList(dyeColor))));
+							}
+						}
 
-                    recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getDye()).setResult(results).setDependentIndex(1).build());
-                } else if (recipe instanceof ImbueRecipe) {
-                    ImbueRecipeAccessor accessor = (ImbueRecipeAccessor) recipe;
+						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getDye()).setResult(results).setDependentIndex(1).build());
+					}
+					case ImbueRecipe imbueRecipe -> {
+						ImbueRecipeAccessor accessor = (ImbueRecipeAccessor) recipe;
 
 
-                    Registry<Potion> potionRegistry = level.registryAccess().lookupOrThrow(Registries.POTION);
-                    potionRegistry.forEach(potion -> {
-                        Holder<Potion> potionHolder = potionRegistry.wrapAsHolder(potion);
-                        var items = getItemsFromIngredient(accessor.getSource()).stream().map(item -> PotionContents.createItemStack(item, potionHolder)).toList();
-                        HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(items), SlotContent.of(accessor.getMaterial()));
+						Registry<Potion> potionRegistry = level.registryAccess().lookupOrThrow(Registries.POTION);
+						potionRegistry.forEach(potion -> {
+							Holder<Potion> potionHolder = potionRegistry.wrapAsHolder(potion);
+							var items = getItemsFromIngredient(accessor.getSource()).stream().map(item -> PotionContents.createItemStack(item, potionHolder)).toList();
+							HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(items), SlotContent.of(accessor.getMaterial()));
 
-                        ItemStack result = accessor.getResult().create().copyWithCount(8);
-                        result.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
-                        recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(result)).setPriority(5).build());
-                    });
-                } else if (recipe instanceof DecoratedPotRecipe) {
-                    DecoratedPotRecipeAccessor accessor = (DecoratedPotRecipeAccessor) recipe;
+							ItemStack result = accessor.getResult().create().copyWithCount(8);
+							result.set(DataComponents.POTION_CONTENTS, new PotionContents(potionHolder));
+							recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(result)).setPriority(5).build());
+						});
+					}
+					case DecoratedPotRecipe decoratedPotRecipe -> {
+						DecoratedPotRecipeAccessor accessor = (DecoratedPotRecipeAccessor) recipe;
 
-                    HashMap<Integer, SlotContent> ingredients = new HashMap<>();
-                    ingredients.put(1, SlotContent.of(accessor.getLeftPattern()));
-                    ingredients.put(3, SlotContent.of(accessor.getRightPattern()));
-                    ingredients.put(5, SlotContent.of(accessor.getBackPattern()));
-                    ingredients.put(7, SlotContent.of(accessor.getFrontPattern()));
+						HashMap<Integer, SlotContent> ingredients = new HashMap<>();
+						ingredients.put(1, SlotContent.of(accessor.getLeftPattern()));
+						ingredients.put(3, SlotContent.of(accessor.getRightPattern()));
+						ingredients.put(5, SlotContent.of(accessor.getBackPattern()));
+						ingredients.put(7, SlotContent.of(accessor.getFrontPattern()));
 
-                    List<ItemStack> results = new ArrayList<>();
-                    for (Item ingredient : getItemsFromIngredient(accessor.getFrontPattern())) {
-                        PotDecorations decorations = new PotDecorations(ingredient, ingredient, ingredient, ingredient);
-                        DataComponentPatch components = DataComponentPatch.builder().set(DataComponents.POT_DECORATIONS, decorations).build();
-                        results.add(accessor.getResult().apply(components));
-                    }
+						List<ItemStack> results = new ArrayList<>();
+						for (Item item : getItemsFromIngredient(accessor.getFrontPattern())) {
+							//? if >26.2 {
+							/*var ingredient = Optional.of(new ItemStackTemplate(item));
+							*///?} else {
+							var ingredient = item;
+							 //?}
+							PotDecorations decorations = new PotDecorations(ingredient, ingredient, ingredient, ingredient);
+							DataComponentPatch components = DataComponentPatch.builder().set(DataComponents.POT_DECORATIONS, decorations).build();
+							results.add(accessor.getResult().apply(components));
+						}
 
-                    recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(results)).setDependentIndex(7).build());
-                } else if (recipe instanceof BookCloningRecipe) {
-                    BookCloningRecipeAccessor accessor = (BookCloningRecipeAccessor) recipe;
-                    recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getSource(), accessor.getMaterial()).setResult(accessor.getResult().withCount(2)).build());
-                } else if (recipe instanceof MapExtendingRecipe) {
-                    MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) recipe;
-                    HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(accessor.getMap()), SlotContent.of(accessor.getMaterial()));
-                    recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult())).build());
-                } else if (recipe instanceof FireworkRocketRecipe) {
-                    FireworkRocketRecipeAccessor accessor = (FireworkRocketRecipeAccessor) recipe;
-                    List<SlotContent> ingredients = new ArrayList<>(List.of(SlotContent.of(accessor.getFuel()), SlotContent.of(accessor.getShell()), SlotContent.of(accessor.getStar())));
-                    recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult())).setPriority(20).build());
-                    ingredients.addFirst(SlotContent.of(accessor.getFuel()));
-                    recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(2, List.of())).build()))).setPriority(20).build());
-                    ingredients.addFirst(SlotContent.of(accessor.getFuel()));
-                    recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(3, List.of())).build()))).setPriority(20).build());
-                } else if (recipe instanceof ShieldDecorationRecipe) {
-                    ShieldDecorationRecipeAccessor accessor = (ShieldDecorationRecipeAccessor) recipe;
-                    ArrayList<ItemStack> results = new ArrayList<>();
-                    for (Item item : getItemsFromIngredient(accessor.getBanner())) {
-                        if (item instanceof BannerItem bannerItem) {
-                            var dyeColor = bannerItem.getColor();
-                            results.add(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.BASE_COLOR, dyeColor).build()));
-                        }
-                    }
-                    recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getBanner()).setResult(SlotContent.of(results)).setDependentIndex(1).build());
-                } else if (recipe instanceof RepairItemRecipe) {
-                    // Repairing
-                    addRepairingRecipes(recipeList);
-                }
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(results)).setDependentIndex(7).build());
+					}
+					case BookCloningRecipe bookCloningRecipe -> {
+						BookCloningRecipeAccessor accessor = (BookCloningRecipeAccessor) recipe;
+						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getSource(), accessor.getMaterial()).setResult(accessor.getResult().withCount(2)).build());
+					}
+					case MapExtendingRecipe mapExtendingRecipe -> {
+						MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) recipe;
+						HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(accessor.getMap()), SlotContent.of(accessor.getMaterial()));
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult())).build());
+					}
+					case FireworkRocketRecipe fireworkRocketRecipe -> {
+						FireworkRocketRecipeAccessor accessor = (FireworkRocketRecipeAccessor) recipe;
+						List<SlotContent> ingredients = new ArrayList<>(List.of(
+								SlotContent.of(accessor.getFuel()),
+								SlotContent.of(accessor.getShell())
+								// todo star, firework stars are weird and optional
+						));
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult())).setPriority(20).build());
+						ingredients.addFirst(SlotContent.of(accessor.getFuel()));
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(2, List.of())).build()))).setPriority(20).build());
+						ingredients.addFirst(SlotContent.of(accessor.getFuel()));
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(3, List.of())).build()))).setPriority(20).build());
+					}
+					case ShieldDecorationRecipe shieldDecorationRecipe -> {
+						ShieldDecorationRecipeAccessor accessor = (ShieldDecorationRecipeAccessor) recipe;
+						ArrayList<ItemStack> results = new ArrayList<>();
+						for (Item item : getItemsFromIngredient(accessor.getBanner())) {
+							if (item instanceof BannerItem bannerItem) {
+								var dyeColor = bannerItem.getColor();
+								results.add(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.BASE_COLOR, dyeColor).build()));
+							}
+						}
+						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getBanner()).setResult(SlotContent.of(results)).setDependentIndex(1).build());
+					}
+					case RepairItemRecipe repairItemRecipe ->
+						// Repairing
+							addRepairingRecipes(recipeList);
+					default -> {
+					}
+				}
             } catch (Exception e) {
                 // Log crafting recipes that throw out an exception on parse
                 ReliableRecipeViewer.LOGGER.atError().setCause(e).log(
@@ -300,7 +335,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 if (smithingRecipe instanceof SmithingTrimRecipe trimRecipe) {
                     recipeList.add(SmithingClientRecipe.trimRecipe(smithingRecipeRecipeHolder.id().identifier(),
                             trimRecipe.additionIngredient().orElse(null), trimRecipe.baseIngredient(),
-                            trimRecipe.templateIngredient().orElse(null), trimRecipe.pattern.value()));
+                            trimRecipe.templateIngredient().orElse(null), trimRecipe.pattern));
                 } else if (smithingRecipe instanceof SmithingTransformRecipe transformRecipe) {
                     recipeList.add(SmithingClientRecipe.transformationRecipe(smithingRecipeRecipeHolder.id().identifier(),
                             transformRecipe.additionIngredient().orElse(null), transformRecipe.baseIngredient(),
@@ -316,6 +351,16 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addBrewingRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
+        //? if >26.2 {
+        /*ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.BREWING).forEach(holder -> {
+            var recipe = holder.value();
+			recipeList.add(new BrewingClientRecipe(holder.id().identifier(),
+                    SlotContent.of(recipe.getOutput()),
+                    SlotContent.of(recipe.getReagent()),
+                    SlotContent.of(recipe.getInput())
+            ));
+		});
+        *///?} else {
         PotionBrewing potionBrewing = level.potionBrewing();
         List<PotionBrewing.Mix<Potion>> potionMixes = ((PotionBrewingAccessor) potionBrewing).getPotionMixes();
         List<PotionBrewing.Mix<Item>> containerMixes = ((PotionBrewingAccessor) potionBrewing).getContainerMixes();
@@ -329,6 +374,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             recipeList.add(new BrewingClientRecipe(id.withSuffix("_lingering_potion"+RrvUtil.ingredientSuffix(potionMix.ingredient())), PotionContents.createItemStack(Items.LINGERING_POTION, potionMix.to()), potionMix.ingredient(), PotionContents.createItemStack(Items.LINGERING_POTION, potionMix.from())));
 
         });
+        //?}
     }
 
     private static void addRepairingRecipes(List<ReliableClientRecipe> recipeList) {
@@ -353,6 +399,13 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         var axes = SlotContent.of(ItemTags.AXES);
         var shovels = SlotContent.of(ItemTags.SHOVELS);
+        var hoes = SlotContent.of(ItemTags.HOES);
+
+        //? if >26.2 {
+        /*WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.AXE.transforms(), worldInteractionRecipes, axes);
+        WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.SHOVEL.transforms(), worldInteractionRecipes, shovels);
+        WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.HOE.transforms(), worldInteractionRecipes, hoes);
+        *///?}
 
         BuiltInRegistries.ITEM.entrySet().forEach(itemEntry -> {
             if (itemEntry.getValue() instanceof FluidItem fluidItem) {
@@ -390,23 +443,36 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_solidify"), SlotContent.of(block), SlotContent.of(new FluidStack(Fluids.WATER)), SlotContent.of(((ConcretePowderBlockAccessor) concretePowderBlock).getConcrete())));
                 }
             }
+            //? if >26.2 {
+            /*ItemStack stack = itemEntry.getValue().getDefaultInstance();
+            if (stack.has(DataComponents.BLOCK_TRANSFORMER)) {
+                List<BlockTransformer.BlockTransformData> transforms = stack.get(DataComponents.BLOCK_TRANSFORMER).transforms();
+                if (!transforms.equals(BlockTransformerMappings.AXE.transforms()) && !transforms.equals(BlockTransformerMappings.SHOVEL.transforms()) && !transforms.equals(BlockTransformerMappings.HOE.transforms())) {
+                    WorldInteractionRecipeUtil.addTransformerRecipes(transforms, worldInteractionRecipes, SlotContent.of(stack));
+                }
+            }
+            *///?}
         });
 
         // honeycomb
         //? fabric {
         HoneycombItem.WAXABLES.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_", block), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), SlotContent.of(block2)))));
         HoneycombItem.WAX_OFF_BY_BLOCK.get().forEach(((block, block2) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_off_",block), SlotContent.of(block), axes, SlotContent.of(block2)))));
+        //? if <26.3
         AxeItem.STRIPPABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/strip_", block), SlotContent.of(block), axes, SlotContent.of(state)))));
         //?}
 
         // flattenables
+        //? if <26.3
         ShovelItem.FLATTENABLES.forEach(((block, state) -> worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/shovel_path"), SlotContent.of(block), shovels, SlotContent.of(state.getBlock())))));
 
         // hoes
-        var hoes = SlotContent.of(ItemTags.HOES);
-        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_farmland"), SlotContent.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH), hoes, SlotContent.of(Items.FARMLAND)));
+        //? if <26.3 {
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_dirt"),SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.DIRT)));
+        worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_farmland"), SlotContent.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH), hoes, SlotContent.of(Items.FARMLAND)));
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/hoe_hanging_roots"),SlotContent.of(Blocks.ROOTED_DIRT), hoes, SlotContent.of(Items.HANGING_ROOTS)));
+        //?}
+
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/shearing_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.SHEARS), SlotContent.of(new ItemStack(Items.HONEYCOMB, 3))));
         worldInteractionRecipes.add(new WorldInteractionClientRecipe(Identifier.withDefaultNamespace("/world_interaction/glass_bottle_bee_nest"), SlotContent.of(Blocks.BEEHIVE, Blocks.BEE_NEST), SlotContent.of(Items.GLASS_BOTTLE), SlotContent.of(Items.HONEY_BOTTLE)));
 

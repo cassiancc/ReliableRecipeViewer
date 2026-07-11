@@ -14,17 +14,21 @@ import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.SpriteIconButton;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.NonNull;
 
@@ -82,6 +86,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         super.onScreenChanged(info);
         this.updateSidePanelIndex(Reason.SCREEN_CHANGE);
         this.createButtons(OverlayManager.INSTANCE.currentInfo());
+        this.currentScreen = info.screen();
     }
 
 
@@ -127,7 +132,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 	public void updateSidePanelIndex(Reason reason) {
         var screen = RRVClientUtil.currentScreen();
         if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to %s".formatted(reason));
+        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
         this.availableItems.clear();
         availableItems.addAll(SidePanel.populateSlots(reason, screen));
         this.updateSlots();
@@ -221,6 +226,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
         Minecraft client = Minecraft.getInstance();
+        var screen = RRVClientUtil.currentScreen();
         Font font = client.font;
 
 
@@ -243,14 +249,15 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, colour);
 		}
 
-
-        for (ItemSlot slot : this.itemSlots()) {
-            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-        }
-
+        try {
+            ItemSlot.currentFrameSlots = this.itemSlots();
+            for (ItemSlot slot : this.itemSlots()) {
+                slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+            }
+            ItemSlot.currentFrameSlots = null;
+        } catch (ConcurrentModificationException ignored) {}
 
         drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
-
     }
 
     public void createButtons(InventoryPositionInfo info){
@@ -275,7 +282,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
         back.setPosition(itemStartX+2, buttonY);
         next.setPosition(buttonEnd, buttonY);
-
 
         next.visible = false;
         back.visible = false;

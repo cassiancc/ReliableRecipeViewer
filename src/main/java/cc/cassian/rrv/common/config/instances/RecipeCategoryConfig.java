@@ -6,6 +6,8 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import com.google.gson.JsonObject;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
@@ -84,6 +86,10 @@ public class RecipeCategoryConfig extends AbstractRrvConfig {
 
 	public record ConfiguredRecipeCategory(Identifier id, int priority, boolean enabled) {
 
+		//TODO store client recipe type name
+		public MutableComponent name() {
+			return Component.literal(id.toString());
+		}
 	}
 
 	public RecipeCategoryConfig() {

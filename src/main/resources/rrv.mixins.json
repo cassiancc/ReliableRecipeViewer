@@ -5,7 +5,10 @@
   "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "mixins": [
-    "EntityPredicateAccessor",
+    "world.level.predicates.CombiningPredicateAccessor",
+    "world.level.predicates.EntityPredicateAccessor",
+    "world.level.predicates.MatchingBlocksPredicateAccessor",
+    "world.level.predicates.MatchingBlockTagPredicateAccessor",
     "advancements.criterion.MixinInventoryChangeTrigger",
     "chat.HoverEventActionMixin",
     "recipe.ConcretePowderBlockAccessor",

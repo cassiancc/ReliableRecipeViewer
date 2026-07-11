@@ -15,6 +15,7 @@ import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
@@ -26,6 +27,7 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -62,6 +64,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     private String currentQuery;
     boolean itemFilterMode;
     private boolean warned = false;
+    private final List<ItemStack> filteredItems = new ArrayList<>();
 
     public ItemViewOverlay() {
         super(-1, -1, -1, -1);
@@ -183,46 +186,47 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             ArrayList<String> objects = new ArrayList<>();
 
             for (String query : newQuery.split(" ")) {
-                if (!query.startsWith("@") && !query.startsWith(":") && !query.startsWith("#")) {
+                if (!PrefixedFilter.startsWithPrefix(query)) {
                     objects.add(query);
                 }
             }
 
-            this.availableItems = ItemFilters.defaultFilter(String.join(" ", objects));
+            this.filteredItems.clear();
+            this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects).strip()));
 
-            for (String query : newQuery.split(" ")) {
-                if (query.startsWith("@")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
-                }
-                else if (query.startsWith(":")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
-                }
-                else if (query.startsWith("#")) {
-                    this.availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
-                }
+            for (String query : getCurrentQueries()) {
+                ItemFilters.advancedFilter(filteredItems, query);
             }
         // standard filtering
         } else {
-            if (newQuery.startsWith("@"))
-                this.availableItems = ItemFilters.modNamespace(newQuery.substring(1));
-            else if (newQuery.startsWith(":"))
-                this.availableItems = ItemFilters.id(newQuery.substring(1));
-            else if (newQuery.startsWith("#"))
-                this.availableItems = ItemFilters.tag(newQuery.substring(1));
-            else
-                this.availableItems = ItemFilters.defaultFilter(newQuery);
+            this.filteredItems.clear();
+            this.filteredItems.addAll(ItemFilters.filter(newQuery));
         }
 
-        this.availableItems().removeIf(ItemView::isExcludedItem);
+        this.filteredItems.removeIf(ItemView::isExcludedItem);
+
+        this.updateDisplayedItems();
 
         SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
-
-        this.updateSlots();
 
         this.updateButtons();
     }
 
-	private void updateButtons() {
+    public void updateDisplayedItems() {
+        List<ItemStack> items = this.filteredItems;
+        if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
+            boolean isSearching = isSearchingStackGroups();
+            if (isSearching) {
+                items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
+            }
+            items = StackGroupManager.applyGrouping(items, isSearching);
+        }
+        this.availableItems = items;
+        this.availableItems.removeIf(ItemView::isExcludedItem);
+        this.updateSlots();
+    }
+
+    private void updateButtons() {
         if (back != null) {
             back.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
             next.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
@@ -284,9 +288,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 
 
+        ItemSlot.currentFrameSlots = this.itemSlots();
         for (ItemSlot slot : this.itemSlots()) {
             slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         }
+        ItemSlot.currentFrameSlots = null;
 
 
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
@@ -309,7 +315,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
-            if (!slot.hasItem() || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())) {
+
+            if (!slot.hasItem()
+                    || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())
+                    && ItemFilters.getTooltipMatch(slot.getItem(), this.currentQuery) == 0) {
                 guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
             }
             guiGraphics.pose().popMatrix();
@@ -366,7 +375,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             buttonEnd-=13;
         }
 
-        back.setPosition(itemStartX+2, buttonY);
+        back.setPosition(checkedX()+10, buttonY);
         next.setPosition(buttonEnd, buttonY);
 
         updateButtons();
@@ -458,17 +467,25 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         return this.searchbar;
     }
 
+    ///  Whether the user is currently using the search bar to filter their inventory.
     public boolean isItemFilterMode() {
         return this.itemFilterMode;
     }
 
+    ///  The current value in the search bar.
     public String getCurrentQuery() {
         return this.currentQuery;
     }
 
+    ///  Whether the search bar contains a value.
 	public boolean isSearching() {
 		return searchbar != null && searchbar.isVisible() && !searchbar.getValue().isEmpty();
 	}
+
+    /// Stack groups are always expanded when the user is searching.
+    public boolean isSearchingStackGroups() {
+        return this.currentQuery != null && !this.currentQuery.isEmpty();
+    }
 
     public void setButtonVisibility(boolean b) {
         searchbar.visible = b;
@@ -476,10 +493,12 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         back.visible = b;
     }
 
+    ///  Set the status of whether the user was shown a warning that they're connected to an incompatible/vanilla server.
     public void setWarned(boolean b) {
         warned = b;
     }
 
+    ///  Whether the user was shown a warning that they're connected to an incompatible/vanilla server.
     public boolean wasWarned() {
         return warned;
     }
