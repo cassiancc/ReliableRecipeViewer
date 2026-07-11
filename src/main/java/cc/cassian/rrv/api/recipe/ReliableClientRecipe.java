@@ -93,7 +93,7 @@ public interface ReliableClientRecipe {
 
     /// The identifier of this recipe, used for clientside operations like recipe hiding and favoriting.
     ///
-    /// If this recipe does not have a file associated with it, prefix the path with `'` e.g. `minecraft:/code_driven_recipe` so that users do not look for a nonexistent file.
+    /// If this recipe does not have a file associated with it, prefix the path with `/` e.g. `minecraft:/code_driven_recipe` so that users do not look for a nonexistent file.
     default Identifier getId() {
         return null;
     }
