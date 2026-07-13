@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.util.RRVClientUtil;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
@@ -70,7 +71,11 @@ public class SlotContent {
         List<ItemStack> copied = new ArrayList<>();
         content.stream().map(ItemStack::copy)
         //? fabric {
-        .map(RRVClientUtil::applyPolymerCheck)
+        .map(i -> {
+            if (RRVPlatform.INSTANCE.isClientSide())
+			    return RRVClientUtil.applyPolymerCheck(i);
+            return i;
+		})
         //?}
         .forEach(copied::add);
 
