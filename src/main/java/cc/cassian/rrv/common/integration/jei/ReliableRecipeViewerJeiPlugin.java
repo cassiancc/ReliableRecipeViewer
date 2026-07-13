@@ -4,15 +4,25 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipeType;
+import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
+import cc.cassian.rrv.common.builtin.info.InfoClientRecipeType;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
+import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 
@@ -39,7 +49,24 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
 		RECIPE_CATEGORIES.forEach((type, recipeType) -> {
-			registration.addRecipes(recipeType, ClientRecipeCache.INSTANCE.getRecipes().stream().filter(p->p.getType().equals(type)).toList());
+			List<ReliableClientRecipe> recipes = ClientRecipeCache.INSTANCE.getRecipes().stream().filter(p -> p.getType().equals(type)).toList();
+			if (type.getId().equals(ReliableRecipeViewer.of("info"))) {
+				recipes.forEach(recipe -> {
+					InfoClientRecipe info = ((InfoClientRecipe) recipe);
+					ArrayList<ItemStack> stacks = new ArrayList<>();
+					info.getIngredients().stream().map(SlotContent::getValidContents).forEach(stacks::addAll);
+					registration.addItemStackInfo(stacks, info.getText());
+				});
+			}
+			else if (type.getId().equals(ReliableRecipeViewer.of("anvil_combining"))) {
+				recipes.forEach(recipe -> {
+					AnvilCombiningClientRecipe anvilRecipe = ((AnvilCombiningClientRecipe) recipe);
+					registration.addRecipes(RecipeTypes.ANVIL, List.of(new AnvilRecipe(anvilRecipe.getLeft().getValidContents(), anvilRecipe.getRight().getValidContents(), anvilRecipe.getResult().getValidContents(), anvilRecipe.getId())));
+				});
+			}
+			else {
+				registration.addRecipes(recipeType, recipes);
+			}
 		});
 	}
 

@@ -934,7 +934,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             return this.contents;
         }
 
-        protected HashMap<Integer, OptionalSlotRenderer> getOptionalSlotRenderers() {
+        public HashMap<Integer, OptionalSlotRenderer> getOptionalSlotRenderers() {
             return this.optionalSlotRenderers;
         }
 
@@ -942,7 +942,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             return this.contents.getOrDefault(slotId, SlotContent.of(List.of()));
         }
 
-        private HashMap<Integer, AdditionalStackModifier> getAdditionalTooltips() {
+        public HashMap<Integer, AdditionalStackModifier> getAdditionalTooltips() {
             return this.additionalTooltips;
         }
 

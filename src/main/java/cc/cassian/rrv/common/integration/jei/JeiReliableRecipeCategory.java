@@ -9,28 +9,27 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
 import org.jspecify.annotations.Nullable;
+
+import java.util.HashMap;
 
 final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientRecipe> {
 	private final ReliableClientRecipeType recipeType;
 	private final IRecipeType<ReliableClientRecipe> recipeClass;
 
 	private RecipeViewMenu.SlotDefinition slotDefinition;
-	private RecipeViewMenu.SlotFillContext context = new RecipeViewMenu.SlotFillContext();
+	private RecipeViewMenu.SlotFillContext slotFillContext = new RecipeViewMenu.SlotFillContext();
 
 	JeiReliableRecipeCategory(ReliableClientRecipeType recipeType, IRecipeType<ReliableClientRecipe> recipeClass) {
 		this.recipeType = recipeType;
@@ -94,16 +93,20 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 		return recipe.entryId();
 	}
 
+	private final HashMap<Integer, RecipeViewMenu.OptionalSlotRenderer> optionalSlotRenderers  = new HashMap<>();
+
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, ReliableClientRecipe recipe, IFocusGroup focuses) {
-		context = new RecipeViewMenu.SlotFillContext();
-		recipe.bindSlots(context);
+		slotFillContext = new RecipeViewMenu.SlotFillContext();
+		recipe.bindSlots(slotFillContext);
 
 		slotDefinition = new RecipeViewMenu.SlotDefinition(null) {
 			public void addItemSlot(int slotId, int x, int y) {
 				var slot = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, x, y);
-				SlotContent slotContent = context.contentBySlot(slotId);
+				SlotContent slotContent = slotFillContext.contentBySlot(slotId);
 				addSlotContent(slot, slotContent);
+				if (slotFillContext.getOptionalSlotRenderers().containsKey(slotId)) // TODO do this better
+					slot.setStandardSlotBackground();
 			}
 		};
 
@@ -127,7 +130,6 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 				slot.add(validContent);
 			}
 		}
-		slot.addItemStacks(slotContent.getValidContents());
 	}
 
 }

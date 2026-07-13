@@ -144,7 +144,7 @@ dependencies {
     if (stonecutter.eval(mcVersion, "<26.3")) {
 
         // compile against the JEI API but do not include it at runtime
-        compileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric-api:${property("deps.jei")}")
+        compileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
         // at runtime, use the full JEI jar for Fabric
         runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
 

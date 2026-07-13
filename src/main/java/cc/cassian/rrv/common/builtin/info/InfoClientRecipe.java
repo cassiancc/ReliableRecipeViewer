@@ -98,6 +98,10 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 		return List.of(this.key);
 	}
 
+	public MutableComponent getText() {
+		return text;
+	}
+
 	@Override
 	public boolean isVisualOnly() {
 		return true;
