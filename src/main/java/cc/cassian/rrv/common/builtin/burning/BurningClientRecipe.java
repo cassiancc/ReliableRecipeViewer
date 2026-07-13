@@ -11,6 +11,7 @@ import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -66,7 +67,7 @@ public class BurningClientRecipe implements ReliableClientRecipe {
 
 
     @Override
-    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         // burn sprite
         int burnProgress = Math.round(this.ticker.getProgress() * 14);
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 22, 5 + (14 - burnProgress), 0, 14 - burnProgress, 14, burnProgress, 128, 128);

@@ -9,6 +9,7 @@ import cc.cassian.rrv.common.rendering.RrvGuiRenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -116,7 +117,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
         Component entityName = this.entityType.getDescription();
 
@@ -132,7 +133,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
     }
 
-    private void renderEntity(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    private void renderEntity(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
         if (this.previewEntity == null)
             return;

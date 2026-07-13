@@ -7,6 +7,7 @@ import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -110,6 +111,17 @@ public interface ReliableClientRecipe {
     /// @param partialTicks partialTicks
     default void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
+    }
+
+    /// @param screen       The current screen
+    /// @param guiGraphics  The [GuiGraphicsExtractor] supplied by Minecraft
+    /// @param mouseX       The current x-position of the mouse **relative to the position of the rendered recipe**
+    /// @param mouseY       The current y-position of the mouse **relative to the position of the rendered recipe**
+    /// @param partialTicks partialTicks
+    default void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        if (screen instanceof RecipeViewScreen recipeViewScreen) {
+            renderRecipe(recipeViewScreen, recipePosition, guiGraphics, mouseX, mouseY, partialTicks);
+        }
     }
 
     /// Called on every game tick

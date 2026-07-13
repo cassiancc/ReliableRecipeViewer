@@ -31,6 +31,9 @@
     ],
     "modmenu": [
       "cc.cassian.rrv.fabric.integration.ModMenuIntegration"
+    ],
+    "jei_mod_plugin": [
+      "cc.cassian.rrv.common.integration.jei.ReliableRecipeViewerJeiPlugin"
     ]
   },
   "mixins": [

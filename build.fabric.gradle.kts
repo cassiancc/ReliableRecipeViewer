@@ -102,6 +102,11 @@ repositories {
             includeGroupAndSubgroups("lol.bai")
         }
     }
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = uri("https://maven.blamejared.com/")
+    }
     mavenCentral()
 }
 
@@ -110,9 +115,10 @@ dependencies {
 
     implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
-    compileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
+    compileOnly("maven.modrinth:modmenu:${property("deps.modmenu")}")
 
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
+        exclude(group = "com.terraformersmc")
         exclude(group = "maven.modrinth")
         exclude(group = "net.caffeinemc")
     }
@@ -136,11 +142,17 @@ dependencies {
 
 
     if (stonecutter.eval(mcVersion, "<26.3")) {
+
+        // compile against the JEI API but do not include it at runtime
+        compileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric-api:${property("deps.jei")}")
+        // at runtime, use the full JEI jar for Fabric
+        runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
+
         localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
             exclude(group = "mcp.mobius.waila")
             exclude(group = "lol.bai")
         }
-        localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
+//        localRuntime("maven.modrinth:modmenu:${property("deps.modmenu")}")
 //        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")

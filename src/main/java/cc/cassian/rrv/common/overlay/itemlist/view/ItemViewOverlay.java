@@ -75,7 +75,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     public boolean isEnabled() {
-        return super.isEnabled() && (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching()));
+        return super.isEnabled() && (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching())) && !ModCompat.JEI;
     }
 
     @Override
@@ -119,6 +119,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 _ -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
         );
 
+        if (ModCompat.JEI) {
+            settingsButton.visible = false;
+        }
+
         int position = 0;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
             position = info.screenWidth() - 18;
@@ -135,6 +139,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             sidePanelButtonPosition = info.screenWidth() - 40;
         }
         sidePanelButton.setPosition(sidePanelButtonPosition, info.screenHeight() - 18);
+
+        if (ModCompat.JEI) {
+            sidePanelButton.visible = false;
+        }
 
         ctx.addRenderable(sidePanelButton);
     }
