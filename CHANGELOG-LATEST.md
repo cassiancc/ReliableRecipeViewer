@@ -1,2 +1,2 @@
 ### Fixed
-- Crash on dedicated servers.
+- Performance issues when searching.
