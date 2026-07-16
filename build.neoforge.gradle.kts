@@ -80,6 +80,14 @@ repositories {
             includeGroupAndSubgroups("lol.bai")
         }
     }
+    maven {
+        name = "Sinytra"
+        url = uri("https://maven.su5ed.dev/releases")
+        content {
+            includeGroupAndSubgroups("org.sinytra")
+            includeGroupAndSubgroups("dev.su5ed")
+        }
+    }
     mavenCentral()
 }
 
@@ -87,8 +95,10 @@ dependencies {
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         isTransitive = false;
     }
-    compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
-    compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+    compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}") {
+        isTransitive = false;
+    }
+    compileOnly("cc.cassian.item-descriptions:item-descriptions-neoforge:${property("deps.item_descriptions")}") {
         isTransitive = false;
     }
     compileOnly("folk.sisby:kaleido-config:0.3.3+1.3.2")
@@ -96,6 +106,11 @@ dependencies {
         isTransitive = false;
     }
     compileOnly("mcp.mobius.waila:wthit:neo-${property("deps.wthit")}")
+
+    // Sinytra Connector support
+    compileOnly("org.sinytra:forgified-fabric-loader:2.5.85+0.19.3+26.1.2")
+    compileOnly("org.sinytra.forgified-fabric-api:fabric-recipe-api-v1:9.0.16+a1e31eec4c")
+
 }
 
 neoForge {

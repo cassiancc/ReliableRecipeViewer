@@ -1,3 +1,13 @@
+## [8.6.2]
+
+### Fixed
+- Performance issues when searching.
+
+## [8.6.1]
+
+### Fixed
+- Crash on dedicated servers.
+
 ## [8.6.0]
 
 ### Added

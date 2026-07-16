@@ -1,7 +1,6 @@
 //? fabric {
 package cc.cassian.rrv.fabric;
 
-import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.command.RrvCommand;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerIntegration;
@@ -10,7 +9,6 @@ import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -30,7 +28,7 @@ public class FabricEntrypoint implements ModInitializer {
 
         CommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext, commandSelection) -> RrvCommand.register(commandDispatcher));
 
-        FabricLoader.getInstance().invokeEntrypoints("rrv", ReliableRecipeViewerPlugin.class, ReliableRecipeViewerPlugin::onIntegrationInitialize);
+        FabricUtil.initialize();
 
         RrvNetworkManager.INSTANCE.registerPayloads();
 

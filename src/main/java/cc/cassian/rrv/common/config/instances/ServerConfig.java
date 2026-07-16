@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
+import cc.cassian.rrv.common.integration.ModCompat;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.*;
@@ -19,10 +20,10 @@ public class ServerConfig extends AbstractRrvConfig {
 	private int version = 2;
 	private boolean recipeSharing = true;
 
-	//? fabric {
 	private List<Identifier> synchronizedRecipeSerializers = addVanillaRecipeSerializers();
 
 	private List<Identifier> addVanillaRecipeSerializers() {
+		//? fabric {
 		return Stream.of(
 				ShapedRecipe.SERIALIZER,
 				ShapelessRecipe.SERIALIZER,
@@ -48,6 +49,9 @@ public class ServerConfig extends AbstractRrvConfig {
 				//? if >26.2
 				//, BrewingRecipe.SERIALIZER
 		).map(BuiltInRegistries.RECIPE_SERIALIZER::getKey).toList();
+		//?} else {
+		/*return List.of();
+		*///?}
 	}
 	public void addRecipeSerializer(Identifier newSerializer) {
 		var list = new ArrayList<>(synchronizedRecipeSerializers);
@@ -55,8 +59,7 @@ public class ServerConfig extends AbstractRrvConfig {
 		synchronizedRecipeSerializers = list;
 	}
 
-	//?} else {
-	/*private List<Identifier> synchronizedRecipeTypes = addVanillaRecipeTypes();
+	private List<Identifier> synchronizedRecipeTypes = addVanillaRecipeTypes();
 
 	private List<Identifier> addVanillaRecipeTypes() {
 		return Stream.of(RecipeType.CRAFTING, RecipeType.SMELTING, RecipeType.BLASTING, RecipeType.CAMPFIRE_COOKING, RecipeType.SMOKING, RecipeType.SMITHING
@@ -71,9 +74,6 @@ public class ServerConfig extends AbstractRrvConfig {
 		synchronizedRecipeTypes = list;
 	}
 
-
-	*///?}
-
 	public boolean isRecipeSharing() {
 		return recipeSharing;
 	}
@@ -82,7 +82,6 @@ public class ServerConfig extends AbstractRrvConfig {
 		this.recipeSharing = recipeSharing;
 	}
 
-	//? fabric {
 	public List<Identifier> getSynchronizedRecipeSerializers() {
 		return synchronizedRecipeSerializers;
 	}
@@ -90,7 +89,7 @@ public class ServerConfig extends AbstractRrvConfig {
 	public void setSynchronizedRecipeSerializers(List<Identifier> synchronizedRecipeSerializers) {
 		this.synchronizedRecipeSerializers = synchronizedRecipeSerializers;
 	}
-	//?} else {
+	//? if neoforge {
 	/*public List<Identifier> getSynchronizedRecipeTypes() {
 		return synchronizedRecipeTypes;
 	}
@@ -105,8 +104,8 @@ public class ServerConfig extends AbstractRrvConfig {
 		int newVersion = load("config_version_do_not_touch", this.version);
 		if (newVersion == this.version) {
 			this.recipeSharing = load("recipeSharing", this.recipeSharing);
-			//? fabric
-			this.synchronizedRecipeSerializers = load("synchronizedRecipeSerializers", this.synchronizedRecipeSerializers, Identifier.CODEC.listOf());
+			if (ModCompat.FABRIC_RECIPE_API)
+				this.synchronizedRecipeSerializers = load("synchronizedRecipeSerializers", this.synchronizedRecipeSerializers, Identifier.CODEC.listOf());
 			//? neoforge
 			//this.synchronizedRecipeTypes = load("synchronizedRecipeTypes", this.synchronizedRecipeTypes, Identifier.CODEC.listOf());
 		} else {
@@ -118,8 +117,8 @@ public class ServerConfig extends AbstractRrvConfig {
 	protected void saveData() {
 		save("config_version_do_not_touch", this.version);
 		save("recipeSharing", this.recipeSharing);
-		//? fabric
-		save("synchronizedRecipeSerializers", synchronizedRecipeSerializers, Identifier.CODEC.listOf());
+		if (ModCompat.FABRIC_RECIPE_API)
+			save("synchronizedRecipeSerializers", synchronizedRecipeSerializers, Identifier.CODEC.listOf());
 		//? neoforge
 		//save("synchronizedRecipeTypes", synchronizedRecipeTypes, Identifier.CODEC.listOf());
 	}

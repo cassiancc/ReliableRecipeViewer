@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
 import cc.cassian.rrv.common.config.ServerConfigs;
+import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
@@ -151,11 +152,12 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
 
-        //? fabric {
-        for (Identifier serializer : ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeSerializers()) {
-            ServerRecipeManager.INSTANCE.synchronizeRecipeType(BuiltInRegistries.RECIPE_SERIALIZER.getValue(serializer), null);
+        if (ModCompat.FABRIC_RECIPE_API) {
+            for (Identifier serializer : ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeSerializers()) {
+                ServerRecipeManager.INSTANCE.synchronizeRecipeType(BuiltInRegistries.RECIPE_SERIALIZER.getValue(serializer), null);
+            }
         }
-        //?} else {
+        //? if neoforge {
         /*for (Identifier type : ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeTypes()) {
             ServerRecipeManager.INSTANCE.synchronizeRecipeType(null, BuiltInRegistries.RECIPE_TYPE.getValue(type));
         }
