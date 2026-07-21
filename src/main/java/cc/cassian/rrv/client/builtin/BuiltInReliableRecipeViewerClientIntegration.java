@@ -66,6 +66,7 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 //?}
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.*;
