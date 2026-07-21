@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay;
 
+import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.RRVPlatform;
@@ -182,7 +183,7 @@ public class OverlayManager {
             screenContext.renderables().forEach(guiEventListener -> {
                 if (guiEventListener.isFocused() && !guiEventListener.isMouseOver(event.x(), event.y()))
                     guiEventListener.setFocused(false);
-                if (guiEventListener.isMouseOver(event.x(), event.y()) && event.button() == 0)
+                if (guiEventListener.isMouseOver(event.x(), event.y()) && RRVInputUtil.isLeftClick(event))
                     guiEventListener.setFocused(true);
             });
         });

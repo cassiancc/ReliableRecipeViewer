@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe;
 
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
@@ -212,6 +213,10 @@ public class ServerRecipeManager {
                 tag.put("recipeData", dataTag);
             }catch (Exception e) {
                 ReliableRecipeViewer.LOGGER.error("Failed to encode recipe {}: {}, please contact the mod author", this.recipeId(), e.getMessage());
+                if (RRVPlatform.INSTANCE.isDevelopment()) {
+                    ReliableRecipeViewer.LOGGER.error(e.getMessage(), e);
+                }
+
             }
 
             return tag;

@@ -21,7 +21,7 @@ public class ExampleServerRecipe implements ReliableServerRecipe {
     private SlotContent input, output;
 
     //Create a server recipe type (the id does not have to match your client side recipe type id)
-    public static final ModRecipeType<ExampleServerRecipe> TYPE = ModRecipeType.register(
+    public static final ReliableServerRecipeType<ExampleServerRecipe> TYPE = ReliableServerRecipeType.register(
             Identifier.fromNamespaceAndPath("example-mod", "your_recipe_id"),
             () -> new ExampleServerRecipe(null, null)
     );

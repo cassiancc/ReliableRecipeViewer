@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.world.entity.npc;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -20,17 +21,24 @@ public interface VillagerTradeAccessor {
 	@Accessor
 	TradeCost getWants();
 
+	//? if >26.2 {
+	/*@Accessor("givenItemModifier")
+	Optional<Holder<LootItemFunction>> getGivenItemModifiers();
+	*///?} else {
 	@Accessor("givenItemModifiers")
 	List<LootItemFunction> getGivenItemModifiers();
+	//?}
 
 	@Accessor("doubleTradePriceEnchantments")
 	Optional<HolderSet<Enchantment>> getDoubleTradePriceEnchantments();
 
+	//~ if >26.2 'NumberProvider'->'Holder<NumberProvider>' {
 	@Accessor("maxUses")
 	NumberProvider getMaxUses();
 
 	@Accessor("xp")
 	NumberProvider getXp();
+	//~}
 
 	@Accessor
 	Optional<TradeCost> getAdditionalWants();

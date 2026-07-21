@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.gui.widgets;
 
+import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.ConfiguredStackGroup;
 import cc.cassian.rrv.common.overlay.ItemSlot;
@@ -164,7 +165,7 @@ public class StackGroupNameWidget extends AbstractWidget {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (draggedIndex != -1 && event.button() == 0) {
+        if (draggedIndex != -1 && RRVInputUtil.isLeftClick(event)) {
             int dropIndex = clampedIndexAt(event.x(), event.y());
             if (dropIndex != -1 && dropIndex != draggedIndex) {
                 ItemStack moved = items.remove(draggedIndex);

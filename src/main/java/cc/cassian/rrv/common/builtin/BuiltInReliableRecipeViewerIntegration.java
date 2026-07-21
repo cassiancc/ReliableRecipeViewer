@@ -1,7 +1,9 @@
 package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.builtin.burning.BurningClientRecipe;
 import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
 import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -18,7 +20,9 @@ import cc.cassian.rrv.common.mixin.world.level.storage.loot.entries.LootPoolSing
 import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetPotionFunctionAccessor;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -53,6 +57,7 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -151,7 +156,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             });
 
         });
-
         if (ModCompat.FABRIC_RECIPE_API) {
             for (Identifier serializer : ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeSerializers()) {
                 ServerRecipeManager.INSTANCE.synchronizeRecipeType(BuiltInRegistries.RECIPE_SERIALIZER.getValue(serializer), null);
@@ -173,7 +177,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
             villagerProfessionRegistryLookup.listElements().forEach((professionReference) -> {
                 professionReference.value().tradeSetsByLevel().forEach((level, tradeSetKey) -> {
+                    //~ if >26.2 '.getTrades'->'.trades' {
                     var trades = tradeSetRegistryLookup.getOrThrow(tradeSetKey).value().getTrades();
+                    //~}
                     trades.forEach(villagerTradeHolder -> {
                         recipeList.add(new VillagerServerRecipe(professionReference.key(), level, villagerTradeHolder.value(), villagerTradeHolder.unwrapKey().map(ResourceKey::identifier).orElse(null)));
                     });
@@ -203,18 +209,23 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             for (LootPoolEntryContainer container : lootPoolAccessor.entries()) {
                 if (container instanceof LootItem lootItem) {
                     LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
+                    //? if <26.3
                     LootPoolSingletonContainerAccessor containerAccessor = (LootPoolSingletonContainerAccessor) lootItemAccessor;
 
                     ItemStack stack = new ItemStack(lootItemAccessor.getItem().value());
 
+                    //FIXME
+                    //? if <26.3 {
                     containerAccessor.getFunctions().forEach(function -> {
 
                         if (function instanceof SetPotionFunction setPotionFunction)
                             stack.set(DataComponents.POTION_CONTENTS, stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).withPotion(((SetPotionFunctionAccessor) setPotionFunction).getPotion()));
 
                     });
+                    //?}
 
-                    for (LootItemCondition condition : lootPoolAccessor.conditions()) {
+                    List<LootItemCondition> conditions = RrvUtil.getLootItemFunctions(lootPoolAccessor.conditions());
+                    for (LootItemCondition condition : conditions) {
                         if (condition instanceof LootItemKilledByPlayerCondition)
                             stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.player_kill").withStyle(ChatFormatting.GRAY)));
                     }
