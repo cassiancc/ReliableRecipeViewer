@@ -56,7 +56,6 @@ public class NeoForgeClientEntrypoint {
 		if (ModCompat.LAUNCHPAD && ModCompat.FABRIC_RECIPE_API) {
 			ReliableRecipeViewer.LOGGER.info("Initializing RRV client integration for Fabric mods through Launchpad.");
 			FabricClientUtil.initializeClient();
-			FabricClientUtil.registerFabricRecipeEvents();
 		}
         ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new ClientConfigScreen(screen));
     }
