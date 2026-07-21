@@ -18,7 +18,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeMap;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -28,19 +27,19 @@ public class ReliableRecipeViewerClient {
 
     public static final KeyMapping.Category RRV_CATEGORY = KeyMapping.Category.register(ReliableRecipeViewer.of("rrv"));
     public static final KeyMapping.Category RRV_ADMIN_CATEGORY = KeyMapping.Category.register(ReliableRecipeViewer.of("rrv_admin"));
-    
-    public static final KeyMapping USAGE_KEYBIND = new KeyMapping("key.rrv.usage", GLFW.GLFW_KEY_U, RRV_CATEGORY);
 
-    public static final KeyMapping RECIPE_KEYBIND = new KeyMapping("key.rrv.recipe", GLFW.GLFW_KEY_R, RRV_CATEGORY);
+    public static final KeyMapping USAGE_KEYBIND = new KeyMapping("key.rrv.usage", InputConstants.KEY_U, RRV_CATEGORY);
 
-    public static final KeyMapping TOGGLE_OVERLAY_KEYBIND = new KeyMapping("key.rrv.toggle_overlay", GLFW.GLFW_KEY_UNKNOWN, RRV_CATEGORY);
+    public static final KeyMapping RECIPE_KEYBIND = new KeyMapping("key.rrv.recipe", InputConstants.KEY_R, RRV_CATEGORY);
 
-    public static final KeyMapping ADD_BOOKMARK_KEYBIND = new KeyMapping("key.rrv.bookmark", GLFW.GLFW_KEY_A, RRV_CATEGORY);
+    public static final KeyMapping TOGGLE_OVERLAY_KEYBIND = new KeyMapping("key.rrv.toggle_overlay", 0, RRV_CATEGORY);
+
+    public static final KeyMapping ADD_BOOKMARK_KEYBIND = new KeyMapping("key.rrv.bookmark", InputConstants.KEY_A, RRV_CATEGORY);
 
     public static final KeyMapping GO_BACK_RECIPE = new KeyMapping("key.rrv.go_back", InputConstants.Type.MOUSE, 3, RRV_CATEGORY);
     public static final KeyMapping GO_FORWARD_RECIPE = new KeyMapping("key.rrv.go_forward", InputConstants.Type.MOUSE, 4, RRV_CATEGORY);
 
-    public static final KeyMapping USE_CHEATMODE = new KeyMapping("key.rrv.cheatmode", GLFW.GLFW_KEY_LEFT_ALT, RRV_ADMIN_CATEGORY);
+    public static final KeyMapping USE_CHEATMODE = new KeyMapping("key.rrv.cheatmode", InputConstants.KEY_LALT, RRV_ADMIN_CATEGORY);
 
     public static final List<KeyMapping> RRV_KEY_MAPPINGS = List.of(USAGE_KEYBIND, RECIPE_KEYBIND, TOGGLE_OVERLAY_KEYBIND, ADD_BOOKMARK_KEYBIND, GO_BACK_RECIPE, GO_FORWARD_RECIPE, USE_CHEATMODE);
     public static RecipeMap LOCAL_RECIPES = RecipeMap.EMPTY;
@@ -66,7 +65,10 @@ public class ReliableRecipeViewerClient {
 
     public static boolean isCheatmodeActive() {
         Minecraft mc = Minecraft.getInstance();
-        return mc.player != null && RrvUtil.hasPermission(mc.player) && !ReliableRecipeViewerClient.USE_CHEATMODE.isUnbound() && InputConstants.isKeyDown(mc.getWindow(), ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
+        return mc.player != null && RrvUtil.hasPermission(mc.player) && !ReliableRecipeViewerClient.USE_CHEATMODE.isUnbound() && InputConstants.isKeyDown(
+                //? if <26.3
+                mc.getWindow(),
+                ReliableRecipeViewerClient.USE_CHEATMODE.key.getValue());
     }
 
     public static Component addNamespaceTooltip(String modName, List<Component> tooltip, boolean inItemView) {

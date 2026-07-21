@@ -1,3 +1,8 @@
+## [8.6.3]
+
+### Added
+- Support for running mods with RRV integration via Launchpad and Sinytra Connector.
+
 ## [8.6.2]
 
 ### Fixed

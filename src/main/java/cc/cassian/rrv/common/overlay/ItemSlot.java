@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.overlay;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
@@ -227,7 +228,6 @@ public class ItemSlot {
 
     /// Called on a mouse click in any inventory
     public void onClicked(MouseButtonEvent event) {
-        var mouseButton = event.button();
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
 
@@ -249,11 +249,11 @@ public class ItemSlot {
             }
         }
 
-        if (mouseButton == 2 && ReliableRecipeViewerClient.isCheatmodeActive()) {
+        if (RRVInputUtil.isMiddleClick(event) && ReliableRecipeViewerClient.isCheatmodeActive()) {
             this.currentCheatmodeCount = this.stack.getMaxStackSize();
         }
 
-        if (mouseButton == 0 && ReliableRecipeViewerClient.isCheatmodeActive()) {
+        if (RRVInputUtil.isLeftClick(event) && ReliableRecipeViewerClient.isCheatmodeActive()) {
             ClientNetworkManager.sendPacketToServer(new ServerboundPickCheatmodeItemPayload(this.stack.copy(), this.currentCheatmodeCount));
             return;
         }
@@ -267,10 +267,10 @@ public class ItemSlot {
             }
         }
 
-        if (mouseButton == 0)
+        if (RRVInputUtil.isLeftClick(event))
             ItemViewOverlay.INSTANCE.openRecipeView(this.stack, ActionType.RESULT);
 
-        if (mouseButton == 1)
+        if (RRVInputUtil.isRightClick(event))
             ItemViewOverlay.INSTANCE.openRecipeView(this.stack, ActionType.INPUT);
     }
 

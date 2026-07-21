@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.world.level.storage.loot.functions;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.functions.EnchantWithLevelsFunction;
@@ -12,8 +13,10 @@ import java.util.Optional;
 @Mixin(EnchantWithLevelsFunction.class)
 public interface EnchantWithLevelsFunctionAccessor {
 
+    //~ if >26.2 'NumberProvider'->'Holder<NumberProvider>' {
     @Accessor(value = "levels")
     NumberProvider getLevels();
+    //~}
 
     @Accessor(value = "options")
     Optional<HolderSet<Enchantment>> options();

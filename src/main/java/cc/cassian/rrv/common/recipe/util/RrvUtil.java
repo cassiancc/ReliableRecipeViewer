@@ -29,7 +29,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
@@ -212,5 +215,25 @@ public class RrvUtil {
 
         ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration from mod: {}", modId);
     }
+
+    //? if >26.2 {
+    /*@SuppressWarnings("all")
+    public static <T> List<T> getLootItemFunctions(Optional<Holder<T>> tradeModifiers) {
+        List<T> givenItemModifiers = new ArrayList<>();
+        tradeModifiers.ifPresent(holder->{
+            T modifier = holder.value();
+            if (modifier instanceof SequenceFunction sequenceFunction) {
+                givenItemModifiers.addAll((Collection<? extends T>) sequenceFunction.functions.stream().map(Holder::value).toList());
+            } else {
+                givenItemModifiers.add(modifier);
+            }
+        });
+        return givenItemModifiers;
+    }
+    *///?} else {
+    public static <T> List<T> getLootItemFunctions(List<T> tradeModifiers) {
+        return tradeModifiers;
+    }
+    //?}
 
 }

@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.sharing.RecipeSharing;
+import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.RRVPlatform;
@@ -505,7 +506,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-        if (mouseButtonEvent.button() == 1) {
+        if (RRVInputUtil.isRightClick(mouseButtonEvent)) {
             if (this.hoveredSlot != null) {
                 ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.INPUT);
                 return true;
@@ -516,7 +517,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             }
         }
 
-        if (mouseButtonEvent.button() == 0) {
+        if (RRVInputUtil.isLeftClick(mouseButtonEvent)) {
             if (this.hoveredSlot != null) {
                 ItemViewOverlay.INSTANCE.openRecipeView(this.hoveredSlot.getItem(), ActionType.RESULT);
                 return true;
