@@ -60,9 +60,10 @@ public class ServerRecipeManager {
     /// @param serializer The recipe serializer used for Fabric recipe synchronization.
     /// @param type The recipe type used for NeoForge recipe synchronization.
     public void synchronizeRecipeType(RecipeSerializer<?> serializer, RecipeType<?> type) {
+        //? fabric {
         if (ModCompat.FABRIC_RECIPE_API && serializer != null)
             FabricUtil.synchronizeRecipeType(serializer);
-        //? neoforge {
+        //?} else {
         /*if (type != null && !NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.contains(type))
             NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.add(type);
         *///?}
