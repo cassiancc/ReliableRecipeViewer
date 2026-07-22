@@ -9,7 +9,11 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.CreativeModeTab;
+//? if >26.2 {
+/*import com.mojang.blaze3d.platform.InputConstants;
+*///?} else {
 import org.lwjgl.glfw.GLFW;
+//?}
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,8 +46,10 @@ public abstract class MixinCreativeModeInventoryScreen extends AbstractContainer
             if(OverlayManager.INSTANCE.isTextWidgetFocused()) {
                 box.keyPressed(keyEvent);
 
+                //~ if >26.2 'GLFW.GLFW_KEY'->'InputConstants.KEY' {
                 if ((keyEvent.key() != GLFW.GLFW_KEY_ESCAPE && keyEvent.key() != GLFW.GLFW_KEY_TAB))
                     cir.setReturnValue(true);
+                //~}
             }
 
         }

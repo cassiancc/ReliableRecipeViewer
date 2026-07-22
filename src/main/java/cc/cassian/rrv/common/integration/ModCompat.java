@@ -10,6 +10,8 @@ public class ModCompat {
 	public static final boolean WTHIT = RRVPlatform.INSTANCE.isModLoaded("wthit");
 	public static final boolean INVENTORY_ITEM_GROUPS = RRVPlatform.INSTANCE.isModLoaded("inventory_item_groups");
 	public static final boolean JEI = RRVPlatform.INSTANCE.isModLoaded("jei");
+	public static final boolean FABRIC_RECIPE_API = RRVPlatform.INSTANCE.isModLoaded("fabric-recipe-api-v1") || RRVPlatform.INSTANCE.isModLoaded("fabric_recipe_api_v1");
+	public static final boolean LAUNCHPAD = RRVPlatform.INSTANCE.isModLoaded("launchpad");
 
 	public static boolean hasModNamespaceModsInstalled() {
         return (ITEM_DESCRIPTIONS && ItemDescriptionsCompat.modNamespaceEnabled()) ||

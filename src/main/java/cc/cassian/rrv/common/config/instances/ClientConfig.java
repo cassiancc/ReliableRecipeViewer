@@ -4,11 +4,6 @@ import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
-import com.mojang.serialization.Codec;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 
 public class ClientConfig extends AbstractRrvConfig {
 
@@ -195,7 +190,7 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public void setIndexSource(IndexSource indexSource) {
 		this.indexSource = indexSource;
-		ItemFilters.cached = false;
+		ItemFilters.clearCaches();
 	}
 
 	@Override

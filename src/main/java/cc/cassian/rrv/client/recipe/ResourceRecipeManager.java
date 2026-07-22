@@ -240,7 +240,10 @@ public class ResourceRecipeManager {
 		JsonElement jsonElement = GSON.fromJson(tagReader, JsonElement.class);
 		JsonObject recipeObject = jsonElement.getAsJsonObject();
 		if (!recipeObject.has("type")) return;
-		Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new);
+		Recipe<?> recipe = Recipe.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(JsonOps.INSTANCE), recipeObject).getOrThrow(JsonParseException::new)
+				//? if >26.2
+				//.value()
+				;
 		Identifier recipeId = Identifier.fromNamespaceAndPath(modId, id);
 		if (!objects.containsKey(recipeId))
 			objects.put(recipeId, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), recipe));

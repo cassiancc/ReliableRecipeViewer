@@ -16,13 +16,14 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
 public class BurningClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent fuel;
-    private final int burnTime;
+    private final float burnTime;
 
     private final AnimationTicker ticker;
     private final Identifier id;
@@ -32,7 +33,15 @@ public class BurningClientRecipe implements ReliableClientRecipe {
         this.fuel = SlotContent.of(item);
         this.burnTime = i;
 
-        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), this.burnTime);
+        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), (int) this.burnTime);
+    }
+
+    public BurningClientRecipe(ItemStack item, float i) {
+        this.id = item.typeHolder().unwrapKey().get().identifier().withPrefix("/").withSuffix("_burning");
+        this.fuel = SlotContent.of(item);
+        this.burnTime = i;
+
+        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), (int) this.burnTime);
     }
 
     @Override

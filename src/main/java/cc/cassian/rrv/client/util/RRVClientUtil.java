@@ -1,6 +1,8 @@
 package cc.cassian.rrv.client.util;
 
+import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import net.minecraft.client.Minecraft;
@@ -9,14 +11,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ApiStatus.Internal
 public class RRVClientUtil {
+    private static final ArrayList<String> INITIALIZED_MODS = new ArrayList<>();
     public static final Identifier CONTAINER = Identifier.withDefaultNamespace("container");
 
     public static void setScreen(Screen newScreen) {
@@ -61,5 +64,23 @@ public class RRVClientUtil {
             return ClientPolymerItemUtils.getServerItem(i);
         }
         return i;
+    }
+
+    /// Initialize client entrypoints from `fabric.mod.json` or `neoforge.mods.toml` files.
+    public static void initializeEntrypoint(String modId, ReliableRecipeViewerClientPlugin plugin) {
+        ReliableRecipeViewer.LOGGER.debug("RRV: Loading client integration from mod: {}", modId);
+        try {
+            if (!INITIALIZED_MODS.contains(modId)) {
+                plugin.onIntegrationInitialize();
+                ReliableRecipeViewer.LOGGER.info("RRV: Client integration initialized for mod: {}", modId);
+                INITIALIZED_MODS.add(modId);
+            } else {
+                ReliableRecipeViewer.LOGGER.debug("RRV: Skipped initializing client integration for multi-loader mod: {}", modId);
+            }
+            return;
+        } catch (Exception ignored) {
+        }
+
+        ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration from mod: {}", modId);
     }
 }

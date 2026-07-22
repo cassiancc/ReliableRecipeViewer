@@ -12,7 +12,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -163,7 +162,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
     private void save() {
         Configs.STACK_GROUPS.save();
         StackGroupManager.reload();
-        ItemFilters.cached = false;
+        ItemFilters.clearCaches();
     }
 
     @Override

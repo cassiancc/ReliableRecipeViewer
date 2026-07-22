@@ -1,6 +1,8 @@
 package cc.cassian.rrv.common.recipe.util;
 
+import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.client.util.RRVClientUtil;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
@@ -27,6 +29,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
@@ -39,6 +43,7 @@ import static net.minecraft.server.permissions.Permissions.*;
 @ApiStatus.Internal
 @NullMarked
 public class RrvUtil {
+    private static final ArrayList<String> INITIALIZED_MODS = new ArrayList<>();
 
     public static boolean hasPermission(Player sender) {
         return sender.permissions().hasPermission(COMMANDS_GAMEMASTER);
@@ -118,7 +123,7 @@ public class RrvUtil {
         return getIdentifier(block).orElseThrow().withPath(path-> "%s%s".formatted(prefix, path.replace(":", "_")));
     }
 
-    private static @NonNull Optional<Identifier> getIdentifier(Block block) {
+    private static Optional<Identifier> getIdentifier(Block block) {
         return BuiltInRegistries.BLOCK.getResourceKey(block).map(ResourceKey::identifier);
     }
 
@@ -192,5 +197,43 @@ public class RrvUtil {
 
         return stringBuilder.toString();
 	}
+
+    /// Initialize entrypoints from `fabric.mod.json` or `neoforge.mods.toml` files.
+    public static void initializeEntrypoint(String modId, ReliableRecipeViewerPlugin plugin) {
+        ReliableRecipeViewer.LOGGER.debug("RRV: Loading integration from mod: {}", modId);
+        try {
+            if (!INITIALIZED_MODS.contains(modId)) {
+                plugin.onIntegrationInitialize();
+                ReliableRecipeViewer.LOGGER.info("RRV: Integration initialized for mod: {}", modId);
+                INITIALIZED_MODS.add(modId);
+            } else {
+                ReliableRecipeViewer.LOGGER.debug("RRV: Skipped initializing integration for multi-loader mod: {}", modId);
+            }
+            return;
+        } catch (Exception ignored) {
+        }
+
+        ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration from mod: {}", modId);
+    }
+
+    //? if >26.2 {
+    /*@SuppressWarnings("all")
+    public static <T> List<T> getLootItemFunctions(Optional<Holder<T>> tradeModifiers) {
+        List<T> givenItemModifiers = new ArrayList<>();
+        tradeModifiers.ifPresent(holder->{
+            T modifier = holder.value();
+            if (modifier instanceof SequenceFunction sequenceFunction) {
+                givenItemModifiers.addAll((Collection<? extends T>) sequenceFunction.functions.stream().map(Holder::value).toList());
+            } else {
+                givenItemModifiers.add(modifier);
+            }
+        });
+        return givenItemModifiers;
+    }
+    *///?} else {
+    public static <T> List<T> getLootItemFunctions(List<T> tradeModifiers) {
+        return tradeModifiers;
+    }
+    //?}
 
 }

@@ -3,6 +3,7 @@
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
@@ -10,9 +11,13 @@ import cc.cassian.rrv.client.extra.FluidItemModel;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
+import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import cc.cassian.rrv.fabric.FabricClientUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
@@ -25,12 +30,11 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 @EventBusSubscriber(modid = ReliableRecipeViewer.MOD_ID, value = Dist.CLIENT)
@@ -42,20 +46,17 @@ public class NeoForgeClientEntrypoint {
 		ModList.get().getMods().forEach(modInfo -> {
 			Optional<String> optional = modInfo.getConfig().getConfigElement("rrv_client");
 			if (optional.isPresent()) {
-				ReliableRecipeViewer.LOGGER.info("RRV: Loading client integration: {}", optional.get());
 				try {
 					Class<?> clazz = Class.forName(optional.get());
 					ReliableRecipeViewerClientPlugin integration = ((ReliableRecipeViewerClientPlugin) clazz.getConstructor().newInstance());
-					integration.onIntegrationInitialize();
-					ReliableRecipeViewer.LOGGER.info("RRV: Client integration initialized for mod: {}", modInfo.getModId());
-					return;
-
-				} catch (Exception ignored) {
-				}
-
-				ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration: {}", optional.get());
+					RRVClientUtil.initializeEntrypoint(modInfo.getModId(), integration);
+				} catch (Exception ignored) {}
 			}
 		});
+		if (ModCompat.LAUNCHPAD && ModCompat.FABRIC_RECIPE_API) {
+			ReliableRecipeViewer.LOGGER.info("Initializing RRV client integration for Fabric mods through Launchpad.");
+			FabricClientUtil.initializeClient();
+		}
         ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new ClientConfigScreen(screen));
     }
 
@@ -94,7 +95,9 @@ public class NeoForgeClientEntrypoint {
 
     @SubscribeEvent
     public static void receiveRecipes(RecipesReceivedEvent event) {
-        ReliableRecipeViewerClient.LOCAL_RECIPES = event.getRecipeMap();
+		Collection<RecipeHolder<?>> newRecipes = new ArrayList<>(event.getRecipeMap().values());
+		newRecipes.addAll(ReliableRecipeViewerClient.LOCAL_RECIPES.values());
+		ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(newRecipes);
 		if (!event.getRecipeTypes().isEmpty())
 			ClientRecipeCache.INSTANCE.buildRecipeCache(true);
 		else if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED)) {
