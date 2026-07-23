@@ -10,6 +10,7 @@ import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -146,17 +147,9 @@ public enum SidePanel implements StringRepresentable {
 
 	private static void filter(List<ItemStack> availableItems) {
 		for (String query : ItemViewOverlay.INSTANCE.getCurrentQueries()) {
-			if (query.startsWith("@")) {
-				availableItems.removeIf(stack-> !ItemFilters.modNamespace(stack, query.substring(1)));
-			}
-			else if (query.startsWith(":")) {
-				availableItems.removeIf(stack-> !ItemFilters.id(stack, query.substring(1)));
-			}
-			else if (query.startsWith("#")) {
-				availableItems.removeIf(stack-> !ItemFilters.tag(stack, query.substring(1)));
-			}
-			else {
-				availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)));
+			String substring = RrvUtil.lowercaseSubstring(query);
+			if (!ItemFilters.advancedFilter(availableItems, query)) {
+				availableItems.removeIf(stack-> !stack.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(substring));
 			}
 		}
 	}
