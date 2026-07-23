@@ -331,7 +331,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
                 slotContent.bindResult(recipe.entryId());
             });
 
-            SlotDefinition slotDefinition = new SlotDefinition();
+            SlotDefinition slotDefinition = new SlotDefinition(viewContainer);
             this.clientRecipeType.placeSlots(slotDefinition);
             for (Slot slot : slotDefinition.getItemSlots()) {
                 int id = slot.getContainerSlot() + (i * this.getClientRecipeType().getSlotCount());
@@ -844,17 +844,19 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     }
 
 
-    public class SlotDefinition {
+    public static class SlotDefinition {
 
         private final HashMap<Integer, Slot> itemSlots;
-        private boolean highlightWithoutContents = true;
+		private final ViewContainer viewContainer;
+		private boolean highlightWithoutContents = true;
 
-        private SlotDefinition() {
-            this.itemSlots = new HashMap<>();
+        public SlotDefinition(ViewContainer viewContainer) {
+			this.viewContainer = viewContainer;
+			this.itemSlots = new HashMap<>();
         }
 
         public void addItemSlot(int slotId, int x, int y) {
-            this.itemSlots.put(slotId, new RecipeSlot(RecipeViewMenu.this.viewContainer, slotId, x, y, highlightWithoutContents));
+            this.itemSlots.put(slotId, new RecipeSlot(viewContainer, slotId, x, y, highlightWithoutContents));
         }
 
         public void setHighlightWithoutContents(boolean highlightWithoutContents) {

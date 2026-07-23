@@ -1,3 +1,28 @@
+## [8.6.3]
+
+### Added
+- Support for running mods with RRV integration via Launchpad and Sinytra Connector.
+
+## [8.6.2]
+
+### Fixed
+- Performance issues when searching.
+
+## [8.6.1]
+
+### Fixed
+- Crash on dedicated servers.
+
+## [8.6.0]
+
+### Added
+- Stack groups, a new way to group similar items together to make navigating the index easier. Stack groups are highly configurable, and have their own config screen. (thanks @evanbones!)
+
+### Fixed
+- Creative index source causing Polymer items to be added to the index incorrectly.
+- Log spam and potential broken behaviour on 26.3.
+- Firework rocket recipe displays are now more accurate.
+
 ## [8.5.0]
 
 ### Added

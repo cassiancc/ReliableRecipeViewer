@@ -20,5 +20,7 @@ mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen
 accessible field net/minecraft/client/gui/components/ScrollableLayout container Lnet/minecraft/client/gui/components/ScrollableLayout$Container;
 accessible class net/minecraft/client/gui/components/ScrollableLayout$Container
 
+accessible field net/minecraft/world/level/storage/loot/functions/SequenceFunction functions Lnet/minecraft/core/HolderSet;
+
 # Recipe Sharing
 extend-enum net/minecraft/network/chat/HoverEvent$Action RRV_SHOW_RECIPE

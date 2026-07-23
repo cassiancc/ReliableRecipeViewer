@@ -4,7 +4,9 @@
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.command.RrvCommand;
-import cc.cassian.rrv.common.network.RrvNetworkManager;
+import cc.cassian.rrv.common.integration.ModCompat;import cc.cassian.rrv.common.network.RrvNetworkManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import cc.cassian.rrv.fabric.FabricUtil;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -34,20 +36,17 @@ public class NeoForgeEntrypoint {
         ModList.get().getMods().forEach(modInfo -> {
             Optional<String> optional = modInfo.getConfig().getConfigElement("rrv");
             if (optional.isPresent()) {
-                ReliableRecipeViewer.LOGGER.info("RRV: Loading integration: {}", optional.get());
                 try {
                     Class<?> clazz = Class.forName(optional.get());
                     ReliableRecipeViewerPlugin integration = ((ReliableRecipeViewerPlugin) clazz.getConstructor().newInstance());
-                    integration.onIntegrationInitialize();
-                    ReliableRecipeViewer.LOGGER.info("RRV: Integration initialized for mod: {}", modInfo.getModId());
-                    return;
-
-                } catch (Exception ignored) {
-                }
-
-                ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration: {}", optional.get());
+                    RrvUtil.initializeEntrypoint(modInfo.getModId(), integration);
+				} catch (Exception ignored) {}
             }
         });
+        if (ModCompat.LAUNCHPAD && ModCompat.FABRIC_RECIPE_API) {
+            ReliableRecipeViewer.LOGGER.info("Initializing RRV integration for Fabric mods through Launchpad.");
+            FabricUtil.initialize();
+        }
     }
 
     @SubscribeEvent

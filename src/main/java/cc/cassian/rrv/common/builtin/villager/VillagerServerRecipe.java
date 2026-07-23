@@ -25,10 +25,12 @@ package cc.cassian.rrv.common.builtin.villager;
 
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.mixin.world.entity.npc.VillagerTradeAccessor;
 import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.*;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -51,6 +53,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -72,6 +75,7 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.storage.loot.functions.*;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.*;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
@@ -140,7 +144,9 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 		this.subTradeGroups.add(new SubTradeGroup(List.of(wants), additionalWants.isEmpty() ? List.of() : List.of(additionalWants), List.of(offerStack), new CompoundTag()));
 
-		for (LootItemFunction modifier : tradeAccessor.getGivenItemModifiers()) {
+		List<LootItemFunction> givenItemModifiers = RrvUtil.getLootItemFunctions(tradeAccessor.getGivenItemModifiers());
+
+		for (LootItemFunction modifier : givenItemModifiers) {
 			GivenItemFunctionProcessor<?> processor = FUNCTION_PROCESSORS.getOrDefault(modifier.getClass(), null);
 
 			if (processor != null) {
@@ -154,7 +160,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 		}
 
-		this.modifiers = tradeAccessor.getGivenItemModifiers();
+		this.modifiers = givenItemModifiers;
 	}
 
 	private <T extends LootItemFunction> T cast(LootItemFunction function) {
@@ -225,7 +231,13 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 		ListTag modifiersTag = new ListTag();
 		this.modifiers.forEach(modifier -> {
-			modifiersTag.add(LootItemFunctions.ROOT_CODEC.encode(modifier, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).getOrThrow());
+			//~ if >26.2 'ROOT_CODEC'->'DIRECT_CODEC'
+			DataResult<Tag> encode = LootItemFunctions.ROOT_CODEC.encode(modifier, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag());
+			if (encode.isSuccess()) {
+				modifiersTag.add(encode.getOrThrow());
+			} else {
+				ReliableRecipeViewer.LOGGER.error("Failed to encode villager recipe modifier {}", modifier);
+			}
 		});
 		if (this.id != null) {
 			tag.store("id", Identifier.CODEC, id);
@@ -252,6 +264,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 		this.modifiers.clear();
 		tag.getListOrEmpty("modifiers").forEach(modifier -> {
+			//~ if >26.2 'ROOT_CODEC'->'DIRECT_CODEC'
 			DataResult<LootItemFunction> parse = LootItemFunctions.ROOT_CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), modifier);
 			if (parse.isSuccess()) {
 				this.modifiers.add(parse.getOrThrow());
@@ -361,6 +374,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 
 		VillagerServerRecipe.registerFunctionProcessor(SetStewEffectFunction.class, (function, cost1, cost2, offerStacks, doubleTradePriceEnchantments, extraData) -> {
 
+			//~ if >26.2 'ROOT_CODEC'->'DIRECT_CODEC'
 			CompoundTag stewTag = LootItemFunctions.ROOT_CODEC.encode(function, ServerRecipeManager.INSTANCE.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).getOrThrow().asCompound().orElseGet(CompoundTag::new);
 			ListTag effects = stewTag.getListOrEmpty("effects");
 
@@ -544,10 +558,11 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		if (provider instanceof UniformGenerator(NumberProvider min, NumberProvider max))
 			return new MinMaxValue(getMinMax(min).min(), getMinMax(max).max());
 
+		//~ if >26.2 'List'->'HolderSet' {
 		if (provider instanceof Sum(List<NumberProvider> summands)) {
 			int min = 0;
 			int max = 0;
-			for (NumberProvider numberProvider : summands) {
+			for (var numberProvider : summands) {
 				MinMaxValue minMaxValue = getMinMax(numberProvider);
 				min += minMaxValue.min();
 				max += minMaxValue.max();
@@ -556,10 +571,14 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 			return new MinMaxValue(min, max);
 
 		}
+		//~}
 
 		return new MinMaxValue(0, 0);
 	}
 
+	public static MinMaxValue getMinMax(Holder<NumberProvider> holder) {
+		return getMinMax(holder.value());
+	}
 
 	public record MinMaxValue(int min, int max) {
 

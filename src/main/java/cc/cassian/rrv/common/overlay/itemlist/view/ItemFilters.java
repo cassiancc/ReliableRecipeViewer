@@ -12,9 +12,6 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.unlocking.ServerUnlockManager;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
-//? fabric {
-import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
-//?}
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
@@ -40,7 +37,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ItemFilters {
 
     public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
+    /// A list of [ItemStack]s that can be shown in the item view. Cleared when the player disconnects from a world, reloads resource packs, or changes the index source. Rebuilt by calling [ItemFilters#fullStackList()].
+    private static final List<ItemStack> CACHED_STACKS = new ArrayList<>();
+    /// Whether the contents of the creative search tab has been populated. When false, [ItemFilters#fullStackList()] will repopulate the creative tabs.
+    private static boolean creativeTabsCached;
 
+    /// Standard filtering for single-word searches.
     public static List<ItemStack> filter(String newQuery) {
         String query = RrvUtil.lowercaseSubstring(newQuery);
         for (PrefixedFilter value : PrefixedFilter.values()) {
@@ -51,6 +53,7 @@ public class ItemFilters {
         return ItemFilters.defaultFilter(newQuery);
     }
 
+    /// Advanced filtering for multi-word searches.
     public static boolean advancedFilter(List<ItemStack> availableItems, String newQuery) {
         boolean filtered = false;
         String query = RrvUtil.lowercaseSubstring(newQuery);
@@ -265,52 +268,55 @@ public class ItemFilters {
         return 0;
     }
 
-    public static boolean cached;
-
     /// @return A list of all items that can be displayed in the ViewOverlay
     ///
     /// **Also includes all stack-sensitives**
     private static List<ItemStack> fullStackList() {
-        List<ItemStack> results = new ArrayList<>();
+        if (CACHED_STACKS.isEmpty()) {
+            List<ItemStack> results = new ArrayList<>();
 
-		if (Configs.CLIENT_SETTINGS.getIndexSource() == IndexSource.REGISTRY) {
-			BuiltInRegistries.ITEM.forEach(item -> {
-				results.add(new ItemStack(item));
-				results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).toList());
-			});
-		} else {
-			Minecraft mc = Minecraft.getInstance();
-            LocalPlayer player = mc.player;
-            if (!cached && player != null && !player.hasInfiniteMaterials()) {
-				CreativeModeTabs.tryRebuildTabContents(FeatureFlags.VANILLA_SET, false, player.registryAccess());
-			}
-
-			results.addAll(CreativeModeTabs.searchTab().getSearchTabDisplayItems().stream()
-                            //? fabric {
-                            .map(RRVClientUtil::applyPolymerCheck)
-                    //?}
-                    .toList()
-            );
-
-			BuiltInRegistries.ITEM.forEach(item -> {
-                if (Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.CREATIVE_AND_REGISTRY)) {
-                    ItemStack e = new ItemStack(item);
-                    if (results.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, e)))
-                        results.add(e);
+            if (Configs.CLIENT_SETTINGS.getIndexSource() == IndexSource.REGISTRY) {
+                BuiltInRegistries.ITEM.forEach(item -> {
+                    results.add(new ItemStack(item));
+                    results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).toList());
+                });
+            } else {
+                Minecraft mc = Minecraft.getInstance();
+                LocalPlayer player = mc.player;
+                if (!creativeTabsCached && player != null && !player.hasInfiniteMaterials()) {
+                    CreativeModeTabs.tryRebuildTabContents(FeatureFlags.VANILLA_SET, false, player.registryAccess());
                 }
-				results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
-			});
-		}
+
+                results.addAll(CreativeModeTabs.searchTab().getSearchTabDisplayItems().stream()
+                        //? fabric {
+                        .map(RRVClientUtil::applyPolymerCheck)
+                        //?}
+                        .toList()
+                );
+
+                BuiltInRegistries.ITEM.forEach(item -> {
+                    if (Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.CREATIVE_AND_REGISTRY)) {
+                        ItemStack e = new ItemStack(item);
+                        if (results.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, e)))
+                            results.add(e);
+                    }
+                    results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
+                });
+            }
 
 
-		if (ModCompat.POLYMER)
-            PolymerHelpers.polymerFilter(results);
+            if (ModCompat.POLYMER)
+                PolymerHelpers.polymerFilter(results);
 
-        ResourceRecipeManager.replaceIndex(results);
+            ResourceRecipeManager.replaceIndex(results);
 
-        return results;
+            CACHED_STACKS.addAll(results);
+        }
+
+        return CACHED_STACKS;
     }
 
+    ///  Exports the contents of the index in a format compatible with resource packs.
     public static void exportFullStackList(Button button) {
         try (var output = Files.newOutputStream(RRVPlatform.INSTANCE.getDataDirectory().resolve("rrv_index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
             JsonObject index = new JsonObject();
@@ -346,4 +352,9 @@ public class ItemFilters {
             ReliableRecipeViewer.LOGGER.error("Unable to export full stack list!", e);
         }
     }
+
+	public static void clearCaches() {
+		CACHED_STACKS.clear();
+        creativeTabsCached = false;
+	}
 }

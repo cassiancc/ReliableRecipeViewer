@@ -1,10 +1,12 @@
 package cc.cassian.rrv.common.recipe;
 
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.recipe.*;
 import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPayload;
@@ -13,7 +15,7 @@ import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayl
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
 //? neoforge
 //import cc.cassian.rrv.neoforge.NeoForgeEntrypoint;
-//? fabric
+import cc.cassian.rrv.fabric.FabricUtil;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -59,10 +61,11 @@ public class ServerRecipeManager {
     /// @param serializer The recipe serializer used for Fabric recipe synchronization.
     /// @param type The recipe type used for NeoForge recipe synchronization.
     public void synchronizeRecipeType(RecipeSerializer<?> serializer, RecipeType<?> type) {
-        //? fabric
-        RecipeSynchronization.synchronizeRecipeSerializer(serializer);
-        //? neoforge {
-        /*if (!NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.contains(type))
+        //? fabric {
+        if (ModCompat.FABRIC_RECIPE_API && serializer != null)
+            FabricUtil.synchronizeRecipeType(serializer);
+        //?} else {
+        /*if (type != null && !NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.contains(type))
             NeoForgeEntrypoint.SYNCHRONIZED_RECIPES.add(type);
         *///?}
     }
@@ -210,6 +213,10 @@ public class ServerRecipeManager {
                 tag.put("recipeData", dataTag);
             }catch (Exception e) {
                 ReliableRecipeViewer.LOGGER.error("Failed to encode recipe {}: {}, please contact the mod author", this.recipeId(), e.getMessage());
+                if (RRVPlatform.INSTANCE.isDevelopment()) {
+                    ReliableRecipeViewer.LOGGER.error(e.getMessage(), e);
+                }
+
             }
 
             return tag;

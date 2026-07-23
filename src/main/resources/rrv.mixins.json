@@ -37,7 +37,6 @@
     "world.level.storage.loot.functions.SetEnchantmentsFunctionAccessor",
     "world.level.storage.loot.functions.SetNameFunctionAccessor",
     "world.level.storage.loot.functions.SetPotionFunctionAccessor",
-    "world.level.storage.loot.functions.SetRandomDyesFunctionAccessor",
     "world.level.storage.loot.functions.SetRandomPotionFunctionAccessor"
   ],
   "injectors": {

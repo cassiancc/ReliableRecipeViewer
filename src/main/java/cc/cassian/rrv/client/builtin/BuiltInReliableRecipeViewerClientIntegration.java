@@ -47,6 +47,8 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 //? if >26.2 {
 /*import net.minecraft.core.component.BlockTransformer;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.component.BlockTransformerMappings;
 *///?}
 import net.minecraft.core.component.DataComponentPatch;
@@ -64,19 +66,20 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 //?}
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.FuelValues;
-import net.minecraft.world.level.block.entity.PotDecorations;
+import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 //? neoforge
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static cc.cassian.rrv.client.recipe.ResourceRecipeManager.*;
 import static cc.cassian.rrv.common.recipe.util.RrvUtil.blockName;
@@ -318,13 +321,19 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addFuelRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
-        FuelValues fuelValues = level.fuelValues();
+        //FIXME
+		//? if >26.2 {
+
+		//?} else {
+
+		FuelValues fuelValues = level.fuelValues();
         fuelValues.fuelItems().forEach(item -> {
             //? fabric
             recipeList.add(new BurningClientRecipe(item, fuelValues.burnDuration(new ItemStack(item))));
             //? neoforge
             //recipeList.add(new BurningClientRecipe(item, item.getDefaultInstance().getBurnTime(null, fuelValues)));
         });
+		//?}
     }
 
     private static void addSmithingRecipes(List<ReliableClientRecipe> recipeList) {

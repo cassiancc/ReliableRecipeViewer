@@ -16,10 +16,9 @@ public record ExtendedTooltipFlag(boolean advanced, boolean creative) implements
 	public boolean isCreative() {
 		return this.creative;
 	}
-	/*TODO: Wait for NeoForge and Fabric to merge the PRs that implement `shouldDisplayAllInformation`.
-	@Override
+
+	// No override, this is currently only 26.2 Neo but will be on all versions eventually.
 	public boolean shouldDisplayAllInformation() {
 		return true;
 	}
-	*/
 }
