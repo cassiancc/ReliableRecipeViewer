@@ -7,9 +7,10 @@
   "mixins": [
     "advancements.criterion.MixinInventoryChangeTrigger",
     "chat.HoverEventActionMixin",
-    "integration.JeiBookmarkButtonControllerMixin",
-    "integration.JeiButtonControllerMixin",
-    "integration.JeiScreenEventsMixin",
+    "integration.jei.JeiBookmarkOverlayAccessor",
+    "integration.jei.JeiBookmarkButtonControllerMixin",
+    "integration.jei.JeiButtonControllerMixin",
+    "integration.jei.JeiScreenEventsMixin",
     "recipe.ConcretePowderBlockAccessor",
     "server.MixinMinecraftServer",
     "world.entity.npc.VillagerTradeAccessor",
@@ -61,6 +62,6 @@
     "client.renderer.item.MixinSpecialModelWrapper",
     "client.renderer.special.MixinSpecialModelRenderers",
     "integration.ControlifyRecipeViewScreenMixin",
-    "integration.JeiRecipesGuiMixin"
+    "integration.jei.JeiRecipesGuiMixin"
   ]
 }

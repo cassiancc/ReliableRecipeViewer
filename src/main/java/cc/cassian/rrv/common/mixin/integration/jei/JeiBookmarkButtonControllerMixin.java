@@ -1,18 +1,10 @@
-package cc.cassian.rrv.common.mixin.integration;
+package cc.cassian.rrv.common.mixin.integration.jei;
 
-import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.integration.jei.JeiHelpers;
-import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
-import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
-import mezz.jei.gui.overlay.ConfigButtonController;
 import mezz.jei.gui.overlay.bookmarks.BookmarkButtonController;
-import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryButtonController;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BookmarkButtonController.class)

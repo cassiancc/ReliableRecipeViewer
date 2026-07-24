@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.mixin.integration;
+package cc.cassian.rrv.common.mixin.integration.jei;
 
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
@@ -26,7 +26,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;

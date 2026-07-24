@@ -4,6 +4,7 @@ import cc.cassian.rrv.common.config.AbstractRrvConfig;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 
 public class ClientConfig extends AbstractRrvConfig {
 
@@ -80,6 +81,7 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public void setShowItemView(OverlayDisplay showItemView) {
 		this.showItemView = showItemView;
+		ItemViewOverlay.INSTANCE.updateSearchBarVisibility();
 	}
 
 	public SidePanel getSidePanel() {
@@ -201,10 +203,11 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public void setJeiPanel(boolean jeiPanel) {
 		this.jeiPanel = jeiPanel;
+		ItemViewOverlay.INSTANCE.updateSearchBarVisibility();
 	}
 
 	public boolean isJeiRecipeScreen() {
-		return jeiRecipeScreen;
+		return ModCompat.JEI && jeiRecipeScreen;
 	}
 
 	public void setJeiRecipeScreen(boolean jeiRecipeScreen) {

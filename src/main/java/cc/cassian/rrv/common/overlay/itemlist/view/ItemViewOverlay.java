@@ -115,26 +115,27 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         InventoryPositionInfo info = OverlayManager.INSTANCE.currentInfo();
 
+        int buttonSize = ModCompat.JEI ? 20 : 18;
 
         //---- Client Settings Button ----
         ReliableSpriteIconButton settingsButton = new ReliableSpriteIconButton(
-                        18,
+                buttonSize,
                         Component.translatable("rrv.client_settings.btn"),
                         14,
                         SETTINGS_WHEEL,
                 _ -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
         );
 
-        if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
-            settingsButton.visible = false;
-        }
-
         int position = 0;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
-            position = info.screenWidth() - 18;
+            position = info.screenWidth() - buttonSize;
         }
 
-        settingsButton.setPosition(position, info.screenHeight() - 18);
+        settingsButton.setPosition(position, info.screenHeight() - buttonSize);
+
+        if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
+            JeiHelpers.placeSidePanelButton(settingsButton);
+        }
 
         ctx.addRenderable(settingsButton);
         //---- Side Panel Settings Button ----
@@ -144,7 +145,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
             sidePanelButtonPosition = info.screenWidth() - 40;
         }
-        sidePanelButton.setPosition(sidePanelButtonPosition, info.screenHeight() - 18);
+        sidePanelButton.setPosition(sidePanelButtonPosition, info.screenHeight() - buttonSize);
 
         if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
             sidePanelButton.visible = false;
@@ -376,9 +377,18 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         newSearchbar.setResponder(this::updateQuery);
         newSearchbar.setHint(Component.translatable("rrv.search_hint"));
 
-        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.DISABLED);
+        updateSearchBarVisibility(newSearchbar);
 
         this.searchbar = newSearchbar;
+    }
+
+    private void updateSearchBarVisibility(SearchBar newSearchbar) {
+        if (newSearchbar == null) return;
+        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.DISABLED) && !Configs.CLIENT_SETTINGS.isJeiPanel();
+    }
+
+    public void updateSearchBarVisibility() {
+        updateSearchBarVisibility(this.searchbar);
     }
 
     public void createButtons(InventoryPositionInfo info){

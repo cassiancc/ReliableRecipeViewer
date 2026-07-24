@@ -7,6 +7,7 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import mezz.jei.api.IModPlugin;
@@ -24,6 +25,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 @JeiPlugin
+@NullMarked
 public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 
 	public static HashMap<ReliableClientRecipeType, IRecipeType<ReliableClientRecipe>> RECIPE_CATEGORIES = new HashMap<>();
@@ -76,10 +79,10 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			else if (type.getId().equals(ReliableRecipeViewer.of("anvil_combining"))) {
 				recipes.forEach(recipe -> {
 					AnvilCombiningClientRecipe anvilRecipe = ((AnvilCombiningClientRecipe) recipe);
-					registration.addRecipes(RecipeTypes.ANVIL, List.of(new AnvilRecipe(anvilRecipe.getLeft().getValidContents(), anvilRecipe.getRight().getValidContents(), anvilRecipe.getResult().getValidContents(), anvilRecipe.getId())));
+					registration.getVanillaRecipeFactory().createAnvilRecipe(anvilRecipe.getLeft().getValidContents(), anvilRecipe.getRight().getValidContents(), anvilRecipe.getResult().getValidContents(), anvilRecipe.getId());
 				});
 			}
-			else {
+			else if (Configs.CATEGORIES.CATEGORIES.get(type.getId()).enabled()) {
 				registration.addRecipes(recipeType, recipes);
 			}
 		});

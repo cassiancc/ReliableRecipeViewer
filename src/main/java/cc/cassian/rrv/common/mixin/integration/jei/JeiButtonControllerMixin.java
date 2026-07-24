@@ -1,4 +1,4 @@
-package cc.cassian.rrv.common.mixin.integration;
+package cc.cassian.rrv.common.mixin.integration.jei;
 
 import cc.cassian.rrv.common.config.Configs;
 import mezz.jei.api.gui.buttons.IButtonState;

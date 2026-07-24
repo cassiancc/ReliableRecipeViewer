@@ -190,7 +190,7 @@
   "rrv.category_settings.priority": "Priority",
   "rrv.client_settings.export_item_view.needs_world": "The Item View can only be exported while a world is loaded!",
   "rrv.category_settings.needs_initial_load": "Recipe categories can only be configured while a world is loaded!",
-  "rrv.client_settings.jei": "JEI",
+  "rrv.client_settings.jei": "JEI Compatibility",
   "rrv.client_settings.jei_panel": "Panels",
   "rrv.client_settings.jei_panel.rrv": "RRV",
   "rrv.client_settings.jei_panel.jei": "JEI",
