@@ -32,7 +32,7 @@ public class ReliableRecipeViewerClient {
 
     public static final KeyMapping RECIPE_KEYBIND = new KeyMapping("key.rrv.recipe", InputConstants.KEY_R, RRV_CATEGORY);
 
-    public static final KeyMapping TOGGLE_OVERLAY_KEYBIND = new KeyMapping("key.rrv.toggle_overlay", 0, RRV_CATEGORY);
+    public static final KeyMapping TOGGLE_OVERLAY_KEYBIND = new KeyMapping("key.rrv.toggle_overlay", InputConstants.UNKNOWN.getValue(), RRV_CATEGORY);
 
     public static final KeyMapping ADD_BOOKMARK_KEYBIND = new KeyMapping("key.rrv.bookmark", InputConstants.KEY_A, RRV_CATEGORY);
 
