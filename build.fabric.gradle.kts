@@ -145,6 +145,7 @@ dependencies {
 
 
     if (stonecutter.eval(mcVersion, "<26.3")) {
+        localRuntime("maven.modrinth:modmenu:${property("deps.modmenu")}")
 
         compileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
         localRuntime("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")

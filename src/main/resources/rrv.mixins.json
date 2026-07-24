@@ -8,6 +8,7 @@
     "advancements.criterion.MixinInventoryChangeTrigger",
     "chat.HoverEventActionMixin",
     "integration.JeiBookmarkButtonControllerMixin",
+    "integration.JeiButtonControllerMixin",
     "integration.JeiScreenEventsMixin",
     "recipe.ConcretePowderBlockAccessor",
     "server.MixinMinecraftServer",

@@ -76,7 +76,8 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                     Configs.CLIENT_SETTINGS.isShowSidePanel().equals(OverlayDisplay.ENABLED) ||
                     (Configs.CLIENT_SETTINGS.isShowSidePanel().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching()) ||
                     (Configs.CLIENT_SETTINGS.isShowSidePanel().equals(OverlayDisplay.WITH_ITEM_VIEW) && ItemViewOverlay.INSTANCE.isEnabled())
-                );
+                ) &&
+                !Configs.CLIENT_SETTINGS.isJeiPanel();
     }
 
     @Override
@@ -112,7 +113,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         ctx.addRenderable(this.back);
     }
 
-    private void initForScreen(AbstractContainerScreen<? extends AbstractContainerMenu> screen, InventoryPositionInfo invInfo) {
+    private void initForScreen(Screen screen, InventoryPositionInfo invInfo) {
 
         //-14 for cleaner appearance
         this.width = screen.width - ((screen.width - 176) / 2 + 176) - 14 - 2 * ITEM_ENTRY_SIZE;

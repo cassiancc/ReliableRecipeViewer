@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -249,7 +250,7 @@ public abstract class AbstractRrvOverlay {
 
     }
 
-    public record InventoryPositionInfo(AbstractContainerScreen<? extends AbstractContainerMenu> screen,
+    public record InventoryPositionInfo(Screen screen,
                                         int screenWidth, int screenHeight, int leftPos, int topPos, int imageWidth,
                                         int imageHeight) {
 

@@ -35,4 +35,8 @@ public class JeiHelpers {
 			case null, default -> RecipeIngredientRole.RENDER_ONLY;
 		};
 	}
+
+	public static ItemStack getItemUnderMouse() {
+		return runtime.getRecipesGui().getIngredientUnderMouse(VanillaTypes.ITEM_STACK).orElse(null);
+	}
 }

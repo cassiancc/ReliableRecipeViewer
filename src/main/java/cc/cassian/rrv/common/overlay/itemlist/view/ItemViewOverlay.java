@@ -77,8 +77,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public boolean isEnabled() {
         return
                 super.isEnabled() &&
-                (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching()))
-                && !Configs.CLIENT_SETTINGS.isJeiPanel();
+                (
+                        Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) ||
+                        (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching())
+                ) &&
+                !Configs.CLIENT_SETTINGS.isJeiPanel();
     }
 
     @Override
@@ -150,7 +153,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         ctx.addRenderable(sidePanelButton);
     }
 
-    private void initForScreen(AbstractContainerScreen<? extends AbstractContainerMenu> screen, InventoryPositionInfo invInfo) {
+    private void initForScreen(Screen screen, InventoryPositionInfo invInfo) {
 
         //-14 for cleaner appearance
         this.width = invInfo.screenWidth() - ((invInfo.screenWidth() - 176) / 2 + 176) - 14;
@@ -314,27 +317,31 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     }
 
 
-    public void renderItemHighlighting(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderItemHighlighting(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.itemFilterMode)
             return;
 
+        if (screen instanceof AbstractContainerScreen<?> abstractContainerScreen) {
 
-        screen.getMenu().slots.forEach(slot -> {
+            abstractContainerScreen.getMenu().slots.forEach(slot -> {
 
-            if (!slot.isActive() || !slot.isHighlightable())
-                return;
+                if (!slot.isActive() || !slot.isHighlightable())
+                    return;
 
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
+                guiGraphics.pose().pushMatrix();
+                guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
 
-            if (!slot.hasItem()
-                    || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())
-                    && ItemFilters.getTooltipMatch(slot.getItem(), this.currentQuery) == 0) {
-                guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
-            }
-            guiGraphics.pose().popMatrix();
+                if (!slot.hasItem()
+                        || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())
+                        && ItemFilters.getTooltipMatch(slot.getItem(), this.currentQuery) == 0) {
+                    guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
+                }
+                guiGraphics.pose().popMatrix();
 
-        });
+            });
+        }
+
+
     }
 
 

@@ -1,7 +1,10 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens;
 
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.JeiHelpers;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.Minecraft;
@@ -41,7 +44,8 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
 
 	@Inject(method = "extractBackground", at = @At("RETURN"))
 	private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-		if ((Screen) (Object) this instanceof AbstractContainerScreen<?>)
+		Screen screen = (Screen) (Object) this;
+		if (screen instanceof RRVExtendedContainerScreen)
 			OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 
