@@ -37,6 +37,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -141,9 +142,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         //---- Side Panel Settings Button ----
         ReliableSpriteIconButton sidePanelButton = new SidePanelButton();
 
-        int sidePanelButtonPosition = position + 20;
+        int sidePanelButtonPosition = position + buttonSize + 2;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
-            sidePanelButtonPosition = info.screenWidth() - 40;
+            sidePanelButtonPosition = info.screenWidth() - (buttonSize+2)*2;
         }
         sidePanelButton.setPosition(sidePanelButtonPosition, info.screenHeight() - buttonSize);
 
@@ -247,8 +248,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     private void updateButtons() {
         if (back != null) {
-            back.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
-            next.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
+            boolean enabled = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons() && (getWidth()-16)>Minecraft.getInstance().font.width(getPageCountText())+(buttonSize()*2);
+            back.visible = enabled;
+            next.visible = enabled;
         }
 	}
 
@@ -294,8 +296,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         Font font = client.font;
 
 
-        var page = Component.literal((this.getPage() + 1) + "/" + (this.getMaxPageIndex() + 1));
-
+        var page = getPageCountText();
 
         if (this.fittingPerPage() > 0) {
             int titleX = checkedX() + checkedWidth() / 2;
@@ -320,7 +321,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex(), false);
 
     }
-
 
     public void renderItemHighlighting(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.itemFilterMode)

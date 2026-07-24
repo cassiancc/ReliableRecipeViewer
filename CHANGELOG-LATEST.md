@@ -7,3 +7,4 @@
 
 ### Fixed
 - Incorrectly set unknown keybind causing OpenGL spam.
+- Next/prev page buttons no longer show up if they do not have enough space to render.

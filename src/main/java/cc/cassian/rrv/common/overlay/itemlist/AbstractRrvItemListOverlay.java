@@ -194,6 +194,10 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return maxPageIndex;
     }
 
+    protected Component getPageCountText() {
+        return Component.literal((this.getPage() + 1) + "/" + (this.getMaxPageIndex() + 1));
+    }
+
     protected void drawProgressBar(GuiGraphicsExtractor guiGraphics, boolean rightIndex, boolean sidePanel) {
         if (Configs.CLIENT_SETTINGS.isShowProgressBar()) {
             double scrollPage = this.getPage();
