@@ -115,7 +115,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         InventoryPositionInfo info = OverlayManager.INSTANCE.currentInfo();
 
-        int buttonSize = ModCompat.JEI ? 20 : 18;
+        int buttonSize = buttonSize();
 
         //---- Client Settings Button ----
         ReliableSpriteIconButton settingsButton = new ReliableSpriteIconButton(
@@ -152,6 +152,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 
         ctx.addRenderable(sidePanelButton);
+    }
+
+    protected int buttonSize() {
+        return Configs.CLIENT_SETTINGS.isJeiPanel() ? 20 : 18;
     }
 
     private void initForScreen(Screen screen, InventoryPositionInfo invInfo) {

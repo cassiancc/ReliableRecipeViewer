@@ -7,9 +7,10 @@
   "mixins": [
     "advancements.criterion.MixinInventoryChangeTrigger",
     "chat.HoverEventActionMixin",
-    "integration.jei.JeiBookmarkOverlayAccessor",
     "integration.jei.JeiBookmarkButtonControllerMixin",
+    "integration.jei.JeiBookmarkOverlayAccessor",
     "integration.jei.JeiButtonControllerMixin",
+    "integration.jei.JeiPluginLoaderMixin",
     "integration.jei.JeiScreenEventsMixin",
     "recipe.ConcretePowderBlockAccessor",
     "server.MixinMinecraftServer",

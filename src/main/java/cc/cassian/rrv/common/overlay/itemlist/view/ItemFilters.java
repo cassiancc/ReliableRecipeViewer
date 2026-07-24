@@ -7,6 +7,7 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.JeiHelpers;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
@@ -46,7 +47,7 @@ public class ItemFilters {
         String query = RrvUtil.lowercaseSubstring(newQuery);
         for (PrefixedFilter value : PrefixedFilter.values()) {
             if (newQuery.startsWith(value.prefix())) {
-                return value.filter.apply(query);
+                return value.filter().apply(query);
             }
         }
         return ItemFilters.defaultFilter(newQuery);
@@ -58,7 +59,7 @@ public class ItemFilters {
         String query = RrvUtil.lowercaseSubstring(newQuery);
         for (PrefixedFilter value : PrefixedFilter.values()) {
             if (newQuery.startsWith(value.prefix())) {
-                availableItems.removeIf(stack-> !value.advancedFilter.apply(stack, query));
+                availableItems.removeIf(stack-> !value.advancedFilter().apply(stack, query));
                 filtered = true;
             }
         }
@@ -238,6 +239,38 @@ public class ItemFilters {
         }
 
         return result.get();
+    }
+
+    /// Filters by [String] (color)
+    /// @param query The query
+    /// @return A list of matching color
+    public static List<ItemStack> color(String query) {
+        if (!ModCompat.JEI) return List.of();
+        List<ItemStack> firstPrio = new ArrayList<>();
+        List<ItemStack> secondPrio = new ArrayList<>();
+
+        for (ItemStack stack : fullStackList()) {
+
+            String itemId = JeiHelpers.getColorName(stack).toLowerCase(Locale.ROOT);
+
+            if (itemId.startsWith(query))
+                add(firstPrio, stack);
+            else if (itemId.contains(query))
+                add(secondPrio, stack);
+        }
+
+        List<ItemStack> results = new ArrayList<>(firstPrio);
+        secondPrio.stream().filter(o -> !results.contains(o)).forEach(results::add);
+        return results;
+    }
+
+    /// Filters by [String] (color)
+    /// @param stack The item stack
+    /// @param query The query
+    /// @return Whether the item stack matches the color
+    public static boolean color(ItemStack stack, String query) {
+        if (!ModCompat.JEI) return true;
+        return JeiHelpers.getColorName(stack).toLowerCase(Locale.ROOT).contains(query);
     }
 
     /// Returns the matching level of the item stack's tooltip with the query

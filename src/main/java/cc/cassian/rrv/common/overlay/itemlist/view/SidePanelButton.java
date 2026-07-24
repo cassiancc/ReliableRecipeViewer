@@ -11,8 +11,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
 
@@ -22,7 +20,7 @@ public class SidePanelButton extends ReliableSpriteIconButton {
     private static final Identifier SIDE_PANEL_TOGGLE = ReliableRecipeViewer.of("side_panel_button");
 
     public SidePanelButton() {
-        super(18, getTooltip(), 14, SIDE_PANEL_TOGGLE, SidePanelButton::nextSidePanel);
+        super(ItemViewOverlay.INSTANCE.buttonSize(), getTooltip(), 14, SIDE_PANEL_TOGGLE, SidePanelButton::nextSidePanel);
     }
 
     public static void nextSidePanel(Button button) {

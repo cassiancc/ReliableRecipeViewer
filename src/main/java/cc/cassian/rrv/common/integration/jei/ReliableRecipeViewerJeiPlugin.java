@@ -1,6 +1,5 @@
 package cc.cassian.rrv.common.integration.jei;
 
-import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
@@ -12,7 +11,6 @@ import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.types.IRecipeType;
@@ -22,7 +20,6 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NullMarked;
@@ -55,13 +52,18 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 	public void registerCategories(IRecipeCategoryRegistration registration) {
 		for (ReliableClientRecipe recipe : ClientRecipeCache.INSTANCE.getRecipes()) {
 			ReliableClientRecipeType type = recipe.getType();
-			if (!RECIPE_CATEGORIES.containsKey(type)) {
-				IRecipeType<ReliableClientRecipe> recipeType = IRecipeType.create(type.getId().withPrefix("rrv/"), recipe.getClass()); //FIXME RRV TYPES SHOULD BE DE-DUPLICATED
+			if (!RECIPE_CATEGORIES.containsKey(type) && doesNotHaveNativePlugin(type.getId().getNamespace())) {
+				IRecipeType<ReliableClientRecipe> recipeType = IRecipeType.create(type.getId().withPrefix("rrv/"), recipe.getClass());
 				registration.addRecipeCategories(new JeiReliableRecipeCategory(type, recipeType));
 				RECIPE_CATEGORIES.put(type, recipeType);
 			}
 		}
+	}
 
+	private boolean doesNotHaveNativePlugin(String namespace) {
+		if (namespace.equals("rrv")) return true;
+		else if (namespace.equals("minecraft")) return false;
+		return !JeiHelpers.PLUGINS.contains(namespace);
 	}
 
 	@Override
@@ -70,17 +72,24 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			List<ReliableClientRecipe> recipes = ClientRecipeCache.INSTANCE.getRecipes().stream().filter(p -> p.getType().equals(type)).toList();
 			if (type.getId().equals(ReliableRecipeViewer.of("info"))) {
 				recipes.forEach(recipe -> {
-					InfoClientRecipe info = ((InfoClientRecipe) recipe);
-					ArrayList<ItemStack> stacks = new ArrayList<>();
-					info.getIngredients().stream().map(SlotContent::getValidContents).forEach(stacks::addAll);
-					registration.addItemStackInfo(stacks, info.getText());
+					if (doesNotHaveNativePlugin(recipe.getId().getNamespace())) {
+						InfoClientRecipe info = ((InfoClientRecipe) recipe);
+						ArrayList<ItemStack> stacks = new ArrayList<>();
+						info.getIngredients().stream().map(SlotContent::getValidContents).forEach(stacks::addAll);
+						registration.addItemStackInfo(stacks, info.getText());
+					}
 				});
 			}
 			else if (type.getId().equals(ReliableRecipeViewer.of("anvil_combining"))) {
 				recipes.forEach(recipe -> {
-					AnvilCombiningClientRecipe anvilRecipe = ((AnvilCombiningClientRecipe) recipe);
-					registration.getVanillaRecipeFactory().createAnvilRecipe(anvilRecipe.getLeft().getValidContents(), anvilRecipe.getRight().getValidContents(), anvilRecipe.getResult().getValidContents(), anvilRecipe.getId());
+					if (doesNotHaveNativePlugin(recipe.getId().getNamespace())) {
+						AnvilCombiningClientRecipe anvilRecipe = ((AnvilCombiningClientRecipe) recipe);
+						registration.getVanillaRecipeFactory().createAnvilRecipe(anvilRecipe.getLeft().getValidContents(), anvilRecipe.getRight().getValidContents(), anvilRecipe.getResult().getValidContents(), anvilRecipe.getId());
+					}
 				});
+			}
+			else if (type.getId().equals(ReliableRecipeViewer.of("item_tag"))) {
+				return;
 			}
 			else if (Configs.CATEGORIES.CATEGORIES.get(type.getId()).enabled()) {
 				registration.addRecipes(recipeType, recipes);

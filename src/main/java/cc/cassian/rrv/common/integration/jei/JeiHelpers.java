@@ -4,23 +4,20 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.common.mixin.integration.jei.JeiBookmarkOverlayAccessor;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
 public class JeiHelpers {
 	public static IJeiRuntime runtime;
+	public static final ArrayList<String> PLUGINS = new ArrayList<>();
 
 	public static boolean hasRecipesForItem(ItemStack stack, ActionType openType) {
 		return true;
@@ -53,5 +50,14 @@ public class JeiHelpers {
 		} else {
 			settingsButton.visible = false;
 		}
+	}
+
+	public static String getColorName(ItemStack stack) {
+		IColorHelper colorHelper = runtime.getJeiHelpers().getColorHelper();
+		var color = colorHelper.getColors(stack, 1);
+		if (color.isEmpty()) {
+			return "";
+		}
+		return colorHelper.getClosestColorName(color.getFirst());
 	}
 }
