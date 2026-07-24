@@ -37,7 +37,6 @@ import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
-import cc.cassian.rrv.common.recipe.util.WorldInteractionRecipeUtil;
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 //?}
 import net.minecraft.client.Minecraft;
@@ -66,7 +65,6 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 //?}
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.*;
@@ -79,7 +77,6 @@ import net.minecraft.world.level.material.Fluids;
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 import java.util.*;
-import java.util.function.Function;
 
 import static cc.cassian.rrv.client.recipe.ResourceRecipeManager.*;
 import static cc.cassian.rrv.common.recipe.util.RrvUtil.blockName;

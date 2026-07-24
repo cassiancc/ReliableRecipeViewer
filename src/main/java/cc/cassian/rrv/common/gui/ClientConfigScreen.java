@@ -4,6 +4,7 @@ import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.options.*;
+import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -113,6 +114,18 @@ public class ClientConfigScreen extends Screen {
 
 
         linearLayout.addChild(behavior);
+
+        if (ModCompat.JEI) {
+            // jei
+            GridLayout jei = createGridLayout();
+            GridLayout.RowHelper jeiHelper = jei.createRowHelper(2);
+            linearLayout.addChild(new StringWidget(clientSetting("jei"), this.font));
+
+            addChild(jeiHelper, "jei_panel", "jei", "rrv", configs.isJeiPanel(), (_, b) -> configs.setJeiPanel(b));
+            addChild(jeiHelper, "jei_recipe_screen", "jei", "rrv", configs.isJeiRecipeScreen(), (_, b) -> configs.setJeiRecipeScreen(b));
+
+            linearLayout.addChild(jei);
+        }
 
         // style
         GridLayout style = createGridLayout();

@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.smoking;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
@@ -66,13 +67,13 @@ public class SmokingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeScreenContext context) {
         int litProgress = Math.round(this.smokingTicker.getProgress() * 14);
         int smeltProgress = Math.round(this.smokingTicker.getProgress() * 24);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 4, 23 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 4, 23 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 27, 22, 14, 0, smeltProgress, 16, 128, 128);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 27, 22, 14, 0, smeltProgress, 16, 128, 128);
     }
 
 

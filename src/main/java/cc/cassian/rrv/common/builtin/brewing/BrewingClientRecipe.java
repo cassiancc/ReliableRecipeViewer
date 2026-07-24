@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.brewing;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
@@ -80,14 +81,14 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeScreenContext context) {
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 42, 33, 38, 0, 18, 4, 128, 128);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 42, 33, 38, 0, 18, 4, 128, 128);
 
         int brewProgress = Math.round(this.brewProgressTicker.getProgress() * 28);
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 79, 5, 56, 0, 9, brewProgress, 128, 128);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 79, 5, 56, 0, 9, brewProgress, 128, 128);
 
         int bubbleProgress = 29 - BUBBLE_LENGTHS[this.brewProgressTicker.getTick() / 2 % 7];
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 45, 32 - bubbleProgress, 64, 29 - bubbleProgress, 13, bubbleProgress, 128, 128);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 45, 32 - bubbleProgress, 64, 29 - bubbleProgress, 13, bubbleProgress, 128, 128);
     }
 }

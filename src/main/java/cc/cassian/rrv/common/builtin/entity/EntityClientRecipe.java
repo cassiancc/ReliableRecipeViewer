@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.entity;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -117,23 +118,20 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeScreenContext context) {
 
         Component entityName = this.entityType.getDescription();
 
-        this.renderEntity(screen, recipePosition, guiGraphics, mouseX, mouseY, partialTicks);
+        this.renderEntity(context);
 
-        if (mouseX >= 65 && mouseX <= 65 + 32 && mouseY >= 0 && mouseY <= 32)
-            this.hovered = true;
-        else
-            this.hovered = false;
+		this.hovered = context.mouseY() >= 65 && context.mouseX() <= 65 + 32 && context.mouseY() >= 0 && context.mouseY() <= 32;
 
         if (this.hovered)
-            guiGraphics.setComponentTooltipForNextFrame(screen.getFont(), List.of(Component.empty().append(entityName).withStyle(ChatFormatting.GOLD)), recipePosition.left() + mouseX, recipePosition.top() + mouseY);
+            context.guiGraphics().setComponentTooltipForNextFrame(context.font(), List.of(Component.empty().append(entityName).withStyle(ChatFormatting.GOLD)), context.recipePosition().left() + context.mouseX(), context.recipePosition().top() + context.mouseY());
 
     }
 
-    private void renderEntity(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    private void renderEntity(RecipeScreenContext context) {
 
         if (this.previewEntity == null)
             return;
@@ -144,7 +142,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         if (boundingBox.getYsize() * scale > 26)
             scale = (float) (26.0F / boundingBox.getYsize());
 
-        RrvGuiRenderHelper.renderEntityOnScreen(guiGraphics, this.previewEntity, recipePosition.left() + 67, recipePosition.top() + 2, recipePosition.left() + 67 + 28, recipePosition.top() + 2 + 28, scale, new Vector3f(0.0F, (28.0F / scale / 2.0F), 0.0F), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + partialTicks) / 180.0F * Mth.PI, 0.0F), null);
+        RrvGuiRenderHelper.renderEntityOnScreen(context.guiGraphics(), this.previewEntity, context.recipePosition().left() + 67, context.recipePosition().top() + 2, context.recipePosition().left() + 67 + 28, context.recipePosition().top() + 2 + 28, scale, new Vector3f(0.0F, (28.0F / scale / 2.0F), 0.0F), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + context.partialTicks()) / 180.0F * Mth.PI, 0.0F), null);
 
     }
 

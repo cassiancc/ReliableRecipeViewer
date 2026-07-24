@@ -1,5 +1,6 @@
 package cc.cassian.rrv.api.recipe;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
@@ -7,7 +8,6 @@ import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -104,23 +104,21 @@ public interface ReliableClientRecipe {
         return List.of();
     }
 
+    /// Deprecated: use [ReliableClientRecipe#renderRecipe(cc.cassian.rrv.api.client.RecipeScreenContext)], which provides the same functionality while allowing for recipes to be rendered on screens other than a [RecipeViewScreen].
     /// @param screen       The current recipe screen
     /// @param guiGraphics  The [GuiGraphicsExtractor] supplied by Minecraft
     /// @param mouseX       The current x-position of the mouse **relative to the position of the rendered recipe**
     /// @param mouseY       The current y-position of the mouse **relative to the position of the rendered recipe**
     /// @param partialTicks partialTicks
+    @Deprecated(since = "8.7.0")
     default void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
     }
 
-    /// @param screen       The current screen
-    /// @param guiGraphics  The [GuiGraphicsExtractor] supplied by Minecraft
-    /// @param mouseX       The current x-position of the mouse **relative to the position of the rendered recipe**
-    /// @param mouseY       The current y-position of the mouse **relative to the position of the rendered recipe**
-    /// @param partialTicks partialTicks
-    default void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (screen instanceof RecipeViewScreen recipeViewScreen) {
-            renderRecipe(recipeViewScreen, recipePosition, guiGraphics, mouseX, mouseY, partialTicks);
+    /// Allows rendering custom content to the recipe screen.
+    default void renderRecipe(RecipeScreenContext context) {
+        if (context.screen() instanceof RecipeViewScreen recipeViewScreen) {
+            renderRecipe(recipeViewScreen, context.recipePosition(), context.guiGraphics(), context.mouseX(), context.mouseY(), context.partialTicks());
         }
     }
 

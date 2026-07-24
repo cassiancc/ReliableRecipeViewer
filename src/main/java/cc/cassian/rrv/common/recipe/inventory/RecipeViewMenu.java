@@ -10,6 +10,8 @@ import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.recipe.JeiClientRecipe;
+import cc.cassian.rrv.common.integration.jei.recipe.JeiClientRecipeType;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
@@ -134,6 +136,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         if (ModCompat.POLYDEX) {
             this.sortedByType.put(PolydexClientRecipeType.INSTANCE, List.of(new PolydexClientRecipe(originType, origin)));
             this.viewTypeOrder.add(PolydexClientRecipeType.INSTANCE);
+        }
+
+        if (ModCompat.JEI) {
+            this.sortedByType.put(JeiClientRecipeType.INSTANCE, List.of(new JeiClientRecipe(originType, origin)));
+            this.viewTypeOrder.add(JeiClientRecipeType.INSTANCE);
         }
 
         if (recipes.isEmpty())

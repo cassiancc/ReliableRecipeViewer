@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.crafting;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -59,11 +60,11 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
 	}
 
     @Override
-    public void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeScreenContext context) {
         if (shapeless) {
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("crafting_shapeless"), 23, 14, 0, 0, 95, 3, 23, 14);
-            if ((mouseX > 95 && mouseX < 120) && (mouseY>0 && mouseY < 14)) {
-                guiGraphics.setComponentTooltipForNextFrame(screen.getFont(), List.of(Component.translatable("view.rrv.type.crafting.shapeless")), mouseX+recipePosition.left(), mouseY+recipePosition.top());
+            context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("crafting_shapeless"), 23, 14, 0, 0, 95, 3, 23, 14);
+            if ((context.mouseX() > 95 && context.mouseX() < 120) && (context.mouseY()>0 && context.mouseY() < 14)) {
+                context.guiGraphics().setComponentTooltipForNextFrame(context.font(), List.of(Component.translatable("view.rrv.type.crafting.shapeless")), context.mouseX()+context.recipePosition().left(), context.mouseY()+context.recipePosition().top());
             }
         }
     }

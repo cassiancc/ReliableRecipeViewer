@@ -106,6 +106,9 @@ repositories {
         // location of the maven that hosts JEI files since January 2023
         name = "Jared's maven"
         url = uri("https://maven.blamejared.com/")
+        content {
+            includeGroup("mezz.jei")
+        }
     }
     mavenCentral()
 }
@@ -143,10 +146,8 @@ dependencies {
 
     if (stonecutter.eval(mcVersion, "<26.3")) {
 
-        // compile against the JEI API but do not include it at runtime
         compileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
-        // at runtime, use the full JEI jar for Fabric
-        runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
+        localRuntime("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
 
         localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
             exclude(group = "mcp.mobius.waila")
@@ -159,6 +160,8 @@ dependencies {
         localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
         localRuntime("eu.pb4:polymer-virtual-entity:${property("deps.polymer")}")
         localRuntime("maven.modrinth:jade:${property("deps.jade")}")
+    } else {
+        compileOnly("mezz.jei:jei-26.2-fabric:30.11.0.66")
     }
 }
 

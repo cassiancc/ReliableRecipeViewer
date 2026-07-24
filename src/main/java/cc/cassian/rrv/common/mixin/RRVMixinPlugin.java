@@ -23,6 +23,7 @@ public class RRVMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 		if (mixinClassName.toLowerCase(Locale.ROOT).contains("controlify") && !RRVPlatform.INSTANCE.isLoadingLoaded("controlify")) return false;
+		else if (mixinClassName.toLowerCase(Locale.ROOT).contains("jei") && !RRVPlatform.INSTANCE.isLoadingLoaded("jei")) return false;
 		return true;
 	}
 

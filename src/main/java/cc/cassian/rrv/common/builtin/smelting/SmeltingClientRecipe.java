@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.smelting;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -64,14 +65,14 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeScreenContext context) {
 
         int litProgress = Math.round(this.smeltingTicker.getProgress() * 14);
         int smeltProgress = Math.round(this.smeltingTicker.getProgress() * 24);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 4, 23 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 4, 23 + (14 - litProgress), 0, 14 - litProgress, 14, litProgress, 128, 128);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 26, 21, 14, 0, smeltProgress, 16, 128, 128);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 26, 21, 14, 0, smeltProgress, 16, 128, 128);
     }
 
 

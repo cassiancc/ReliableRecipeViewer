@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.integration.jei;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.util.RRVClientUtil;
@@ -80,7 +81,7 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 	public void draw(ReliableClientRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 		if (recipeType.getGuiTexture() != null)
 			guiGraphics.blit(RenderPipelines.GUI_TEXTURED, recipeType.getGuiTexture(), 0, 0, 0, 0, recipeType.getDisplayWidth(), recipeType.getDisplayHeight(), recipeType.getDisplayWidth(), recipeType.getDisplayHeight());
-		recipe.renderRecipe(RRVClientUtil.currentScreen(), new ReliableClientRecipe.RecipePosition(200, 100, 0, 0), guiGraphics, (int) mouseX, (int) mouseY, 0);
+		recipe.renderRecipe(new RecipeScreenContext(RRVClientUtil.currentScreen(), RRVClientUtil.currentScreen().getFont(), new ReliableClientRecipe.RecipePosition(200, 100, 0, 0), guiGraphics, (int) mouseX, (int) mouseY, 0));
 	}
 
 	@Override

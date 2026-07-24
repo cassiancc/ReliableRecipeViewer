@@ -1,29 +1,37 @@
 package cc.cassian.rrv.common.integration.jei;
 
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
-import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipeType;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
-import cc.cassian.rrv.common.builtin.info.InfoClientRecipeType;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.runtime.IIngredientListOverlay;
+import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
-import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
+@JeiPlugin
 public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 
 	public static HashMap<ReliableClientRecipeType, IRecipeType<ReliableClientRecipe>> RECIPE_CATEGORIES = new HashMap<>();
@@ -31,6 +39,13 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 	@Override
 	public Identifier getPluginUid() {
 		return ReliableRecipeViewer.of("jrrv");
+	}
+
+	@Override
+	public void registerRuntime(IRuntimeRegistration registration) {
+		System.out.println("JRRV Runtime registration");
+//		registration.setIngredientListOverlay(new JRRVIngredientListOverlay());
+
 	}
 
 	@Override
@@ -79,4 +94,35 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 		});
 	}
 
+	@Override
+	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+		JeiHelpers.runtime = jeiRuntime;
+	}
+
+	private static class JRRVIngredientListOverlay implements IIngredientListOverlay {
+		@Override
+		public Optional<ITypedIngredient<?>> getIngredientUnderMouse() {
+			return Optional.empty();
+		}
+
+		@Override
+		public @Nullable <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+			return null;
+		}
+
+		@Override
+		public boolean isListDisplayed() {
+			return ItemViewOverlay.INSTANCE.isEnabled();
+		}
+
+		@Override
+		public boolean hasKeyboardFocus() {
+			return ItemViewOverlay.INSTANCE.getSearchbar().isFocused();
+		}
+
+		@Override
+		public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+			return List.of();
+		}
+	}
 }

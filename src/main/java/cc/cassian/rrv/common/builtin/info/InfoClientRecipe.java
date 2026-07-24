@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.info;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -68,12 +69,12 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		if (!rendered) {
+	public void renderRecipe(RecipeScreenContext context) {
+		if (!rendered && context.screen() instanceof RecipeViewScreen recipeViewScreen) {
 			MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
-			widget.setX(recipePosition.left() + 5);
-			widget.setY(recipePosition.top() + 20);
-			screen.addRecipeWidget(widget);
+			widget.setX(context.recipePosition().left() + 5);
+			widget.setY(context.recipePosition().top() + 20);
+			recipeViewScreen.addRecipeWidget(widget);
 			rendered = true;
 		}
 	}

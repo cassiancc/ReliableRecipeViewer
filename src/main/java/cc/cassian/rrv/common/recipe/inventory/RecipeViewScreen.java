@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.client.util.RRVClientUtil;
@@ -637,7 +638,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 guiGraphics.pose().popMatrix();
             });
             this.renderInvalidSlots(guiGraphics, i);
-            this.getMenu().getCurrentDisplay().get(i).renderRecipe(this, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
+            this.getMenu().getCurrentDisplay().get(i).renderRecipe(new RecipeScreenContext(this, this.font, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), guiGraphics, mouseX, mouseY, partialTicks));
             guiGraphics.pose().popMatrix();
         }
 

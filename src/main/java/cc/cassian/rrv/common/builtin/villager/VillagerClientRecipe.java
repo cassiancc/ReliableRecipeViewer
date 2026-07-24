@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.villager;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -135,7 +136,12 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void renderRecipe(Screen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeScreenContext recipeScreenContext) {
+        var guiGraphics = recipeScreenContext.guiGraphics();
+        var partialTicks = recipeScreenContext.partialTicks();
+        var mouseX = recipeScreenContext.mouseX();
+        var mouseY = recipeScreenContext.mouseY();
+        var recipePosition = recipeScreenContext.recipePosition();
 
         Font font = Minecraft.getInstance().font;
 

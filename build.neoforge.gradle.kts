@@ -88,6 +88,14 @@ repositories {
             includeGroupAndSubgroups("dev.su5ed")
         }
     }
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = uri("https://maven.blamejared.com/")
+        content {
+            includeGroup("mezz.jei")
+        }
+    }
     mavenCentral()
 }
 
@@ -110,6 +118,10 @@ dependencies {
     // Sinytra Connector support
     compileOnly("org.sinytra:forgified-fabric-loader:2.5.85+0.19.3+26.1.2")
     compileOnly("org.sinytra.forgified-fabric-api:fabric-recipe-api-v1:9.0.16+a1e31eec4c")
+
+    // JEI support
+    compileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
+    runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
 
 }
 

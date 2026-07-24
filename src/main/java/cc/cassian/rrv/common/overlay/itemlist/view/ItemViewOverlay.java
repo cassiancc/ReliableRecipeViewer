@@ -15,6 +15,7 @@ import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.JeiHelpers;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
@@ -27,7 +28,6 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -75,7 +75,10 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     public boolean isEnabled() {
-        return super.isEnabled() && (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching())) && !ModCompat.JEI;
+        return
+                super.isEnabled() &&
+                (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching()))
+                && !Configs.CLIENT_SETTINGS.isJeiPanel();
     }
 
     @Override
@@ -119,7 +122,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 _ -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
         );
 
-        if (ModCompat.JEI) {
+        if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
             settingsButton.visible = false;
         }
 
@@ -140,7 +143,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
         sidePanelButton.setPosition(sidePanelButtonPosition, info.screenHeight() - 18);
 
-        if (ModCompat.JEI) {
+        if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
             sidePanelButton.visible = false;
         }
 
@@ -409,6 +412,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
+        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen()) {
+            JeiHelpers.openJEI(stack, openType, RRVClientUtil.currentScreen());
+            return;
+        }
+
         List<ReliableClientRecipe> foundRecipes = switch (openType) {
             case INPUT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
             case RESULT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingOutput(stack);
@@ -419,7 +427,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             }
         };
 
-        if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack))) {
+        if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack)) || (ModCompat.JEI && JeiHelpers.hasRecipesForItem(stack, openType))) {
             openRecipeView(stack, openType, clientPlayer, foundRecipes, type, false);
         }
     }

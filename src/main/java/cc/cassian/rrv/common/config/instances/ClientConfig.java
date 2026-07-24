@@ -27,6 +27,8 @@ public class ClientConfig extends AbstractRrvConfig {
 	private LocalFallback localFallback = LocalFallback.WHEN_NEEDED;
 	private boolean recipeSharing = true;
 	private IndexSource indexSource = IndexSource.CREATIVE_AND_REGISTRY;
+	private boolean jeiPanel = false;
+	private boolean jeiRecipeScreen = true;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -193,6 +195,22 @@ public class ClientConfig extends AbstractRrvConfig {
 		ItemFilters.clearCaches();
 	}
 
+	public boolean isJeiPanel() {
+		return ModCompat.JEI && jeiPanel;
+	}
+
+	public void setJeiPanel(boolean jeiPanel) {
+		this.jeiPanel = jeiPanel;
+	}
+
+	public boolean isJeiRecipeScreen() {
+		return jeiRecipeScreen;
+	}
+
+	public void setJeiRecipeScreen(boolean jeiRecipeScreen) {
+		this.jeiRecipeScreen = jeiRecipeScreen;
+	}
+
 	@Override
 	protected void loadData() {
 		this.showItemView = load("enabled", this.showItemView, OverlayDisplay.CODEC);
@@ -215,6 +233,10 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		this.recipeSharing = load("recipeSharing", this.recipeSharing);
 		this.indexSource = load("indexSource", this.indexSource, IndexSource.CODEC);
+		if (ModCompat.JEI) {
+			this.jeiPanel = load("jeiPanel", this.jeiPanel);
+			this.jeiRecipeScreen = load("jeiRecipeScreen", this.jeiRecipeScreen);
+		}
 	}
 
 	@Override
@@ -239,5 +261,9 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
 		save("recipeSharing", this.recipeSharing);
 		save("indexSource", this.indexSource, IndexSource.CODEC);
+		if (ModCompat.JEI) {
+			save("jeiPanel", this.jeiPanel);
+			save("jeiRecipeScreen", this.jeiRecipeScreen);
+		}
 	}
 }

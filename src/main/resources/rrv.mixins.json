@@ -5,12 +5,10 @@
   "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "mixins": [
-    "world.level.predicates.CombiningPredicateAccessor",
-    "world.level.predicates.EntityPredicateAccessor",
-    "world.level.predicates.MatchingBlocksPredicateAccessor",
-    "world.level.predicates.MatchingBlockTagPredicateAccessor",
     "advancements.criterion.MixinInventoryChangeTrigger",
     "chat.HoverEventActionMixin",
+    "integration.JeiBookmarkButtonControllerMixin",
+    "integration.JeiScreenEventsMixin",
     "recipe.ConcretePowderBlockAccessor",
     "server.MixinMinecraftServer",
     "world.entity.npc.VillagerTradeAccessor",
@@ -25,6 +23,10 @@
     "world.item.crafting.MixinRecipeManager",
     "world.item.crafting.ShieldDecorationRecipeAccessor",
     "world.item.crafting.TransmuteRecipeAccessor",
+    "world.level.predicates.CombiningPredicateAccessor",
+    "world.level.predicates.EntityPredicateAccessor",
+    "world.level.predicates.MatchingBlocksPredicateAccessor",
+    "world.level.predicates.MatchingBlockTagPredicateAccessor",
     "world.level.storage.loot.LootPoolAccessor",
     "world.level.storage.loot.LootTableAccessor",
     "world.level.storage.loot.entries.CompositeEntryBaseAccessor",
@@ -57,6 +59,7 @@
     "client.renderer.entity.state.MixinEntityRenderState",
     "client.renderer.item.MixinSpecialModelWrapper",
     "client.renderer.special.MixinSpecialModelRenderers",
-    "integration.ControlifyRecipeViewScreenMixin"
+    "integration.ControlifyRecipeViewScreenMixin",
+    "integration.JeiRecipesGuiMixin"
   ]
 }
