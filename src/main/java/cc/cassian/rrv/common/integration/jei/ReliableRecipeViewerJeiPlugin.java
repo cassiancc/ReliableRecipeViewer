@@ -3,25 +3,40 @@ package cc.cassian.rrv.common.integration.jei;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
+import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipeType;
+import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.buttons.IButtonState;
+import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.common.gui.elements.DrawableSprite;
+import mezz.jei.library.plugins.jei.tags.TagInfoRecipe;
+import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -107,6 +122,33 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 	}
 
 	@Override
+	public void registerAdvanced(IAdvancedRegistration registration) {
+		registration.addRecipeButtonFactory(new IRecipeButtonControllerFactory() {
+			@Override
+			public @Nullable <T> IIconButtonController createButtonController(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
+				T recipe = recipeLayoutDrawable.getRecipe();
+				return switch (recipe) {
+					case ReliableClientRecipe clientRecipe ->
+							new JeiRRVLookupButtonController(clientRecipe.getId(), true);
+					case RecipeHolder<?> holder ->
+							new JeiRRVLookupButtonController(holder.id().identifier(), false);
+					case TagInfoRecipe<?, ?> tagInfoRecipe -> {
+						if (tagInfoRecipe.getTag().isFor(Registries.ITEM) && Configs.CATEGORIES.enabled(ItemTagClientRecipeType.INSTANCE))
+							yield new JeiRRVLookupButtonController(tagInfoRecipe.getTag().location().withPrefix("/item_tag/"), false);
+						else if (tagInfoRecipe.getTag().isFor(Registries.BLOCK) && Configs.CATEGORIES.enabled(BlockTagClientRecipeType.INSTANCE))
+							yield new JeiRRVLookupButtonController(tagInfoRecipe.getTag().location().withPrefix("/block_tag/"), false);
+						else yield null;
+					}
+					default -> {
+						System.out.println(recipe.getClass().getName());
+						yield null;
+					}
+				};
+			}
+		});
+	}
+
+	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		JeiHelpers.runtime = jeiRuntime;
 	}
@@ -135,6 +177,35 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 		@Override
 		public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 			return List.of();
+		}
+	}
+
+	private record JeiRRVLookupButtonController(Identifier id, boolean providedByReliableRecipeViewer) implements IIconButtonController {
+
+		@Override
+		public boolean onPress(IJeiUserInput input) {
+			ItemViewOverlay.INSTANCE.openRecipeView(id, false);
+			return true;
+		}
+
+		@Override
+		public void initState(IButtonState state) {
+			state.setIcon(new DrawableSprite(Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.GUI), ReliableRecipeViewer.of("recipe_view")));
+			updateState(state);
+			if (ClientRecipeCache.INSTANCE.getRecipes(id).isEmpty()) {
+				state.setVisible(false);
+			}
+		}
+
+		@Override
+		public void getTooltips(ITooltipBuilder tooltip) {
+			tooltip.add(Component.translatable("rrv.jrrv.lookup"));
+			if (providedByReliableRecipeViewer) {
+				tooltip.add(Component.translatable("rrv.jrrv.provided").withStyle(ChatFormatting.GRAY));
+			}
+			if (RRVPlatform.INSTANCE.isDevelopment()) {
+				tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.GRAY));
+			}
 		}
 	}
 }

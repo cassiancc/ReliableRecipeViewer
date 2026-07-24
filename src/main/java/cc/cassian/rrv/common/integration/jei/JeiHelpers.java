@@ -14,19 +14,26 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class JeiHelpers {
 	public static IJeiRuntime runtime;
 	public static final ArrayList<String> PLUGINS = new ArrayList<>();
 
 	public static boolean hasRecipesForItem(ItemStack stack, ActionType openType) {
-		return true;
+		return !stack.isEmpty();
 	}
 
 	public static void openJEI(ItemStack stack, ActionType openType, Screen parentScreen) {
+		if (stack.isEmpty()) return;
 		IFocus<?> focus = runtime.getJeiHelpers().getFocusFactory().createFocus(getRole(openType), VanillaTypes.ITEM_STACK, stack);
 		var gui = runtime.getRecipesGui();
-		gui.show(focus);
+		if (openType.equals(ActionType.INPUT)) {
+			IFocus<?> workstationFocus = runtime.getJeiHelpers().getFocusFactory().createFocus(RecipeIngredientRole.CRAFTING_STATION, VanillaTypes.ITEM_STACK, stack);
+			gui.show(List.of(focus, workstationFocus));
+		} else {
+			gui.show(focus);
+		}
 	}
 
 	private static RecipeIngredientRole getRole(ActionType openType) {
