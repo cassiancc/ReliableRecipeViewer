@@ -16,6 +16,6 @@ public class RRVInputUtil {
     }
 
 	public static boolean isRightClick(MouseButtonEvent mouseButtonEvent) {
-		return mouseButtonEvent.button() == InputConstants.KEY_RIGHT;
+		return mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_RIGHT;
     }
 }

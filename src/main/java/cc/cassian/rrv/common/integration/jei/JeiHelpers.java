@@ -50,7 +50,7 @@ public class JeiHelpers {
 		if (stack.getItem() instanceof FluidItem) {
 			FluidStack fluidStack = FluidStack.fromItemStack(stack);
 			//? fabric {
-			return focusFactory.createFocus(role, FabricTypes.FLUID_STACK, new JeiFluidIngredient(fluidStack.toFluidVariant(), fluidStack.amount()));
+			return focusFactory.createFocus(role, FabricTypes.FLUID_STACK, new JeiFluidIngredient(fluidStack.toFluidVariant(), fluidStack.amount()* 81L));
 			//?} else {
 			/*return focusFactory.createFocus(role, NeoForgeTypes.FLUID_STACK, fluidStack.toLoaderFluidStack());
 			*///?}
