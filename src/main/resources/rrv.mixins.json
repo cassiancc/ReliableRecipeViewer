@@ -12,6 +12,7 @@
     "integration.jei.JeiButtonControllerMixin",
     "integration.jei.JeiPluginLoaderMixin",
     "integration.jei.JeiScreenEventsMixin",
+    "integration.jei.RecipesGuiAccessor",
     "recipe.ConcretePowderBlockAccessor",
     "server.MixinMinecraftServer",
     "world.entity.npc.VillagerTradeAccessor",

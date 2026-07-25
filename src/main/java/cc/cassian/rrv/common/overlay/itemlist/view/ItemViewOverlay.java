@@ -433,7 +433,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
-        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && !stack.hasNonDefault(DataComponents.ITEM_MODEL) && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
+        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && JeiHelpers.hasRecipesForItem(stack, openType) && !stack.hasNonDefault(DataComponents.ITEM_MODEL) && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
             JeiHelpers.openJEI(stack, openType, RRVClientUtil.currentScreen());
             return;
         }

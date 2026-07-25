@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.integration.jei;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.integration.jei.JeiBookmarkOverlayAccessor;
+import cc.cassian.rrv.common.mixin.integration.jei.RecipesGuiAccessor;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import mezz.jei.api.constants.VanillaTypes;
@@ -15,10 +16,12 @@ import mezz.jei.api.fabric.ingredients.fluids.JeiFluidIngredient;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
@@ -30,19 +33,28 @@ public class JeiHelpers {
 	public static final ArrayList<String> PLUGINS = new ArrayList<>();
 
 	public static boolean hasRecipesForItem(ItemStack stack, ActionType openType) {
-		return !stack.isEmpty();
+		if (stack.isEmpty()) return false;
+		List<IFocus<?>> focus = getFocuses(stack, openType);
+		IFocusGroup checkedFocuses = runtime.getJeiHelpers().getFocusFactory().createFocusGroup(focus);
+		return runtime.getRecipesGui() instanceof RecipesGui recipesGui && ((RecipesGuiAccessor) recipesGui).getLogic().showFocus(checkedFocuses);
+	}
+
+	public static List<IFocus<?>> getFocuses(ItemStack stack, ActionType openType) {
+		IFocus<?> focus = createFocus(getRole(openType), stack);
+		ArrayList<IFocus<?>> list = new ArrayList<>();
+		list.add(focus);
+		if (openType.equals(ActionType.INPUT)) {
+			IFocus<?> workstationFocus = createFocus(RecipeIngredientRole.CRAFTING_STATION, stack);
+			list.add(workstationFocus);
+		}
+		return list;
 	}
 
 	public static void openJEI(ItemStack stack, ActionType openType, Screen parentScreen) {
 		if (stack.isEmpty()) return;
-		IFocus<?> focus = createFocus(getRole(openType), stack);
+		List<IFocus<?>> focus = getFocuses(stack, openType);
 		var gui = runtime.getRecipesGui();
-		if (openType.equals(ActionType.INPUT)) {
-			IFocus<?> workstationFocus = createFocus(RecipeIngredientRole.CRAFTING_STATION, stack);
-			gui.show(List.of(focus, workstationFocus));
-		} else {
-			gui.show(focus);
-		}
+		gui.show(focus);
 	}
 
 	private static IFocus<?> createFocus(RecipeIngredientRole role, ItemStack stack) {
