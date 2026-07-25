@@ -52,6 +52,7 @@
   "rrv.previous_page": "Previous Page",
   "rrv.next_page": "Next Page",
 
+  "rrv.sharing.share_jei": "Share Recipe:",
   "rrv.sharing.share": "Share recipe: %s",
   "rrv.sharing.recipe": "[%s]",
   "rrv.sharing.shared_by": "%s shared recipe: %s",
@@ -62,7 +63,7 @@
   "rrv.sharing.denied": "Recipe sharing is not enabled on this server",
 
   "rrv.jrrv.provided": "This recipe is provided to JEI through RRV.",
-  "rrv.jrrv.lookup": "Show in RRV",
+  "rrv.jrrv.lookup": "Show in RRV:",
 
   "modmenu.nameTranslation.c": "Common",
 

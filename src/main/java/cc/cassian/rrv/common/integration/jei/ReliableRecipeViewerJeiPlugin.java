@@ -3,6 +3,8 @@ package cc.cassian.rrv.common.integration.jei;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.sharing.RecipeSharing;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
@@ -11,6 +13,7 @@ import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipeType;
 import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import mezz.jei.api.IModPlugin;
@@ -32,6 +35,7 @@ import mezz.jei.library.plugins.jei.tags.TagInfoRecipe;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.Registries;
@@ -58,7 +62,6 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 
 	@Override
 	public void registerRuntime(IRuntimeRegistration registration) {
-		System.out.println("JRRV Runtime registration");
 //		registration.setIngredientListOverlay(new JRRVIngredientListOverlay());
 
 	}
@@ -121,29 +124,39 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 		});
 	}
 
+	public static <T> @Nullable Identifier getId(T recipe) {
+		return switch (recipe) {
+			case ReliableClientRecipe clientRecipe -> clientRecipe.getId();
+			case RecipeHolder<?> holder -> holder.id().identifier();
+			case TagInfoRecipe<?, ?> tagInfoRecipe -> {
+				if (tagInfoRecipe.getTag().isFor(Registries.ITEM) && Configs.CATEGORIES.enabled(ItemTagClientRecipeType.INSTANCE))
+					yield tagInfoRecipe.getTag().location().withPrefix("/item_tag/");
+				else if (tagInfoRecipe.getTag().isFor(Registries.BLOCK) && Configs.CATEGORIES.enabled(BlockTagClientRecipeType.INSTANCE))
+					yield tagInfoRecipe.getTag().location().withPrefix("/block_tag/");
+				else yield null;
+			}
+			default -> null;
+		};
+	}
+
 	@Override
 	public void registerAdvanced(IAdvancedRegistration registration) {
 		registration.addRecipeButtonFactory(new IRecipeButtonControllerFactory() {
 			@Override
 			public @Nullable <T> IIconButtonController createButtonController(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
 				T recipe = recipeLayoutDrawable.getRecipe();
-				return switch (recipe) {
-					case ReliableClientRecipe clientRecipe ->
-							new JeiRRVLookupButtonController(clientRecipe.getId(), true);
-					case RecipeHolder<?> holder ->
-							new JeiRRVLookupButtonController(holder.id().identifier(), false);
-					case TagInfoRecipe<?, ?> tagInfoRecipe -> {
-						if (tagInfoRecipe.getTag().isFor(Registries.ITEM) && Configs.CATEGORIES.enabled(ItemTagClientRecipeType.INSTANCE))
-							yield new JeiRRVLookupButtonController(tagInfoRecipe.getTag().location().withPrefix("/item_tag/"), false);
-						else if (tagInfoRecipe.getTag().isFor(Registries.BLOCK) && Configs.CATEGORIES.enabled(BlockTagClientRecipeType.INSTANCE))
-							yield new JeiRRVLookupButtonController(tagInfoRecipe.getTag().location().withPrefix("/block_tag/"), false);
-						else yield null;
-					}
-					default -> {
-						System.out.println(recipe.getClass().getName());
-						yield null;
-					}
-				};
+				Identifier id = getId(recipe);
+				if (id == null) return null;
+				return new JeiRRVLookupButtonController(id, recipe instanceof ReliableClientRecipe);
+			}
+		});
+		registration.addRecipeButtonFactory(new IRecipeButtonControllerFactory() {
+			@Override
+			public @Nullable <T> IIconButtonController createButtonController(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
+				T recipe = recipeLayoutDrawable.getRecipe();
+				Identifier id = getId(recipe);
+				if (id == null) return null;
+				return new JeiRRVShareButtonController(id, recipe instanceof ReliableClientRecipe);
 			}
 		});
 		registration.addRecipeButtonFactory(new IRecipeButtonControllerFactory() {
@@ -193,7 +206,9 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 
 		@Override
 		public boolean onPress(IJeiUserInput input) {
-			ItemViewOverlay.INSTANCE.openRecipeView(id, false);
+			if (!input.isSimulate()) {
+				ItemViewOverlay.INSTANCE.openRecipeView(id, false);
+			}
 			return true;
 		}
 
@@ -212,9 +227,39 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			if (providedByReliableRecipeViewer) {
 				tooltip.add(Component.translatable("rrv.jrrv.provided").withStyle(ChatFormatting.GRAY));
 			}
-			if (RRVPlatform.INSTANCE.isDevelopment()) {
+			if (RRVPlatform.INSTANCE.isDevelopment() || Configs.CLIENT_SETTINGS.isShowRecipeId()) {
 				tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.GRAY));
 			}
+		}
+	}
+
+	private record JeiRRVShareButtonController(Identifier id, boolean providedByReliableRecipeViewer) implements IIconButtonController {
+
+		@Override
+		public boolean onPress(IJeiUserInput input) {
+			if (!input.isSimulate()) {
+				RecipeSharing.shareRecipe(id);
+				RRVClientUtil.setScreen(null);
+			}
+			return true;
+		}
+
+		@Override
+		public void initState(IButtonState state) {
+			state.setIcon(new DrawableSprite(Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.GUI), ReliableRecipeViewer.of("widget/share")));
+			updateState(state);
+			if (ClientRecipeCache.INSTANCE.getRecipes(id).isEmpty() || !Configs.CLIENT_SETTINGS.isRecipeSharing()) {
+				state.setVisible(false);
+			}
+			if (providedByReliableRecipeViewer && !ClientRecipeCache.INSTANCE.getRecipeEntry(id).getType().placeRecipeShareButton(new RecipeViewMenu.DisplayInfo(0, 0, 0, 0)).visible()) {
+				state.setVisible(false);
+			}
+		}
+
+		@Override
+		public void getTooltips(ITooltipBuilder tooltip) {
+			tooltip.add(Component.translatable("rrv.sharing.share_jei").withStyle(ChatFormatting.GOLD));
+			tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.GRAY));
 		}
 	}
 

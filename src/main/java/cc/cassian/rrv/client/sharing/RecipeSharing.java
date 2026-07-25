@@ -37,7 +37,11 @@ public class RecipeSharing {
 	}
 
 	public static void shareRecipe(ReliableClientRecipe currentRecipe) {
-		ClientNetworkManager.sendPacketToServer(new ServerboundShareRecipePayload(currentRecipe.getId()));
+		shareRecipe(currentRecipe.getId());
+	}
+
+	public static void shareRecipe(Identifier currentRecipe) {
+		ClientNetworkManager.sendPacketToServer(new ServerboundShareRecipePayload(currentRecipe));
 	}
 
 	public record ShowRecipe(Component recipeType, String recipeTypeNamespace, ItemStack result) implements HoverEvent {
