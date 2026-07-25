@@ -157,7 +157,9 @@ public class ClientConfigScreen extends Screen {
         addChild(advancedHelper, "fluid_unit", "droplets", "mb", configs.isFluidUnitDroplets(), (_, b) -> configs.setFluidUnitDroplets(b));
         addChild(advancedHelper, "show_recipe_id", "show", "hide", configs.isShowRecipeId(), (_, b) -> configs.setShowRecipeId(b));
         addChild(advancedHelper, "local_fallback", configs.localFallbackAllowed(), LocalFallback.values(), (_, b) -> configs.setLocalFallbackAllowed(b));
-        addChild(advancedHelper, "index_source", configs.getIndexSource(), IndexSource.values(), (_, b) -> configs.setIndexSource(b));
+        Button indexSourceSettings = Button.builder(Component.translatable("rrv.client_settings.index_source"), (_) -> RRVClientUtil.setScreen(new IndexSourceConfigScreen(this))).size(buttonWidth, 20).build();
+        indexSourceSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.index_source.tooltip")));
+        advancedHelper.addChild(indexSourceSettings);
 
         Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (_) -> RRVClientUtil.setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
         if (Minecraft.getInstance().level == null) {

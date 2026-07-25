@@ -307,14 +307,11 @@ public class ItemFilters {
         if (CACHED_STACKS.isEmpty()) {
             List<ItemStack> results = new ArrayList<>();
 
-            if (Configs.CLIENT_SETTINGS.getIndexSource() == IndexSource.REGISTRY) {
-                BuiltInRegistries.ITEM.forEach(item -> {
-                    results.add(new ItemStack(item));
-                    results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).toList());
-                });
-            } else {
-                Minecraft mc = Minecraft.getInstance();
-                LocalPlayer player = mc.player;
+
+            Minecraft mc = Minecraft.getInstance();
+            LocalPlayer player = mc.player;
+
+            if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.CREATIVE)) {
                 if (!creativeTabsCached && player != null && !player.hasInfiniteMaterials()) {
                     CreativeModeTabs.tryRebuildTabContents(FeatureFlags.VANILLA_SET, false, player.registryAccess());
                 }
@@ -325,34 +322,36 @@ public class ItemFilters {
                         //?}
                         .toList()
                 );
-
-                BuiltInRegistries.ITEM.forEach(item -> {
-                    if (Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.CREATIVE_AND_REGISTRY)) {
-                        ItemStack e = new ItemStack(item);
-                        if (results.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, e)))
-                            results.add(e);
-                    }
-                    results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
-                });
-
-                var list = new ArrayList<ItemStack>();
-                ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
-					r.getResults().forEach(l-> {
-                        l.getValidContents().forEach(stack -> {
-                            if (stack.hasNonDefault(DataComponents.ITEM_MODEL) && results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))) {
-								list.add(stack);
-							}
-                        });
-					});
-				});
-                results.addAll(list);
             }
 
+            if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.REGISTRY)) {
+                BuiltInRegistries.ITEM.forEach(item -> {
+                    ItemStack e = new ItemStack(item);
+                    if (results.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, e)))
+                        results.add(e);
+                    results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
+                });
+            }
+
+            if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT)) {
+                var list = new ArrayList<ItemStack>();
+                ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
+                    r.getResults().forEach(l-> {
+                        l.getValidContents().forEach(stack -> {
+                            if (stack.hasNonDefault(DataComponents.ITEM_MODEL) && results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))) {
+                                list.add(stack);
+                            }
+                        });
+                    });
+                });
+                results.addAll(list);
+            }
 
             if (ModCompat.POLYMER)
                 PolymerHelpers.polymerFilter(results);
 
-            ResourceRecipeManager.replaceIndex(results);
+            if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.RESOURCE_PACKS))
+                ResourceRecipeManager.replaceIndex(results);
 
             CACHED_STACKS.addAll(results);
         }

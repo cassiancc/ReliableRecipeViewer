@@ -1,10 +1,13 @@
 package cc.cassian.rrv.common.config.instances;
 
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+
+import java.util.Map;
 
 public class ClientConfig extends AbstractRrvConfig {
 
@@ -27,7 +30,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean recipeBookTheme = true;
 	private LocalFallback localFallback = LocalFallback.WHEN_NEEDED;
 	private boolean recipeSharing = true;
-	private IndexSource indexSource = IndexSource.CREATIVE_AND_REGISTRY;
+	private Map<IndexSource, Boolean> indexSource = IndexSource.DEFAULT;
 	private boolean jeiPanel = false;
 	private boolean jeiRecipeScreen = true;
 
@@ -188,11 +191,15 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.recipeSharing = recipeSharing;
 	}
 
-	public IndexSource getIndexSource() {
+	public Map<IndexSource, Boolean> getIndexSource() {
 		return indexSource;
 	}
 
-	public void setIndexSource(IndexSource indexSource) {
+	public boolean getIndexSource(IndexSource indexSource) {
+		return getIndexSource().get(indexSource);
+	}
+
+	public void setIndexSource(Map<IndexSource, Boolean> indexSource) {
 		this.indexSource = indexSource;
 		ItemFilters.clearCaches();
 	}
