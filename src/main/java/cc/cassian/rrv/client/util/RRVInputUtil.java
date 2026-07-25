@@ -1,5 +1,6 @@
 package cc.cassian.rrv.client.util;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -7,29 +8,14 @@ import org.jetbrains.annotations.ApiStatus;
 public class RRVInputUtil {
 
 	public static boolean isLeftClick(MouseButtonEvent mouseButtonEvent) {
-		int mouseButton = mouseButtonEvent.button();
-		//? if >26.2 {
-		/*return mouseButton == 1;
-		*///?} else {
-		return mouseButton == 0;
-		 //?}
+		return mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_LEFT;
     }
 
 	public static boolean isMiddleClick(MouseButtonEvent mouseButtonEvent) {
-		int mouseButton = mouseButtonEvent.button();
-		//? if >26.2 {
-		/*return mouseButton == 2;
-		*///?} else {
-		return mouseButton == 3;
-		 //?}
+		return mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_MIDDLE;
     }
 
 	public static boolean isRightClick(MouseButtonEvent mouseButtonEvent) {
-		int mouseButton = mouseButtonEvent.button();
-		//? if >26.2 {
-		/*return mouseButton == 3;
-		*///?} else {
-		return mouseButton == 1;
-		 //?}
+		return mouseButtonEvent.button() == InputConstants.KEY_RIGHT;
     }
 }

@@ -126,7 +126,9 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 		for (ItemStack validContent : slotContent.getValidContents()) {
 			if (validContent.getItem() instanceof FluidItem) {
 				FluidStack fluidStack = FluidStack.fromItemStack(validContent);
-				slot.add(fluidStack.fluid(), fluidStack.amount(), fluidStack.patch());
+				slot.add(fluidStack.fluid()
+//						, fluidStack.amount(), fluidStack.patch() FIXME - this doesn't look right in JEI!
+				);
 			} else {
 				slot.add(validContent);
 			}

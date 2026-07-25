@@ -2,9 +2,12 @@ package cc.cassian.rrv.client.util;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -36,6 +39,14 @@ public class RRVClientUtil {
          *///?} else {
         return Minecraft.getInstance().screen;
         //?}
+    }
+
+    public static boolean isKeyDown(KeyMapping key) {
+        if (key.isUnbound()) return false;
+        return InputConstants.isKeyDown(
+                //? if <26.3
+                Minecraft.getInstance().getWindow(),
+                key.key.getValue());
     }
 
     public static boolean showDebugScreen() {

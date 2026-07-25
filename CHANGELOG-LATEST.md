@@ -5,7 +5,10 @@
   - Note: Even with JEI's recipe screen enabled, Polymer items will still use the RRV recipe screen, as JEI's Polymer integration does not appear to work reliably. RRV's recipe screen can also be manually viewed by clicking the RRV button next to the recipe.
   - Recipes implementing `renderRecipe` should now use `renderRecipe(RecipeScreenContext)` to allow rendering recipes without an RRV `RecipeViewScreen`.
   - With JEI present, RRV can search by item colour with the ^ prefix.
+  - Known issues: Bookmarking recipes does not work correctly, previous/next page buttons do not show up with JEI's recipe screen enabled, fluid stacks do not have amount set.
+- Quick crafting keybind can now be rebound from Left Control.
 
 ### Fixed
 - Incorrectly set unknown keybind causing OpenGL spam.
+- Incorrect mouse button bindings on 26.3.
 - Next/prev page buttons no longer show up if they do not have enough space to render.

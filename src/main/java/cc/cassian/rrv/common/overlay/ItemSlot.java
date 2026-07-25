@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.overlay;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -262,7 +263,7 @@ public class ItemSlot {
             CompoundTag compoundTag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
             if (compoundTag.contains("rrv_result")) {
                 Identifier id = Identifier.parse(compoundTag.get("rrv_result").asString().get());
-                ItemViewOverlay.INSTANCE.openRecipeView(id, Minecraft.getInstance().hasControlDown());
+                ItemViewOverlay.INSTANCE.openRecipeView(id, RRVClientUtil.isKeyDown(ReliableRecipeViewerClient.USE_QUICK_CRAFT));
                 return;
             }
         }

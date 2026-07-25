@@ -120,7 +120,7 @@ dependencies {
     compileOnly("org.sinytra.forgified-fabric-api:fabric-recipe-api-v1:9.0.16+a1e31eec4c")
 
     // JEI support
-    compileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
+    compileOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
     runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
 
 }
