@@ -12,6 +12,7 @@ import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -28,9 +29,11 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.library.plugins.jei.tags.TagInfoRecipe;
-import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.network.chat.Component;
@@ -40,10 +43,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @JeiPlugin
 @NullMarked
@@ -103,7 +103,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 					}
 				});
 			}
-			else if (type.getId().equals(ReliableRecipeViewer.of("item_tag"))) {
+			else if (type.getId().equals(ItemTagClientRecipeType.INSTANCE.getId())) {
 				return;
 			}
 			else if (Configs.CATEGORIES.CATEGORIES.get(type.getId()).enabled()) {
@@ -144,6 +144,15 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 						yield null;
 					}
 				};
+			}
+		});
+		registration.addRecipeButtonFactory(new IRecipeButtonControllerFactory() {
+			@Override
+			public @Nullable <T> IIconButtonController createButtonController(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
+				T recipe = recipeLayoutDrawable.getRecipe();
+				if (recipe instanceof TagInfoRecipe<?, ?> tagInfoRecipe && tagInfoRecipe.getTag().isFor(Registries.ITEM))
+					return new JeiRRVStackGroupButtonController(tagInfoRecipe.getTag().location());
+				return null;
 			}
 		});
 	}
@@ -206,6 +215,56 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			if (RRVPlatform.INSTANCE.isDevelopment()) {
 				tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.GRAY));
 			}
+		}
+	}
+
+	private static final class JeiRRVStackGroupButtonController implements IIconButtonController {
+		private final Identifier tagId;
+		private boolean exists;
+
+		private JeiRRVStackGroupButtonController(Identifier tagId) {
+			this.tagId = tagId;
+			this.exists = StackGroupManager.hasGroup(tagId);
+		}
+
+		@Override
+		public boolean onPress(IJeiUserInput input) {
+			if (!input.isSimulate()) {
+				StackGroupManager.toggleTagGroup(tagId);
+				ItemViewOverlay.INSTANCE.updateDisplayedItems();
+				exists = !exists;
+			}
+			return true;
+		}
+
+		@Override
+		public void initState(IButtonState state) {
+			updateIcon(state);
+		}
+
+		private void updateIcon(IButtonState state) {
+			Identifier base = ReliableRecipeViewer.of("widget/tag_stack_group_disabled");
+			state.setIcon(new DrawableSprite(Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.GUI), base));
+		}
+
+		@Override
+		public void drawExtras(GuiGraphicsExtractor guiGraphics, Rect2i buttonArea, int mouseX, int mouseY, float partialTicks) {
+			if (exists) {
+				guiGraphics.blitSprite(
+						RenderPipelines.GUI_TEXTURED,
+						ReliableRecipeViewer.of("widget/tag_stack_group_enabled"),
+						buttonArea.getX()+1,
+						buttonArea.getY()+1,
+						buttonArea.getWidth()-2,
+						buttonArea.getHeight()-2
+				);
+			}
+		}
+
+		@Override
+		public void getTooltips(ITooltipBuilder tooltip) {
+			var component = (Component.translatable(exists ? "rrv.tag_recipe.stack_group.enabled" : "rrv.tag_recipe.stack_group.disabled").withStyle(ChatFormatting.GOLD));
+			tooltip.add(component);
 		}
 	}
 }

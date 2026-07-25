@@ -51,6 +51,7 @@ public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedCo
 		super(title);
 	}
 
+	//~ if >26.1 'Lnet/minecraft/client/Minecraft'->'Lnet/minecraft/client/gui/Gui'
 	@ModifyArg(method = "onClose", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"))
 	private @Nullable Screen modifyParentScreen(@Nullable Screen screen) {
 		if (screen instanceof RecipeViewScreen recipeViewScreen) {
@@ -87,7 +88,7 @@ public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedCo
 		if (minecraft == null || Configs.CLIENT_SETTINGS.isJeiPanel()) return;
 
 
-		AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo((Screen) this, this.width, this.height, this.area.x(), this.area.y(), this.area.width(), this.area.height());
+		AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo(this, this.width, this.height, this.area.x(), this.area.y(), this.area.width(), this.area.height());
 
 		OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
 				RRVClientUtil.CONTAINER,
