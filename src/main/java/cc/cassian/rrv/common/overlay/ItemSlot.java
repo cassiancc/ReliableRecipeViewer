@@ -39,14 +39,15 @@ public class ItemSlot {
 
     private final ItemStack stack;
     private final int x, y;
+    private final boolean showDecorations;
 
     private boolean hovered;
 
     private int currentCheatmodeCount = 1;
 
-    public ItemSlot(ItemStack stack, int x, int y) {
+    public ItemSlot(ItemStack stack, int x, int y, boolean showDecorations) {
         this.stack = stack;
-
+        this.showDecorations = showDecorations;
         this.x = x;
         this.y = y;
     }
@@ -204,7 +205,7 @@ public class ItemSlot {
 
             ReliableRecipeViewerClient.addNamespaceTooltip(stack, tooltip, true);
 
-            if (recipe != null) {
+            if (recipe != null && showDecorations) {
                 tooltip.add(Component.translatable("view.rrv.recipe_id", Component.literal(recipe).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD));
             }
 
@@ -218,7 +219,7 @@ public class ItemSlot {
         guiGraphics.fakeItem(this.stack, this.x + 2, this.y + 2);
 
         // render recipe
-        if (recipe != null) {
+        if (recipe != null && showDecorations) {
             guiGraphics.itemDecorations(mc.font, this.stack, this.x+2, this.y+2);
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_stack_highlight"), this.x + 3, this.y + 2, 16, 16);
         }

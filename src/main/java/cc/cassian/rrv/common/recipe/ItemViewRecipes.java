@@ -9,6 +9,7 @@ import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.common.collect.LinkedHashMultimap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -134,7 +135,8 @@ public class ItemViewRecipes {
         boolean enchantmentRedirectCheck = ItemViewRecipes.makeEnchantmentCheck(stack, ingredient);
         boolean stewRedirectCheck = ItemViewRecipes.makeStewCheck(stack, ingredient);
         boolean fireworkRocketRedirectCheck = ItemViewRecipes.makeFireworkRocketCheck(stack, ingredient);
-        return potionRedirectCheck && enchantmentRedirectCheck && stewRedirectCheck && fireworkRocketRedirectCheck;
+        boolean itemModelRedirectCheck = ItemViewRecipes.makeItemModelCheck(stack, ingredient);
+        return potionRedirectCheck && enchantmentRedirectCheck && stewRedirectCheck && fireworkRocketRedirectCheck && itemModelRedirectCheck;
     }
 
     /**
@@ -162,6 +164,21 @@ public class ItemViewRecipes {
 
         return new HashSet<>(contents.effects()).containsAll(stackContents.effects());
     }
+
+
+    /**
+     * @return Whether the item model component of two itemStacks matches
+     */
+    public static boolean makeItemModelCheck(ItemStack stack1, ItemStack stack2) {
+        if (!(stack1.has(DataComponents.ITEM_MODEL) && stack2.has(DataComponents.ITEM_MODEL)))
+            return true;
+
+        Identifier contents = stack1.get(DataComponents.ITEM_MODEL);
+        Identifier stackContents = stack2.get(DataComponents.ITEM_MODEL);
+
+        return contents.equals(stackContents);
+    }
+
 
     /**
      * @return Whether the firework component of two itemStacks matches

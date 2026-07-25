@@ -4,6 +4,7 @@ import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -136,7 +137,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
                         continue;
 
                     if (currentStackPos < this.availableItems().size())
-                        this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y));
+                        this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
 
                     currentStackPos++;
                     continue;
@@ -145,7 +146,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
                 if (x >= this.effectiveX && x <= this.effectiveX + this.effectiveWidth - ITEM_ENTRY_SIZE && y >= this.effectiveY && y <= this.effectiveY + this.effectiveHeight - ITEM_ENTRY_SIZE) {
 
                     if (currentStackPos < this.availableItems().size())
-                        this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y));
+                        this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
 
                     currentStackPos++;
                 }

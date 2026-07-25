@@ -334,6 +334,18 @@ public class ItemFilters {
                     }
                     results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
                 });
+
+                var list = new ArrayList<ItemStack>();
+                ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
+					r.getResults().forEach(l-> {
+                        l.getValidContents().forEach(stack -> {
+                            if (stack.hasNonDefault(DataComponents.ITEM_MODEL) && results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))) {
+								list.add(stack);
+							}
+                        });
+					});
+				});
+                results.addAll(list);
             }
 
 

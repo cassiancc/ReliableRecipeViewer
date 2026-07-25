@@ -36,6 +36,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -432,7 +433,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
-        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
+        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && !stack.hasNonDefault(DataComponents.ITEM_MODEL) && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
             JeiHelpers.openJEI(stack, openType, RRVClientUtil.currentScreen());
             return;
         }
@@ -469,11 +470,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     /// Open a recipe view screen showing all recipes with a specific id.
     public void openRecipeView(Identifier recipeId, boolean shouldAttemptQuickCraft) {
-        openRecipeView(ItemStack.EMPTY, ActionType.ANY, Minecraft.getInstance().player, ClientRecipeCache.INSTANCE.getRecipes(recipeId), ReliableClientRecipeType.NONE, shouldAttemptQuickCraft);
-    }
-
-    /// Open a recipe view screen showing all recipes with a specific id.
-    public void openRecipeView(Identifier recipeId, boolean shouldAttemptQuickCraft, boolean allowRedirectingToJei) {
         openRecipeView(ItemStack.EMPTY, ActionType.ANY, Minecraft.getInstance().player, ClientRecipeCache.INSTANCE.getRecipes(recipeId), ReliableClientRecipeType.NONE, shouldAttemptQuickCraft);
     }
 
