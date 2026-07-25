@@ -84,6 +84,20 @@ public abstract class AbstractRrvConfig {
         this.data().addProperty(key, newValue);
     }
 
+    protected void save(String group, String key, boolean newValue) {
+        var o = this.data().getAsJsonObject(group);
+        if (o == null) o = new JsonObject();
+        o.addProperty(key, newValue);
+        this.data().add(group, o);
+    }
+
+    protected <T> void save(String group, String key, T newValue, Codec<T> codec) {
+        var o = this.data().getAsJsonObject(group);
+        if (o == null) o = new JsonObject();
+        o.add(key, codec.encodeStart(JsonOps.INSTANCE, newValue).getOrThrow());
+        this.data().add(group, o);
+    }
+
     protected void save(String key, int newValue) {
         this.data().addProperty(key, newValue);
     }
@@ -91,6 +105,24 @@ public abstract class AbstractRrvConfig {
     protected <T> T load(String key, T defaultValue, Codec<T> codec) {
         if (this.data().has(key))
             return codec.decode(JsonOps.INSTANCE, this.data().get(key)).mapOrElse(Pair::getFirst, (e)->defaultValue);
+        return defaultValue;
+    }
+
+    protected <T> T load(String group, String key, T defaultValue, Codec<T> codec) {
+        if (this.data().has(group)) {
+			var o = this.data().getAsJsonObject(group);
+            if (o.has(key))
+                return codec.decode(JsonOps.INSTANCE, o.get(key)).mapOrElse(Pair::getFirst, (e)->defaultValue);
+		}
+        return defaultValue;
+    }
+
+    protected boolean load(String group, String key, boolean defaultValue) {
+        if (this.data().has(group)) {
+            var o = this.data().getAsJsonObject(group);
+            if (o.has(key))
+                return o.get(key).getAsBoolean();
+        }
         return defaultValue;
     }
 

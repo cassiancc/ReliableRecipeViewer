@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.config.instances;
 
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.AbstractRrvConfig;
-import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
@@ -223,57 +223,114 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	@Override
 	protected void loadData() {
-		this.showItemView = load("enabled", this.showItemView, OverlayDisplay.CODEC);
-		this.showSidePanel = load("sidePanelEnabled", this.showSidePanel, OverlayDisplay.CODEC);
-		this.background = load("background", this.background);
-		this.itemWrapMode = load("itemWrapMode", this.itemWrapMode);
-		this.namespaceTooltip = load("namespaceTooltip", this.namespaceTooltip, NamespaceTooltip.CODEC);
-		this.rightIndex = load("rightIndex", this.rightIndex);
-		this.centerSearch = load("centerSearch", this.centerSearch);
-		this.showButtons = load("showButtons", showButtons);
-		this.showProgressBar = load("showProgressBar", this.showProgressBar);
-		this.fluidUnitDroplets = load("fluidUnitDroplets", this.fluidUnitDroplets);
-		this.centerRecipeScreen = load("centerRecipeScreen", this.centerRecipeScreen);
-		this.showRecipeId = load("showRecipeId", this.showRecipeId);
-		this.recipeBookButton = load("recipeBookButton", this.recipeBookButton);
-		this.recipeBookTheme = load("recipeBookTheme", this.recipeBookTheme);
-		this.localFallback = load("localFallback", this.localFallback, LocalFallback.CODEC);
-		this.wrapScrolling = load("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
-		this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
-		this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
-		this.recipeSharing = load("recipeSharing", this.recipeSharing);
-		this.indexSource = load("indexSource", this.indexSource, IndexSource.CODEC);
+		boolean loadedDeprecatedConfig = false;
+		if (data().has("enabled")) { // load deprecated config fields from v8.6.x and below
+			this.showItemView = load("enabled", this.showItemView, OverlayDisplay.CODEC);
+			this.showSidePanel = load("sidePanelEnabled", this.showSidePanel, OverlayDisplay.CODEC);
+			this.background = load("background", this.background);
+			this.itemWrapMode = load("itemWrapMode", this.itemWrapMode);
+			this.namespaceTooltip = load("namespaceTooltip", this.namespaceTooltip, NamespaceTooltip.CODEC);
+			this.rightIndex = load("rightIndex", this.rightIndex);
+			this.centerSearch = load("centerSearch", this.centerSearch);
+			this.showButtons = load("showButtons", showButtons);
+			this.showProgressBar = load("showProgressBar", this.showProgressBar);
+			this.fluidUnitDroplets = load("fluidUnitDroplets", this.fluidUnitDroplets);
+			this.centerRecipeScreen = load("centerRecipeScreen", this.centerRecipeScreen);
+			this.showRecipeId = load("showRecipeId", this.showRecipeId);
+			this.recipeBookButton = load("recipeBookButton", this.recipeBookButton);
+			this.recipeBookTheme = load("recipeBookTheme", this.recipeBookTheme);
+			this.localFallback = load("localFallback", this.localFallback, LocalFallback.CODEC);
+			this.wrapScrolling = load("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
+			this.sidePanel = load("sidePanel", this.sidePanel, SidePanel.CODEC);
+			this.workstationDisplay = load("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
+			this.recipeSharing = load("recipeSharing", this.recipeSharing);
+			loadedDeprecatedConfig = true;
+		} else {
+			this.showItemView = load("general", "show_item_view", this.showItemView, OverlayDisplay.CODEC);
+			this.showSidePanel = load("general", "show_side_panel", this.showSidePanel, OverlayDisplay.CODEC);
+			this.background = load("style", "background", this.background);
+			this.itemWrapMode = load("style", "item_wrap_mode", this.itemWrapMode);
+			this.namespaceTooltip = load("style", "namespace_tooltip", this.namespaceTooltip, NamespaceTooltip.CODEC);
+			this.rightIndex = load("style","right_index", this.rightIndex);
+			this.centerSearch = load( "style","center_search", this.centerSearch);
+			this.showButtons = load("style", "show_buttons", showButtons);
+			this.showProgressBar = load("style", "show_progress_bar", this.showProgressBar);
+			this.fluidUnitDroplets = load("advanced", "fluid_unit_droplets", this.fluidUnitDroplets);
+			this.centerRecipeScreen = load("style", "center_recipe_screen", this.centerRecipeScreen);
+			this.showRecipeId = load("advanced", "showRecipeId", this.showRecipeId);
+			this.recipeBookButton = load("behaviour", "recipe_book_button", this.recipeBookButton);
+			this.recipeBookTheme = load("style", "recipe_book_theme", this.recipeBookTheme);
+			this.localFallback = load("advanced", "local_fallback", this.localFallback, LocalFallback.CODEC);
+			this.wrapScrolling = load("behaviour", "wrap_scrolling", this.wrapScrolling, WrapScrolling.CODEC);
+			this.sidePanel = load("behaviour", "side_panel_contents", this.sidePanel, SidePanel.CODEC);
+			this.workstationDisplay = load("style", "workstation_display", this.workstationDisplay, WorkstationDisplay.CODEC);
+			this.recipeSharing = load("behaviour", "recipe_sharing", this.recipeSharing);
+		}
+
+
+		this.indexSource = load("advanced", "index_sources", this.indexSource, IndexSource.CODEC);
 		if (ModCompat.JEI) {
-			this.jeiPanel = load("jeiPanel", this.jeiPanel);
-			this.jeiRecipeScreen = load("jeiRecipeScreen", this.jeiRecipeScreen);
+			this.jeiPanel = load("jei","panel", this.jeiPanel);
+			this.jeiRecipeScreen = load("jei", "recipeScreen", this.jeiRecipeScreen);
+		}
+
+		if (loadedDeprecatedConfig) {
+			ReliableRecipeViewer.LOGGER.info("Upgraded config file from v8.6 to v8.7.");
+			save();
 		}
 	}
 
 	@Override
 	protected void saveData() {
-		save("enabled", this.showItemView, OverlayDisplay.CODEC);
-		save("sidePanelEnabled", this.showSidePanel, OverlayDisplay.CODEC);
-		save("background", this.background);
-		save("itemWrapMode", this.itemWrapMode);
-		save("namespaceTooltip", this.namespaceTooltip, NamespaceTooltip.CODEC);
-		save("rightIndex", this.rightIndex);
-		save("centerSearch", this.centerSearch);
-		save("showButtons", showButtons);
-		save("showProgressBar", this.showProgressBar);
-		save("fluidUnitDroplets", this.fluidUnitDroplets);
-		save("centerRecipeScreen", this.centerRecipeScreen);
-		save("showRecipeId", this.showRecipeId);
-		save("recipeBookButton", this.recipeBookButton);
-		save("recipeBookTheme", this.recipeBookTheme);
-		save("wrapScrolling", this.wrapScrolling, WrapScrolling.CODEC);
-		save("sidePanel", this.sidePanel, SidePanel.CODEC);
-		save("localFallback", this.localFallback, LocalFallback.CODEC);
-		save("workstationDisplay", this.workstationDisplay, WorkstationDisplay.CODEC);
-		save("recipeSharing", this.recipeSharing);
-		save("indexSource", this.indexSource, IndexSource.CODEC);
+		save("general", "show_item_view", this.showItemView, OverlayDisplay.CODEC);
+		save("general", "show_side_panel", this.showSidePanel, OverlayDisplay.CODEC);
+		save("style", "background", this.background);
+		save("style", "item_wrap_mode", this.itemWrapMode);
+		save("style", "namespace_tooltip", this.namespaceTooltip, NamespaceTooltip.CODEC);
+		save("style","right_index", this.rightIndex);
+		save("style","center_search", this.centerSearch);
+		save("style", "show_buttons", showButtons);
+		save("style", "show_progress_bar", this.showProgressBar);
+		save("advanced", "fluid_unit_droplets", this.fluidUnitDroplets);
+		save("style", "center_recipe_screen", this.centerRecipeScreen);
+		save("advanced", "showRecipeId", this.showRecipeId);
+		save("behaviour", "recipe_book_button", this.recipeBookButton);
+		save("style", "recipe_book_theme", this.recipeBookTheme);
+		save("advanced", "local_fallback", this.localFallback, LocalFallback.CODEC);
+		save("behaviour", "wrap_scrolling", this.wrapScrolling, WrapScrolling.CODEC);
+		save("behaviour", "side_panel_contents", this.sidePanel, SidePanel.CODEC);
+		save("style", "workstation_display", this.workstationDisplay, WorkstationDisplay.CODEC);
+		save("behaviour", "recipe_sharing", this.recipeSharing);
+		save("advanced", "index_sources", this.indexSource, IndexSource.CODEC);
 		if (ModCompat.JEI) {
-			save("jeiPanel", this.jeiPanel);
-			save("jeiRecipeScreen", this.jeiRecipeScreen);
+			save("jei","panel", this.jeiPanel);
+			save("jei", "recipeScreen", this.jeiRecipeScreen);
 		}
+
+		// remove deprecated config fields from v8.6.x and below
+		remove("enabled");
+		remove("sidePanelEnabled");
+		remove("background");
+		remove("itemWrapMode");
+		remove("namespaceTooltip");
+		remove("rightIndex");
+		remove("centerSearch");
+		remove("showButtons");
+		remove("showProgressBar");
+		remove("fluidUnitDroplets");
+		remove("centerRecipeScreen");
+		remove("showRecipeId");
+		remove("recipeBookButton");
+		remove("recipeBookTheme");
+		remove("wrapScrolling");
+		remove("sidePanel");
+		remove("localFallback");
+		remove("workstationDisplay");
+		remove("recipeSharing");
+		remove("indexSource");
+	}
+
+	private void remove(String oldKey) {
+		this.data().remove(oldKey);
 	}
 }
