@@ -102,4 +102,10 @@ public class JeiHelpers {
 		}
 		return colorHelper.getClosestColorName(color.getFirst());
 	}
+
+	public static boolean doesNotHaveNativePlugin(String namespace) {
+		if (namespace.equals("rrv")) return true;
+		else if (namespace.equals("minecraft")) return false;
+		return !JeiHelpers.PLUGINS.contains(namespace);
+	}
 }

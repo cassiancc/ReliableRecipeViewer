@@ -12,6 +12,7 @@ import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipeType;
 import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -50,6 +51,8 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
+import static cc.cassian.rrv.common.integration.jei.JeiHelpers.doesNotHaveNativePlugin;
+
 @JeiPlugin
 @NullMarked
 public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
@@ -77,12 +80,6 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 				RECIPE_CATEGORIES.put(type, recipeType);
 			}
 		}
-	}
-
-	private boolean doesNotHaveNativePlugin(String namespace) {
-		if (namespace.equals("rrv")) return true;
-		else if (namespace.equals("minecraft")) return false;
-		return !JeiHelpers.PLUGINS.contains(namespace);
 	}
 
 	@Override
@@ -227,11 +224,6 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			MutableComponent lookupText = Component.translatable("rrv.jrrv.lookup").withStyle(ChatFormatting.GOLD);
 			if (RRVPlatform.INSTANCE.isDevelopment() || Configs.CLIENT_SETTINGS.isShowRecipeId()) {
 				tooltip.add(lookupText.append(":"));
-			}
-			if (providedByReliableRecipeViewer) {
-				tooltip.add(Component.translatable("rrv.jrrv.provided").withStyle(ChatFormatting.GRAY));
-			}
-			if (RRVPlatform.INSTANCE.isDevelopment() || Configs.CLIENT_SETTINGS.isShowRecipeId()) {
 				tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.GRAY));
 			}
 		}

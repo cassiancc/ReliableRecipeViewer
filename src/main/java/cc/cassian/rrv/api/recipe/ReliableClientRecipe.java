@@ -1,14 +1,17 @@
 package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.client.RecipeScreenContext;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
@@ -119,6 +122,13 @@ public interface ReliableClientRecipe {
     default void renderRecipe(RecipeScreenContext context) {
         if (context.screen() instanceof RecipeViewScreen recipeViewScreen) {
             renderRecipe(recipeViewScreen, context.recipePosition(), context.guiGraphics(), context.mouseX(), context.mouseY(), context.partialTicks());
+        } else {
+            try {
+                renderRecipe(null, context.recipePosition(), context.guiGraphics(), context.mouseX(), context.mouseY(), context.partialTicks());
+            } catch (Exception e) {
+                context.guiGraphics().textWithWordWrap(Minecraft.getInstance().font, FormattedText.of("Failed to render recipe."), 20, 20, 160, -16777216, false);
+                ReliableRecipeViewer.LOGGER.error("Failed to render recipe", e);
+            }
         }
     }
 
