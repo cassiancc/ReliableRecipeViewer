@@ -45,6 +45,10 @@ import static net.minecraft.server.permissions.Permissions.*;
 public class RrvUtil {
     private static final ArrayList<String> INITIALIZED_MODS = new ArrayList<>();
 
+    public static Collection<String> getInitializedMods() {
+        return INITIALIZED_MODS;
+    }
+
     public static boolean hasPermission(Player sender) {
         return sender.permissions().hasPermission(COMMANDS_GAMEMASTER);
     }
@@ -234,6 +238,6 @@ public class RrvUtil {
     public static <T> List<T> getLootItemFunctions(List<T> tradeModifiers) {
         return tradeModifiers;
     }
-    //?}
+	//?}
 
 }

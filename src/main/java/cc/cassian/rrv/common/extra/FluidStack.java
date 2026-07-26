@@ -15,9 +15,10 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-/// A representation of a [FluidItem] including its fluid type, data components, and stored fluid amount
+/// A representation of a [FluidItem] including its fluid type, data components, and stored fluid amount in millibuckets
 public record FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
 
+    /// One bucket's worth of fluid.
     public static final int AMOUNT_FULL = 1000;
     public static final FluidStack EMPTY = new FluidStack(Fluids.EMPTY, 0, DataComponentPatch.EMPTY);
 
@@ -35,7 +36,7 @@ public record FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
         return this.fluid;
     }
 
-    /// @return The amount of fluid this stack holds
+    /// @return The amount of fluid this stack holds in millibuckets
     @Override
     public int amount() {
         return this.amount;

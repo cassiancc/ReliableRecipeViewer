@@ -25,6 +25,10 @@ public class RRVClientUtil {
     private static final ArrayList<String> INITIALIZED_MODS = new ArrayList<>();
     public static final Identifier CONTAINER = Identifier.withDefaultNamespace("container");
 
+    public static ArrayList<String> getInitializedMods() {
+        return INITIALIZED_MODS;
+    }
+
     public static void setScreen(Screen newScreen) {
         //? if >26.1 {
         /*Minecraft.getInstance().gui.setScreen(newScreen);

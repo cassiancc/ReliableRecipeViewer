@@ -41,6 +41,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -126,7 +127,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 
 	public static <T> @Nullable Identifier getId(T recipe) {
 		return switch (recipe) {
-			case ReliableClientRecipe clientRecipe -> clientRecipe.getId();
+			case ReliableClientRecipe clientRecipe -> clientRecipe.entryId();
 			case RecipeHolder<?> holder -> holder.id().identifier();
 			case TagInfoRecipe<?, ?> tagInfoRecipe -> {
 				if (tagInfoRecipe.getTag().isFor(Registries.ITEM) && Configs.CATEGORIES.enabled(ItemTagClientRecipeType.INSTANCE))
@@ -223,7 +224,10 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 
 		@Override
 		public void getTooltips(ITooltipBuilder tooltip) {
-			tooltip.add(Component.translatable("rrv.jrrv.lookup"));
+			MutableComponent lookupText = Component.translatable("rrv.jrrv.lookup").withStyle(ChatFormatting.GOLD);
+			if (RRVPlatform.INSTANCE.isDevelopment() || Configs.CLIENT_SETTINGS.isShowRecipeId()) {
+				tooltip.add(lookupText.append(":"));
+			}
 			if (providedByReliableRecipeViewer) {
 				tooltip.add(Component.translatable("rrv.jrrv.provided").withStyle(ChatFormatting.GRAY));
 			}
@@ -251,7 +255,8 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			if (ClientRecipeCache.INSTANCE.getRecipes(id).isEmpty() || !Configs.CLIENT_SETTINGS.isRecipeSharing()) {
 				state.setVisible(false);
 			}
-			if (providedByReliableRecipeViewer && !ClientRecipeCache.INSTANCE.getRecipeEntry(id).getType().placeRecipeShareButton(new RecipeViewMenu.DisplayInfo(0, 0, 0, 0)).visible()) {
+			ReliableClientRecipe recipeEntry = ClientRecipeCache.INSTANCE.getRecipeEntry(id);
+			if (providedByReliableRecipeViewer && recipeEntry != null && !recipeEntry.getType().placeRecipeShareButton(new RecipeViewMenu.DisplayInfo(0, 0, 0, 0)).visible()) {
 				state.setVisible(false);
 			}
 		}

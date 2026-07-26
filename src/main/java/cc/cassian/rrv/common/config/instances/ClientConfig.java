@@ -33,6 +33,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private Map<IndexSource, Boolean> indexSource = IndexSource.DEFAULT;
 	private boolean jeiPanel = false;
 	private boolean jeiRecipeScreen = true;
+	private boolean prioritizeNativeRecipeScreens = true;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -221,6 +222,14 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.jeiRecipeScreen = jeiRecipeScreen;
 	}
 
+	public boolean isPrioritizeNativeRecipeScreens() {
+		return prioritizeNativeRecipeScreens;
+	}
+
+	public void setPrioritizeNativeRecipeScreens(boolean prioritizeNativeRecipeScreens) {
+		this.prioritizeNativeRecipeScreens = prioritizeNativeRecipeScreens;
+	}
+
 	@Override
 	protected void loadData() {
 		boolean loadedDeprecatedConfig = false;
@@ -257,7 +266,7 @@ public class ClientConfig extends AbstractRrvConfig {
 			this.showProgressBar = load("style", "show_progress_bar", this.showProgressBar);
 			this.fluidUnitDroplets = load("advanced", "fluid_unit_droplets", this.fluidUnitDroplets);
 			this.centerRecipeScreen = load("style", "center_recipe_screen", this.centerRecipeScreen);
-			this.showRecipeId = load("advanced", "showRecipeId", this.showRecipeId);
+			this.showRecipeId = load("advanced", "show_recipe_id", this.showRecipeId);
 			this.recipeBookButton = load("behaviour", "recipe_book_button", this.recipeBookButton);
 			this.recipeBookTheme = load("style", "recipe_book_theme", this.recipeBookTheme);
 			this.localFallback = load("advanced", "local_fallback", this.localFallback, LocalFallback.CODEC);
@@ -271,7 +280,8 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.indexSource = load("advanced", "index_sources", this.indexSource, IndexSource.CODEC);
 		if (ModCompat.JEI) {
 			this.jeiPanel = load("jei","panel", this.jeiPanel);
-			this.jeiRecipeScreen = load("jei", "recipeScreen", this.jeiRecipeScreen);
+			this.jeiRecipeScreen = load("jei", "recipe_screen", this.jeiRecipeScreen);
+			this.prioritizeNativeRecipeScreens = load("jei", "prioritize_native_screens", this.prioritizeNativeRecipeScreens);
 		}
 
 		if (loadedDeprecatedConfig) {
@@ -293,7 +303,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("style", "show_progress_bar", this.showProgressBar);
 		save("advanced", "fluid_unit_droplets", this.fluidUnitDroplets);
 		save("style", "center_recipe_screen", this.centerRecipeScreen);
-		save("advanced", "showRecipeId", this.showRecipeId);
+		save("advanced", "show_recipe_id", this.showRecipeId);
 		save("behaviour", "recipe_book_button", this.recipeBookButton);
 		save("style", "recipe_book_theme", this.recipeBookTheme);
 		save("advanced", "local_fallback", this.localFallback, LocalFallback.CODEC);
@@ -304,7 +314,8 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("advanced", "index_sources", this.indexSource, IndexSource.CODEC);
 		if (ModCompat.JEI) {
 			save("jei","panel", this.jeiPanel);
-			save("jei", "recipeScreen", this.jeiRecipeScreen);
+			save("jei", "recipe_screen", this.jeiRecipeScreen);
+			save("jei", "prioritize_native_screens", this.prioritizeNativeRecipeScreens);
 		}
 
 		// remove deprecated config fields from v8.6.x and below

@@ -6,6 +6,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -28,6 +29,7 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -433,7 +435,9 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
-        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && JeiHelpers.hasRecipesForItem(stack, openType) && !stack.hasNonDefault(DataComponents.ITEM_MODEL) && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
+        String namespace = RRVPlatform.INSTANCE.getModNamespaceForItem(stack);
+        boolean isFromModWithIntegration = RrvUtil.getInitializedMods().contains(namespace) && RRVClientUtil.getInitializedMods().contains(namespace);
+        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && (!Configs.CLIENT_SETTINGS.isPrioritizeNativeRecipeScreens() || !isFromModWithIntegration) && JeiHelpers.hasRecipesForItem(stack, openType) && !stack.hasNonDefault(DataComponents.ITEM_MODEL) && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
             JeiHelpers.openJEI(stack, openType, RRVClientUtil.currentScreen());
             return;
         }
