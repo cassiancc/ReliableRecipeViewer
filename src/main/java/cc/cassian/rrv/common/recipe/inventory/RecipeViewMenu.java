@@ -50,6 +50,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     private List<? extends ReliableClientRecipe> recipes;
     private ReliableClientRecipeType clientRecipeType;
 
+    /// Maximum amount of recipes possible to display on a single page.
     private int maxPossiblePerPage;
     private int maxPageIndex;
     private int currentPage;
@@ -222,7 +223,6 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         return this.viewContainer.stillValid(player);
     }
-
 
     public int getMaxPossiblePerPage() {
         return this.maxPossiblePerPage;

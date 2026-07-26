@@ -193,19 +193,49 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         });
     }
 
-    /// Switch to the previous type of recipes.
+    /// Switch to the previous page of recipe types.
     public void prevPage() {
         this.viewTypePage = Math.max(this.viewTypePage - 1, 0);
         this.checkGui();
         this.getMenu().setClientRecipeType(this.viewTypePage*5);
     }
 
-    /// Switch to the next type of recipes
+    /// Switch to the next page of recipe types.
     public void nextPage() {
         this.viewTypePage = Math.min(this.viewTypePage + 1, this.getMenu().getViewTypeOrder().size() / 5);
         this.checkGui();
         this.getMenu().setClientRecipeType(this.viewTypePage*5);
 	}
+
+    /// Switch to the previous type of recipes.
+    public void prevRecipeType() {
+        int typeId = this.getMenu().getCurrentTypeIndex();
+
+        if (typeId-1 == -1) {
+            return;
+        }
+
+        if (typeId % 5 == 0) {
+            this.viewTypePage = Math.max(this.viewTypePage - 1, 0);
+        }
+        this.checkGui();
+        this.getMenu().setClientRecipeType(typeId-1);
+    }
+
+    /// Switch to the next type of recipes
+    public void nextRecipeType() {
+        int typeId = this.getMenu().getCurrentTypeIndex() + 1;
+
+        if (typeId>=this.getMenu().getViewTypeOrder().size())
+            return;
+
+        if (typeId != 0 && typeId % 5 == 0) {
+            nextPage();
+        } else {
+            this.checkGui();
+            this.getMenu().setClientRecipeType(typeId);
+        }
+    }
 
     protected void checkGui() {
         this.clearRecipeWidgets();
@@ -465,6 +495,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 
+        // scroll through workstations
         if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
             if (mouseX <= this.leftPos && mouseX >= this.leftPos - 25 && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight) {
                 if (scrollY < 0)
@@ -486,11 +517,22 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             return true;
         }
 
+        // scroll through recipe types
+        int topPos1 = this.getTopPos() + 16;
+        if (mouseY < topPos1 && scrollY < 0) {
+            this.nextRecipeType();
+            return true;
+        }
+        if (mouseY < topPos1 && scrollY > 0) {
+            this.prevRecipeType();
+            return true;
+        }
 
         if (!(mouseX >= this.leftPos && mouseX <= this.leftPos + this.imageWidth && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight))
             return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 
 
+        // scroll through recipes
         if (scrollY < 0) {
             this.getMenu().nextRecipe(null);
             this.checkTickers();
