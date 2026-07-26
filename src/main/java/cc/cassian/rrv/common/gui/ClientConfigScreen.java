@@ -249,4 +249,8 @@ public class ClientConfigScreen extends Screen {
         Configs.STACK_GROUPS.save();
         RRVClientUtil.setScreen(this.lastScreen);
     }
+
+	public Screen getParentScreen() {
+		return lastScreen;
+	}
 }

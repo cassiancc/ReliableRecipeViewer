@@ -108,4 +108,9 @@ public class JeiHelpers {
 		else if (namespace.equals("minecraft")) return false;
 		return !JeiHelpers.PLUGINS.contains(namespace);
 	}
+
+	public static Screen getJeiParentScreen(Screen screen) {
+		if (screen instanceof RecipesGui recipesGui) return recipesGui.getParentScreen().orElse(null);
+		return null;
+	}
 }

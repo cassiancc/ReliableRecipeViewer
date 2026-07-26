@@ -235,7 +235,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 		public boolean onPress(IJeiUserInput input) {
 			if (!input.isSimulate()) {
 				RecipeSharing.shareRecipe(id);
-				RRVClientUtil.setScreen(null);
+				RRVClientUtil.setToParentScreen();
 			}
 			return true;
 		}

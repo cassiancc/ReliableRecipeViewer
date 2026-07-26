@@ -2,10 +2,12 @@ package cc.cassian.rrv.client.util;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.JeiHelpers;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -35,6 +37,24 @@ public class RRVClientUtil {
          *///?} else {
         Minecraft.getInstance().setScreen(newScreen);
         //?}
+    }
+
+    public static void setToParentScreen() {
+        setScreen(getParentScreen());
+    }
+
+    private static Screen getParentScreen() {
+        var oldScreen = currentScreen();
+        if (oldScreen instanceof RecipeViewScreen recipeViewScreen) {
+            return recipeViewScreen.getMenu().getParentScreen();
+        }
+        else if (oldScreen instanceof ClientConfigScreen clientConfigScreen) {
+            return clientConfigScreen.getParentScreen();
+        }
+        else if (ModCompat.JEI) {
+            return JeiHelpers.getJeiParentScreen(oldScreen);
+        }
+        else return null;
     }
 
     public static Screen currentScreen() {
