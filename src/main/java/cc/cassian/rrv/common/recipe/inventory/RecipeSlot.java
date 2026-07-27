@@ -11,6 +11,13 @@ public class RecipeSlot extends Slot {
 		this.highlightWithoutContents = highlightWithoutContents;
 	}
 
+	public RecipeSlot(Properties properties) {
+		this(properties.container, properties.slotId, properties.x, properties.y, properties.highlightWithoutContents);
+	}
+
+	public record Properties(ViewContainer container, int slotId, int x, int y, boolean highlightWithoutContents) {
+	}
+
 	@Override
 	public boolean isFake() {
 		return true;

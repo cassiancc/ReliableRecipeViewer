@@ -28,10 +28,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
@@ -335,15 +335,15 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             recipe.getIngredients().forEach(slotContent -> slotContent.setType(ActionType.INPUT));
             recipe.getResults().forEach(slotContent -> {
                 slotContent.setType(ActionType.RESULT);
-                slotContent.bindResult(recipe.entryId());
+                slotContent.bindResult(recipe.entryId()); //FIXME this should only be applied to the stacks on the screen, not the actual recipe's stacks
             });
 
             SlotDefinition slotDefinition = new SlotDefinition(viewContainer);
             this.clientRecipeType.placeSlots(slotDefinition);
-            for (Slot slot : slotDefinition.getItemSlots()) {
-                int id = slot.getContainerSlot() + (i * this.getClientRecipeType().getSlotCount());
-
-                this.addSlot(new RecipeSlot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i), slotDefinition.highlightWithoutContents));
+            for (SlotPlacement function : slotDefinition.getItemSlots()) {
+                var properties = function.properties();
+                var slot = function.function().apply(new RecipeSlot.Properties(properties.container(), properties.slotId()+ (i * this.getClientRecipeType().getSlotCount()), properties.x() + this.guiOffsetLeft(), properties.y() + this.guiOffsetTop(i), properties.highlightWithoutContents()));
+                this.addSlot(slot);
             }
 
             SlotFillContext slotFillContext = new SlotFillContext();
@@ -351,7 +351,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
             for (int j = 0; j < this.getClientRecipeType().getSlotCount(); j++) {
                 int slotId = j + (i * this.getClientRecipeType().getSlotCount());
-                this.viewContainer.setItem(slotId, slotFillContext.contentBySlot(j).getByIndex(slotFillContext.contentBySlot(j).index()));
+                ItemStack stackByIndex = slotFillContext.contentBySlot(j).getByIndex(slotFillContext.contentBySlot(j).index());
+                this.viewContainer.setItem(slotId, stackByIndex);
 
                 if (slotFillContext.getAdditionalTooltips().containsKey(j))
                     this.additionalStackModifiers.put(slotId, slotFillContext.getAdditionalTooltips().get(j));
@@ -853,27 +854,30 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     public static class SlotDefinition {
 
-        public final HashMap<Integer, Slot> itemSlots;
+        public final HashMap<Integer, SlotPlacement> itemSlots;
 		private final ViewContainer viewContainer;
-		private boolean highlightWithoutContents = true;
+        private boolean highlightWithoutContents = true;
 
-        public SlotDefinition(ViewContainer viewContainer) {
+		public SlotDefinition(ViewContainer viewContainer) {
 			this.viewContainer = viewContainer;
 			this.itemSlots = new HashMap<>();
         }
 
         public void addItemSlot(int slotId, int x, int y) {
-            this.itemSlots.put(slotId, new RecipeSlot(viewContainer, slotId, x, y, highlightWithoutContents));
+            this.itemSlots.put(slotId, new SlotPlacement(new RecipeSlot.Properties(viewContainer, slotId, x, y, highlightWithoutContents), properties -> new RecipeSlot(properties)));
+        }
+
+        public void addItemSlot(int slotId, int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
+            this.itemSlots.put(slotId, new SlotPlacement(new RecipeSlot.Properties(viewContainer,slotId, x, y, highlightWithoutContents), recipeSlot));
         }
 
         public void setHighlightWithoutContents(boolean highlightWithoutContents) {
             this.highlightWithoutContents = highlightWithoutContents;
-        }
+		}
 
-        private List<Slot> getItemSlots() {
+        private List<SlotPlacement> getItemSlots() {
             return this.itemSlots.values().stream().toList();
         }
-
 
     }
 
