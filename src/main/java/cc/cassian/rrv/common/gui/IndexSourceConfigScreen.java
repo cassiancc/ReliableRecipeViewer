@@ -2,9 +2,7 @@ package cc.cassian.rrv.common.gui;
 
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.config.instances.RecipeCategoryConfig;
 import cc.cassian.rrv.common.config.options.IndexSource;
-import cc.cassian.rrv.common.config.widgets.IntegerEditBox;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.StringWidget;
@@ -14,14 +12,8 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
 
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class IndexSourceConfigScreen extends ClientConfigScreen {

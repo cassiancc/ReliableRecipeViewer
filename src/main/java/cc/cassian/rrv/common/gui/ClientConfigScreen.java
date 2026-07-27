@@ -19,6 +19,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
+//? if <26
+//import cc.cassian.rrv.backport.ScrollableLayout;
 
 public class ClientConfigScreen extends Screen {
 
