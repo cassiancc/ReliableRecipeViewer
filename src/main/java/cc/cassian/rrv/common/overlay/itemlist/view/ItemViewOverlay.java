@@ -16,7 +16,7 @@ import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
-import cc.cassian.rrv.common.integration.jei.JeiHelpers;
+import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
@@ -98,7 +98,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         updateButtons();
     }
 
-
     @Override
     public void onScreenChanged(InventoryPositionInfo info) {
         this.initForScreen(info.screen(), info);
@@ -107,7 +106,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.createSearchbarElement(OverlayManager.INSTANCE.currentInfo());
         this.createButtons(OverlayManager.INSTANCE.currentInfo());
     }
-
 
     @Override
     protected void placeWidgets(ScreenContext ctx) {
@@ -135,25 +133,15 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 
         settingsButton.setPosition(position, info.screenHeight() - buttonSize);
+        settingsButton.visible = Configs.CLIENT_SETTINGS.isClientSettingsButtonEnabled();
 
         if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
-            JeiHelpers.placeSidePanelButton(settingsButton);
+            JeiCompatibilityUtil.placeSettingsButton(settingsButton);
         }
 
         ctx.addRenderable(settingsButton);
         //---- Side Panel Settings Button ----
-        ReliableSpriteIconButton sidePanelButton = new SidePanelButton();
-
-        int sidePanelButtonPosition = position + buttonSize + 2;
-        if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
-            sidePanelButtonPosition = info.screenWidth() - (buttonSize+2)*2;
-        }
-        sidePanelButton.setPosition(sidePanelButtonPosition, info.screenHeight() - buttonSize);
-
-        if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
-            sidePanelButton.visible = false;
-        }
-
+        ReliableSpriteIconButton sidePanelButton = new SidePanelButton(position, info);
         ctx.addRenderable(sidePanelButton);
     }
 
@@ -256,7 +244,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 	}
 
-
     @Override
     protected boolean keyPressed(KeyEvent event) {
         if (super.keyPressed(event)) {
@@ -351,7 +338,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     }
 
-
     public void createSearchbarElement(InventoryPositionInfo info) {
         boolean wrapMode = Configs.CLIENT_SETTINGS.isItemWrapMode();
 
@@ -437,8 +423,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         String namespace = RRVPlatform.INSTANCE.getModNamespaceForItem(stack);
         boolean isFromModWithIntegration = RrvUtil.getInitializedMods().contains(namespace) && RRVClientUtil.getInitializedMods().contains(namespace);
-        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && (!Configs.CLIENT_SETTINGS.isPrioritizeNativeRecipeScreens() || !isFromModWithIntegration) && JeiHelpers.hasRecipesForItem(stack, openType) && !stack.hasNonDefault(DataComponents.ITEM_MODEL) && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
-            JeiHelpers.openJEI(stack, openType, RRVClientUtil.currentScreen());
+        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && (!Configs.CLIENT_SETTINGS.isPrioritizeNativeRecipeScreens() || !isFromModWithIntegration) && JeiCompatibilityUtil.hasRecipesForItem(stack, openType) && !stack.hasNonDefault(DataComponents.ITEM_MODEL) && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
+            JeiCompatibilityUtil.openJEI(stack, openType, RRVClientUtil.currentScreen());
             return;
         }
 
@@ -452,7 +438,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             }
         };
 
-        if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack)) || (ModCompat.JEI && JeiHelpers.hasRecipesForItem(stack, openType))) {
+        if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack)) || (ModCompat.JEI && JeiCompatibilityUtil.hasRecipesForItem(stack, openType))) {
             openRecipeView(stack, openType, clientPlayer, foundRecipes, type, false);
         }
     }

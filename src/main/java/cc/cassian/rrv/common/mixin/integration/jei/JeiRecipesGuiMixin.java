@@ -11,6 +11,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -54,6 +55,14 @@ public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedCo
 	@Inject(method = "init", at = @At("TAIL"))
 	private void injectOverlay$0(CallbackInfo ci) {
 		this.rrv$callInit();
+	}
+
+	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lmezz/jei/common/config/IClientConfig;isCenterSearchBarEnabled()Z"), require = 0)
+	private boolean centered(IClientConfig instance, Operation<Boolean> original) {
+		if (Configs.CLIENT_SETTINGS.isCenterSearch() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
+			return true;
+		}
+		return original.call(instance);
 	}
 
 	@Override

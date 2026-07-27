@@ -104,8 +104,6 @@
   "rrv.client_settings.recipe_book_button.toggles_recipe_book": "Toggles Recipe Book",
   "rrv.client_settings.recipe_sharing": "Recipe Sharing",
   "rrv.client_settings.recipe_sharing.tooltip": "Whether to allow recipe sharing. Adds a button in the Recipe Screen, and will show chat messages containing shared recipes.",
-  "rrv.client_settings.recipe_sharing.enabled": "Enabled",
-  "rrv.client_settings.recipe_sharing.disabled": "Disabled",
   "rrv.client_settings.theme": "Theme",
   "rrv.client_settings.theme.tooltip": "The theme of the two overlay panels.",
   "rrv.client_settings.theme.recipe_book": "Recipe Book",
@@ -205,6 +203,13 @@
   "rrv.client_settings.jei_recipe_screen.rrv": "RRV",
   "rrv.client_settings.jei_recipe_screen.jei": "JEI",
   "rrv.client_settings.jei_recipe_screen.tooltip": "Whether the screen shown when checking an item's recipe should be from RRV or JEI.",
+  "rrv.client_settings.client_settings_button": "Client Settings Button",
+  "rrv.client_settings.side_panel_settings_button": "Client Settings Button",
+  "rrv.client_settings.client_settings_button.tooltip": "Adds a button to the bottom left to quickly configure client settings.",
+  "rrv.client_settings.side_panel_settings_button.tooltip": "Adds a button to the bottom left to quickly configure the side panel contents.",
+
+  "rrv.client_settings.boolean.enabled": "Enabled",
+  "rrv.client_settings.boolean.disabled": "Disabled",
 
   "tag.minecraft.poplar_logs": "Poplar Logs",
   "tag.minecraft.wool_stairs": "Wool Stairs",
@@ -576,8 +581,6 @@
 
   "rrv.client_settings.stack_groups": "Stack Groups",
   "rrv.client_settings.stack_groups.tooltip": "Group similar items (e.g. spawn eggs, minecarts) into expandable entries.",
-  "rrv.client_settings.stack_groups.enabled": "Enabled",
-  "rrv.client_settings.stack_groups.disabled": "Disabled",
   "rrv.client_settings.configure_stack_groups.title": "Configure Stack Groups",
   "rrv.client_settings.configure_stack_groups.tooltip": "Manage individual stack groups and reorder their contents.",
   "rrv.client_settings.configure_stack_groups.needs_world": "Stack Groups can only be configured while a world is loaded!",

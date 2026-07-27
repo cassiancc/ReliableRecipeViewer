@@ -94,6 +94,8 @@ public class ClientConfigScreen extends Screen {
 
         addChild(generalHelper, "itemview", configs.isShowItemView(), new OverlayDisplay[]{OverlayDisplay.ENABLED, OverlayDisplay.DISABLED, OverlayDisplay.WHEN_SEARCHING}, (_, sidePanel)-> configs.setShowItemView(sidePanel));
         addChild(generalHelper, "show_side_panel", configs.isShowSidePanel(), OverlayDisplay.values(), (_, sidePanel)-> configs.setShowSidePanel(sidePanel));
+        addChild(generalHelper, "client_settings_button", configs.isClientSettingsButtonEnabled(), (_, b )-> configs.setClientSettingsButton(b));
+        addChild(generalHelper, "side_panel_settings_button", configs.isSidePanelSettingsButtonEnabled(), (_, b )-> configs.setSidePanelSettingsButton(b));
 
         linearLayout.addChild(general);
 
@@ -105,9 +107,9 @@ public class ClientConfigScreen extends Screen {
         addChild(behaviorHelper, "sidepanel", configs.getSidePanel(), SidePanel.values(), (_, sidePanel)-> configs.setSidePanel(sidePanel));
         addChild(behaviorHelper, "wrap_scrolling", configs.isWrapScrolling(), WrapScrolling.values(), (_, sidePanel)-> configs.setWrapScrolling(sidePanel));
         addChild(behaviorHelper, "recipe_book_button", "toggles_overlay", "toggles_recipe_book", configs.isRecipeBookButton(), (_, b) -> configs.setRecipeBookButton(b));
-        addChild(behaviorHelper, "recipe_sharing", "enabled", "disabled", configs.isRecipeSharing(), (_, b) -> configs.setRecipeSharing(b));
+        addChild(behaviorHelper, "recipe_sharing", configs.isRecipeSharing(), (_, b) -> configs.setRecipeSharing(b));
 
-        addChild(behaviorHelper, "stack_groups", "enabled", "disabled", Configs.STACK_GROUPS.areStackGroupsEnabled(), (_, b) -> {
+        addChild(behaviorHelper, "stack_groups", Configs.STACK_GROUPS.areStackGroupsEnabled(), (_, b) -> {
             Configs.STACK_GROUPS.setStackGroupsEnabled(b);
             ItemFilters.clearCaches();
         });
@@ -234,6 +236,12 @@ public class ClientConfigScreen extends Screen {
 
     private void addChild(GridLayout.RowHelper linearLayout, String key, String enabled, String disabled, boolean currentValue, CycleButton.OnValueChange<Boolean> newValueSetter) {
         CycleButton<Boolean> widget = CycleButton.booleanBuilder(clientSetting("%s.%s".formatted(key, enabled)), clientSetting("%s.%s".formatted(key, disabled)), currentValue).create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter);
+        addTooltip(key, widget);
+        linearLayout.addChild(widget);
+    }
+
+    private void addChild(GridLayout.RowHelper linearLayout, String key, boolean currentValue, CycleButton.OnValueChange<Boolean> newValueSetter) {
+        CycleButton<Boolean> widget = CycleButton.booleanBuilder(Component.translatable("rrv.client_settings.boolean.enabled"), Component.translatable("rrv.client_settings.boolean.disabled"), currentValue).create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter);
         addTooltip(key, widget);
         linearLayout.addChild(widget);
     }

@@ -7,7 +7,6 @@
   "mixins": [
     "advancements.criterion.MixinInventoryChangeTrigger",
     "chat.HoverEventActionMixin",
-    "integration.jei.JeiBookmarkButtonControllerMixin",
     "integration.jei.JeiBookmarkOverlayAccessor",
     "integration.jei.JeiButtonControllerMixin",
     "integration.jei.JeiPluginLoaderMixin",

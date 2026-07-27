@@ -7,7 +7,7 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
-import cc.cassian.rrv.common.integration.jei.JeiHelpers;
+import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
@@ -251,7 +251,7 @@ public class ItemFilters {
 
         for (ItemStack stack : fullStackList()) {
 
-            String itemId = JeiHelpers.getColorName(stack).toLowerCase(Locale.ROOT);
+            String itemId = JeiCompatibilityUtil.getColorName(stack).toLowerCase(Locale.ROOT);
 
             if (itemId.startsWith(query))
                 add(firstPrio, stack);
@@ -270,7 +270,7 @@ public class ItemFilters {
     /// @return Whether the item stack matches the color
     public static boolean color(ItemStack stack, String query) {
         if (!ModCompat.JEI) return true;
-        return JeiHelpers.getColorName(stack).toLowerCase(Locale.ROOT).contains(query);
+        return JeiCompatibilityUtil.getColorName(stack).toLowerCase(Locale.ROOT).contains(query);
     }
 
     /// Returns the matching level of the item stack's tooltip with the query

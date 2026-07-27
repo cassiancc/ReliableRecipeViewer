@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -19,8 +20,19 @@ import static cc.cassian.rrv.common.config.options.SidePanel.*;
 public class SidePanelButton extends ReliableSpriteIconButton {
     private static final Identifier SIDE_PANEL_TOGGLE = ReliableRecipeViewer.of("side_panel_button");
 
-    public SidePanelButton() {
-        super(ItemViewOverlay.INSTANCE.buttonSize(), getTooltip(), 14, SIDE_PANEL_TOGGLE, SidePanelButton::nextSidePanel);
+    public SidePanelButton(int position, AbstractRrvOverlay.InventoryPositionInfo info) {
+        int buttonSize = ItemViewOverlay.INSTANCE.buttonSize();
+        super(buttonSize, getTooltip(), 14, SIDE_PANEL_TOGGLE, SidePanelButton::nextSidePanel);
+        int sidePanelButtonPosition = position + buttonSize + 2;
+        if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
+            sidePanelButtonPosition = info.screenWidth() - (buttonSize + 2) * 2;
+        }
+        this.setPosition(sidePanelButtonPosition, info.screenHeight() - buttonSize);
+        this.visible = Configs.CLIENT_SETTINGS.isSidePanelSettingsButtonEnabled();
+
+        if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
+            this.visible = false;
+        }
     }
 
     public static void nextSidePanel(Button button) {

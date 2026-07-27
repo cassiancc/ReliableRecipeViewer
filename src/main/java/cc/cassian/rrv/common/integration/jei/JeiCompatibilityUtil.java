@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.integration.jei;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.integration.jei.JeiBookmarkOverlayAccessor;
 import cc.cassian.rrv.common.mixin.integration.jei.RecipesGuiAccessor;
@@ -19,6 +20,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -28,7 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JeiHelpers {
+public class JeiCompatibilityUtil {
 	public static IJeiRuntime runtime;
 	public static final ArrayList<String> PLUGINS = new ArrayList<>();
 
@@ -83,7 +85,11 @@ public class JeiHelpers {
 		return runtime.getRecipesGui().getIngredientUnderMouse(VanillaTypes.ITEM_STACK).orElse(null);
 	}
 
-	public static void placeSidePanelButton(ReliableSpriteIconButton settingsButton) {
+	public static void placeSettingsButton(ReliableSpriteIconButton settingsButton) {
+		if (!Configs.CLIENT_SETTINGS.isClientSettingsButtonEnabled()) {
+			settingsButton.visible = false;
+			return;
+		}
 		if (runtime.getBookmarkOverlay() instanceof BookmarkOverlay bookmarkOverlay) {
 			IconButton button = ((JeiBookmarkOverlayAccessor) bookmarkOverlay).getHistoryButton();
 			if (button.isVisible())
@@ -106,11 +112,15 @@ public class JeiHelpers {
 	public static boolean doesNotHaveNativePlugin(String namespace) {
 		if (namespace.equals("rrv")) return true;
 		else if (namespace.equals("minecraft")) return false;
-		return !JeiHelpers.PLUGINS.contains(namespace);
+		return !JeiCompatibilityUtil.PLUGINS.contains(namespace);
 	}
 
 	public static Screen getJeiParentScreen(Screen screen) {
 		if (screen instanceof RecipesGui recipesGui) return recipesGui.getParentScreen().orElse(null);
 		return null;
+	}
+
+	public static boolean isJeiRecipeViewScreen(Screen screen) {
+		return screen instanceof IRecipesGui;
 	}
 }

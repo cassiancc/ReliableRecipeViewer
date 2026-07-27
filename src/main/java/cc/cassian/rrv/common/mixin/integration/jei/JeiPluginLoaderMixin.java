@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.integration.jei;
 
+import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.library.load.PluginLoader;
@@ -16,6 +17,6 @@ import java.util.List;
 public class JeiPluginLoaderMixin {
 	@Inject(method = "createRecipeCategories", at = @At(value = "HEAD"))
 	private static void hideJeiButtons(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, JeiHelpers jeiHelpers, CallbackInfoReturnable<List<IRecipeCategory<?>>> cir) {
-		cc.cassian.rrv.common.integration.jei.JeiHelpers.PLUGINS.addAll(plugins.stream().map(iModPlugin -> iModPlugin.getPluginUid().getNamespace()).toList());
+		JeiCompatibilityUtil.PLUGINS.addAll(plugins.stream().map(iModPlugin -> iModPlugin.getPluginUid().getNamespace()).toList());
 	}
 }

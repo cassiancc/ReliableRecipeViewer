@@ -4,12 +4,11 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
-import cc.cassian.rrv.common.integration.jei.JeiHelpers;
+import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
@@ -50,7 +49,7 @@ public class JeiClientRecipe implements ReliableClientRecipe {
 	}
 
 	public static void tryOpen(ActionType type, ItemStack stack, Screen parentScreen) {
-		JeiHelpers.openJEI(stack, type, parentScreen);
+		JeiCompatibilityUtil.openJEI(stack, type, parentScreen);
 	}
 
 	@Override

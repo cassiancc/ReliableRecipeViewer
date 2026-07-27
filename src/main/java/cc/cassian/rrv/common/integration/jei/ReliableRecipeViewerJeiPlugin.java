@@ -12,7 +12,6 @@ import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipeType;
 import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -36,7 +35,6 @@ import mezz.jei.library.plugins.jei.tags.TagInfoRecipe;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.Registries;
@@ -51,7 +49,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-import static cc.cassian.rrv.common.integration.jei.JeiHelpers.doesNotHaveNativePlugin;
+import static cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil.doesNotHaveNativePlugin;
 
 @JeiPlugin
 @NullMarked
@@ -170,7 +168,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-		JeiHelpers.runtime = jeiRuntime;
+		JeiCompatibilityUtil.runtime = jeiRuntime;
 	}
 
 	private static class JRRVIngredientListOverlay implements IIngredientListOverlay {

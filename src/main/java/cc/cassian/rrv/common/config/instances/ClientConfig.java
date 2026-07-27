@@ -34,6 +34,8 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean jeiPanel = false;
 	private boolean jeiRecipeScreen = true;
 	private boolean prioritizeNativeRecipeScreens = true;
+	private boolean clientSettingsButton = true;
+	private boolean sidePanelSettingsButton = true;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -230,6 +232,22 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.prioritizeNativeRecipeScreens = prioritizeNativeRecipeScreens;
 	}
 
+	public boolean isClientSettingsButtonEnabled() {
+		return clientSettingsButton;
+	}
+
+	public void setClientSettingsButton(boolean clientSettingsButton) {
+		this.clientSettingsButton = clientSettingsButton;
+	}
+
+	public boolean isSidePanelSettingsButtonEnabled() {
+		return sidePanelSettingsButton;
+	}
+
+	public void setSidePanelSettingsButton(boolean sidePanelSettingsButton) {
+		this.sidePanelSettingsButton = sidePanelSettingsButton;
+	}
+
 	@Override
 	protected void loadData() {
 		boolean loadedDeprecatedConfig = false;
@@ -276,7 +294,8 @@ public class ClientConfig extends AbstractRrvConfig {
 			this.recipeSharing = load("behaviour", "recipe_sharing", this.recipeSharing);
 		}
 
-
+		this.clientSettingsButton = load("general", "client_settings_button", this.clientSettingsButton);
+		this.sidePanelSettingsButton = load("general", "side_panel_settings_button", this.sidePanelSettingsButton);
 		this.indexSource = load("advanced", "index_sources", this.indexSource, IndexSource.CODEC);
 		if (ModCompat.JEI) {
 			this.jeiPanel = load("jei","panel", this.jeiPanel);
@@ -294,6 +313,8 @@ public class ClientConfig extends AbstractRrvConfig {
 	protected void saveData() {
 		save("general", "show_item_view", this.showItemView, OverlayDisplay.CODEC);
 		save("general", "show_side_panel", this.showSidePanel, OverlayDisplay.CODEC);
+		save("general", "client_settings_button", this.clientSettingsButton);
+		save("general", "side_panel_settings_button", this.sidePanelSettingsButton);
 		save("style", "background", this.background);
 		save("style", "item_wrap_mode", this.itemWrapMode);
 		save("style", "namespace_tooltip", this.namespaceTooltip, NamespaceTooltip.CODEC);

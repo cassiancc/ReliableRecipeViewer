@@ -5,7 +5,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
-import cc.cassian.rrv.common.integration.jei.JeiHelpers;
+import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -52,7 +52,7 @@ public class RRVClientUtil {
             return clientConfigScreen.getParentScreen();
         }
         else if (ModCompat.JEI) {
-            return JeiHelpers.getJeiParentScreen(oldScreen);
+            return JeiCompatibilityUtil.getJeiParentScreen(oldScreen);
         }
         else return null;
     }

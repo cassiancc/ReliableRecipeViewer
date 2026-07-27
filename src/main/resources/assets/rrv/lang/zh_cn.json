@@ -449,8 +449,8 @@
 
   "rrv.client_settings.stack_groups": "堆叠组",
   "rrv.client_settings.stack_groups.tooltip": "将类似的物品（例如刷怪蛋，矿车）归纳成可折叠的卡槽。",
-  "rrv.client_settings.stack_groups.enabled": "已启用",
-  "rrv.client_settings.stack_groups.disabled": "已禁用",
+  "rrv.client_settings.boolean.enabled": "已启用",
+  "rrv.client_settings.boolean.disabled": "已禁用",
   "rrv.client_settings.configure_stack_groups.title": "配置堆叠组",
   "rrv.client_settings.configure_stack_groups.tooltip": "管理具体的堆叠组以及调整其内部物品的排列顺序。",
   "rrv.stack_group_settings.group": "堆叠组",
