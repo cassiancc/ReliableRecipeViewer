@@ -16,6 +16,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 *///?}
 //? fabric {
+import net.fabricmc.fabric.api.recipe.v1.ingredient.DefaultCustomIngredients;
+//?}
+//? if >26.2 {
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.predicates.PotionsPredicate;
+import net.minecraft.world.item.alchemy.PotionContents;
 //?}
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
