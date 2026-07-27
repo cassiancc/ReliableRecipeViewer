@@ -4,8 +4,10 @@
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.command.RrvCommand;
-import cc.cassian.rrv.common.integration.ModCompat;import cc.cassian.rrv.common.network.RrvNetworkManager;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
+//? >26
 import cc.cassian.rrv.fabric.FabricUtil;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.IEventBus;
@@ -43,10 +45,12 @@ public class NeoForgeEntrypoint {
 				} catch (Exception ignored) {}
             }
         });
+        //? if >26 {
         if (ModCompat.LAUNCHPAD && ModCompat.FABRIC_RECIPE_API) {
             ReliableRecipeViewer.LOGGER.info("Initializing RRV integration for Fabric mods through Launchpad.");
             FabricUtil.initialize();
         }
+        //?}
     }
 
     @SubscribeEvent

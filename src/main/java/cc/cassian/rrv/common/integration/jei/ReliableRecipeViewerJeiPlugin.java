@@ -72,11 +72,15 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 	public void registerCategories(IRecipeCategoryRegistration registration) {
 		for (ReliableClientRecipe recipe : ClientRecipeCache.INSTANCE.getRecipes()) {
 			ReliableClientRecipeType type = recipe.getType();
-			if (!RECIPE_CATEGORIES.containsKey(type) && doesNotHaveNativePlugin(type.getId().getNamespace())) {
-				IRecipeType<ReliableClientRecipe> recipeType = IRecipeType.create(type.getId().withPrefix("rrv/"), recipe.getClass());
-				registration.addRecipeCategories(new JeiReliableRecipeCategory(type, recipeType));
-				RECIPE_CATEGORIES.put(type, recipeType);
-			}
+			bridgeRecipeType(registration, recipe.getClass(), type);
+		}
+	}
+
+	private static void bridgeRecipeType(IRecipeCategoryRegistration registration, Class<? extends ReliableClientRecipe> recipe, ReliableClientRecipeType type) {
+		if (!RECIPE_CATEGORIES.containsKey(type) && doesNotHaveNativePlugin(type.getId())) {
+			IRecipeType<ReliableClientRecipe> recipeType = IRecipeType.create(type.getId().withPrefix("rrv/"), recipe);
+			registration.addRecipeCategories(new JeiReliableRecipeCategory(type, recipeType));
+			RECIPE_CATEGORIES.put(type, recipeType);
 		}
 	}
 
@@ -86,7 +90,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			List<ReliableClientRecipe> recipes = ClientRecipeCache.INSTANCE.getRecipes().stream().filter(p -> p.getType().equals(type)).toList();
 			if (type.getId().equals(ReliableRecipeViewer.of("info"))) {
 				recipes.forEach(recipe -> {
-					if (doesNotHaveNativePlugin(recipe.getId().getNamespace())) {
+					if (doesNotHaveNativePlugin(recipe.getId())) {
 						InfoClientRecipe info = ((InfoClientRecipe) recipe);
 						ArrayList<ItemStack> stacks = new ArrayList<>();
 						info.getIngredients().stream().map(SlotContent::getValidContents).forEach(stacks::addAll);
@@ -96,7 +100,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			}
 			else if (type.getId().equals(ReliableRecipeViewer.of("anvil_combining"))) {
 				recipes.forEach(recipe -> {
-					if (doesNotHaveNativePlugin(recipe.getId().getNamespace())) {
+					if (doesNotHaveNativePlugin(recipe.getId())) {
 						AnvilCombiningClientRecipe anvilRecipe = ((AnvilCombiningClientRecipe) recipe);
 						registration.getVanillaRecipeFactory().createAnvilRecipe(anvilRecipe.getLeft().getValidContents(), anvilRecipe.getRight().getValidContents(), anvilRecipe.getResult().getValidContents(), anvilRecipe.getId());
 					}

@@ -5,6 +5,9 @@ plugins {
     id("maven-publish")
 }
 
+val minecraft = stonecutter.current.version
+val mcVersion = stonecutter.current.project.substringBeforeLast('-')
+
 tasks.named<ProcessResources>("processResources") {
     fun prop(name: String) = project.property(name) as String
 
@@ -17,7 +20,7 @@ tasks.named<ProcessResources>("processResources") {
         this["mod_authors"] = prop("mod.authors")
         this["mod_license"] = prop("mod.license")
         this["neoforge_loader_version_range"] = "[1,)"
-        this["neoforge_version_range"] = "[26.1.2.13-beta,)"
+        this["neoforge_version_range"] = prop("deps.neoforge_version_range")
         this["minecraft_version_range"] = prop("deps.minecraft_version_range")
     }
 
@@ -116,8 +119,10 @@ dependencies {
     compileOnly("mcp.mobius.waila:wthit:neo-${property("deps.wthit")}")
 
     // Sinytra Connector support
-    compileOnly("org.sinytra:forgified-fabric-loader:2.5.85+0.19.3+26.1.2")
-    compileOnly("org.sinytra.forgified-fabric-api:fabric-recipe-api-v1:9.0.16+a1e31eec4c")
+    if (stonecutter.eval(mcVersion, ">26")) {
+        compileOnly("org.sinytra:forgified-fabric-loader:2.5.85+0.19.3+26.1.2")
+        compileOnly("org.sinytra.forgified-fabric-api:fabric-recipe-api-v1:9.0.16+a1e31eec4c")
+    }
 
     // JEI support
     compileOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")

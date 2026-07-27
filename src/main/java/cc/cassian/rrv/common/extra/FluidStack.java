@@ -71,12 +71,14 @@ public record FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
         return new FluidStack(stack.getFluid(), stack.getAmount(), stack.getComponentsPatch());
     }
 
+    //? if >26 {
     /// Creates an RRV FluidStack from a NeoForge FluidStackTemplate
     /// @param stack: A NeoForge Fluid Stack
     /// @return A RRV Fluid Stack
     public static FluidStack fromFluidStack(net.neoforged.neoforge.fluids.FluidStackTemplate stack) {
         return FluidStack.fromFluidStack(stack.create());
     }
+    //?}
 
     /// Creates a NeoForge FluidStack from an RRV FluidStack
     /// @return A NeoForge Fluid Stack

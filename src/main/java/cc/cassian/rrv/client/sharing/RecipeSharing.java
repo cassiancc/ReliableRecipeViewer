@@ -31,7 +31,7 @@ public class RecipeSharing {
 	private static MutableComponent getRecipeName(ReliableClientRecipe recipe) {
 		Identifier recipeId = recipe.entryId();
 		return Component.translatable("rrv.sharing.recipe",
-				recipeId).withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)
+				recipeId.toString()).withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)
 				.withClickEvent(new ClickEvent.Custom(ReliableRecipeViewer.of("click_recipe"), Optional.of(StringTag.valueOf(recipeId.toString()))))
 				.withHoverEvent(new ShowRecipe(recipe.getType().getDisplayName().copy(), recipe.getType().getId().getNamespace(), recipe.getResults().getFirst().next()))
 		);

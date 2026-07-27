@@ -87,7 +87,6 @@ public class ClientRecipeCache {
         return clientRecipes;
     }
 
-
     public void updateType(ReliableServerRecipeType<?> type, List<ServerRecipeManager.ServerRecipeEntry> recipes) {
         this.serverEntryMap.getOrDefault(type, new ArrayList<>()).forEach(entry -> this.multiRecipeMap.getOrDefault(entry.recipeId(), new ArrayList<>()).forEach(id -> {
             this.recipeMap.remove(id);

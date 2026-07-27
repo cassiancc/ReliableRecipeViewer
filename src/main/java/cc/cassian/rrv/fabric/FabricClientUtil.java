@@ -1,3 +1,4 @@
+//? if fabric || >26 {
 package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
@@ -17,3 +18,4 @@ public class FabricClientUtil {
 		}
 	}
 }
+//?}

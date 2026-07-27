@@ -14,6 +14,7 @@ import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
+//? if >26
 import cc.cassian.rrv.fabric.FabricClientUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -53,10 +54,12 @@ public class NeoForgeClientEntrypoint {
 				} catch (Exception ignored) {}
 			}
 		});
+		//? if >26 {
 		if (ModCompat.LAUNCHPAD && ModCompat.FABRIC_RECIPE_API) {
 			ReliableRecipeViewer.LOGGER.info("Initializing RRV client integration for Fabric mods through Launchpad.");
 			FabricClientUtil.initializeClient();
 		}
+		//?}
         ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new ClientConfigScreen(screen));
     }
 

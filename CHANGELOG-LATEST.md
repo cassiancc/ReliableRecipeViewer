@@ -10,7 +10,7 @@
 - Recipe outputs with unique `ITEM_MODEL` components will now be added to the index. This should improve the experience when playing with datapacks like Matcha Flavoured.
 - Index sources can now be mixed and matched from their own screen.
 - Recipe type buttons can now be scrolled through.
-- Backport to 1.21.11 Fabric.
+- Backport to 1.21.11.
 
 ### Changed
 - Client config file has been reorganized to match the categories found in the ingame config screen. Configs from 8.6.4 and below will be safely upgraded to this new format.

@@ -18,9 +18,12 @@ import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
@@ -55,12 +58,14 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
 
         float renderHeight = Math.clamp((float) fluidStack.amount() / (float) FluidStack.AMOUNT_FULL, 0.1F, 1.0F);
 
+        TextureAtlasSprite sprite = null;
         //? if >26 {
         FluidModel fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
-        TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
+        sprite = fluidModel.stillMaterial().sprite();
         int color = getColor(fluidStack, fluid, fluidModel);
         //?} else {
-        /*TextureAtlasSprite sprite = FluidVariantRendering.getSprite(FluidVariant.of(fluid));
+        /*//? fabric
+        sprite = FluidVariantRendering.getSprite(FluidVariant.of(fluid));
         int color = getColor(fluidStack, fluid);
         if (sprite == null) {
             sprite = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(fluid.defaultFluidState().createLegacyBlock()).particleIcon();
@@ -125,11 +130,7 @@ public class FluidItemSpecialRenderer implements SpecialModelRenderer<ItemStack>
         }
         return FluidVariantRendering.getColor(FluidVariant.of(fluid));
         //?} else {
-        /^var fluidTintSource = fluidModel.fluidTintSource();
-        if (fluidTintSource != null) {
-            return fluidTintSource.colorAsStack(fluidStack.toLoaderFluidStack());
-        }
-        return -1;
+        /^return fluid == Fluids.WATER ? Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value().getWaterColor() : -1;
         ^///?}
     }
     *///?}

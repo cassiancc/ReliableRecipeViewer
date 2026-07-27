@@ -25,6 +25,7 @@ import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -109,7 +110,8 @@ public class JeiCompatibilityUtil {
 		return colorHelper.getClosestColorName(color.getFirst());
 	}
 
-	public static boolean doesNotHaveNativePlugin(String namespace) {
+	public static boolean doesNotHaveNativePlugin(Identifier id) {
+		var namespace = id.getNamespace();
 		if (namespace.equals("rrv")) return true;
 		else if (namespace.equals("minecraft")) return false;
 		return !JeiCompatibilityUtil.PLUGINS.contains(namespace);
