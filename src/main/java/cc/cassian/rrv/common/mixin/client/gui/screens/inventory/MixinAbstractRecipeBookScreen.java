@@ -32,6 +32,7 @@ public abstract class MixinAbstractRecipeBookScreen<T extends RecipeBookMenu> ex
         this.rrv$callInit();
     }
 
+    //~ if >26 'method_64513'->'lambda$initButton$0'
     @Inject(method = "lambda$initButton$0", at = @At("HEAD"), cancellable = true)
     private void injectButton(CallbackInfo ci) {
         if (Configs.CLIENT_SETTINGS.isRecipeBookButton()) {

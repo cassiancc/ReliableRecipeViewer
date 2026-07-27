@@ -35,6 +35,7 @@ public abstract class MixinEffectsInInventory {
     @Final
     private AbstractContainerScreen<?> screen;
 
+    //~ if >26 'render'->'extractRenderState'
     @Inject(method = "extractRenderState", at = @At("HEAD"))
     private void injectBlocking$0(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci){
 

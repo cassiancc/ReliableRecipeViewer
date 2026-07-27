@@ -81,7 +81,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
             if (expanded) expandedWidget = nameWidget;
             helper.addChild(nameWidget);
             // enable
-            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, current.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(group.getId().toString()), (_, value) -> {
+            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, current.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(group.getId().toString()), (button, value) -> {
                 ConfiguredStackGroup latest = Configs.STACK_GROUPS.getOrDefault(group.getId());
                 Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), value, latest.priority(), latest.order()));
 			});
@@ -137,9 +137,11 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
         this.rebuildWidgets();
     }
 
+    //~ if >26 'render'->'extractRenderState' {
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+    //~}
         if (expandedWidget != null) {
             guiGraphics.nextStratum();
             boolean clipped = scrollArea != null;

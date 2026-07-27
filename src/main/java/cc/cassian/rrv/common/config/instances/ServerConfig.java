@@ -23,7 +23,7 @@ public class ServerConfig extends AbstractRrvConfig {
 	private List<Identifier> synchronizedRecipeSerializers = addVanillaRecipeSerializers();
 
 	private List<Identifier> addVanillaRecipeSerializers() {
-		//? fabric {
+		//? fabric && >26 {
 		return Stream.of(
 				ShapedRecipe.SERIALIZER,
 				ShapelessRecipe.SERIALIZER,
@@ -49,7 +49,33 @@ public class ServerConfig extends AbstractRrvConfig {
 				//? if >26.2
 				//, BrewingRecipe.SERIALIZER
 		).map(BuiltInRegistries.RECIPE_SERIALIZER::getKey).toList();
-		//?} else {
+		//?} else if fabric {
+		/*return Stream.of(
+				RecipeSerializer.SHAPED_RECIPE,
+				RecipeSerializer.SHAPELESS_RECIPE,
+				RecipeSerializer.ARMOR_DYE,
+				RecipeSerializer.TIPPED_ARROW,
+				RecipeSerializer.TRANSMUTE,
+				RecipeSerializer.DECORATED_POT_RECIPE,
+				RecipeSerializer.BOOK_CLONING,
+				RecipeSerializer.MAP_EXTENDING,
+				RecipeSerializer.FIREWORK_ROCKET,
+				RecipeSerializer.FIREWORK_STAR, // TODO
+				RecipeSerializer.FIREWORK_STAR_FADE, // TODO
+				RecipeSerializer.BANNER_DUPLICATE, // TODO
+				RecipeSerializer.SHIELD_DECORATION,
+				RecipeSerializer.REPAIR_ITEM,
+				RecipeSerializer.SMELTING_RECIPE,
+				RecipeSerializer.BLASTING_RECIPE,
+				RecipeSerializer.CAMPFIRE_COOKING_RECIPE,
+				RecipeSerializer.SMELTING_RECIPE,
+				RecipeSerializer.STONECUTTER,
+				RecipeSerializer.SMITHING_TRIM,
+				RecipeSerializer.SMITHING_TRANSFORM
+				//? if >26.2
+				//, BrewingRecipe.SERIALIZER
+		).map(BuiltInRegistries.RECIPE_SERIALIZER::getKey).toList();
+		*///?} else {
 		/*return List.of();
 		*///?}
 	}

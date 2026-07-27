@@ -83,6 +83,7 @@ public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedCo
 		RRVExtendedContainerScreen.updateWidgets(this);
 	}
 
+	//~ if >26 'render'->'extractRenderState'
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void injectOverlay$1(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		if (minecraft == null || Configs.CLIENT_SETTINGS.isJeiPanel()) return;

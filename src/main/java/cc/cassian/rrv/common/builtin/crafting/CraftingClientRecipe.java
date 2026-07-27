@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
@@ -188,6 +189,10 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         public Builder setResult(SlotContent result) {
             this.result = result;
             return this;
+        }
+
+        public Builder setResult(ItemStack result) {
+            return setResult(SlotContent.of(result));
         }
 
         public Builder setResult(ItemStackTemplate result) {

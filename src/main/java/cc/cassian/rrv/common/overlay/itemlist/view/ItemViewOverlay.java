@@ -124,7 +124,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                         Component.translatable("rrv.client_settings.btn"),
                         14,
                         SETTINGS_WHEEL,
-                _ -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
+                button -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
         );
 
         int position = 0;
@@ -411,7 +411,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (stack.isEmpty()) return;
 
         if (!InternalRecipeManager.INSTANCE.isRecipesSynced() && !warned) {
-            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
+            RRVClientUtil.sendMessage(Component.translatable("recipe_sync.rrv.denied"));
             warned = true;
             if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.WHEN_NEEDED) || Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED)) {
                 ClientRecipeCache.INSTANCE.buildRecipeCache(false);

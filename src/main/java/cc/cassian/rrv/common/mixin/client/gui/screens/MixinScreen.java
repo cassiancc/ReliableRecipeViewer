@@ -30,6 +30,7 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
     @Final
 	@Shadow protected Font font;
 
+	//~ if >26 'render'->'extractRenderState'
     @Inject(method = "extractRenderState", at = @At("RETURN"))
     private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics, int i, int j, float f, CallbackInfo ci){
         String statusMsg = ClientRecipeManager.INSTANCE.status().get();

@@ -19,10 +19,10 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     private static final List<ItemStack> SPAWN_EGGS = BuiltInRegistries.ITEM.stream().filter(item -> item instanceof SpawnEggItem).map(ItemStack::new).toList();
     private static final ReferenceCondition REFERENCE_CONDITION = (craftReference, viewRecipe) -> {
 
-        if(!(craftReference.getItem() instanceof SpawnEggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
+        if(!(craftReference.getItem() instanceof SpawnEggItem spawnEggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
             return true;
 
-        return SpawnEggItem.getType(craftReference) == entityViewRecipe.getEntityType();
+        return spawnEggItem.getType(craftReference) == entityViewRecipe.getEntityType();
 
     };
     private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/entity.png");

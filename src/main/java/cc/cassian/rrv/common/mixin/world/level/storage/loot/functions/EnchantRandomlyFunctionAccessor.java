@@ -17,6 +17,8 @@ public interface EnchantRandomlyFunctionAccessor {
     @Accessor(value = "onlyCompatible")
     boolean onlyCompatible();
 
+    //? if >26 {
     @Accessor(value = "includeAdditionalCostComponent")
     boolean includeAdditionalCostComponent();
+    //?}
 }

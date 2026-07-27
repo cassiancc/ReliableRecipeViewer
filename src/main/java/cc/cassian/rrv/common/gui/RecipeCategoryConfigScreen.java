@@ -68,7 +68,7 @@ public class RecipeCategoryConfigScreen extends ClientConfigScreen {
             // name
             helper.addChild(new StringWidget(column1, font.lineHeight, category.name().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(id.toString())))), font));
             // enable
-            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, category.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id.toString()), (_, value) -> Configs.CATEGORIES.setEnabled(id, value));
+            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, category.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id.toString()), (button, value) -> Configs.CATEGORIES.setEnabled(id, value));
             helper.addChild(button1);
             // priority
             IntegerEditBox priorityBox = new IntegerEditBox(font, 0, 0, column2, 20, null);

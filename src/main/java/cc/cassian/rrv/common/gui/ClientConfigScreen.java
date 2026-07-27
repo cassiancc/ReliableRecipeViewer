@@ -92,10 +92,10 @@ public class ClientConfigScreen extends Screen {
         GridLayout.RowHelper generalHelper = general.createRowHelper(2);
         linearLayout.addChild(new StringWidget(clientSetting("general"), this.font));
 
-        addChild(generalHelper, "itemview", configs.isShowItemView(), new OverlayDisplay[]{OverlayDisplay.ENABLED, OverlayDisplay.DISABLED, OverlayDisplay.WHEN_SEARCHING}, (_, sidePanel)-> configs.setShowItemView(sidePanel));
-        addChild(generalHelper, "show_side_panel", configs.isShowSidePanel(), OverlayDisplay.values(), (_, sidePanel)-> configs.setShowSidePanel(sidePanel));
-        addChild(generalHelper, "client_settings_button", configs.isClientSettingsButtonEnabled(), (_, b )-> configs.setClientSettingsButton(b));
-        addChild(generalHelper, "side_panel_settings_button", configs.isSidePanelSettingsButtonEnabled(), (_, b )-> configs.setSidePanelSettingsButton(b));
+        addChild(generalHelper, "itemview", configs.isShowItemView(), new OverlayDisplay[]{OverlayDisplay.ENABLED, OverlayDisplay.DISABLED, OverlayDisplay.WHEN_SEARCHING}, (u, sidePanel)-> configs.setShowItemView(sidePanel));
+        addChild(generalHelper, "show_side_panel", configs.isShowSidePanel(), OverlayDisplay.values(), (u, sidePanel)-> configs.setShowSidePanel(sidePanel));
+        addChild(generalHelper, "client_settings_button", configs.isClientSettingsButtonEnabled(), (u, b )-> configs.setClientSettingsButton(b));
+        addChild(generalHelper, "side_panel_settings_button", configs.isSidePanelSettingsButtonEnabled(), (u, b )-> configs.setSidePanelSettingsButton(b));
 
         linearLayout.addChild(general);
 
@@ -104,12 +104,12 @@ public class ClientConfigScreen extends Screen {
         GridLayout.RowHelper behaviorHelper = behavior.createRowHelper(2);
         linearLayout.addChild(new StringWidget(clientSetting("behavior"), this.font));
 
-        addChild(behaviorHelper, "sidepanel", configs.getSidePanel(), SidePanel.values(), (_, sidePanel)-> configs.setSidePanel(sidePanel));
-        addChild(behaviorHelper, "wrap_scrolling", configs.isWrapScrolling(), WrapScrolling.values(), (_, sidePanel)-> configs.setWrapScrolling(sidePanel));
-        addChild(behaviorHelper, "recipe_book_button", "toggles_overlay", "toggles_recipe_book", configs.isRecipeBookButton(), (_, b) -> configs.setRecipeBookButton(b));
-        addChild(behaviorHelper, "recipe_sharing", configs.isRecipeSharing(), (_, b) -> configs.setRecipeSharing(b));
+        addChild(behaviorHelper, "sidepanel", configs.getSidePanel(), SidePanel.values(), (u, sidePanel)-> configs.setSidePanel(sidePanel));
+        addChild(behaviorHelper, "wrap_scrolling", configs.isWrapScrolling(), WrapScrolling.values(), (u, sidePanel)-> configs.setWrapScrolling(sidePanel));
+        addChild(behaviorHelper, "recipe_book_button", "toggles_overlay", "toggles_recipe_book", configs.isRecipeBookButton(), (u, b) -> configs.setRecipeBookButton(b));
+        addChild(behaviorHelper, "recipe_sharing", configs.isRecipeSharing(), (u, b) -> configs.setRecipeSharing(b));
 
-        addChild(behaviorHelper, "stack_groups", Configs.STACK_GROUPS.areStackGroupsEnabled(), (_, b) -> {
+        addChild(behaviorHelper, "stack_groups", Configs.STACK_GROUPS.areStackGroupsEnabled(), (u, b) -> {
             Configs.STACK_GROUPS.setStackGroupsEnabled(b);
             ItemFilters.clearCaches();
         });
@@ -123,8 +123,8 @@ public class ClientConfigScreen extends Screen {
             GridLayout.RowHelper jeiHelper = jei.createRowHelper(2);
             linearLayout.addChild(new StringWidget(clientSetting("jei"), this.font));
 
-            addChild(jeiHelper, "jei_panel", "jei", "rrv", configs.isJeiPanel(), (_, b) -> configs.setJeiPanel(b));
-            addChild(jeiHelper, "jei_recipe_screen", "jei", "rrv", configs.isJeiRecipeScreen(), (_, b) -> configs.setJeiRecipeScreen(b));
+            addChild(jeiHelper, "jei_panel", "jei", "rrv", configs.isJeiPanel(), (u, b) -> configs.setJeiPanel(b));
+            addChild(jeiHelper, "jei_recipe_screen", "jei", "rrv", configs.isJeiRecipeScreen(), (u, b) -> configs.setJeiRecipeScreen(b));
 
             linearLayout.addChild(jei);
         }
@@ -134,20 +134,20 @@ public class ClientConfigScreen extends Screen {
         GridLayout.RowHelper styleHelper = style.createRowHelper(2);
         linearLayout.addChild(new StringWidget(clientSetting("style"), this.font));
 
-        addChild(styleHelper, "theme", "recipe_book", "classic", configs.isRecipeBookTheme(), (_, b) -> configs.setRecipeBookTheme(b));
-        addChild(styleHelper, "center_search", "centered", "with_index", configs.isCenterSearch(), (_, b) -> configs.setCenterSearch(b));
+        addChild(styleHelper, "theme", "recipe_book", "classic", configs.isRecipeBookTheme(), (u, b) -> configs.setRecipeBookTheme(b));
+        addChild(styleHelper, "center_search", "centered", "with_index", configs.isCenterSearch(), (u, b) -> configs.setCenterSearch(b));
 
-        addChild(styleHelper, "append_namespace", configs.showNamespaceTooltip(), NamespaceTooltip.values(), (_, sidePanel)-> configs.setNamespaceTooltip(sidePanel));
-        addChild(styleHelper, "background", "enabled", "disabled", configs.drawBackground(), (_, b )-> configs.setDrawBackground(b));
+        addChild(styleHelper, "append_namespace", configs.showNamespaceTooltip(), NamespaceTooltip.values(), (u, sidePanel)-> configs.setNamespaceTooltip(sidePanel));
+        addChild(styleHelper, "background", "enabled", "disabled", configs.drawBackground(), (u, b )-> configs.setDrawBackground(b));
 
-        addChild(styleHelper, "show_buttons", "show", "hide", configs.isShowButtons(), (_, b) -> configs.setShowButtons(b));
-        addChild(styleHelper, "show_progress_bar", "show", "hide", configs.isShowProgressBar(), (_, b) -> configs.setShowProgressBar(b));
+        addChild(styleHelper, "show_buttons", "show", "hide", configs.isShowButtons(), (u, b) -> configs.setShowButtons(b));
+        addChild(styleHelper, "show_progress_bar", "show", "hide", configs.isShowProgressBar(), (u, b) -> configs.setShowProgressBar(b));
 
-        addChild(styleHelper, "resize_mode", "wrap", "cut", configs.isItemWrapMode(), (_, b) -> configs.setItemWrapMode(b));
-        addChild(styleHelper, "right_index", "right", "left", configs.isRightIndex(), (_, b) -> configs.setRightIndex(b));
+        addChild(styleHelper, "resize_mode", "wrap", "cut", configs.isItemWrapMode(), (u, b) -> configs.setItemWrapMode(b));
+        addChild(styleHelper, "right_index", "right", "left", configs.isRightIndex(), (u, b) -> configs.setRightIndex(b));
 
-        addChild(styleHelper, "recipe_screen_position", "centered", "top", configs.isCenterRecipeScreen(), (_, b) -> configs.setCenterRecipeScreen(b));
-        addChild(styleHelper, "workstation_display", configs.getWorkstationDisplay(), WorkstationDisplay.values(), (_, workstationDisplay)-> configs.setWorkstationDisplay(workstationDisplay));
+        addChild(styleHelper, "recipe_screen_position", "centered", "top", configs.isCenterRecipeScreen(), (u, b) -> configs.setCenterRecipeScreen(b));
+        addChild(styleHelper, "workstation_display", configs.getWorkstationDisplay(), WorkstationDisplay.values(), (u, workstationDisplay)-> configs.setWorkstationDisplay(workstationDisplay));
 
         linearLayout.addChild(style);
 
@@ -156,14 +156,14 @@ public class ClientConfigScreen extends Screen {
         GridLayout.RowHelper advancedHelper = advanced.createRowHelper(2);
         linearLayout.addChild(new StringWidget(clientSetting("advanced"), this.font));
 
-        addChild(advancedHelper, "fluid_unit", "droplets", "mb", configs.isFluidUnitDroplets(), (_, b) -> configs.setFluidUnitDroplets(b));
-        addChild(advancedHelper, "show_recipe_id", "show", "hide", configs.isShowRecipeId(), (_, b) -> configs.setShowRecipeId(b));
-        addChild(advancedHelper, "local_fallback", configs.localFallbackAllowed(), LocalFallback.values(), (_, b) -> configs.setLocalFallbackAllowed(b));
-        Button indexSourceSettings = Button.builder(Component.translatable("rrv.client_settings.index_source"), (_) -> RRVClientUtil.setScreen(new IndexSourceConfigScreen(this))).size(buttonWidth, 20).build();
+        addChild(advancedHelper, "fluid_unit", "droplets", "mb", configs.isFluidUnitDroplets(), (u, b) -> configs.setFluidUnitDroplets(b));
+        addChild(advancedHelper, "show_recipe_id", "show", "hide", configs.isShowRecipeId(), (u, b) -> configs.setShowRecipeId(b));
+        addChild(advancedHelper, "local_fallback", configs.localFallbackAllowed(), LocalFallback.values(), (u, b) -> configs.setLocalFallbackAllowed(b));
+        Button indexSourceSettings = Button.builder(Component.translatable("rrv.client_settings.index_source"), (button) -> RRVClientUtil.setScreen(new IndexSourceConfigScreen(this))).size(buttonWidth, 20).build();
         indexSourceSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.index_source.tooltip")));
         advancedHelper.addChild(indexSourceSettings);
 
-        Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (_) -> RRVClientUtil.setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
+        Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (button) -> RRVClientUtil.setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
         if (Minecraft.getInstance().level == null) {
             recipeCategorySettings.active = false;
             recipeCategorySettings.setTooltip(Tooltip.create(Component.translatable("rrv.category_settings.needs_initial_load")));
@@ -173,7 +173,7 @@ public class ClientConfigScreen extends Screen {
         advancedHelper.addChild(recipeCategorySettings);
 
 
-        Button stackGroupSettings = Button.builder(Component.translatable("rrv.client_settings.configure_stack_groups.title"), (_) -> RRVClientUtil.setScreen(new StackGroupConfigScreen(this))).size(buttonWidth, 20).build();
+        Button stackGroupSettings = Button.builder(Component.translatable("rrv.client_settings.configure_stack_groups.title"), (button) -> RRVClientUtil.setScreen(new StackGroupConfigScreen(this))).size(buttonWidth, 20).build();
         stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.tooltip")));
         if (Minecraft.getInstance().level == null) {
             stackGroupSettings.active = false;
@@ -197,7 +197,7 @@ public class ClientConfigScreen extends Screen {
 
         // done
 
-        this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, _ -> this.onClose()).size(100, 20).build()));
+        this.addRenderableWidget(this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).size(100, 20).build()));
 
         // finalize
 
@@ -205,7 +205,7 @@ public class ClientConfigScreen extends Screen {
     }
 
     static void finalizeLayout(LinearLayout linearLayout, HeaderAndFooterLayout layout, ClientConfigScreen screen) {
-        screen.addRenderableWidget(layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, _ -> screen.onClose()).size(100, 20).build()));
+        screen.addRenderableWidget(layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> screen.onClose()).size(100, 20).build()));
 
         screen.scrollableLayout = layout.addToContents(new ScrollableLayout(Minecraft.getInstance(), linearLayout, screen.layout.getContentHeight()) {});
         screen.scrollableLayout.arrangeElements();

@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(DecoratedPotRecipe.class)
 public interface DecoratedPotRecipeAccessor {
+    //? if >26 {
     @Accessor
     Ingredient getBackPattern();
 
@@ -22,4 +23,5 @@ public interface DecoratedPotRecipeAccessor {
 
     @Accessor
     ItemStackTemplate getResult();
+    //?}
 }

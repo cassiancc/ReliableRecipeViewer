@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(MapExtendingRecipe.class)
 public interface MapExtendingRecipeAccessor {
+    //? if >26 {
     @Accessor
     Ingredient getMap();
 
@@ -17,4 +18,5 @@ public interface MapExtendingRecipeAccessor {
 
     @Accessor
     ItemStackTemplate getResult();
+    //?}
 }

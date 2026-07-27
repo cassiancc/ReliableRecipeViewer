@@ -94,6 +94,7 @@ public record FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
     /// @param stack: A Fabric Fluid Variant
     /// @return A RRV Fluid Stack
     public static FluidStack fromFluidVariant(FluidVariant stack) {
+        //~ if >26 'getComponents' -> 'getComponentsPatch'
         return new FluidStack(stack.getFluid(), AMOUNT_FULL, stack.getComponentsPatch());
     }
 

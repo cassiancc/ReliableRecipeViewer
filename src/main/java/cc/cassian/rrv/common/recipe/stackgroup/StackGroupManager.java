@@ -44,10 +44,10 @@ public class StackGroupManager {
         registerType("rrv:tag", StackGroupManager::parseTagGroup);
         registerType("rrv:component", StackGroupManager::parseComponentGroup);
         registerType("rrv:regex", StackGroupManager::parseRegexGroup);
-        registerType("rrv:pressure_plates", (_, _) -> new PressurePlateItemGroup());
-        registerType("rrv:minecarts", (_, _) -> new MinecartItemGroup());
-        registerType("rrv:infested_blocks", (_, _) -> new InfestedBlockItemGroup());
-        registerType("rrv:coral", (_, _) -> new CoralItemGroup());
+        registerType("rrv:pressure_plates", (identifier, object) -> new PressurePlateItemGroup());
+        registerType("rrv:minecarts", (identifier, object) -> new MinecartItemGroup());
+        registerType("rrv:infested_blocks", (identifier, object) -> new InfestedBlockItemGroup());
+        registerType("rrv:coral", (identifier, object) -> new CoralItemGroup());
     }
 
     public static void registerType(String type, BiFunction<Identifier, JsonObject, AbstractStackGroup> factory) {
@@ -338,7 +338,7 @@ public class StackGroupManager {
 
             AbstractStackGroup group = getGroupForItem(stack);
             if (group != null && group.isEnabled) {
-                groupMatches.computeIfAbsent(group, _ -> new ArrayList<>()).add(stack);
+                groupMatches.computeIfAbsent(group, abstractStackGroup -> new ArrayList<>()).add(stack);
             }
         }
 

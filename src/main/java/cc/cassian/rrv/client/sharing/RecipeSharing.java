@@ -2,6 +2,7 @@ package cc.cassian.rrv.client.sharing;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePayload;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 public class RecipeSharing {
 	public static void sendMessage(ReliableClientRecipe recipe, Component sender) {
-		Minecraft.getInstance().player.sendSystemMessage(getMessage(recipe, sender));
+		RRVClientUtil.sendMessage(getMessage(recipe, sender));
 	}
 
 	private static MutableComponent getMessage(ReliableClientRecipe recipe, Component sender) {

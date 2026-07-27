@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(FireworkRocketRecipe.class)
 public interface FireworkRocketRecipeAccessor {
+    //? if >26 {
     @Accessor
     Ingredient getShell();
 
@@ -20,4 +21,5 @@ public interface FireworkRocketRecipeAccessor {
 
     @Accessor
     ItemStackTemplate getResult();
+    //?}
 }

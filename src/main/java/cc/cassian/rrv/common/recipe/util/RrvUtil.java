@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 
@@ -131,7 +132,7 @@ public class RrvUtil {
         return BuiltInRegistries.BLOCK.getResourceKey(block).map(ResourceKey::identifier);
     }
 
-    public static Level getLevel() {
+    public static @Nullable Level getLevel() {
         MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
         if (server != null) {
             return server.overworld();

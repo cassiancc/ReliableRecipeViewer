@@ -11,6 +11,7 @@ import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.common.builtin.entity.EntityServerRecipe;
+//~ if >26 'backport' -> 'common.builtin.villager'
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.mixin.world.level.storage.loot.LootPoolAccessor;
 import cc.cassian.rrv.common.mixin.world.level.storage.loot.LootTableAccessor;
@@ -38,8 +39,13 @@ import net.minecraft.world.entity.EntityType;
 /*import net.minecraft.world.entity.EntityTypes;
  *///?}
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
+
 import net.minecraft.world.flag.FeatureFlags;
+//? if >26 {
 import net.minecraft.world.item.trading.TradeSet;
+//?} else {
+/*import net.minecraft.world.entity.npc.villager.VillagerTrades;
+*///?}
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.*;
@@ -168,9 +174,59 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         *///?}
 
 
-        //Trading
-        VillagerServerRecipe.registerDefaultProcessors();
+        //? <26 {
+        /*ItemView.addServerRecipeProvider(recipeList -> {
 
+            VillagerTrades.TRADES.forEach((profession, byProfessionLevel) -> {
+
+                byProfessionLevel.forEach((professionLevel, itemListings) -> {
+                    Arrays.stream(itemListings).toList().forEach(listing -> {
+
+                        if (listing instanceof VillagerTrades.EmeraldForItems emeraldForItems)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.EMERALD_FOR_ITEMS, emeraldForItems)));
+
+                        if (listing instanceof VillagerTrades.ItemsForEmeralds itemsForEmeralds)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.ITEMS_FOR_EMERALDS, itemsForEmeralds)));
+
+                        if (listing instanceof VillagerTrades.SuspiciousStewForEmerald suspiciousStewForEmerald)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.SUSPICIOUS_STEW, suspiciousStewForEmerald)));
+
+                        if (listing instanceof VillagerTrades.EnchantBookForEmeralds enchantBookForEmeralds)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.ENCHANT_BOOK, enchantBookForEmeralds)));
+
+                        if (listing instanceof VillagerTrades.TreasureMapForEmeralds treasureMapForEmeralds)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TREASURE_MAP, treasureMapForEmeralds)));
+
+                        if (listing instanceof VillagerTrades.TippedArrowForItemsAndEmeralds tippedArrowForItemsAndEmeralds)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TIPPED_ARROW, tippedArrowForItemsAndEmeralds)));
+
+                        if (listing instanceof VillagerTrades.EnchantedItemForEmeralds enchantedItemForEmeralds)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.ENCHANTED_ITEM_FOR_EMERALDS, enchantedItemForEmeralds)));
+
+                        if (listing instanceof VillagerTrades.DyedArmorForEmeralds dyedArmorForEmeralds)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.DYED_ARMOR, dyedArmorForEmeralds)));
+
+                        if (listing instanceof VillagerTrades.ItemsAndEmeraldsToItems itemsAndEmeraldsToItems)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.ITEMS_AND_EMERALDS_TO_ITEMS, itemsAndEmeraldsToItems)));
+
+                        if (listing instanceof VillagerTrades.EmeraldsForVillagerTypeItem emeraldsForVillagerTypeItem)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.EMERALDS_FOR_VILLAGER_TYPE, emeraldsForVillagerTypeItem)));
+
+                        if (listing instanceof VillagerTrades.TypeSpecificTrade typeSpecificTrade)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TYPE_SPECIFIC, typeSpecificTrade)));
+
+                        //? neoforge {
+                        /^if (listing instanceof BasicItemListing basicItemListing)
+                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(NEOFORGE_BASIC, basicItemListing)));
+                        ^///?}
+                    });
+                });
+
+            });
+
+        });
+        *///?} else {
+        VillagerServerRecipe.registerDefaultProcessors();
         ItemView.addServerRecipeProvider(recipeList -> {
             HolderLookup.RegistryLookup<VillagerProfession> villagerProfessionRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.VILLAGER_PROFESSION);
             HolderLookup.RegistryLookup<TradeSet> tradeSetRegistryLookup = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.TRADE_SET);
@@ -187,6 +243,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             });
 
         });
+        //?}
     }
 
 	private boolean isBrewablePotion(Holder<Potion> potionHolder) {

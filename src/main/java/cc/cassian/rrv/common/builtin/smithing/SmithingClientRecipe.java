@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.core.Holder;
@@ -72,16 +73,24 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
 
         additionIngredient.getValidContents().forEach(additionStack -> {
             base.getValidContents().forEach(baseStack -> {
-                possibleResults.add(SmithingTrimRecipe.applyTrim(baseStack, additionStack, trimPattern));
+                possibleResults.add(applyTrim(baseStack, additionStack, trimPattern));
             });
         });
 
         return SlotContent.of(possibleResults);
     }
 
+	private static ItemStack applyTrim(ItemStack baseStack, ItemStack additionStack, Holder<TrimPattern> trimPattern) {
+        //? if >26 {
+		return SmithingTrimRecipe.applyTrim(baseStack, additionStack, trimPattern);
+        //?} else {
+        /*return SmithingTrimRecipe.applyTrim(Minecraft.getInstance().level.registryAccess(), baseStack, additionStack, trimPattern);
+        *///?}
+	}
+
     private Integer getResult() {
         if (this.trimPattern != null) {
-            return this.result.getNextMatching(SmithingTrimRecipe.applyTrim(this.base.current(), this.additionIngredient.current(), this.trimPattern), ItemViewRecipes::makeTrimCheck);
+            return this.result.getNextMatching(applyTrim(this.base.current(), this.additionIngredient.current(), this.trimPattern), ItemViewRecipes::makeTrimCheck);
         }
         return 0;
     }

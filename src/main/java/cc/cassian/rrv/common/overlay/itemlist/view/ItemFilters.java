@@ -219,6 +219,7 @@ public class ItemFilters {
         List<ItemStack> results = new ArrayList<>();
 
         for (ItemStack itemStack : fullStackList()) {
+            //~ if >26 'getTags' -> 'tags'
             if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query))) {
                 results.add(itemStack);
             }
@@ -234,6 +235,7 @@ public class ItemFilters {
     public static boolean tag(ItemStack itemStack, String query) {
         AtomicBoolean result = new AtomicBoolean(false);
 
+        //~ if >26 'getTags' -> 'tags'
         if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query))) {
             result.set(true);
         }

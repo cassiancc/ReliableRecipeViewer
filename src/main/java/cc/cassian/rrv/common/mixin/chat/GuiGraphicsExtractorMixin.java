@@ -23,6 +23,7 @@ public abstract class GuiGraphicsExtractorMixin {
     @Shadow
     public abstract void setComponentTooltipForNextFrame(Font font, List<Component> lines, int xo, int yo);
 
+    //~ if >26 'renderComponentHoverEffect'->'componentHoverEffect'
     @Inject(method = "componentHoverEffect", at = @At("HEAD"))
     private void hoverRecipe(Font font, Style hoveredStyle, int xMouse, int yMouse, CallbackInfo ci) {
         if (hoveredStyle.getHoverEvent() instanceof RecipeSharing.ShowRecipe recipe) {

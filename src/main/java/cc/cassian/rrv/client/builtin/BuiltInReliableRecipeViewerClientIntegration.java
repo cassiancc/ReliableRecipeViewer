@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import net.minecraft.world.item.ItemStackTemplate;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
 import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
@@ -22,6 +23,7 @@ import cc.cassian.rrv.common.builtin.stonecutting.StonecutterClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
+//~ if >26 'backport' -> 'common.builtin.villager'
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.IndexSource;
@@ -202,12 +204,20 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
 						var ingredients = getItemsFromIngredient(accessor.getInput());
 
-						ingredients.forEach(_ -> results.add(accessor.getResult()));
+						ingredients.forEach(item -> {
+							//? if >26 {
+							var result = accessor.getResult();
+							 //?} else {
+							/*var result = new ItemStackTemplate(accessor.getResult());
+							*///?}
+							results.add(result);
+						});
 
 						if (!ingredients.isEmpty() && !results.isEmpty())
 							recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getInput(), accessor.getMaterial()).setResult(results).build());
 
 					}
+					//? if >26 {
 					case DyeRecipe dyeRecipe -> {
 						DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
 
@@ -293,6 +303,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						}
 						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getBanner()).setResult(SlotContent.of(results)).setDependentIndex(1).build());
 					}
+					//?}
 					case RepairItemRecipe repairItemRecipe ->
 						// Repairing
 							addRepairingRecipes(recipeList);
@@ -344,9 +355,14 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                             trimRecipe.additionIngredient().orElse(null), trimRecipe.baseIngredient(),
                             trimRecipe.templateIngredient().orElse(null), trimRecipe.pattern));
                 } else if (smithingRecipe instanceof SmithingTransformRecipe transformRecipe) {
-                    recipeList.add(SmithingClientRecipe.transformationRecipe(smithingRecipeRecipeHolder.id().identifier(),
+					//? if >26 {
+					var result = transformRecipe.result;
+					//?} else {
+					/*var result = new ItemStackTemplate(transformRecipe.result);
+					*///?}
+					recipeList.add(SmithingClientRecipe.transformationRecipe(smithingRecipeRecipeHolder.id().identifier(),
                             transformRecipe.additionIngredient().orElse(null), transformRecipe.baseIngredient(),
-                            transformRecipe.templateIngredient().orElse(null), transformRecipe.result));
+                            transformRecipe.templateIngredient().orElse(null), result));
                 }
             } catch (Exception e) {
                 // Log smithing recipes that throw out an exception on parse
@@ -418,6 +434,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             if (itemEntry.getValue() instanceof FluidItem fluidItem) {
                 Item bucket = fluidItem.getFluid().getBucket();
                 if (bucket == null || bucket.getDefaultInstance().isEmpty()) return;
+				//~ if >26 'ItemStack'->'ItemStackTemplate'
                 worldInteractionRecipes.add(new WorldInteractionClientRecipe(itemEntry.getKey().identifier().withPath("/world_interaction/%s_bucketing"::formatted), SlotContent.of(new FluidStack(fluidItem.getFluid())), SlotContent.of(Optional.ofNullable(bucket.getCraftingRemainder()).orElse(new ItemStackTemplate(Items.BUCKET))), SlotContent.of(bucket)));
             }
 

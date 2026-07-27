@@ -66,7 +66,7 @@ public class ClientNetworkManager {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player == null) return;
             if (payload.senderUuid().equals(player.getStringUUID())) {
-                player.sendSystemMessage(Component.translatable("rrv.sharing.unable_to_share", payload.recipeId()).withStyle(ChatFormatting.RED));
+                RRVClientUtil.sendMessage(Component.translatable("rrv.sharing.unable_to_share", payload.recipeId()).withStyle(ChatFormatting.RED));
             }
             return;
         }

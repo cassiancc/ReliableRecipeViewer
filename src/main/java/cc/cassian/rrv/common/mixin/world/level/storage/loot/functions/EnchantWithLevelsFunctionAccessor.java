@@ -21,6 +21,8 @@ public interface EnchantWithLevelsFunctionAccessor {
     @Accessor(value = "options")
     Optional<HolderSet<Enchantment>> options();
 
+    //? if >26 {
     @Accessor(value = "includeAdditionalCostComponent")
     boolean includeAdditionalCostComponent();
+    //?}
 }

@@ -79,7 +79,9 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         RRVExtendedContainerScreen.updateWidgets(this);
     }
 
+    //~ if >26 'render' ->'extract' {
     @Inject(method = "extractContents", at = @At("TAIL"))
+    //~}
     private void injectOverlay$1(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (minecraft == null) return;
         AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo((AbstractContainerScreen<? extends AbstractContainerMenu>) (Object) this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
@@ -126,6 +128,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
 
     //Optional Slots
 
+    //~ if >26 'render' ->'extract' {
     @Inject(method = "extractSlotHighlightBack", at = @At("HEAD"), cancellable = true)
     private void preventFromRender$0(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
         if (rrv$checkOptionalSlot())
@@ -137,6 +140,7 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         if (rrv$checkOptionalSlot())
             ci.cancel();
     }
+    //~}
 
     @Unique
 	private boolean rrv$checkOptionalSlot() {

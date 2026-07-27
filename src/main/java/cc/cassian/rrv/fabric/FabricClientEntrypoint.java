@@ -13,11 +13,14 @@ import cc.cassian.rrv.common.integration.polymer.client.PolymerClientIntegration
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.fabricmc.api.ClientModInitializer;
+//~ if >26 'ClientWorldEvents'-> 'ClientLevelEvents' {
+//~ if >26 'KeyBinding'-> 'KeyMapping' {
+//~ if >26 '.keybinding.'-> '.keymapping.' {
+//~ if >26 'AFTER_CLIENT_WORLD_CHANGE'-> 'AFTER_CLIENT_LEVEL_CHANGE' {
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
-import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -35,7 +38,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         FabricClientUtil.initializeClient();
 
         ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyMappingHelper::registerKeyMapping);
-        ModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
+        //~ if >26 '.EntityModelLayerRegistry'-> '.ModelLayerRegistry' {
+        net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
 
         Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewer.RECIPE_VIEW_MENU);
         MenuScreens.register(ReliableRecipeViewer.RECIPE_VIEW_MENU, RecipeViewScreen::new);
@@ -46,7 +50,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
             PolymerClientIntegration.onInitializeClient();
         }
 
-        ItemTooltipCallback.EVENT.register((stack, _, _, tooltip) -> ReliableRecipeViewerClient.addNamespaceTooltip(stack, tooltip, false));
+        ItemTooltipCallback.EVENT.register((stack, context, flag, tooltip) -> ReliableRecipeViewerClient.addNamespaceTooltip(stack, tooltip, false));
 
 
         ClientRecipeSynchronizedEvent.EVENT.register((client, recipes) -> {
@@ -58,6 +62,11 @@ public class FabricClientEntrypoint implements ClientModInitializer {
             if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED))
                 ClientRecipeCache.INSTANCE.buildRecipeCache(false);
         });
+        //~}
+        //~}
+        //~}
+        //~}
+        //~}
     }
 
 }

@@ -4,8 +4,9 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@org.spongepowered.asm.mixin.Mixin(net.minecraft.world.item.crafting.ImbueRecipe.class)
+@org.spongepowered.asm.mixin.Mixin(targets = "net.minecraft.world.item.crafting.ImbueRecipe")
 public interface ImbueRecipeAccessor {
+    //? if >26 {
     @Accessor
     Ingredient getMaterial();
 
@@ -14,4 +15,5 @@ public interface ImbueRecipeAccessor {
 
     @Accessor
     Ingredient getSource();
+    //?}
 }

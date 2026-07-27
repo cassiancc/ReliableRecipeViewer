@@ -21,8 +21,8 @@ public class SidePanelButton extends ReliableSpriteIconButton {
     private static final Identifier SIDE_PANEL_TOGGLE = ReliableRecipeViewer.of("side_panel_button");
 
     public SidePanelButton(int position, AbstractRrvOverlay.InventoryPositionInfo info) {
+        super(ItemViewOverlay.INSTANCE.buttonSize(), getTooltip(), 14, SIDE_PANEL_TOGGLE, SidePanelButton::nextSidePanel);
         int buttonSize = ItemViewOverlay.INSTANCE.buttonSize();
-        super(buttonSize, getTooltip(), 14, SIDE_PANEL_TOGGLE, SidePanelButton::nextSidePanel);
         int sidePanelButtonPosition = position + buttonSize + 2;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
             sidePanelButtonPosition = info.screenWidth() - (buttonSize + 2) * 2;
@@ -60,6 +60,7 @@ public class SidePanelButton extends ReliableSpriteIconButton {
     }
 
     @Override
+    //~ if >26 'render'-> 'extract'
     protected void extractSprite(final GuiGraphicsExtractor graphics, final int x, final int y) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("side_panel_"+ Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase(Locale.ROOT)), x, y, this.spriteWidth, this.spriteHeight, this.alpha);
     }

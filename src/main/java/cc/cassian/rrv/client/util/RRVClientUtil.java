@@ -118,4 +118,13 @@ public class RRVClientUtil {
 
         ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration from mod: {}", modId);
     }
+
+    public static void sendMessage(Component message) {
+        Minecraft.getInstance().player
+                //? if >26 {
+                .sendSystemMessage(message);
+                 //?} else {
+                /*.displayClientMessage(message, false);
+        *///?}
+    }
 }

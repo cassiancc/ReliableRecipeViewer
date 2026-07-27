@@ -153,10 +153,10 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.nextRecipe = new ReliablePlainButton(Component.literal(">"), button -> this.getMenu().nextRecipe(button),
                 12, 12);
 
-        this.prevTypePage = new ReliablePlainButton(Component.literal("<"), _ -> prevPage(),
+        this.prevTypePage = new ReliablePlainButton(Component.literal("<"), button -> prevPage(),
                 12, 14);
 
-        this.nextTypePage = new ReliablePlainButton(Component.literal(">"), _ -> nextPage(),
+        this.nextTypePage = new ReliablePlainButton(Component.literal(">"), button -> nextPage(),
                 12, 14);
 
         this.checkGui();
@@ -335,7 +335,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                             12,
                             base,
                             hovered,
-                            _ -> {
+                            button -> {
                                 StackGroupManager.toggleTagGroup(tagId);
                                 ItemViewOverlay.INSTANCE.updateDisplayedItems();
                                 this.checkGui();
@@ -379,17 +379,22 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
 
+    //~ if >26 'render' ->'extract' {
     @Override
     protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        //~}
         guiGraphics.text(this.font, this.page, (this.imageWidth - font.width(this.page)) / 2, this.imageHeight - 12, -12566464, false);
 
         var color = isHoveringOverTitle(mouseX, mouseY) ? -5606651 : -12566464;
         guiGraphics.text(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, color, false);
     }
 
+    //~ if >26 'render'->'extractRenderState' {
     @Override
     public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+    //~}
+    //~ if >26 'render'->'extract'
         this.extractTooltip(guiGraphics, mouseX, mouseY);
         if (isHoveringOverTitle(mouseX, mouseY)) {
             guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
@@ -411,9 +416,11 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
 
     long lastChanged = 0;
 
+    //~ if >26 'render' ->'extract' {
     @Override
     public void extractContents(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
         super.extractContents(guiGraphics, mouseX, mouseY, a);
+        //~}
         List<ItemStack> craftReferences = getMenu().getCraftReferences();
         if (!craftReferences.isEmpty() && Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER)) {
             var x = this.leftPos + 4;
@@ -631,8 +638,12 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     }
 
     @Override
+    //? if >26 {
     public void extractBackground(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
+    //?} else {
+        /*public void renderBg(@NonNull GuiGraphicsExtractor guiGraphics, float partialTicks, int mouseX, int mouseY) {
+    *///?}
 
         // render deselected icons
         renderRecipeTypeButtons(guiGraphics, mouseX, mouseY, partialTicks, false);

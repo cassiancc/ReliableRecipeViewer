@@ -70,7 +70,7 @@ public class IndexSourceConfigScreen extends ClientConfigScreen {
             // name
             helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatableWithFallback("rrv.client_settings.index_source."+ id, id), font));
             // enable
-            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, b).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id), (_, value) -> {
+            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, b).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id), (button, value) -> {
 				indexSource.put(source, value);
                 Configs.CLIENT_SETTINGS.setIndexSource(indexSource);
                 System.out.println(indexSource);
