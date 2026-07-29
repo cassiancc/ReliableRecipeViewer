@@ -259,8 +259,6 @@ val additionalVersions: List<String> = additionalVersionsStr
 
 publishMods {
     file = loomx.modJar.map { it.archiveFile.get() }
-    additionalFiles.from(loomx.modSourcesJar.map { it.archiveFile.get() })
-
     type = if (stonecutter.eval(stonecutter.current.version, ">=26.3")) {
         BETA
     } else {
@@ -272,14 +270,19 @@ publishMods {
     modLoaders.add("fabric")
 
     modrinth {
+        additionalFile(loomx.modSourcesJar) {
+            type.set(SOURCES_JAR)
+        }
         projectId = property("publish.modrinth") as String
         accessToken = env.MODRINTH_API_KEY.orNull()
         minecraftVersions.add(property("deps.minecraft").toString())
         minecraftVersions.addAll(additionalVersions)
         requires("fabric-api")
+        environment = CLIENT_AND_SERVER
     }
 
     curseforge {
+        additionalFiles.from(loomx.modSourcesJar.map { it.archiveFile.get() })
         projectId = property("publish.curseforge") as String
         accessToken = env.CURSEFORGE_API_KEY.orNull()
         minecraftVersions.add(property("publish.curseforge_minecraft_version").toString())

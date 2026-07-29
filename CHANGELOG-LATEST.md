@@ -5,7 +5,13 @@
   - Note: Even with JEI's recipe screen enabled, Polymer items, items with custom item models, and items from mods with RRV integrations will still use the RRV recipe screen, as JEI does not handle these as well as RRV does. RRV's recipe screen can also be manually viewed by clicking the RRV button next to the recipe.
   - Recipes implementing `renderRecipe` should now use `renderRecipe(RecipeScreenContext)` to allow rendering recipes without an RRV `RecipeViewScreen`.
   - With JEI present, RRV can search by item colour with the ^ prefix.
-  - Known issues: Bookmarking recipes does not work correctly. Any recipes reliant on a `RecipeViewScreen` will not render correctly, and any mods that require mixins into RRV's recipe screen will not render on JEI.
+  - Known issues:
+    - Bookmarking recipes does not work correctly.
+    - Optional slot renderers with custom textures only display normal slots.
+    - Animations do not tick.
+    - Any recipes reliant on a `RecipeViewScreen` will not render correctly.
+    - Any mods that require mixins into RRV's recipe screen will not render on JEI.
+    - Recipes that are synchronized via `ReliableServerRecipe` are not displayed in JEI, as they do not exist when JEI's plugin is initialized.
 - Quick crafting keybind can now be rebound from Left Control.
 - Recipe outputs with unique `ITEM_MODEL` components will now be added to the index. This should improve the experience when playing with datapacks like Matcha Flavoured.
 - Index sources can now be mixed and matched from their own screen.

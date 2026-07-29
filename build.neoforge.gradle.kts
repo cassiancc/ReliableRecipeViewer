@@ -253,22 +253,30 @@ val additionalVersions: List<String> = additionalVersionsStr
 
 publishMods {
     file = tasks.jar.map { it.archiveFile.get() }
-    additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 
-    type = STABLE
+    type = if (stonecutter.eval(stonecutter.current.version, ">=26.3")) {
+        BETA
+    } else {
+        STABLE
+    }
     displayName = "RRV ${property("mod.version")} for ${stonecutter.current.version} NeoForge"
     version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
     changelog = provider { rootProject.file("CHANGELOG-LATEST.md").readText() }
     modLoaders.add("neoforge")
 
     modrinth {
+        additionalFile(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar")) {
+            type.set(SOURCES_JAR)
+        }
         projectId = property("publish.modrinth") as String
         accessToken = env.MODRINTH_API_KEY.orNull()
         minecraftVersions.add(property("deps.minecraft").toString())
         minecraftVersions.addAll(additionalVersions)
+        environment = CLIENT_AND_SERVER
     }
 
     curseforge {
+        additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
         projectId = property("publish.curseforge") as String
         accessToken = env.CURSEFORGE_API_KEY.orNull()
         minecraftVersions.add(property("publish.curseforge_minecraft_version").toString())

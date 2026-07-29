@@ -2,6 +2,7 @@
   "depending-on-rrv.mdx": "Depending on RRV",
   "client-recipe-type.mdx": "Client Recipe Types",
   "client-recipes.mdx": "Client Recipes",
-  "serverside-recipes.mdx": "Serverside Recipes",
-  "finalizing-your-plugins.mdx": "Creating Plugins"
+  "finalizing-your-plugins.mdx": "Creating Plugins",
+  "utilities.mdx": "Utility Classes",
+  "legacy": "Server Recipes"
 }
