@@ -27,3 +27,4 @@
 - Incorrect mouse button bindings on 26.3.
 - Next/prev page buttons no longer show up if they do not have enough space to render.
 - Ingredients used without access to a world now partially work.
+- Stack groups not matching correctly on items added via creative tabs or when the index has been modified.

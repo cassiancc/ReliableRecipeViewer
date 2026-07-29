@@ -11,7 +11,7 @@ To wrap your ingredients and results (items, item stacks, fluid stacks, lists of
 Stack-Sensitives are variants of items that only differ in their components.
 Vanilla examples include Enchanted Books, Potions, and Tipped Arrows.
 
-If you want to add your own item stacks to the index simply call `ItemView.addStackSensitive()` in a reload callback (`ItemView.addReloadCallback()`).
+If you want to add your own item stacks to the index simply call `ItemView.addStackSensitive()` in a reload callback (`ItemView.addServerReloadCallback()`).
 
 You can also exclude items from the index by calling `ItemView.excludeItem()` This method does not need to be called in a reload callback, since it's only client-side.
 

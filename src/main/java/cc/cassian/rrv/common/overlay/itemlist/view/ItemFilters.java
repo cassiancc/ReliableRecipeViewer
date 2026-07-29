@@ -302,10 +302,10 @@ public class ItemFilters {
         return 0;
     }
 
-    /// @return A list of all items that can be displayed in the ViewOverlay
+    /// @return A cached list of all items that can be displayed in the ViewOverlay
     ///
     /// **Also includes all stack-sensitives**
-    private static List<ItemStack> fullStackList() {
+    public static List<ItemStack> fullStackList() {
         if (CACHED_STACKS.isEmpty()) {
             List<ItemStack> results = new ArrayList<>();
 

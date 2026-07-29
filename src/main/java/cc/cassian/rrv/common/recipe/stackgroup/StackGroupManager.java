@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.recipe.stackgroup;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.IdentifierStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.RegexStackGroup;
@@ -397,12 +398,7 @@ public class StackGroupManager {
 
     public static List<ItemStack> getGroupItems(AbstractStackGroup group) {
         List<ItemStack> items = new ArrayList<>();
-        BuiltInRegistries.ITEM.forEach(item -> {
-            ItemStack stack = new ItemStack(item);
-            ClientRecipeCache.INSTANCE.streamStackSensitives(item).forEach(e -> {
-                if (group.match(e))
-                    items.add(e);
-            });
+        ItemFilters.fullStackList().forEach(stack -> {
             if (group.match(stack)) {
                 items.add(stack);
             }
