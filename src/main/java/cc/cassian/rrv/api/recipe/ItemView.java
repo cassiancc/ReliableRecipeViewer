@@ -2,6 +2,7 @@ package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.util.MobDropModifyContext;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
@@ -30,10 +31,10 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.block.Block;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 import static cc.cassian.rrv.common.recipe.ItemViewRecipes.*;
 
@@ -389,10 +390,16 @@ public class ItemView {
         WORLD_INTERACTION_RECIPES.add(recipe);
     }
 
-    /// Mods can add hardcoded mob drops (e.g. Nether Stars, Goat Horns) to an entity type's Mob Drops page. via the API.
+    /// Mods can add hardcoded mob drops (e.g. Nether Stars, Goat Horns) to an entity type's Mob Drops page via the API.
     /// Run this via [ItemView#addServerReloadCallback(ReloadCallback)] to ensure it's registered on time.
     public static void addMobDrops(EntityType<?> type, SlotContent drop) {
         MOB_DROPS.put(type, drop);
+    }
+
+    /// Mods can change mob drops on an entity type's Mob Drops page via the API.
+    /// Run this via [ItemView#addServerReloadCallback(ReloadCallback)] to ensure it's registered on time.
+    public static void modifyMobDrops(Predicate<EntityType<?>> type, Predicate<SlotContent> drop, SlotContent newDrop) {
+        MODIFIED_MOB_DROPS.add(new MobDropModifyContext(type, drop, newDrop));
     }
 
     /// Mods can add an info recipe via the API rather than via a resource pack.

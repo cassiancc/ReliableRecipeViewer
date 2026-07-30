@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.util.MobDropModifyContext;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 
 /// Internal (intermediate) class that connects [ItemView] (Api-class) with RRV logic
 ///
@@ -226,6 +228,8 @@ public class ItemViewRecipes {
 
     /// A list of mob drops to be added to the index.
     public static final LinkedHashMultimap<EntityType<?>, SlotContent> MOB_DROPS = LinkedHashMultimap.create();
+    /// A list of predicates to modify mob drops.
+    public static final List<MobDropModifyContext> MODIFIED_MOB_DROPS = new ArrayList<>();
     /// A list of world interaction recipes to be added to the index.
     public static final List<WorldInteractionClientRecipe> WORLD_INTERACTION_RECIPES = new ArrayList<>();
     /// A list of info recipes to be added to the index.

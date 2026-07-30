@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
+import cc.cassian.rrv.api.util.MobDropModifyContext;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -31,12 +32,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.InstrumentTags;
 import net.minecraft.world.entity.EntityType;
-//? if >26.1 {
+//? if >=26.2 {
 /*import net.minecraft.world.entity.EntityTypes;
 *///?}
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
-import net.minecraft.world.flag.FeatureFlags;
-//? if >26 {
+//? if >1.21.11 {
 import net.minecraft.world.item.trading.TradeSet;
 //?} else {
 /*import net.minecraft.world.entity.npc.villager.VillagerTrades;
@@ -47,7 +47,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemLore;
-import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.*;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -62,14 +61,12 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerC
 /*import net.minecraft.world.level.storage.loot.providers.number.ResolvableNumber;
 import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
 import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
+import net.minecraft.world.flag.FeatureFlags;
 *///?}
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
-
-import static cc.cassian.rrv.common.ReliableRecipeViewer.*;
 
 @NullMarked
 public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeViewerPlugin {
@@ -126,6 +123,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 }
             });
             ItemView.addMobDrops(EntityType.WITHER, SlotContent.of(Items.NETHER_STAR));
+            addLoot(EntityType.CHICKEN, getLootTable(BuiltInLootTables.CHICKEN_LAY), "view.rrv.type.entity.egg_lay");
 
             Registry<PaintingVariant> paintingVariantRegistry = ServerRecipeManager.INSTANCE.getServer().registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT);
             paintingVariantRegistry.forEach(paintingVariant -> {
@@ -142,20 +140,22 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         ItemView.addServerRecipeProvider(recipeList -> {
 
             BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
-                if (entityType.getDefaultLootTable().isEmpty())
+                Optional<ResourceKey<LootTable>> defaultLootTable = entityType.getDefaultLootTable();
+                if (defaultLootTable.isEmpty())
                     return;
 
-                LootTable table = getLootTable(entityType.getDefaultLootTable().get());
+				addLoot(entityType, getLootTable(defaultLootTable.get()), null);
 
-                List<SlotContent> loot = new ArrayList<>();
-
-                addLoot(table, loot, null);
-
-                if (entityType.equals(EntityType.CHICKEN)) {
-                    addLoot(getLootTable(BuiltInLootTables.CHICKEN_LAY), loot, "view.rrv.type.entity.egg_lay");
-                }
-
-                loot.addAll(ItemViewRecipes.MOB_DROPS.get(entityType));
+				List<SlotContent> loot = new ArrayList<>(ItemViewRecipes.MOB_DROPS.get(entityType).stream().map(slotContent -> {
+                    if (ItemViewRecipes.MODIFIED_MOB_DROPS.stream().anyMatch((mobDropModifyContext)->mobDropModifyContext.entityTypePredicate().test(entityType))) {
+                        for (MobDropModifyContext modifiedMobDrop : ItemViewRecipes.MODIFIED_MOB_DROPS) {
+                            if (modifiedMobDrop.slotContentPredicate().test(slotContent)) {
+                                return modifiedMobDrop.newDrop();
+                            }
+                        }
+                    }
+                    return slotContent;
+                }).filter(content->!content.isEmpty()).toList());
 
                 if (!loot.isEmpty())
                     recipeList.add(new EntityServerRecipe(entityType, loot));
@@ -280,7 +280,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
         return ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().getLootTable(key);
     }
 
-    private static void addLoot(LootTable lootTable, List<SlotContent> loot, @Nullable String withLore) {
+    private static void addLoot(EntityType<?> entityType, LootTable lootTable, @Nullable String withLore) {
         var accessor = (LootTableAccessor) lootTable;
         for (LootPool pool : accessor.getPools()) {
             LootPoolAccessor lootPoolAccessor = (LootPoolAccessor) pool;
@@ -309,7 +309,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                             stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.player_kill").withStyle(ChatFormatting.GRAY)));
                     }
 
-                    loot.add(SlotContent.of(stack));
+                    ItemView.addMobDrops(entityType, SlotContent.of(stack));
                 }
                 if (container instanceof CompositeEntryBase entryBase) {
                     CompositeEntryBaseAccessor entryBaseAccessor = (CompositeEntryBaseAccessor) entryBase;
@@ -319,7 +319,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                             ItemStack stack = new ItemStack(lootItemAccessor.getItem());
                             if (withLore != null)
                                 stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable(withLore).withStyle(ChatFormatting.GRAY)));
-                            loot.add(SlotContent.of(stack));
+                            ItemView.addMobDrops(entityType, SlotContent.of(stack));
                         }
                     });
                 }

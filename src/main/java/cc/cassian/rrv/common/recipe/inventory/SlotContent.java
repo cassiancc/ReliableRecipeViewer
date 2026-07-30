@@ -45,6 +45,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public class SlotContent {
 
@@ -110,7 +111,19 @@ public class SlotContent {
         return SlotContent.of(slotDisplay, level);
     }
 
-    public void setType(ActionType type) {
+	public boolean contains(Item item) {
+		return getValidContents().stream().anyMatch(i->i.is(item));
+	}
+
+    public boolean contains(TagKey<Item> itemTag) {
+        return (this.itemTag().isPresent() && this.itemTag().get().equals(itemTag)) || getValidContents().stream().anyMatch(i->i.is(itemTag));
+    }
+
+    public boolean contains(ItemStack stack) {
+        return getValidContents().contains(stack);
+    }
+
+	public void setType(ActionType type) {
         this.type = type;
     }
 
