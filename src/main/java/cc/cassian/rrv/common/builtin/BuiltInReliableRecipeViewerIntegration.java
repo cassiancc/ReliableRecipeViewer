@@ -1,10 +1,8 @@
 package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
-import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.builtin.burning.BurningClientRecipe;
-import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
+import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
 import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
@@ -23,7 +21,6 @@ import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -37,9 +34,8 @@ import net.minecraft.tags.InstrumentTags;
 import net.minecraft.world.entity.EntityType;
 //? if >26.1 {
 /*import net.minecraft.world.entity.EntityTypes;
- *///?}
+*///?}
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
-
 import net.minecraft.world.flag.FeatureFlags;
 //? if >26 {
 import net.minecraft.world.item.trading.TradeSet;
@@ -63,6 +59,11 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
+//? if >26.2 {
+/*import net.minecraft.world.level.storage.loot.providers.number.ConditionalValue;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+*///?}
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -244,6 +245,21 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
         });
         //?}
+
+        //? if >26.2 {
+        /*ItemView.addServerRecipeProvider(recipeList -> {
+            for (Item item : BuiltInRegistries.ITEM) {
+                ItemStack stack = item.getDefaultInstance();
+                if (stack.has(DataComponents.COOKING_FUEL)) {
+                    ResourceKey<NumberProvider> burnTime = Objects.requireNonNull(stack.get(DataComponents.COOKING_FUEL)).burnTime();
+                    var providedValue = RrvUtil.getNumberProvidedFloat(burnTime);
+                    if (providedValue != null) {
+                        recipeList.add(new BurningServerRecipe(item, providedValue));
+                    }
+                }
+            }
+        });
+        *///?}
     }
 
 	private boolean isBrewablePotion(Holder<Potion> potionHolder) {

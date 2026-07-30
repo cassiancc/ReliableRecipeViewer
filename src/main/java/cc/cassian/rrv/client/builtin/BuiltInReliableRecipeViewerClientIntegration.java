@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
 import net.minecraft.world.item.ItemStackTemplate;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
@@ -76,6 +77,8 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 //? neoforge
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
@@ -332,9 +335,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     private static void addFuelRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
         //FIXME
 		//? if >26.2 {
-
-		//?} else {
-
+		/*ItemView.addClientRecipeWrapper(BurningServerRecipe.TYPE, (unwrapped -> List.of(new BurningClientRecipe(unwrapped.getFuel().getDefaultInstance(), unwrapped.getBurnTime()))));
+		*///?} else {
 		FuelValues fuelValues = level.fuelValues();
         fuelValues.fuelItems().forEach(item -> {
             //? fabric

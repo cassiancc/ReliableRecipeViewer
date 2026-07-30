@@ -29,11 +29,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
+import net.minecraft.world.level.storage.loot.providers.number.ConditionalValue;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
@@ -240,5 +241,18 @@ public class RrvUtil {
         return tradeModifiers;
     }
 	//?}
+
+    /// Query a basic number provider. Used for fuel values.
+    public static @Nullable Float getNumberProvidedFloat(ResourceKey<NumberProvider> key) {
+        var numberProviderReference = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.NUMBER_PROVIDER).getOrThrow(key);
+        if (numberProviderReference.value() instanceof ConstantValue(float value)) {
+            return value;
+        } else if (numberProviderReference.value() instanceof ConditionalValue conditionalValue) {
+            if (conditionalValue.onFalse().value() instanceof ConstantValue(float value)) {
+                return value;
+            }
+        }
+		return null;
+	}
 
 }

@@ -18,6 +18,7 @@
 - Recipe type buttons can now be scrolled through.
 - Add-ons can now safely extend `RecipeSlot` without losing their custom additions.
 - Backport to 1.21.11.
+- 26.3 will now show Fuel Recipes again.
 
 ### Changed
 - Client config file has been reorganized to match the categories found in the ingame config screen. Configs from 8.6.4 and below will be safely upgraded to this new format.
