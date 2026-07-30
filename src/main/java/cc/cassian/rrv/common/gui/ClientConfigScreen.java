@@ -180,6 +180,9 @@ public class ClientConfigScreen extends Screen {
         if (Minecraft.getInstance().level == null) {
             stackGroupSettings.active = false;
             stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.needs_world")));
+        } else if (!Configs.STACK_GROUPS.areStackGroupsEnabled()) {
+            stackGroupSettings.active = false;
+            stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.disabled")));
         } else {
             stackGroupSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.configure_stack_groups.tooltip")));
         }

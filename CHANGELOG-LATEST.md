@@ -23,6 +23,7 @@
 - Side panel will now show previous/next buttons if there's space.
 - Previous/next buttons will now become greyed out when unusable.
 - Mob drops can now be modified with the API via `ItemView#modifyMobDrops`.
+- Full stack list is now computed in the background rather than when the inventory is first opened.
 
 ### Changed
 - Client config file has been reorganized to match the categories found in the ingame config screen. Configs from 8.6.4 and below will be safely upgraded to this new format.
@@ -34,3 +35,4 @@
 - Ingredients used without access to a world now partially work.
 - Stack groups not matching correctly on items added via creative tabs or when the index has been modified.
 - Crash sharing recipes without any outputs.
+- Stack group config can no longer be opened if stack groups are disabled.

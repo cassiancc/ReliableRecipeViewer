@@ -168,7 +168,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 }
 
                 filter(availableItems);
-                availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
+                RrvUtil.sortByName(availableItems);
                 if (screen == this.currentScreen && this.availableItems.isEmpty()) {
                     this.availableItems.addAll(availableItems);
                     Minecraft.getInstance().execute(this::updateSlots);

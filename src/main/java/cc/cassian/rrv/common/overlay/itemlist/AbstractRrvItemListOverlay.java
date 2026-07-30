@@ -3,7 +3,6 @@ package cc.cassian.rrv.common.overlay.itemlist;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
@@ -87,16 +86,20 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         int fittingPerPage = this.fittingPerPage();
         if (fittingPerPage == 0) return;
         if (this.startIndex == 0 && shouldWrapScroll(button)) {
-            int size = this.availableItems.size();
-            this.startIndex = size - (size - (size / fittingPerPage) * fittingPerPage);
+            lastPage();
         } else {
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
         }
         if (getPage()>getMaxPageIndex()) {
-            this.startIndex = 0;
+            firstPage();
         }
 
         this.updateSlots();
+    }
+
+    private void lastPage() {
+        int size = this.availableItems.size();
+        this.startIndex = size - (size - (size / this.fittingPerPage()) * this.fittingPerPage());
     }
 
     protected void nextPage(Button button) {
@@ -106,12 +109,16 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         int size = this.availableItems.size();
         this.startIndex = Math.min(this.startIndex + fittingPerPage, size - (size - (size / fittingPerPage) * fittingPerPage));
         if (currentIndex == this.startIndex && shouldWrapScroll(button)) {
-            this.startIndex = 0;
+            firstPage();
         }
         if (getPage()>getMaxPageIndex()) {
             this.startIndex = currentIndex;
         }
         this.updateSlots();
+    }
+
+    public void firstPage() {
+        this.startIndex = 0;
     }
 
     @Override

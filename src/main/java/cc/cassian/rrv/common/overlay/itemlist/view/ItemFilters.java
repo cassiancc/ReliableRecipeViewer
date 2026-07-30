@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
@@ -12,6 +13,7 @@ import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
+import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
@@ -338,14 +340,29 @@ public class ItemFilters {
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT)) {
                 var list = new ArrayList<ItemStack>();
                 ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
-                    r.getResults().forEach(l-> {
-                        l.getValidContents().forEach(stack -> {
-                            if (stack.hasNonDefault(DataComponents.ITEM_MODEL) && results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))) {
-                                list.add(stack);
-                            }
+                    if (r.getType().equals(CraftingClientRecipeType.INSTANCE)) {
+                        r.getResults().forEach(l-> {
+                            l.getValidContents().forEach(stack -> {
+                                if (list.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c)) && results.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c))) {
+                                    list.add(stack);
+                                }
+                            });
                         });
-                    });
+                    }
                 });
+                ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
+                    if (!r.getType().equals(CraftingClientRecipeType.INSTANCE)) {
+                        r.getResults().forEach(l-> {
+                            l.getValidContents().forEach(stack -> {
+                                if (list.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c)) && results.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c))) {
+                                    list.add(stack);
+                                }
+                            });
+                        });
+                    }
+
+                });
+                RrvUtil.sortByName(list);
                 results.addAll(list);
             }
 
@@ -401,5 +418,6 @@ public class ItemFilters {
 	public static void clearCaches() {
 		CACHED_STACKS.clear();
         creativeTabsCached = false;
+        ItemViewOverlay.INSTANCE.firstPage();
 	}
 }

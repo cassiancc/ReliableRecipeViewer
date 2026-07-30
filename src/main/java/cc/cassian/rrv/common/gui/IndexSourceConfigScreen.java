@@ -12,6 +12,8 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +62,7 @@ public class IndexSourceConfigScreen extends ClientConfigScreen {
             Boolean b = entry.getValue();
             String id = source.getSerializedName();
             // name
-            helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatableWithFallback("rrv.client_settings.index_source."+ id, id), font));
+            helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatableWithFallback("rrv.client_settings.index_source."+ id, id).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.translatable("rrv.client_settings.index_source."+ id + ".tooltip")))), font));
             // enable
             CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, b).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(id), (button, value) -> {
 				indexSource.put(source, value);

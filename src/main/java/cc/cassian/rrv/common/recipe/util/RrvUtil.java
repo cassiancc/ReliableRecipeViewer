@@ -287,4 +287,8 @@ public class RrvUtil {
     }
     *///?}
 
+    public static void sortByName(List<ItemStack> availableItems) {
+        availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
+    }
+
 }
