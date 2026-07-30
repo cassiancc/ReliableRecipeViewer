@@ -52,6 +52,7 @@ public class SidePanelButton extends ReliableSpriteIconButton {
         if (!Configs.CLIENT_SETTINGS.getSidePanel().equals(DISABLED)) {
             SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.BUTTON);
         }
+        SidePanelOverlay.INSTANCE.updateButtons();
         button.setTooltip(Tooltip.create(getTooltip()));
     }
 

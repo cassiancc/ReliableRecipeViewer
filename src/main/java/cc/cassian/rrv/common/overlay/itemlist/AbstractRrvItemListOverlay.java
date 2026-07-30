@@ -1,10 +1,14 @@
 package cc.cassian.rrv.common.overlay.itemlist;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.SidePanel;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -21,6 +25,8 @@ import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
 public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
+    public ReliableSpriteIconButton next = null;
+    public ReliableSpriteIconButton back = null;
     protected int itemStartX, itemStartY, itemEndX, itemEndY;
     protected int startIndex;
     private int fittingPerPage;
@@ -221,6 +227,55 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
             guiGraphics.fill(x, y, x + maxWidth, y+4, new Color(white, white, white, 32).getRGB());
             guiGraphics.fill(x, y, getWidth(x, maxWidth, scrollPage, rightIndex), y+4, new Color(white, white, white, 255).getRGB());
         }
+    }
+
+    @Override
+    protected void placeWidgets(ScreenContext ctx) {
+        super.placeWidgets(ctx);
+        ctx.addRenderable(this.back);
+        ctx.addRenderable(this.next);
+    }
+
+    /// @param buttonStart - x position of the back page button in the recipe book theme.
+    /// @param buttonEnd - x position of the next page button in the recipe book theme.
+    /// @param classicButtonStart - x position of the back page button in the classic theme.
+    /// @param classicButtonEnd - x position of the next page button in the classic theme.
+    public void createButtons(Component title, int buttonStart, int buttonEnd, int classicButtonStart, int classicButtonEnd) {
+
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ReliableRecipeViewer.of("back"), ReliableRecipeViewer.of("back"), ReliableRecipeViewer.of("back_disabled"), this::prevPage);
+        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ReliableRecipeViewer.of("next"), ReliableRecipeViewer.of("next"), ReliableRecipeViewer.of("next_disabled"), this::nextPage);
+
+        int buttonY = 5;
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+            buttonY+=25;
+        } else {
+            buttonStart = classicButtonStart;
+            buttonEnd = classicButtonEnd;
+        }
+
+        back.setPosition(buttonStart, buttonY);
+        next.setPosition(buttonEnd, buttonY);
+
+        updateButtons(title);
+    }
+
+    protected void updateButtons(Component title) {
+        if (back != null) {
+            boolean enabled = showButtons(title);
+            back.visible = enabled;
+            next.visible = enabled;
+            if (enabled && getMaxPageIndex() > 0) {
+                next.active = true;
+                back.active = true;
+            } else {
+                next.active = false;
+                back.active = false;
+            }
+        }
+    }
+
+    public boolean showButtons(Component title) {
+		return this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons() && (getWidth() - 16) > Minecraft.getInstance().font.width(title) + (back.getWidth() + next.getWidth());
     }
 
     protected int getWidth(double x, int width, double scrollPage, boolean rightIndex) {

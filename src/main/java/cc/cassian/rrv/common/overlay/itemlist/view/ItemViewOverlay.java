@@ -58,9 +58,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     private SearchBar searchbar = null;
 
-    public ReliableSpriteIconButton next = null;
-    public ReliableSpriteIconButton back = null;
-
     private static final int HEADER_HEIGHT = 30;
     private static final int FOOTER_HEIGHT = 20;
 
@@ -95,7 +92,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (prev != enabled) {
             this.searchbar.visible = enabled;
         }
-        updateButtons();
+        updateButtons(getPageCountText());
     }
 
     @Override
@@ -104,15 +101,13 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         super.onScreenChanged(info);
         this.updateQuery(this.getCurrentQuery());
         this.createSearchbarElement(OverlayManager.INSTANCE.currentInfo());
-        this.createButtons(OverlayManager.INSTANCE.currentInfo());
+        this.createButtons(getPageCountText(), checkedX()+10, itemEndX - 28, checkedX()+4, itemEndX - 16);
     }
 
     @Override
     protected void placeWidgets(ScreenContext ctx) {
-
+        super.placeWidgets(ctx);
         ctx.addRenderable(this.searchbar);
-        ctx.addRenderable(this.next);
-        ctx.addRenderable(this.back);
 
         InventoryPositionInfo info = OverlayManager.INSTANCE.currentInfo();
 
@@ -219,7 +214,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
 
-        this.updateButtons();
+        this.updateButtons(getPageCountText());
     }
 
     public void updateDisplayedItems() {
@@ -235,14 +230,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.availableItems.removeIf(ItemView::isExcludedItem);
         this.updateSlots();
     }
-
-    private void updateButtons() {
-        if (back != null) {
-            boolean enabled = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons() && (getWidth()-16)>Minecraft.getInstance().font.width(getPageCountText())+(buttonSize()*2);
-            back.visible = enabled;
-            next.visible = enabled;
-        }
-	}
 
     @Override
     protected boolean keyPressed(KeyEvent event) {
@@ -381,24 +368,6 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public void updateSearchBarVisibility() {
         updateSearchBarVisibility(this.searchbar);
-    }
-
-    public void createButtons(InventoryPositionInfo info){
-
-        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ReliableRecipeViewer.of("back"), this::prevPage);
-        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ReliableRecipeViewer.of("next"), this::nextPage);
-
-        int buttonY = 5;
-        int buttonEnd = itemEndX - 16;
-        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-            buttonY+=25;
-            buttonEnd-=13;
-        }
-
-        back.setPosition(checkedX()+10, buttonY);
-        next.setPosition(buttonEnd, buttonY);
-
-        updateButtons();
     }
 
     /// Open a recipe view screen showing all recipes that either result in or create an item stack - dependent on the supplied [ActionType].

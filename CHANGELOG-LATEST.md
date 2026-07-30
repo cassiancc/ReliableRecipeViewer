@@ -20,6 +20,8 @@
 - Backport to 1.21.11.
 - 26.3 will now show Fuel Recipes again.
 - Added a client recipe type for Composting.
+- Side panel will now show previous/next buttons if there's space.
+- Previous/next buttons will now become greyed out when unusable.
 
 ### Changed
 - Client config file has been reorganized to match the categories found in the ingame config screen. Configs from 8.6.4 and below will be safely upgraded to this new format.

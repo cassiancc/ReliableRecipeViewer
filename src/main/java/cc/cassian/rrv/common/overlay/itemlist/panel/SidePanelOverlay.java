@@ -25,7 +25,6 @@ import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -36,6 +35,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
@@ -52,9 +52,6 @@ import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     public static final SidePanelOverlay INSTANCE = new SidePanelOverlay();
-
-    public SpriteIconButton next = null;
-    public SpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
     private static final int FOOTER_HEIGHT = 20;
@@ -81,35 +78,21 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     public void setEnabled(boolean enabled) {
-        boolean prev = this.isEnabled();
-        super.setEnabled(enabled);
-
-        if (prev != enabled && enabled) {
-            this.next.visible = true;
-            this.back.visible = true;
-        }
-
-        if (prev != enabled && !enabled) {
-            this.next.visible = false;
-            this.back.visible = false;
-        }
+		super.setEnabled(enabled);
+        updateButtons();
     }
-
 
     @Override
     public void onScreenChanged(InventoryPositionInfo info) {
         this.initForScreen(info.screen(), info);
         super.onScreenChanged(info);
         this.updateSidePanelIndex(Reason.SCREEN_CHANGE);
-        this.createButtons(OverlayManager.INSTANCE.currentInfo());
+        this.createButtons(createTitleText(), checkedX()+16, itemEndX - 24, checkedX()+2, itemEndX - 15);
         this.currentScreen = info.screen();
     }
 
-
-    @Override
-    protected void placeWidgets(ScreenContext ctx) {
-        ctx.addRenderable(this.next);
-        ctx.addRenderable(this.back);
+    public MutableComponent createTitleText() {
+        return Component.translatable("rrv." + Configs.CLIENT_SETTINGS.getSidePanel().getSerializedName());
     }
 
     private void initForScreen(Screen screen, InventoryPositionInfo invInfo) {
@@ -202,6 +185,16 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             availableItems.addAll(StackGroupManager.expandGroupsInList(BookmarkManager.INSTANCE.displayItems()));
             Minecraft.getInstance().execute(this::updateSlots);
         }
+        updateButtons();
+    }
+
+    public void updateButtons() {
+        this.updateButtons(createTitleText());
+    }
+
+    @Override
+    public boolean showButtons(Component title) {
+        return super.showButtons(title) && !Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED);
     }
 
     private static boolean isRecipeViewScreen(Screen screen) {
@@ -302,6 +295,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     private boolean isHoveringOverTitle(double mouseX, double mouseY) {
+        if (next.isHovered() || back.isHovered()) {
+            return false;
+        }
         int left = 0;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
             left = OverlayManager.INSTANCE.currentInfo().screenWidth() - this.width;
@@ -348,55 +344,30 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (isHoveringOverTitle(mouseX, mouseY)) {
             colour = -256;
             guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
-            guiGraphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable(pageKey + ".hint1"), Component.translatable(pageKey + ".hint2"), Component.translatable("rrv.switch_tabs.hint")), mouseX, mouseY+10);
+            guiGraphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable(pageKey + ".hint1"), Component.translatable(pageKey + ".hint2"), Component.translatable("rrv.switch_tabs.hint")), mouseX, mouseY + 10);
         }
 
         if (this.fittingPerPage() > 0) {
             int titleX = (checkedX() + checkedWidth()) / 2;
             int titleY = checkedY() + 10;
             if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-                titleX+=3;
-                titleY+=25;
+                titleX += 3;
+                titleY += 25;
             }
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, colour);
-		}
+        }
 
         try {
             ItemSlot.currentFrameSlots = this.itemSlots();
             for (ItemSlot slot : this.itemSlots()) {
+                if (slot == null) return;
                 slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
             }
             ItemSlot.currentFrameSlots = null;
-        } catch (ConcurrentModificationException ignored) {}
-
-        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
-    }
-
-    public void createButtons(InventoryPositionInfo info){
-
-        back = SpriteIconButton.builder(Component.literal("<"), (button)-> {
-            int fittingPerPage = this.fittingPerPage();
-            this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
-            this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
-        next = SpriteIconButton.builder(Component.literal(">"), (button)->{
-            int fittingPerPage = this.fittingPerPage();
-            this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
-            this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
-
-        int buttonY = 5;
-        int buttonEnd = itemEndX - 16;
-        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-            buttonY+=25;
-            buttonEnd-=13;
+        } catch (ConcurrentModificationException ignored) {
         }
 
-        back.setPosition(itemStartX+2, buttonY);
-        next.setPosition(buttonEnd, buttonY);
-
-        next.visible = false;
-        back.visible = false;
+        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
     }
 
     public enum Reason {
