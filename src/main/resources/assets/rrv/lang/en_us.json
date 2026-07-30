@@ -8,6 +8,8 @@
   "view.rrv.type.blasting": "Blasting",
   "view.rrv.type.burning": "Burning",
   "view.rrv.type.burning.ticks": "%s ticks",
+  "view.rrv.type.composting": "Composting",
+  "view.rrv.type.composting.chance": "%s%s chance",
   "view.rrv.type.smoking": "Smoking",
   "view.rrv.type.stonecutter": "Stonecutting",
   "view.rrv.type.smithing": "Smithing",

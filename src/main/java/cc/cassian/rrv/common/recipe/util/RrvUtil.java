@@ -10,6 +10,10 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 //? if >26.2 {
 /*import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
+import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
+import net.minecraft.util.random.Weighted;
+import net.minecraft.util.random.WeightedList;
 *///?}
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,10 +33,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
-import net.minecraft.world.level.storage.loot.providers.number.ConditionalValue;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
@@ -242,17 +243,48 @@ public class RrvUtil {
     }
 	//?}
 
-    /// Query a basic number provider. Used for fuel values.
+    //? if >26.2 {
+    /*/// Query a resolvable number. Used for fuel values and composting.
+    public static @Nullable Float getNumberProvidedFloat(ResolvableNumber number) {
+        if (number instanceof ResolvableNumber.Constant(float value)) {
+            return value;
+        } else if (number instanceof ResolvableNumber.Reference(ResourceKey<NumberProvider> providerResourceKey)) {
+			return RrvUtil.getNumberProvidedFloat(providerResourceKey);
+        }
+        return null;
+    }
+
+    /// Query a basic number provider. Used for fuel values and composting.
     public static @Nullable Float getNumberProvidedFloat(ResourceKey<NumberProvider> key) {
         var numberProviderReference = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.NUMBER_PROVIDER).getOrThrow(key);
-        if (numberProviderReference.value() instanceof ConstantValue(float value)) {
-            return value;
-        } else if (numberProviderReference.value() instanceof ConditionalValue conditionalValue) {
-            if (conditionalValue.onFalse().value() instanceof ConstantValue(float value)) {
-                return value;
-            }
-        }
-		return null;
+        return getNumberProvidedFloat(numberProviderReference);
 	}
+
+    public static @Nullable Float getNumberProvidedFloat(Holder<NumberProvider> numberProviderReference) {
+        NumberProvider number = numberProviderReference.value();
+		return switch (number) {
+			case ConstantValue(float value) ->
+                    value;
+			case ConditionalValue conditionalValue ->
+                    getNumberProvidedFloat(conditionalValue.onFalse());
+			case NumberDispatcher(List<NumberDispatcher.Case> cases, Holder<NumberProvider> defaultValue) ->
+                    getNumberProvidedFloat(defaultValue);
+            // Compostables (and frankly number providers in general) are really strangely written. https://github.com/misode/mcmeta/blob/data-json/data/minecraft/number_provider/compostable/low.json
+            case WeightedListValue(WeightedList<Holder<NumberProvider>> distribution) -> {
+				var unwrapped = distribution.unwrap();
+				for (Weighted<Holder<NumberProvider>> holder : unwrapped) {
+					if (Objects.equals(getNumberProvidedFloat(holder.value()), 1.0f)) {
+						yield (float)(holder.weight() * 0.01);
+					}
+				}
+                yield 0f;
+			}
+			default -> {
+				LOGGER.error("RRV: Failed to load number provider from key: {}, was unrecognized type {}", numberProviderReference.unwrapKey(), number.getClass());
+				yield null;
+			}
+		};
+    }
+    *///?}
 
 }

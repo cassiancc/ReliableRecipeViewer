@@ -33,7 +33,7 @@ public class RecipeSharing {
 		return Component.translatable("rrv.sharing.recipe",
 				recipeId.toString()).withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)
 				.withClickEvent(new ClickEvent.Custom(ReliableRecipeViewer.of("click_recipe"), Optional.of(StringTag.valueOf(recipeId.toString()))))
-				.withHoverEvent(new ShowRecipe(recipe.getType().getDisplayName().copy(), recipe.getType().getId().getNamespace(), recipe.getResults().getFirst().next()))
+				.withHoverEvent(new ShowRecipe(recipe.getType().getDisplayName().copy(), recipe.getType().getId().getNamespace(), !recipe.getResults().isEmpty() ? recipe.getResults().getFirst().next() : ItemStack.EMPTY))
 		);
 	}
 

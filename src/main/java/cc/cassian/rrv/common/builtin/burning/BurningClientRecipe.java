@@ -14,6 +14,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
@@ -30,7 +31,7 @@ public class BurningClientRecipe implements ReliableClientRecipe {
     private final Identifier id;
 
     public BurningClientRecipe(Item item, int i) {
-        this.id = item.builtInRegistryHolder().key().identifier().withPrefix("/").withSuffix("_burning");
+        this.id = BuiltInRegistries.ITEM.getKey(item).withPrefix("/").withSuffix("_burning");
         this.fuel = SlotContent.of(item);
         this.burnTime = i;
 

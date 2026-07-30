@@ -19,6 +19,7 @@
 - Add-ons can now safely extend `RecipeSlot` without losing their custom additions.
 - Backport to 1.21.11.
 - 26.3 will now show Fuel Recipes again.
+- Added a client recipe type for Composting.
 
 ### Changed
 - Client config file has been reorganized to match the categories found in the ingame config screen. Configs from 8.6.4 and below will be safely upgraded to this new format.
@@ -29,3 +30,4 @@
 - Next/prev page buttons no longer show up if they do not have enough space to render.
 - Ingredients used without access to a world now partially work.
 - Stack groups not matching correctly on items added via creative tabs or when the index has been modified.
+- Crash sharing recipes without any outputs.

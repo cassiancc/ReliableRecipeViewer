@@ -2,7 +2,6 @@ package cc.cassian.rrv.common.builtin;
 
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
 import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
@@ -60,9 +59,9 @@ import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
 //? if >26.2 {
-/*import net.minecraft.world.level.storage.loot.providers.number.ConditionalValue;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+/*import net.minecraft.world.level.storage.loot.providers.number.ResolvableNumber;
+import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
+import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
 *///?}
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
@@ -251,10 +250,17 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             for (Item item : BuiltInRegistries.ITEM) {
                 ItemStack stack = item.getDefaultInstance();
                 if (stack.has(DataComponents.COOKING_FUEL)) {
-                    ResourceKey<NumberProvider> burnTime = Objects.requireNonNull(stack.get(DataComponents.COOKING_FUEL)).burnTime();
+                    ResolvableNumber burnTime = Objects.requireNonNull(stack.get(DataComponents.COOKING_FUEL)).burnTime();
                     var providedValue = RrvUtil.getNumberProvidedFloat(burnTime);
                     if (providedValue != null) {
                         recipeList.add(new BurningServerRecipe(item, providedValue));
+                    }
+                }
+                if (stack.has(DataComponents.COMPOSTABLE)) {
+                    ResolvableNumber layers = Objects.requireNonNull(stack.get(DataComponents.COMPOSTABLE)).layers();
+                    var providedValue = RrvUtil.getNumberProvidedFloat(layers);
+                    if (providedValue != null) {
+                        recipeList.add(new CompostingServerRecipe(item, providedValue));
                     }
                 }
             }

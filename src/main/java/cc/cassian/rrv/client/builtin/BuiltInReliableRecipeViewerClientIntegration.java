@@ -4,7 +4,14 @@ import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
+//? if >26.2 {
+/*import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
+import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
+*///?} else {
+import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
+//?}
+import cc.cassian.rrv.common.builtin.composting.CompostingClientRecipe;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.world.item.ItemStackTemplate;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
@@ -30,7 +37,6 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.recipe.ConcretePowderBlockAccessor;
-import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.*;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
@@ -38,7 +44,6 @@ import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 //?}
@@ -77,8 +82,6 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 //? neoforge
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
@@ -109,7 +112,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             //? neoforge
             //ItemView.excludeItems(Items.AIR);
             ItemView.excludeItemStack(new ItemStack(Items.POTION), new ItemStack(Items.SPLASH_POTION), new ItemStack(Items.LINGERING_POTION), new ItemStack(Items.ENCHANTED_BOOK), new ItemStack(Items.TIPPED_ARROW), new ItemStack(Items.SUSPICIOUS_STEW));
-            if (!Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.REGISTRY))
+            if (Configs.CLIENT_SETTINGS.getIndexSource().containsKey(IndexSource.CREATIVE))
                 ItemView.excludeItemStack(new ItemStack(Items.SUSPICIOUS_STEW));
             excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
             excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
@@ -140,7 +143,9 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new CampfireClientRecipe(smokingRecipeRecipeHolder)));
             // Fuel
             addFuelRecipes(recipeList, level);
-            // Smithing
+			// Composting
+			addCompostingRecipes(recipeList);
+			// Smithing
             addSmithingRecipes(recipeList);
             // Stonecutting
             ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipeRecipeHolder -> recipeList.add(new StonecutterClientRecipe(stonecutterRecipeRecipeHolder)));
@@ -173,7 +178,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
     }
 
-    private static void addCraftingRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
+	private static void addCraftingRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
         ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.CRAFTING).forEach(craftingRecipeHolder -> {
             var id = craftingRecipeHolder.id().identifier();
             var recipe = craftingRecipeHolder.value();
@@ -506,6 +511,16 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         return worldInteractionRecipes;
     }
+
+	private void addCompostingRecipes(List<ReliableClientRecipe> recipeList) {
+		//? if >26.2 {
+		/*ItemView.addClientRecipeWrapper(CompostingServerRecipe.TYPE, (unwrapped -> List.of(new CompostingClientRecipe(unwrapped.getCompostedItem().getDefaultInstance(), unwrapped.getLayers()))));
+		 *///?} else {
+		ComposterBlock.COMPOSTABLES.forEach((itemLike, aFloat) -> {
+			recipeList.add(new CompostingClientRecipe(itemLike.asItem().getDefaultInstance(), aFloat));
+		});
+		//?}
+	}
 
 
 }
