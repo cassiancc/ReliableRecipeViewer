@@ -63,7 +63,7 @@ public class RecipeCategoryConfigScreen extends ClientConfigScreen {
         helper.addChild(new SpacerElement(5, 5));
 //        helper.addChild(new SpacerElement(5, 5));
 
-        Configs.CATEGORIES.CATEGORIES.values().stream().sorted(Comparator.comparingInt(RecipeCategoryConfig.ConfiguredRecipeCategory::priority)).forEach((category) -> {
+        Configs.CATEGORIES.values().stream().sorted(Comparator.comparingInt(RecipeCategoryConfig.ConfiguredRecipeCategory::priority)).forEach((category) -> {
             Identifier id = category.id();
             // name
             helper.addChild(new StringWidget(column1, font.lineHeight, category.name().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(id.toString())))), font));

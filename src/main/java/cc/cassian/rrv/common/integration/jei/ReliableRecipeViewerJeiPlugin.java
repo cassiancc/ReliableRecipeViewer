@@ -8,7 +8,9 @@ import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipe;
+import cc.cassian.rrv.common.builtin.anvil.AnvilCombiningClientRecipeType;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
+import cc.cassian.rrv.common.builtin.info.InfoClientRecipeType;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipeType;
 import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
@@ -88,7 +90,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration registration) {
 		RECIPE_CATEGORIES.forEach((type, recipeType) -> {
 			List<ReliableClientRecipe> recipes = ClientRecipeCache.INSTANCE.getRecipes().stream().filter(p -> p.getType().equals(type)).toList();
-			if (type.getId().equals(ReliableRecipeViewer.of("info"))) {
+			if (type.getId().equals(InfoClientRecipeType.INSTANCE.getId())) {
 				recipes.forEach(recipe -> {
 					if (doesNotHaveNativePlugin(recipe.getId())) {
 						InfoClientRecipe info = ((InfoClientRecipe) recipe);
@@ -98,7 +100,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 					}
 				});
 			}
-			else if (type.getId().equals(ReliableRecipeViewer.of("anvil_combining"))) {
+			else if (type.getId().equals(AnvilCombiningClientRecipeType.INSTANCE.getId())) {
 				recipes.forEach(recipe -> {
 					if (doesNotHaveNativePlugin(recipe.getId())) {
 						AnvilCombiningClientRecipe anvilRecipe = ((AnvilCombiningClientRecipe) recipe);
@@ -109,7 +111,7 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 			else if (type.getId().equals(ItemTagClientRecipeType.INSTANCE.getId())) {
 				return;
 			}
-			else if (Configs.CATEGORIES.CATEGORIES.get(type.getId()).enabled()) {
+			else if (Configs.CATEGORIES.get(type.getId()).enabled()) {
 				registration.addRecipes(recipeType, recipes);
 			}
 		});
