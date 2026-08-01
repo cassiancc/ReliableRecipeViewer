@@ -217,10 +217,9 @@ public class RrvUtil {
                 ReliableRecipeViewer.LOGGER.debug("RRV: Skipped initializing integration for multi-loader mod: {}", modId);
             }
             return;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration from mod: {} due to {}", modId, e);
         }
-
-        ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration from mod: {}", modId);
     }
 
     //? if >26.2 {

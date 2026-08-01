@@ -119,6 +119,13 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
             hideRecipes();
             StackGroupManager.reload();
+			ItemView.addItemCheck(DataComponents.ITEM_MODEL);
+			ItemView.addItemCheck(DataComponents.PAINTING_VARIANT);
+			ItemView.addItemCheck(ItemViewRecipes.makePotionCheck());
+			ItemView.addItemCheck(ItemViewRecipes.makeStewCheck());
+			ItemView.addItemCheck(ItemViewRecipes.makeFireworkRocketCheck());
+			ItemView.addItemCheck(ItemViewRecipes.makeEnchantmentCheck());
+			ItemView.addItemCheck(ItemViewRecipes.makeTrimCheck());
         });
 
         //Wrapper

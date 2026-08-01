@@ -17,9 +17,11 @@ import net.minecraft.world.item.equipment.trim.TrimPattern;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiPredicate;
 
 public class SmithingClientRecipe implements ReliableClientRecipe {
 
+    public static final BiPredicate<ItemStack, ItemStack> TRIM_CHECK = ItemViewRecipes.makeTrimCheck();
     private final SlotContent additionIngredient, base, template, result;
 
     private final int priority;
@@ -90,7 +92,7 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
 
     private Integer getResult() {
         if (this.trimPattern != null) {
-            return this.result.getNextMatching(applyTrim(this.base.current(), this.additionIngredient.current(), this.trimPattern), ItemViewRecipes::makeTrimCheck);
+            return this.result.getNextMatching(applyTrim(this.base.current(), this.additionIngredient.current(), this.trimPattern), TRIM_CHECK);
         }
         return 0;
     }

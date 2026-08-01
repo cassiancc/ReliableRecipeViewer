@@ -436,7 +436,6 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
 
         Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, false);
-        var index = component != null ? tooltip.indexOf(component) : tooltip.size();
 
         CompoundTag customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (customData.contains(ReliableRecipeViewer.MOD_ID + "_itemTag")) {
@@ -446,10 +445,17 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
             replaceTooltipWithTagDetails(tooltip, customData, "_blockTag", "tag.block.");
         }
 
-        if (Configs.CLIENT_SETTINGS.isShowRecipeId() && customData.contains(ReliableRecipeViewer.MOD_ID + "_result")) {
+		Integer index = component != null ? tooltip.indexOf(component) : null;
+
+		if (Configs.CLIENT_SETTINGS.isShowRecipeId() && customData.contains(ReliableRecipeViewer.MOD_ID + "_result")) {
             String tagKeyString = customData.getStringOr(ReliableRecipeViewer.MOD_ID + "_result", "Error");
             MutableComponent tag = Component.literal(tagKeyString).withStyle(ChatFormatting.GRAY);
-            tooltip.add(index, Component.translatable("view.rrv.recipe_id", tag).withStyle(ChatFormatting.GOLD));
+            MutableComponent component1 = Component.translatable("view.rrv.recipe_id", tag).withStyle(ChatFormatting.GOLD);
+            if (index == null) {
+                tooltip.add(component1);
+            } else {
+                tooltip.set(index, component);
+            }
         }
 
         if (this.hoveredSlot != null && this.hoveredSlot.hasItem())

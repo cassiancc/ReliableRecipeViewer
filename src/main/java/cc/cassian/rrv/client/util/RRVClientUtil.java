@@ -113,10 +113,9 @@ public class RRVClientUtil {
                 ReliableRecipeViewer.LOGGER.debug("RRV: Skipped initializing client integration for multi-loader mod: {}", modId);
             }
             return;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration from mod: {} due to {}", modId, e);
         }
-
-        ReliableRecipeViewer.LOGGER.error("RRV: Failed to load client integration from mod: {}", modId);
     }
 
     public static void sendMessage(Component message) {

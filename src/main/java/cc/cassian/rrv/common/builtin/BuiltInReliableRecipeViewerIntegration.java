@@ -138,7 +138,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
 
         ItemView.addServerRecipeProvider(recipeList -> {
-
             BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
                 Optional<ResourceKey<LootTable>> defaultLootTable = entityType.getDefaultLootTable();
                 if (defaultLootTable.isEmpty())
@@ -160,7 +159,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                 if (!loot.isEmpty())
                     recipeList.add(new EntityServerRecipe(entityType, loot));
             });
-
+            ItemViewRecipes.MOB_DROPS.clear();
         });
         if (ModCompat.FABRIC_RECIPE_API) {
             for (Identifier serializer : ServerConfigs.SERVER_SETTINGS.getSynchronizedRecipeSerializers()) {

@@ -12,7 +12,7 @@ public enum IndexSource implements StringRepresentable {
 	CREATIVE,
 	REGISTRY;
 
-	public static final Map<IndexSource, Boolean> DEFAULT = Map.of(RESOURCE_PACKS, true, UNIQUE_RECIPE_OUTPUT, true, CREATIVE, true, REGISTRY, true);
+	public static final Map<IndexSource, Boolean> DEFAULT = Map.of(RESOURCE_PACKS, true, UNIQUE_RECIPE_OUTPUT, false, CREATIVE, true, REGISTRY, true);
 
 	@Override
 	public String getSerializedName() {

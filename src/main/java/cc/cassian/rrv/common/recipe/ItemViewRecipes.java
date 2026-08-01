@@ -10,7 +10,6 @@ import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.common.collect.LinkedHashMultimap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
 /// Internal (intermediate) class that connects [ItemView] (Api-class) with RRV logic
 ///
@@ -133,103 +132,100 @@ public class ItemViewRecipes {
 
     /// @return Whether the provided [ItemStack] matches the components of the given stack
     public static boolean makeDefaultChecks(ItemStack stack, ItemStack ingredient) {
-        boolean potionRedirectCheck = ItemViewRecipes.makePotionCheck(stack, ingredient);
-        boolean enchantmentRedirectCheck = ItemViewRecipes.makeEnchantmentCheck(stack, ingredient);
-        boolean stewRedirectCheck = ItemViewRecipes.makeStewCheck(stack, ingredient);
-        boolean fireworkRocketRedirectCheck = ItemViewRecipes.makeFireworkRocketCheck(stack, ingredient);
-        boolean itemModelRedirectCheck = ItemViewRecipes.makeItemModelCheck(stack, ingredient);
-        return potionRedirectCheck && enchantmentRedirectCheck && stewRedirectCheck && fireworkRocketRedirectCheck && itemModelRedirectCheck;
+        for (BiPredicate<ItemStack, ItemStack> check : ItemViewRecipes.CHECKS) {
+            if (!check.test(stack, ingredient)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
      * @return Whether the potion component of two itemStacks matches
      */
-    public static boolean makePotionCheck(ItemStack stack1, ItemStack stack2) {
-        if (!(stack1.has(DataComponents.POTION_CONTENTS) && stack2.has(DataComponents.POTION_CONTENTS)))
-            return true;
+    public static BiPredicate<ItemStack, ItemStack> makePotionCheck() {
+        return (stack1, stack2) -> {
+            if (!(stack1.has(DataComponents.POTION_CONTENTS) && stack2.has(DataComponents.POTION_CONTENTS)))
+                return true;
 
-        PotionContents contents = stack1.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
-        PotionContents stackContents = stack2.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+            PotionContents contents = stack1.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+            PotionContents stackContents = stack2.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
 
-        return contents.potion().isPresent() && stackContents.potion().isPresent() && contents.is(stackContents.potion().orElseThrow());
+            return contents.potion().isPresent() && stackContents.potion().isPresent() && contents.is(stackContents.potion().orElseThrow());
+		};
     }
 
     /**
      * @return Whether the suspicious stew component of two itemStacks matches
      */
-    public static boolean makeStewCheck(ItemStack stack1, ItemStack stack2) {
-        if (!(stack1.has(DataComponents.SUSPICIOUS_STEW_EFFECTS) && stack2.has(DataComponents.SUSPICIOUS_STEW_EFFECTS)))
-            return true;
+    public static BiPredicate<ItemStack, ItemStack> makeStewCheck() {
+        return (stack1, stack2) -> {
+            if (!(stack1.has(DataComponents.SUSPICIOUS_STEW_EFFECTS) && stack2.has(DataComponents.SUSPICIOUS_STEW_EFFECTS)))
+                return true;
 
-        SuspiciousStewEffects contents = stack1.getOrDefault(DataComponents.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffects.EMPTY);
-        SuspiciousStewEffects stackContents = stack2.getOrDefault(DataComponents.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffects.EMPTY);
+            SuspiciousStewEffects contents = stack1.getOrDefault(DataComponents.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffects.EMPTY);
+            SuspiciousStewEffects stackContents = stack2.getOrDefault(DataComponents.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffects.EMPTY);
 
-        return new HashSet<>(contents.effects()).containsAll(stackContents.effects());
+            return new HashSet<>(contents.effects()).containsAll(stackContents.effects());
+        };
     }
-
-
-    /**
-     * @return Whether the item model component of two itemStacks matches
-     */
-    public static boolean makeItemModelCheck(ItemStack stack1, ItemStack stack2) {
-        if (!(stack1.has(DataComponents.ITEM_MODEL) && stack2.has(DataComponents.ITEM_MODEL)))
-            return true;
-
-        Identifier contents = stack1.get(DataComponents.ITEM_MODEL);
-        Identifier stackContents = stack2.get(DataComponents.ITEM_MODEL);
-
-        return contents.equals(stackContents);
-    }
-
 
     /**
      * @return Whether the firework component of two itemStacks matches
      */
-    public static boolean makeFireworkRocketCheck(ItemStack stack1, ItemStack stack2) {
-        if (!(stack1.has(DataComponents.FIREWORKS) && stack2.has(DataComponents.FIREWORKS)))
-            return true;
+    public static BiPredicate<ItemStack, ItemStack> makeFireworkRocketCheck() {
+        return (stack1, stack2) -> {
+            if (!(stack1.has(DataComponents.FIREWORKS) && stack2.has(DataComponents.FIREWORKS)))
+                return true;
 
-        Fireworks contents = stack1.getOrDefault(DataComponents.FIREWORKS, new Fireworks(0, List.of()));
-        Fireworks stackContents = stack2.getOrDefault(DataComponents.FIREWORKS, new Fireworks(0, List.of()));
+            Fireworks contents = stack1.getOrDefault(DataComponents.FIREWORKS, new Fireworks(0, List.of()));
+            Fireworks stackContents = stack2.getOrDefault(DataComponents.FIREWORKS, new Fireworks(0, List.of()));
 
-        return contents.flightDuration() == stackContents.flightDuration() && new HashSet<>(contents.explosions()).containsAll(stackContents.explosions());
+            return contents.flightDuration() == stackContents.flightDuration() && new HashSet<>(contents.explosions()).containsAll(stackContents.explosions());
+        };
     }
 
     /**
      * @return Whether the enchantments of two itemStacks match
      */
-    public static boolean makeEnchantmentCheck(ItemStack stack1, ItemStack stack2) {
-        if (!(stack1.has(DataComponents.STORED_ENCHANTMENTS) && stack2.has(DataComponents.STORED_ENCHANTMENTS)))
-            return true;
+    public static BiPredicate<ItemStack, ItemStack> makeEnchantmentCheck() {
+        return (stack1, stack2) -> {
+            if (!(stack1.has(DataComponents.STORED_ENCHANTMENTS) && stack2.has(DataComponents.STORED_ENCHANTMENTS)))
+                return true;
 
-        ItemEnchantments enchantments = stack1.getOrDefault(stack1.is(Items.ENCHANTED_BOOK) ? DataComponents.STORED_ENCHANTMENTS : DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-        ItemEnchantments stackEnchantments = stack2.getOrDefault(stack2.is(Items.ENCHANTED_BOOK) ? DataComponents.STORED_ENCHANTMENTS : DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+            ItemEnchantments enchantments = stack1.getOrDefault(stack1.is(Items.ENCHANTED_BOOK) ? DataComponents.STORED_ENCHANTMENTS : DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+            ItemEnchantments stackEnchantments = stack2.getOrDefault(stack2.is(Items.ENCHANTED_BOOK) ? DataComponents.STORED_ENCHANTMENTS : DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
 
-        return enchantments.keySet().stream().allMatch(enchantment -> {
-            return stackEnchantments.getLevel(enchantment) == enchantments.getLevel(enchantment);
-        }) && stackEnchantments.size() == enchantments.size();
+            return enchantments.keySet().stream().allMatch(enchantment -> {
+                return stackEnchantments.getLevel(enchantment) == enchantments.getLevel(enchantment);
+            }) && stackEnchantments.size() == enchantments.size();
+        };
     }
 
     /**
      * @return Whether the trims of two itemStacks match
      */
-    public static boolean makeTrimCheck(ItemStack stack1, ItemStack stack2) {
-        if (!(stack1.has(DataComponents.TRIM) && stack2.has(DataComponents.TRIM)))
-            return true;
+    public static BiPredicate<ItemStack, ItemStack> makeTrimCheck() {
+        return (stack1, stack2) -> {
+            if (!(stack1.has(DataComponents.TRIM) && stack2.has(DataComponents.TRIM)))
+                return true;
 
-        ArmorTrim contents = stack1.get(DataComponents.TRIM);
-        ArmorTrim stackContents = stack2.get(DataComponents.TRIM);
+            ArmorTrim contents = stack1.get(DataComponents.TRIM);
+            ArmorTrim stackContents = stack2.get(DataComponents.TRIM);
 
-        if (contents == null || stackContents == null)
-            return true;
+            if (contents == null || stackContents == null)
+                return true;
 
-        return stackContents.material() == contents.material() && stackContents.pattern() == contents.pattern();
+            return stackContents.material() == contents.material() && stackContents.pattern() == contents.pattern();
+        };
     }
 
     /// A list of mob drops to be added to the index.
     public static final LinkedHashMultimap<EntityType<?>, SlotContent> MOB_DROPS = LinkedHashMultimap.create();
     /// A list of predicates to modify mob drops.
     public static final List<MobDropModifyContext> MODIFIED_MOB_DROPS = new ArrayList<>();
+    /// A list of predicates to modify item matches.
+    public static final List<BiPredicate<ItemStack, ItemStack>> CHECKS = new ArrayList<>();
     /// A list of world interaction recipes to be added to the index.
     public static final List<WorldInteractionClientRecipe> WORLD_INTERACTION_RECIPES = new ArrayList<>();
     /// A list of info recipes to be added to the index.

@@ -24,9 +24,11 @@
 - Previous/next buttons will now become greyed out when unusable.
 - Mob drops can now be modified with the API via `ItemView#modifyMobDrops`.
 - Full stack list is now computed in the background rather than when the inventory is first opened.
+- Added an API for adding default checks to items.
 
 ### Changed
 - Client config file has been reorganized to match the categories found in the ingame config screen. Configs from 8.6.4 and below will be safely upgraded to this new format.
+- Integrations failing to load will now provide a full stacktrace.
 
 ### Fixed
 - Incorrectly set unknown keybind causing OpenGL spam.

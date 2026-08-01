@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -14,6 +15,7 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
@@ -316,8 +318,8 @@ public class ItemFilters {
             LocalPlayer player = mc.player;
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.CREATIVE)) {
-                if (!creativeTabsCached && player != null && !player.hasInfiniteMaterials()) {
-                    CreativeModeTabs.tryRebuildTabContents(FeatureFlags.VANILLA_SET, false, player.registryAccess());
+                if (!creativeTabsCached && player != null) {
+                    CreativeModeTabs.tryRebuildTabContents(player.level().enabledFeatures(), RrvUtil.hasPermission(player), player.registryAccess());
                 }
 
                 results.addAll(CreativeModeTabs.searchTab().getSearchTabDisplayItems().stream()
@@ -341,26 +343,13 @@ public class ItemFilters {
                 var list = new ArrayList<ItemStack>();
                 ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
                     if (r.getType().equals(CraftingClientRecipeType.INSTANCE)) {
-                        r.getResults().forEach(l-> {
-                            l.getValidContents().forEach(stack -> {
-                                if (list.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c)) && results.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c))) {
-                                    list.add(stack);
-                                }
-                            });
-                        });
+                        addUniqueItem(r.getResults(), list, results);
                     }
                 });
                 ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
                     if (!r.getType().equals(CraftingClientRecipeType.INSTANCE)) {
-                        r.getResults().forEach(l-> {
-                            l.getValidContents().forEach(stack -> {
-                                if (list.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c)) && results.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c))) {
-                                    list.add(stack);
-                                }
-                            });
-                        });
+                        addUniqueItem(r.getIngredients(), list, results);
                     }
-
                 });
                 RrvUtil.sortByName(list);
                 results.addAll(list);
@@ -376,6 +365,16 @@ public class ItemFilters {
         }
 
         return CACHED_STACKS;
+    }
+
+    private static void addUniqueItem(List<SlotContent> r, ArrayList<ItemStack> list, List<ItemStack> results) {
+        r.forEach(l-> {
+            l.getValidContents().forEach(stack -> {
+                if (list.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c)) && results.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c))) {
+                    list.add(stack);
+                }
+            });
+        });
     }
 
     ///  Exports the contents of the index in a format compatible with resource packs.
