@@ -13,7 +13,7 @@
     - Any mods that require mixins into RRV's recipe screen will not render on JEI.
     - Recipes that are synchronized via `ReliableServerRecipe` are not displayed in JEI, as they do not exist when JEI's plugin is initialized.
 - Quick crafting keybind can now be rebound from Left Control.
-- Recipe outputs with unique `ITEM_MODEL` components will now be added to the index. This should improve the experience when playing with datapacks like Matcha Flavoured.
+- Recipe outputs with unique components can now be added to the index by enabling the Unique Recipe Output index source. This should improve the experience when playing with datapacks like Matcha Flavoured.
 - Index sources can now be mixed and matched from their own screen.
 - Recipe type buttons can now be scrolled through.
 - Add-ons can now safely extend `RecipeSlot` without losing their custom additions.

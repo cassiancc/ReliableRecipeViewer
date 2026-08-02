@@ -105,7 +105,7 @@ public abstract class AbstractRrvOverlay {
         //Basic keybinds
 
         for (ItemSlot slot : this.itemSlots()) {
-            if (!slot.isHovered())
+            if (slot == null || !slot.isHovered())
                 continue;
 
             Identifier overlayId = this.getReportedOverlayId();

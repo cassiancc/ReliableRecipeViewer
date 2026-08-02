@@ -71,7 +71,7 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	@Override
 	public void renderRecipe(RecipeScreenContext context) {
 		if (!rendered && context.screen() instanceof RecipeViewScreen recipeViewScreen) {
-			MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
+			MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), context.font()).setMaxRows(10).setMaxWidth(112);
 			widget.setX(context.recipePosition().left() + 5);
 			widget.setY(context.recipePosition().top() + 20);
 			recipeViewScreen.addRecipeWidget(widget);
