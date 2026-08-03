@@ -1,2 +1,2 @@
 ### Fixed
-- Unique recipe output index source now works correctly.
+- Removed broken optimization causing creative search to not work. Will be further tested for v8.8.

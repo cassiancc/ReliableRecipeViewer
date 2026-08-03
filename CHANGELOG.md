@@ -1,3 +1,8 @@
+## [8.7.1]
+
+### Fixed
+- Unique recipe output index source now works correctly.
+
 ## [8.7.0]
 
 ### Added

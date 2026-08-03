@@ -325,7 +325,7 @@ public class ItemFilters {
                     CreativeModeTabs.tryRebuildTabContents(player.level().enabledFeatures(), RrvUtil.hasPermission(player), player.registryAccess());
                 }
 
-                results.addAll(CreativeModeTabs.searchTab().getSearchTabDisplayItems().stream()
+                results.addAll(new ArrayList<>(CreativeModeTabs.searchTab().getSearchTabDisplayItems()).stream()
                         //? fabric {
                         .map(RRVClientUtil::applyPolymerCheck)
                         //?}

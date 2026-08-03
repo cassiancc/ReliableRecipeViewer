@@ -198,8 +198,6 @@ public class ClientRecipeCache {
         }
 
         Configs.CATEGORIES.addNewCategories();
-        if (!Configs.CLIENT_SETTINGS.isJeiPanel())
-            Util.backgroundExecutor().execute(ItemFilters::fullStackList);
     }
 
     private void handleClientRecipe(Identifier modEntryId, ReliableClientRecipe wrapped, int id, boolean fromNewSystem) {
