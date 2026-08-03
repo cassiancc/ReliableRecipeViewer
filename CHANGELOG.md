@@ -1,3 +1,46 @@
+## [8.7.0]
+
+### Added
+- RRV is now partially compatible with JEI. This is still in an experimental stage and is not currently recommended, but should at least offer some way to see recipes from mods with only one integration.
+  - With JEI present, RRV recipes will be bridged to JEI's recipe manager, and JEI's recipe screen will be accessible from RRV's recipe screen in a similar fashion to the existing Polydex integration.
+  - You can also now switch between RRV and JEI's panels and recipe screens in the config. The default is RRV's panels and JEI's recipe screen. These can be used interchangeably, with the default setting clicking an item in RRV's panel will open a JEI recipe screen.
+  - Note: Even with JEI's recipe screen enabled, Polymer items, items with custom item models, and items from mods with RRV integrations will still use the RRV recipe screen, as JEI does not handle these as well as RRV does. RRV's recipe screen can also be manually viewed by clicking the RRV button next to the recipe.
+  - Recipes implementing `renderRecipe` should now use `renderRecipe(RecipeScreenContext)` to allow rendering recipes without an RRV `RecipeViewScreen`.
+  - With JEI present, RRV can search by item colour with the ^ prefix.
+  - Known issues:
+    - Bookmarking recipes does not work correctly.
+    - Optional slot renderers with custom textures only display normal slots.
+    - Animations do not tick.
+    - Any recipes reliant on a `RecipeViewScreen` will not render correctly.
+    - Any mods that require mixins into RRV's recipe screen will not render on JEI.
+    - Recipes that are synchronized via `ReliableServerRecipe` are not displayed in JEI, as they do not exist when JEI's plugin is initialized.
+- Quick crafting keybind can now be rebound from Left Control.
+- Recipe outputs with unique components can now be added to the index by enabling the Unique Recipe Output index source. This should improve the experience when playing with datapacks like Matcha Flavoured.
+- Index sources can now be mixed and matched from their own screen.
+- Recipe type buttons can now be scrolled through.
+- Add-ons can now safely extend `RecipeSlot` without losing their custom additions.
+- Backport to 1.21.11.
+- 26.3 will now show Fuel Recipes again.
+- Added a client recipe type for Composting.
+- Side panel will now show previous/next buttons if there's space.
+- Previous/next buttons will now become greyed out when unusable.
+- Mob drops can now be modified with the API via `ItemView#modifyMobDrops`.
+- Full stack list is now computed in the background rather than when the inventory is first opened.
+- Added an API for adding default checks to items.
+
+### Changed
+- Client config file has been reorganized to match the categories found in the ingame config screen. Configs from 8.6.4 and below will be safely upgraded to this new format.
+- Integrations failing to load will now provide a full stacktrace.
+
+### Fixed
+- Incorrectly set unknown keybind causing OpenGL spam.
+- Incorrect mouse button bindings on 26.3.
+- Next/prev page buttons no longer show up if they do not have enough space to render.
+- Ingredients used without access to a world now partially work.
+- Stack groups not matching correctly on items added via creative tabs or when the index has been modified.
+- Crash sharing recipes without any outputs.
+- Stack group config can no longer be opened if stack groups are disabled.
+
 ## [8.6.4]
 
 ### Added

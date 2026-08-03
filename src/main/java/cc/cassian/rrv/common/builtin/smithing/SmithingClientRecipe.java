@@ -19,9 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import static cc.cassian.rrv.client.builtin.BuiltInReliableRecipeViewerClientIntegration.TRIM_CHECK;
+
 public class SmithingClientRecipe implements ReliableClientRecipe {
 
-    public static final BiPredicate<ItemStack, ItemStack> TRIM_CHECK = ItemViewRecipes.makeTrimCheck();
     private final SlotContent additionIngredient, base, template, result;
 
     private final int priority;

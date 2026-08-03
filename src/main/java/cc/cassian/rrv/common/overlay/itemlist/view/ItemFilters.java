@@ -1,6 +1,8 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.client.builtin.BuiltInReliableRecipeViewerClientIntegration;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -37,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiPredicate;
 
 public class ItemFilters {
 
@@ -341,15 +344,8 @@ public class ItemFilters {
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT)) {
                 var list = new ArrayList<ItemStack>();
-                ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
-                    if (r.getType().equals(CraftingClientRecipeType.INSTANCE)) {
-                        addUniqueItem(r.getResults(), list, results);
-                    }
-                });
-                ClientRecipeCache.INSTANCE.getRecipes().forEach(r-> {
-                    if (!r.getType().equals(CraftingClientRecipeType.INSTANCE)) {
-                        addUniqueItem(r.getIngredients(), list, results);
-                    }
+                ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(RRVClientUtil::compare).forEach(r-> {
+                    addUniqueItem(r.getResults(), list, results);
                 });
                 RrvUtil.sortByName(list);
                 results.addAll(list);
@@ -370,11 +366,22 @@ public class ItemFilters {
     private static void addUniqueItem(List<SlotContent> r, ArrayList<ItemStack> list, List<ItemStack> results) {
         r.forEach(l-> {
             l.getValidContents().forEach(stack -> {
-                if (list.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c)) && results.stream().noneMatch(c-> ItemViewRecipes.makeDefaultChecks(stack, c))) {
+                if (list.stream().noneMatch(c-> makeDefaultChecks(stack, c)) && results.stream().noneMatch(c-> makeDefaultChecks(stack, c))) {
                     list.add(stack);
                 }
             });
         });
+    }
+
+    private static boolean makeDefaultChecks(ItemStack stack, ItemStack ingredient) {
+        List<BiPredicate<ItemStack, ItemStack>> checks = new ArrayList<>(ItemViewRecipes.CHECKS);
+        checks.remove(BuiltInReliableRecipeViewerClientIntegration.TRIM_CHECK);
+        for (BiPredicate<ItemStack, ItemStack> check : checks) {
+            if (!check.test(stack, ingredient)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     ///  Exports the contents of the index in a format compatible with resource packs.

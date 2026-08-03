@@ -86,6 +86,7 @@ import net.minecraft.world.level.material.Fluids;
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 
 import static cc.cassian.rrv.client.recipe.ResourceRecipeManager.*;
 import static cc.cassian.rrv.common.recipe.util.RrvUtil.blockName;
@@ -93,7 +94,13 @@ import static cc.cassian.rrv.common.recipe.util.RrvUtil.getItemsFromIngredient;
 
 public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {
 
-    static <T> void excludeTag(Registry<T> registry, TagKey<T> tag) {
+	public static final BiPredicate<ItemStack, ItemStack> TRIM_CHECK = ItemViewRecipes.makeTrimCheck();
+	public static final BiPredicate<ItemStack, ItemStack> ENCHANTMENT_CHECK = ItemViewRecipes.makeEnchantmentCheck();
+	public static final BiPredicate<ItemStack, ItemStack> FIREWORK_ROCKET_CHECK = ItemViewRecipes.makeFireworkRocketCheck();
+	public static final BiPredicate<ItemStack, ItemStack> STEW_CHECK = ItemViewRecipes.makeStewCheck();
+	public static final BiPredicate<ItemStack, ItemStack> POTION_CHECK = ItemViewRecipes.makePotionCheck();
+
+	static <T> void excludeTag(Registry<T> registry, TagKey<T> tag) {
         registry.get(tag).ifPresent(named -> named.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(t -> {
             switch (t) {
                 case Item item -> ItemView.excludeItems(item);
@@ -121,11 +128,11 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             StackGroupManager.reload();
 			ItemView.addItemCheck(DataComponents.ITEM_MODEL);
 			ItemView.addItemCheck(DataComponents.PAINTING_VARIANT);
-			ItemView.addItemCheck(ItemViewRecipes.makePotionCheck());
-			ItemView.addItemCheck(ItemViewRecipes.makeStewCheck());
-			ItemView.addItemCheck(ItemViewRecipes.makeFireworkRocketCheck());
-			ItemView.addItemCheck(ItemViewRecipes.makeEnchantmentCheck());
-			ItemView.addItemCheck(ItemViewRecipes.makeTrimCheck());
+			ItemView.addItemCheck(POTION_CHECK);
+			ItemView.addItemCheck(STEW_CHECK);
+			ItemView.addItemCheck(FIREWORK_ROCKET_CHECK);
+			ItemView.addItemCheck(ENCHANTMENT_CHECK);
+			ItemView.addItemCheck(TRIM_CHECK);
         });
 
         //Wrapper

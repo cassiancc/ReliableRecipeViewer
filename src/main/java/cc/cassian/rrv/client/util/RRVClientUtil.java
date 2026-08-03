@@ -20,6 +20,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @ApiStatus.Internal
@@ -125,5 +126,12 @@ public class RRVClientUtil {
                  //?} else {
                 /*.displayClientMessage(message, false);
         *///?}
+    }
+
+    public static int compare(ReliableClientRecipe first, ReliableClientRecipe second) {
+        if (first.getType().equals(second.getType())) {
+            return Comparator.comparingInt(ReliableClientRecipe::getPriority).compare(second, first);
+        }
+        return Comparator.comparingInt((ReliableClientRecipe recipeType) -> recipeType.getType().getPriority()).compare(second, first);
     }
 }

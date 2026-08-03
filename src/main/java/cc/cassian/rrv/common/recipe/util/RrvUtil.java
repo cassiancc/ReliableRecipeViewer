@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.util;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
@@ -289,5 +290,6 @@ public class RrvUtil {
     public static void sortByName(List<ItemStack> availableItems) {
         availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
     }
+
 
 }
