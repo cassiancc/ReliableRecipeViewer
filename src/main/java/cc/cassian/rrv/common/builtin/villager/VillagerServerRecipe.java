@@ -331,10 +331,14 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		VillagerServerRecipe.registerFunctionProcessor(ExplorationMapFunction.class, (function, cost1, cost2, offerStacks, doubleTradePriceEnchantments, extraData) -> {
 			ExplorationMapFunctionAccessor accessor = (ExplorationMapFunctionAccessor) function;
 
+			//? if >26.2 {
+			/*return List.of(new SubTradeGroup(cost1, cost2, offerStacks, extraData));
+			*///?} else {
 			ItemStack stack = new ItemStack(Items.FILLED_MAP);
 			MapItemSavedData.addTargetDecoration(stack, BlockPos.ZERO, "+", accessor.getDecorationType());
-
 			return List.of(new SubTradeGroup(cost1, cost2, List.of(stack), extraData));
+			//?}
+
 		});
 
 		VillagerServerRecipe.registerFunctionProcessor(SetPotionFunction.class, (function, cost1, cost2, offerStacks, doubleTradePriceEnchantments, extraData) -> {

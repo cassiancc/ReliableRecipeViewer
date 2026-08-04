@@ -1,3 +1,8 @@
+## [8.7.2]
+
+### Fixed
+- Removed broken optimization causing creative search to not work. Will be further tested for v8.8.
+
 ## [8.7.1]
 
 ### Fixed

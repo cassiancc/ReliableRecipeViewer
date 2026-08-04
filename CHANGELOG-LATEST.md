@@ -1,2 +1,3 @@
-### Fixed
-- Removed broken optimization causing creative search to not work. Will be further tested for v8.8.
+### Added
+- Support for 26.3-snapshot-7.
+- Added stack group for Cloneable Maps.

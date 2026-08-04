@@ -220,16 +220,18 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setSize(shapedRecipe.getWidth(), shapedRecipe.getHeight()).setResult(shapedRecipe.result).build());
 					}
 					case TransmuteRecipe transmuteRecipe -> {
-						TransmuteRecipeAccessor accessor = (TransmuteRecipeAccessor) recipe;
+						TransmuteRecipeAccessor accessor = (TransmuteRecipeAccessor) transmuteRecipe;
 
 						List<ItemStackTemplate> results = new ArrayList<>();
 
 						var ingredients = getItemsFromIngredient(accessor.getInput());
 
 						ingredients.forEach(item -> {
-							//? if >26 {
+							//? if >26.2 {
+							/*var result = new ItemStackTemplate(accessor.getResult().item().orElse(ingredients.getFirst().builtInRegistryHolder()), accessor.getResult().count(), accessor.getResult().components());
+							*///?} else if >26 {
 							var result = accessor.getResult();
-							 //?} else {
+							//?} else {
 							/*var result = new ItemStackTemplate(accessor.getResult());
 							*///?}
 							results.add(result);
@@ -241,7 +243,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 					}
 					//? if >26 {
 					case DyeRecipe dyeRecipe -> {
-						DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
+						DyeRecipeAccessor accessor = (DyeRecipeAccessor) dyeRecipe;
 
 						List<Item> ingredients = getItemsFromIngredient(accessor.getTarget());
 
@@ -255,7 +257,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getDye()).setResult(results).setDependentIndex(1).build());
 					}
 					case ImbueRecipe imbueRecipe -> {
-						ImbueRecipeAccessor accessor = (ImbueRecipeAccessor) recipe;
+						ImbueRecipeAccessor accessor = (ImbueRecipeAccessor) imbueRecipe;
 
 
 						Registry<Potion> potionRegistry = level.registryAccess().lookupOrThrow(Registries.POTION);
@@ -270,7 +272,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						});
 					}
 					case DecoratedPotRecipe decoratedPotRecipe -> {
-						DecoratedPotRecipeAccessor accessor = (DecoratedPotRecipeAccessor) recipe;
+						DecoratedPotRecipeAccessor accessor = (DecoratedPotRecipeAccessor) decoratedPotRecipe;
 
 						HashMap<Integer, SlotContent> ingredients = new HashMap<>();
 						ingredients.put(1, SlotContent.of(accessor.getLeftPattern()));
@@ -293,16 +295,16 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(results)).setDependentIndex(7).build());
 					}
 					case BookCloningRecipe bookCloningRecipe -> {
-						BookCloningRecipeAccessor accessor = (BookCloningRecipeAccessor) recipe;
+						BookCloningRecipeAccessor accessor = (BookCloningRecipeAccessor) bookCloningRecipe;
 						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getSource(), accessor.getMaterial()).setResult(accessor.getResult().withCount(2)).build());
 					}
 					case MapExtendingRecipe mapExtendingRecipe -> {
-						MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) recipe;
+						MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) mapExtendingRecipe;
 						HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(accessor.getMap()), SlotContent.of(accessor.getMaterial()));
-						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult())).build());
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult(), getItemsFromIngredient(accessor.getMap()).getFirst())).build());
 					}
 					case FireworkRocketRecipe fireworkRocketRecipe -> {
-						FireworkRocketRecipeAccessor accessor = (FireworkRocketRecipeAccessor) recipe;
+						FireworkRocketRecipeAccessor accessor = (FireworkRocketRecipeAccessor) fireworkRocketRecipe;
 						List<SlotContent> ingredients = new ArrayList<>(List.of(
 								SlotContent.of(accessor.getFuel()),
 								SlotContent.of(accessor.getShell())
@@ -315,7 +317,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(3, List.of())).build()))).setPriority(20).build());
 					}
 					case ShieldDecorationRecipe shieldDecorationRecipe -> {
-						ShieldDecorationRecipeAccessor accessor = (ShieldDecorationRecipeAccessor) recipe;
+						ShieldDecorationRecipeAccessor accessor = (ShieldDecorationRecipeAccessor) shieldDecorationRecipe;
 						ArrayList<ItemStack> results = new ArrayList<>();
 						for (Item item : getItemsFromIngredient(accessor.getBanner())) {
 							if (item instanceof BannerItem bannerItem) {

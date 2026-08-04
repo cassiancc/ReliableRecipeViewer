@@ -18,7 +18,7 @@ public interface TransmuteRecipeAccessor {
     Ingredient getMaterial();
 
     @Accessor("result")
-    //? if >26 {
+    //? if >26 && <26.3 {
      net.minecraft.world.item.ItemStackTemplate
     //?} else {
      /*net.minecraft.world.item.crafting.TransmuteResult

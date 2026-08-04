@@ -311,7 +311,12 @@ public class SlotContent {
 
         return SlotContent.of(DefaultCustomIngredients.components(potionIngredient.ingredient(), patch.build()));
     }
+
+    public static SlotContent of(net.minecraft.world.item.crafting.TransmuteResult transmuteResult, Item fallback) {
+        return SlotContent.of(new ItemStackTemplate(transmuteResult.item().orElse(fallback.builtInRegistryHolder()), transmuteResult.count(), transmuteResult.components()));
+    }
     *///?}
+
 
     public static SlotContent of(FluidStack fluidStack) {
         if (fluidStack == null) return SlotContent.of();

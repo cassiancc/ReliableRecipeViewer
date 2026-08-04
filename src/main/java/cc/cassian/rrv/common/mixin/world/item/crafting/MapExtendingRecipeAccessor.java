@@ -16,7 +16,12 @@ public interface MapExtendingRecipeAccessor {
     @Accessor
     Ingredient getMaterial();
 
-    @Accessor
-    ItemStackTemplate getResult();
+    @Accessor("result")
+    //? if <26.3 {
+    net.minecraft.world.item.ItemStackTemplate
+     //?} else {
+    /*net.minecraft.world.item.crafting.TransmuteResult
+    *///?}
+    getResult();
     //?}
 }
