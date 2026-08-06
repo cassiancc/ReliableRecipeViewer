@@ -124,11 +124,13 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
         this.renderEntity(context);
 
-		this.hovered = context.mouseY() >= 65 && context.mouseX() <= 65 + 32 && context.mouseY() >= 0 && context.mouseY() <= 32;
+		this.hovered = context.mouseX() >= 65 && context.mouseX() <= 65 + 32 && context.mouseY() >= 0 && context.mouseY() <= 32;
 
-        if (this.hovered)
-            context.guiGraphics().setComponentTooltipForNextFrame(context.font(), List.of(Component.empty().append(entityName).withStyle(ChatFormatting.GOLD)), context.recipePosition().left() + context.mouseX(), context.recipePosition().top() + context.mouseY());
-
+        int xo = context.recipePosition().left() + context.mouseX();
+        int yo = context.recipePosition().top() + context.mouseY();
+        if (this.hovered) {
+            context.guiGraphics().setTooltipForNextFrame(context.font(), Component.empty().append(entityName).withStyle(ChatFormatting.GOLD), xo, yo);
+        }
     }
 
     private void renderEntity(RecipeScreenContext context) {

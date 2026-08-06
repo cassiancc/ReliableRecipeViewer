@@ -35,7 +35,7 @@ public class BurningClientRecipe implements ReliableClientRecipe {
         this.fuel = SlotContent.of(item);
         this.burnTime = i;
 
-        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), (int) this.burnTime);
+        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + (int) this.burnTime), (int) this.burnTime);
     }
 
     //? if >26.2 {
@@ -44,7 +44,7 @@ public class BurningClientRecipe implements ReliableClientRecipe {
         this.fuel = SlotContent.of(item);
         this.burnTime = i;
 
-        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), (int) this.burnTime);
+        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + (int) this.burnTime), (int) this.burnTime);
     }
     *///?}
 

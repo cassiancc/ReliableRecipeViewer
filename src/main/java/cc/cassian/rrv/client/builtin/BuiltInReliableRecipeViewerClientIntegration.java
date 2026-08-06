@@ -301,7 +301,10 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 					case MapExtendingRecipe mapExtendingRecipe -> {
 						MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) mapExtendingRecipe;
 						HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(accessor.getMap()), SlotContent.of(accessor.getMaterial()));
-						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult(), getItemsFromIngredient(accessor.getMap()).getFirst())).build());
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult()
+								//? if >26.2
+								//, getItemsFromIngredient(accessor.getMap()).getFirst()
+						)).build());
 					}
 					case FireworkRocketRecipe fireworkRocketRecipe -> {
 						FireworkRocketRecipeAccessor accessor = (FireworkRocketRecipeAccessor) fireworkRocketRecipe;

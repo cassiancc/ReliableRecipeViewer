@@ -1,12 +1,9 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
-import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.builtin.BuiltInReliableRecipeViewerClientIntegration;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipeType;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
@@ -31,7 +28,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.*;
 
 import java.io.OutputStreamWriter;
@@ -91,6 +87,9 @@ public class ItemFilters {
                 firstPrio.add(stack);
             else if (itemName.contains(lowerCaseQuery))
                 secondPrio.add(stack);
+            else if (lowerCaseQuery.contains(" ") && Arrays.stream(lowerCaseQuery.split(" ")).allMatch(itemName::contains)) {
+                thirdPrio.add(stack);
+            }
             else if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
                 if (compCheck == 1)
@@ -313,7 +312,7 @@ public class ItemFilters {
     ///
     /// **Also includes all stack-sensitives**
     public static List<ItemStack> fullStackList() {
-        if (CACHED_STACKS.isEmpty()) {
+        if (needsCache()) {
             List<ItemStack> results = new ArrayList<>();
 
 
@@ -425,5 +424,9 @@ public class ItemFilters {
 		CACHED_STACKS.clear();
         creativeTabsCached = false;
         ItemViewOverlay.INSTANCE.firstPage();
+	}
+
+	public static boolean needsCache() {
+		return CACHED_STACKS.isEmpty();
 	}
 }

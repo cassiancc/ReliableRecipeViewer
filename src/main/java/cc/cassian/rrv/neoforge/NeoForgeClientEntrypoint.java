@@ -12,6 +12,7 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? if >26
@@ -32,6 +33,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.ArrayList;
@@ -107,6 +109,13 @@ public class NeoForgeClientEntrypoint {
 			ClientRecipeCache.INSTANCE.buildRecipeCache(false);
 		}
     }
+
+	@SubscribeEvent
+	public static void loadStackList(LevelEvent.Load event) {
+		if (ItemFilters.needsCache() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
+			ItemFilters.fullStackList();
+		}
+	}
 
     @SubscribeEvent
     public static void receiveRecipes(ItemTooltipEvent event) {
