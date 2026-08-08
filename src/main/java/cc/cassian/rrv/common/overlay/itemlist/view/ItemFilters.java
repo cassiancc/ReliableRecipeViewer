@@ -19,15 +19,14 @@ import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 
 import java.io.OutputStreamWriter;
@@ -290,7 +289,7 @@ public class ItemFilters {
     /// Used for correct listing of item stacks by match accuracy
     protected static int getTooltipMatch(ItemStack stack, String query) {
 
-        List<Component> lore = RRVClientUtil.getTooltipFromItem(Minecraft.getInstance(), stack);
+        List<Component> lore = RRVClientUtil.getTooltipFromItem(stack);
 
         for (Component line : lore) {
             if (line.getContents() instanceof TranslatableContents translatableContents) {
@@ -315,9 +314,7 @@ public class ItemFilters {
         if (needsCache()) {
             List<ItemStack> results = new ArrayList<>();
 
-
-            Minecraft mc = Minecraft.getInstance();
-            LocalPlayer player = mc.player;
+            Player player = RRVClientUtil.player();
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.CREATIVE)) {
                 if (!creativeTabsCached && player != null) {

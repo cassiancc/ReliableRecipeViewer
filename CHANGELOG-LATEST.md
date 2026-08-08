@@ -6,3 +6,4 @@
 - Crash from incorrectly generated Identifier in burning recipes.
 - Partial search matches for multiple words now work correctly.
 - Typo preventing entity tooltip from working.
+- Support NeoForge's redesigned mod menu on 26.2.

@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -90,6 +91,12 @@ public class RRVClientUtil {
 	}
 
     /// Modified copy of [Screen#getTooltipFromItem] that supports extended tooltip flags.
+    public static List<Component> getTooltipFromItem(final ItemStack itemStack) {
+        return getTooltipFromItem(Minecraft.getInstance(), itemStack);
+    }
+
+
+    /// Modified copy of [Screen#getTooltipFromItem] that supports extended tooltip flags.
     public static List<Component> getTooltipFromItem(final Minecraft minecraft, final ItemStack itemStack) {
         ExtendedTooltipFlag tooltipFlag = minecraft.options.advancedItemTooltips ? ExtendedTooltipFlag.ADVANCED : ExtendedTooltipFlag.NORMAL;
         return itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, tooltipFlag);
@@ -134,4 +141,8 @@ public class RRVClientUtil {
         }
         return Comparator.comparingInt((ReliableClientRecipe recipeType) -> recipeType.getType().getPriority()).compare(second, first);
     }
+
+	public static Player player() {
+		return Minecraft.getInstance().player;
+	}
 }
