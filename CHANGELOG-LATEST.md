@@ -1,9 +1,12 @@
-### Changed
-- Stack group translation keys are now shown in development.
-- Reintroduced a fixed version of the performance optimization removed in 8.7.2.
+### Added
+- Completely redesigned the category formerly known as "Mob Drops".
+  - Renamed to Entities, and changed the category icon to spawn eggs rather than a sword.
+  - Hovering over an entity will now show whether they are hostile via text colour, the name of the mod that adds the entity, and Item Descriptions if present.
+  - Doubled the size of the rendered entity.
+  - Mob drops have been moved to the side.
+  - Now shows information about animal food below the entity preview.
+  - **TODO**: Allow overriding mob food data in the client integration.
 
 ### Fixed
-- Crash from incorrectly generated Identifier in burning recipes.
-- Partial search matches for multiple words now work correctly.
-- Typo preventing entity tooltip from working.
-- Support NeoForge's redesigned mod menu on 26.2.
+- Crash when spamming bookmarks key.
+- Tag descriptions provided by Item Descriptions now wrap correctly.

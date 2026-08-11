@@ -253,7 +253,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
         for (ItemSlot slot : this.itemSlots()) {
-            if (!slot.isHovered())
+            if (slot==null || !slot.isHovered())
                 continue;
 
             if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {

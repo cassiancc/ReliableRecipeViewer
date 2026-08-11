@@ -476,18 +476,20 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         String shortenedTagKey = "tag." + baseTagKey;
 
         // add tag name, ideally translated
+        Component name;
         if (RrvUtil.has(registryPrefixedTagKey)) {
-            tooltip.add(Component.translatable(registryPrefixedTagKey));
+            name = Component.translatable(registryPrefixedTagKey);
         } else if (RrvUtil.has(shortenedTagKey)) {
-            tooltip.add(Component.translatable(shortenedTagKey));
+            name = Component.translatable(shortenedTagKey);
         } else {
-            tooltip.add(Component.literal("#" + tagKeyString));
+            name = Component.literal("#" + tagKeyString);
         }
+        tooltip.add(name);
 
 
         // add tag description
         if (ModCompat.ITEM_DESCRIPTIONS)
-            ItemDescriptionsCompat.addTagDescription(tooltip, baseTagKey);
+            ItemDescriptionsCompat.addTagDescription(tooltip, baseTagKey, name);
 
         // "Displaying: "
         tooltip.add(Component.empty().append(Component.translatable("view.rrv.tags_displaying").withStyle(ChatFormatting.GOLD)).append(itemName));

@@ -75,6 +75,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
     //Default slot rendering
     public static final Identifier DEFAULT_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/default_slot.png");
+    public static final Identifier FOOD_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/food_slot.png");
 
 
     @Override

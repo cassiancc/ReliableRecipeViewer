@@ -3,28 +3,41 @@ package cc.cassian.rrv.common.builtin.entity;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
+import cc.cassian.rrv.common.RRVPlatform;
+import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
+import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.rendering.RrvGuiRenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class EntityClientRecipe implements ReliableClientRecipe {
 
+    public static final Identifier FOOD_EMPTY = Identifier.withDefaultNamespace("hud/food_empty");
+    public static final Identifier FOOD_FULL = Identifier.withDefaultNamespace("hud/food_full");
+    private final HashMap<EntityType<?>, List<ItemStack>> FOOD = new HashMap<>();
     private final EntityType<?> entityType;
     private final List<SlotContent> drops;
 
@@ -32,6 +45,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
     private int animationTick = 0;
     private boolean hovered = false;
+    private boolean renderingFood = false;
 
     public EntityClientRecipe(EntityServerRecipe serverRecipe) {
         this.entityType = serverRecipe.getEntityType();
@@ -61,11 +75,28 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 
+        if (previewEntity instanceof Animal animal) {
+            if (!FOOD.containsKey(previewEntity.getType())) {
+                List<ItemStack> food = new ArrayList<>();
+                for (ItemStack itemStack : ItemFilters.fullStackList()) {
+                    if (animal.isFood(itemStack)) food.add(itemStack);
+                }
+                FOOD.put(previewEntity.getType(), food);
+            }
+
+            if (FOOD.containsKey(previewEntity.getType())) {
+                List<ItemStack> slotContent = FOOD.get(previewEntity.getType());
+                if (!slotContent.isEmpty()) {
+					slotFillContext.bindSlot(0, SlotContent.of(slotContent));
+                    renderingFood = true;
+				}
+            }
+        } else {
+            renderingFood = false;
+        }
+
         for (int i = 0; i < this.drops.size(); i++) {
-            if (i < 9)
-                slotFillContext.bindSlot(i, this.drops.get(i));
-            else
-                slotFillContext.bindOptionalSlot(i, this.drops.get(i), RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
+            slotFillContext.bindSlot(i+1, this.drops.get(i));
         }
 
     }
@@ -82,7 +113,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
     @Override
     public Identifier getId() {
-        return this.entityType.builtInRegistryHolder().key().identifier();
+        return this.entityType.builtInRegistryHolder().key().identifier().withPrefix("/entity/");
     }
 
     @Override
@@ -124,12 +155,32 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
         this.renderEntity(context);
 
-		this.hovered = context.mouseX() >= 65 && context.mouseX() <= 65 + 32 && context.mouseY() >= 0 && context.mouseY() <= 32;
+		this.hovered = context.mouseX() >= 10 && context.mouseX() <= 10 + 64 && context.mouseY() >= 0 && context.mouseY() <= 64;
 
         int xo = context.recipePosition().left() + context.mouseX();
         int yo = context.recipePosition().top() + context.mouseY();
         if (this.hovered) {
-            context.guiGraphics().setTooltipForNextFrame(context.font(), Component.empty().append(entityName).withStyle(ChatFormatting.GOLD), xo, yo);
+            var tooltip = new  ArrayList<Component>();
+            var style = entityType.getCategory().isFriendly() ? ChatFormatting.GREEN : ChatFormatting.RED;
+            tooltip.add(Component.empty().append(entityName).withStyle(style));
+            if (ModCompat.ITEM_DESCRIPTIONS)
+                ItemDescriptionsCompat.addEntityDescription(tooltip, entityType, entityName);
+            ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(entityType.builtInRegistryHolder().key().identifier().getNamespace()), tooltip, true);
+            context.guiGraphics().setComponentTooltipForNextFrame(context.font(), tooltip, xo, yo);
+        }
+        if (renderingFood) {
+            int x = 16;
+            int y = 84;
+            context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.FOOD_SLOT_TEXTURE, 9, y-5, 0, 0, 58, 18, 58, 18);
+            context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_EMPTY, x, y, 9, 9);
+            context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_FULL, x, y, 9, 9);
+
+		    if (context.screen() instanceof RRVExtendedContainerScreen recipeViewScreen && !recipeViewScreen.rrv$hoveredStack().isEmpty())
+			    return;
+
+            if (context.mouseX() >= 9 && context.mouseX() <= 9 + 58 && context.mouseY() >= y && context.mouseY() <= y+58) {
+                context.guiGraphics().setTooltipForNextFrame(context.font(), Tooltip.create(Component.translatable("view.rrv.type.entity.food")).toCharSequence(Minecraft.getInstance()), xo, yo);
+            }
         }
     }
 
@@ -138,13 +189,23 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         if (this.previewEntity == null)
             return;
 
-        float scale = 12.0F;
+        float scale = 26.0F;
 
         AABB boundingBox = this.previewEntity.getBoundingBox();
         if (boundingBox.getYsize() * scale > 26)
             scale = (float) (26.0F / boundingBox.getYsize());
 
-        RrvGuiRenderHelper.renderEntityOnScreen(context.guiGraphics(), this.previewEntity, context.recipePosition().left() + 67, context.recipePosition().top() + 2, context.recipePosition().left() + 67 + 28, context.recipePosition().top() + 2 + 28, scale, new Vector3f(0.0F, (28.0F / scale / 2.0F), 0.0F), new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + context.partialTicks()) / 180.0F * Mth.PI, 0.0F), null);
+        int x = 10;
+        int y = 8;
+        RrvGuiRenderHelper.renderEntityOnScreen(
+                context.guiGraphics(),
+                this.previewEntity,
+                context.recipePosition().left() + x,
+                context.recipePosition().top() + y,
+                context.recipePosition().left() + x + 55,
+                context.recipePosition().top() + y + 55,
+                scale, new Vector3f(0.0F, (28.0F / scale / 2.0F), 0.0F),
+                new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + context.partialTicks()) / 180.0F * Mth.PI, 0.0F), null);
 
     }
 

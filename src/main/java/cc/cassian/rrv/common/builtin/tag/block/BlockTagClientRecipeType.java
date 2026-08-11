@@ -12,7 +12,7 @@ import net.minecraft.world.item.Items;
 public class BlockTagClientRecipeType implements ReliableClientRecipeType {
 
     public static final BlockTagClientRecipeType INSTANCE = new BlockTagClientRecipeType();
-    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/entity.png");
+    public static final Identifier GUI_BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/tags.png");
 
     @Override
     public Component getDisplayName() {
