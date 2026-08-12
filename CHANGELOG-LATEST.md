@@ -3,9 +3,12 @@
   - Renamed to Entities, and changed the category icon to spawn eggs rather than a sword.
   - Hovering over an entity will now show whether they are hostile via text colour, the name of the mod that adds the entity, and Item Descriptions if present.
   - Doubled the size of the rendered entity.
-  - Mob drops have been moved to the side.
+  - Mob drops have been moved to the side and a tooltip has been added to clarify drops.
   - Now shows information about animal food below the entity preview.
-  - **TODO**: Allow overriding mob food data in the client integration.
+  - Animal food can be overridden in the client integration via `ItemView#addMobFood`.
+
+### Changed
+- Creative tabs depending on synchronized recipes are now displayed in RRV correctly.
 
 ### Fixed
 - Crash when spamming bookmarks key.

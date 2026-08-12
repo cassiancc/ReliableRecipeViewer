@@ -57,14 +57,16 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         ClientRecipeSynchronizedEvent.EVENT.register((client, recipes) -> {
             ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(recipes.recipes());
             ClientRecipeCache.INSTANCE.buildRecipeCache(true);
+            client.execute(()->{
+                if (ItemFilters.needsCache() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
+                    ItemFilters.fullStackList();
+                }
+            });
         });
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, recipes) -> {
             if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED))
                 ClientRecipeCache.INSTANCE.buildRecipeCache(false);
-            if (ItemFilters.needsCache() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
-                ItemFilters.fullStackList();
-            }
         });
         //~}
         //~}

@@ -3,6 +3,7 @@ package cc.cassian.rrv.api.recipe;
 import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.util.MobDropModifyContext;
+import cc.cassian.rrv.api.util.MobFood;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
@@ -12,6 +13,7 @@ import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.api.TagUtil;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.common.collect.HashMultimap;
 import net.minecraft.core.Holder;
@@ -19,10 +21,13 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 //? if >26.1
 //import net.minecraft.world.entity.EntityTypes;
@@ -392,16 +397,40 @@ public class ItemView {
         WORLD_INTERACTION_RECIPES.add(recipe);
     }
 
-    /// Mods can add hardcoded mob drops (e.g. Nether Stars, Goat Horns) to an entity type's Mob Drops page via the API.
+    /// Mods can add hardcoded mob drops (e.g. Nether Stars, Goat Horns) to an entity type's page via the API.
     /// Run this via [ItemView#addServerReloadCallback(ReloadCallback)] to ensure it's registered on time.
     public static void addMobDrops(EntityType<?> type, SlotContent drop) {
         MOB_DROPS.put(type, drop);
     }
 
-    /// Mods can change mob drops on an entity type's Mob Drops page via the API.
+    /// Mods can change mob drops on an entity type's page via the API.
     /// Run this via [ItemView#addServerReloadCallback(ReloadCallback)] to ensure it's registered on time.
     public static void modifyMobDrops(Predicate<EntityType<?>> type, Predicate<SlotContent> drop, SlotContent newDrop) {
         MODIFIED_MOB_DROPS.add(new MobDropModifyContext(type, drop, newDrop));
+    }
+
+    /// Mods can override mob food (e.g. Allay Duplication) to an entity type's page via the API.
+    /// Run this via [ItemView#addClientReloadCallback(ReloadCallback)] to ensure it's registered on time.
+    public static void addMobFood(EntityType<?> type, SlotContent food) {
+        MOB_FOOD.put(type, new MobFood(food));
+    }
+
+    /// Mods can override mob food (e.g. Allay Duplication) to an entity type's page via the API.
+    /// Run this via [ItemView#addClientReloadCallback(ReloadCallback)] to ensure it's registered on time.
+    public static void addMobFood(EntityType<?> type, SlotContent food, RecipeViewMenu.AdditionalStackModifier lore) {
+        MOB_FOOD.put(type, new MobFood(food, Optional.ofNullable(lore)));
+    }
+
+    /// Mods can override mob food (e.g. Allay Duplication) to an entity type's page via the API.
+    /// Run this via [ItemView#addClientReloadCallback(ReloadCallback)] to ensure it's registered on time.
+    public static void addMobFood(EntityType<?> type, SlotContent food, Component lore) {
+        MOB_FOOD.put(type, new MobFood(food, Optional.of((stack, tooltip) -> tooltip.add(lore))));
+    }
+
+    /// Mods can override mob food (e.g. Allay Duplication) to an entity type's page via the API.
+    /// Run this via [ItemView#addClientReloadCallback(ReloadCallback)] to ensure it's registered on time.
+    public static void addMobFood(EntityType<?> type, TagKey<Item> food) {
+        MOB_FOOD.put(type, new MobFood(SlotContent.of(food)));
     }
 
     /// Mods may add components that makes the item view treat it as a unique item with its own associated recipe, rather than just a variation on a normal item.

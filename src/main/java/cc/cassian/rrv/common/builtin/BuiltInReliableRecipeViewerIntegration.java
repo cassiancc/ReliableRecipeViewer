@@ -157,8 +157,7 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
                     return slotContent;
                 }).filter(content->!content.isEmpty()).toList());
 
-                if (!loot.isEmpty())
-                    recipeList.add(new EntityServerRecipe(entityType, loot));
+                recipeList.add(new EntityServerRecipe(entityType, loot));
             });
             ItemViewRecipes.MOB_DROPS.clear();
         });

@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.builtin.entity;
 
 import cc.cassian.rrv.api.overlay.ButtonData;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -8,14 +9,17 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 
 import java.util.List;
+import java.util.Optional;
 
 public class EntityClientRecipeType implements ReliableClientRecipeType {
 
@@ -86,6 +90,14 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public void renderIcon(RecipeViewScreen screen, int x, int y, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        List<ReliableClientRecipe> currentDisplay = screen.getMenu().getCurrentDisplay();
+        if (!currentDisplay.isEmpty() && currentDisplay.getFirst() instanceof EntityClientRecipe entityClientRecipe) {
+            var itemHolder = SpawnEggItem.byId(entityClientRecipe.getEntityType());
+            if (itemHolder.isPresent()) {
+                guiGraphics.fakeItem(new ItemStack(itemHolder.get()), x, y);
+                return;
+            }
+        }
         ClientLevel level = Minecraft.getInstance().level;
         if (level != null) {
             long gameTime = level.getGameTime();

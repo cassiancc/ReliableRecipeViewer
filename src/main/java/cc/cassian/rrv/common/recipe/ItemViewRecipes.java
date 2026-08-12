@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.util.MobDropModifyContext;
+import cc.cassian.rrv.api.util.MobFood;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -22,10 +23,7 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 /// Internal (intermediate) class that connects [ItemView] (Api-class) with RRV logic
@@ -220,6 +218,8 @@ public class ItemViewRecipes {
         };
     }
 
+    /// A list of food to be added to the index.
+    public static final HashMap<EntityType<?>, MobFood> MOB_FOOD = new HashMap<>();
     /// A list of mob drops to be added to the index.
     public static final LinkedHashMultimap<EntityType<?>, SlotContent> MOB_DROPS = LinkedHashMultimap.create();
     /// A list of predicates to modify mob drops.

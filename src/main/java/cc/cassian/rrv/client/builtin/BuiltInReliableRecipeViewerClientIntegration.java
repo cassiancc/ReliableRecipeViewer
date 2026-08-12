@@ -9,9 +9,13 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
 *///?} else {
 import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
+import net.minecraft.world.entity.npc.villager.Villager;
 //?}
 import cc.cassian.rrv.common.builtin.composting.CompostingClientRecipe;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStackTemplate;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
@@ -133,12 +137,50 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 			ItemView.addItemCheck(FIREWORK_ROCKET_CHECK);
 			ItemView.addItemCheck(ENCHANTMENT_CHECK);
 			ItemView.addItemCheck(TRIM_CHECK);
+			ItemView.addMobFood(EntityType.ALLAY, SlotContent.of(ItemTags.DUPLICATES_ALLAYS), Component.translatable("view.rrv.type.entity.allay_duplication")); // allay duplication isn't food but may as well be
+			ItemView.addMobFood(EntityType.ARMADILLO, ItemTags.ARMADILLO_FOOD);
+			ItemView.addMobFood(EntityType.AXOLOTL, ItemTags.AXOLOTL_FOOD);
+			ItemView.addMobFood(EntityType.BEE, ItemTags.BEE_FOOD);
+			ItemView.addMobFood(EntityType.CAMEL, ItemTags.CAMEL_FOOD);
+			ItemView.addMobFood(EntityType.CAMEL_HUSK, ItemTags.CAMEL_HUSK_FOOD);
+			ItemView.addMobFood(EntityType.CAT, ItemTags.CAT_FOOD);
+			ItemView.addMobFood(EntityType.CHICKEN, ItemTags.CHICKEN_FOOD);
+			ItemView.addMobFood(EntityType.COW, ItemTags.COW_FOOD);
+			ItemView.addMobFood(EntityType.FOX, ItemTags.FOX_FOOD);
+			ItemView.addMobFood(EntityType.FROG, ItemTags.FROG_FOOD);
+			ItemView.addMobFood(EntityType.GOAT, ItemTags.GOAT_FOOD);
+			ItemView.addMobFood(EntityType.HAPPY_GHAST, ItemTags.HAPPY_GHAST_FOOD);
+			ItemView.addMobFood(EntityType.HOGLIN, ItemTags.HOGLIN_FOOD);
+			ItemView.addMobFood(EntityType.HORSE, ItemTags.HORSE_FOOD);
+			ItemView.addMobFood(EntityType.DONKEY, ItemTags.HORSE_FOOD);
+			ItemView.addMobFood(EntityType.LLAMA, ItemTags.LLAMA_FOOD);
+			var mooshroomFood = new ArrayList<>(SlotContent.of(ItemTags.COW_FOOD).getValidContents());
+			mooshroomFood.addAll(SlotContent.of(CommonTags.FLOWERS).getValidContents());
+			ItemView.addMobFood(EntityType.MOOSHROOM, SlotContent.of(mooshroomFood)); // mooshrooms can eat suspicious stew foods
+			ItemView.addMobFood(EntityType.MULE, ItemTags.HORSE_FOOD);
+			ItemView.addMobFood(EntityType.NAUTILUS, ItemTags.NAUTILUS_FOOD);
+			ItemView.addMobFood(EntityType.OCELOT, ItemTags.OCELOT_FOOD);
+			ItemView.addMobFood(EntityType.PARROT, ItemTags.PARROT_FOOD);
+			ItemView.addMobFood(EntityType.PANDA, ItemTags.PANDA_FOOD);
+			ItemView.addMobFood(EntityType.PIG, ItemTags.PIG_FOOD);
+			ItemView.addMobFood(EntityType.RABBIT, ItemTags.RABBIT_FOOD);
+			ItemView.addMobFood(EntityType.SNIFFER, ItemTags.SNIFFER_FOOD);
+			ItemView.addMobFood(EntityType.STRIDER, ItemTags.STRIDER_FOOD);
+			ItemView.addMobFood(EntityType.TRADER_LLAMA, ItemTags.LLAMA_FOOD);
+			//? if >26.2 {
+			/*ItemView.addMobFood(EntityType.VILLAGER, SlotContent.ofItemList(BuiltInRegistries.ITEM.stream().filter(p->p.getDefaultInstance().has(DataComponents.VILLAGER_FOOD)).toList()));
+			*///?} else {
+			ItemView.addMobFood(EntityType.VILLAGER, SlotContent.ofItemList(Villager.FOOD_POINTS.keySet().stream().toList()));
+			//?}
+			ItemView.addMobFood(EntityType.WOLF, ItemTags.WOLF_FOOD);
+			ItemView.addMobFood(EntityType.ZOMBIE_HORSE, ItemTags.ZOMBIE_HORSE_FOOD);
         });
 
         //Wrapper
         ItemView.addClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> unwrapped.getClientOffers().stream().map(VillagerClientRecipe::new).toList());
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> {
             if (unwrapped.getEntityType() == null) return Collections.emptyList();
+			if (unwrapped.getDrops().isEmpty() && !ItemViewRecipes.MOB_FOOD.containsKey(unwrapped.getEntityType())) return Collections.emptyList();
 			return List.of(new EntityClientRecipe(unwrapped));
 		});
         ItemView.addClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe.Builder(null, unwrapped.getIngredients()).setResult(unwrapped.getResult()).build()));
@@ -357,7 +399,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addFuelRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
-        //FIXME
 		//? if >26.2 {
 		/*ItemView.addClientRecipeWrapper(BurningServerRecipe.TYPE, (unwrapped -> List.of(new BurningClientRecipe(unwrapped.getFuel().getDefaultInstance(), unwrapped.getBurnTime()))));
 		*///?} else {

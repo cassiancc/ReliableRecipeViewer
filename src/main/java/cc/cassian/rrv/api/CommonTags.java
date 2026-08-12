@@ -15,5 +15,6 @@ public class CommonTags {
 	public static final TagKey<Fluid> EXCLUDED_FLUIDS = TagKey.create(Registries.FLUID, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
 	public static final TagKey<Enchantment> EXCLUDED_ENCHANTMENTS = TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
 	public static final TagKey<Potion> EXCLUDED_POTIONS = TagKey.create(Registries.POTION, Identifier.fromNamespaceAndPath("c", "hidden_from_recipe_viewers"));
+	public static final TagKey<Item> FLOWERS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "flowers"));
 
 }
