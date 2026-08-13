@@ -10,6 +10,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
@@ -105,6 +106,11 @@ public interface ReliableClientRecipe {
     /// @return A list of [AnimationTicker]s; Useful for rendering animations
     default List<AnimationTicker> getAnimationTickers() {
         return List.of();
+    }
+
+    /// Allows adding [net.minecraft.client.gui.components.Renderable] components to the recipe screen. Note that the [RecipeScreenContext] provided by this method does not have access to the [GuiGraphicsExtractor] and will return null.
+    default void addRecipeWidgets(RecipeScreenContext context) {
+
     }
 
     /// Deprecated: use [ReliableClientRecipe#renderRecipe(cc.cassian.rrv.api.client.RecipeScreenContext)], which provides the same functionality while allowing for recipes to be rendered on screens other than a [RecipeViewScreen].

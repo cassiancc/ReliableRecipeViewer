@@ -6,6 +6,7 @@ import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.client.util.GuiWidgetAccess;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
@@ -17,7 +18,6 @@ import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.ItemSlot;
-import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
@@ -29,10 +29,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -55,7 +52,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
+public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> implements GuiWidgetAccess {
 
     private static final Identifier VIEW_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/recipe_view.png");
     private static final Identifier UNSELECTED_TOP_TABS = Identifier.withDefaultNamespace("container/creative_inventory/tab_top_unselected_2");
@@ -78,7 +75,6 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
     private final List<RecipeTypeButton> recipeTypeButtons;
     private int viewTypePage;
     private Button prevTypePage, nextTypePage;
-    private final ArrayList<Renderable> widgets = new ArrayList<>();
     private ItemSlot workstationSlot;
 
     public RecipeViewScreen(RecipeViewMenu recipeViewMenu, Inventory inventory, Component component) {
@@ -182,17 +178,6 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         }
     }
 
-    public <T extends GuiEventListener & Renderable & NarratableEntry> T addRecipeWidget(T widget) {
-        this.widgets.add(widget);
-        return super.addRenderableWidget(widget);
-    }
-
-    public void clearRecipeWidgets() {
-        this.widgets.forEach(r->{
-            this.removeWidget((GuiEventListener) r);
-        });
-    }
-
     /// Switch to the previous page of recipe types.
     public void prevPage() {
         this.viewTypePage = Math.max(this.viewTypePage - 1, 0);
@@ -278,18 +263,19 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
         this.shareButtons.forEach(this::removeWidget);
         this.shareButtons.clear();
 
-        if (!ItemViewOverlay.INSTANCE.wasWarned()) {
-            int guiLeft = this.leftPos + menu.guiOffsetLeft();
+		int guiLeft = this.leftPos + menu.guiOffsetLeft();
 
-            for (int i = 0; i < menu.getCurrentDisplay().size(); i++) {
-                final ReliableClientRecipe currentRecipe = menu.getCurrentDisplay().get(i);
-                ReliableClientRecipeType type = currentRecipe.getType();
-                int guiTop = getTopPos() + menu.guiOffsetTop(i);
-                int finalI = i;
-                RecipeViewMenu.DisplayInfo info = new RecipeViewMenu.DisplayInfo(guiLeft, guiTop, type.getDisplayWidth(), type.getDisplayHeight());
+		for (int i = 0; i < menu.getCurrentDisplay().size(); i++) {
+			final ReliableClientRecipe currentRecipe = menu.getCurrentDisplay().get(i);
+			ReliableClientRecipeType recipeType = currentRecipe.getType();
+			int guiTop = getTopPos() + menu.guiOffsetTop(i);
+			int finalI = i;
+			RecipeViewMenu.DisplayInfo info = new RecipeViewMenu.DisplayInfo(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight());
+           currentRecipe.addRecipeWidgets(new RecipeScreenContext(this,this, this.font, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), null, (int) Minecraft.getInstance().mouseHandler.xpos(), (int) Minecraft.getInstance().mouseHandler.ypos(), 0));
 
+            if (!ItemViewOverlay.INSTANCE.wasWarned()) {
                 // transfer button
-                var transferButtonData = type.placeRecipeTransferButton(info);
+                var transferButtonData = recipeType.placeRecipeTransferButton(info);
                 Button transferButton = new ReliablePlainButton(Component.literal("+"),
                         button1 -> menu.quickCraft(currentRecipe, finalI),
                         transferButtonData.x(), transferButtonData.y(),
@@ -303,7 +289,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 this.transferButtons.add(transferButton);
 
                 // share button
-                var shareButtonData = type.placeRecipeShareButton(info);
+                var shareButtonData = recipeType.placeRecipeShareButton(info);
                 Button shareButton = new ReliableSpriteIconButton(12,
                         Component.literal(">"),
                         12,
@@ -349,13 +335,12 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                     tagGroupButton.visible = true;
 
                     this.addRenderableWidget(tagGroupButton);
-                    this.widgets.add(tagGroupButton);
+                    GuiWidgetAccess.widgets.add(tagGroupButton);
                 }
+			}
+		}
 
-            }
-        }
-
-        updateRecipeTypeButtons();
+		updateRecipeTypeButtons();
 
     }
 
@@ -700,7 +685,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> {
                 guiGraphics.pose().popMatrix();
             });
             this.renderInvalidSlots(guiGraphics, i);
-            this.getMenu().getCurrentDisplay().get(i).renderRecipe(new RecipeScreenContext(this, this.font, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), guiGraphics, mouseX, mouseY, partialTicks));
+            this.getMenu().getCurrentDisplay().get(i).renderRecipe(new RecipeScreenContext(this,this, this.font, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), guiGraphics, mouseX, mouseY, partialTicks));
             guiGraphics.pose().popMatrix();
         }
 

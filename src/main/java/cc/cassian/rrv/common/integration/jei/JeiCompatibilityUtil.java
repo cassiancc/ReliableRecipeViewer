@@ -27,6 +27,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,11 +79,11 @@ public class JeiCompatibilityUtil {
 		return switch (openType) {
 			case INPUT -> RecipeIngredientRole.INPUT;
 			case RESULT -> RecipeIngredientRole.OUTPUT;
-			case null, default -> RecipeIngredientRole.RENDER_ONLY;
+			default -> RecipeIngredientRole.RENDER_ONLY;
 		};
 	}
 
-	public static ItemStack getItemUnderMouse() {
+	public static @Nullable ItemStack getItemUnderMouse() {
 		return runtime.getRecipesGui().getIngredientUnderMouse(VanillaTypes.ITEM_STACK).orElse(null);
 	}
 
@@ -117,7 +118,7 @@ public class JeiCompatibilityUtil {
 		return !JeiCompatibilityUtil.PLUGINS.contains(namespace);
 	}
 
-	public static Screen getJeiParentScreen(Screen screen) {
+	public static @Nullable Screen getJeiParentScreen(Screen screen) {
 		if (screen instanceof RecipesGui recipesGui) return recipesGui.getParentScreen().orElse(null);
 		return null;
 	}

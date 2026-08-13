@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.integration.jei;
 
+import cc.cassian.rrv.client.util.GuiWidgetAccess;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.config.Configs;
@@ -32,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 
 @Mixin(RecipesGui.class)
-public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedContainerScreen {
+public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedContainerScreen, GuiWidgetAccess {
 	@Shadow
 	private ImmutableRect2i area;
 

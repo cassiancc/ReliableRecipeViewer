@@ -69,24 +69,11 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public void renderRecipe(RecipeScreenContext context) {
-		if (!rendered && context.screen() instanceof RecipeViewScreen recipeViewScreen) {
-			MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), context.font()).setMaxRows(10).setMaxWidth(112);
-			widget.setX(context.recipePosition().left() + 5);
-			widget.setY(context.recipePosition().top() + 20);
-			recipeViewScreen.addRecipeWidget(widget);
-			rendered = true;
-		}
-	}
-
-	@Override
-	public void initRecipe() {
-		rendered = false;
-	}
-
-	@Override
-	public void fadeRecipe() {
-		rendered = false;
+	public void addRecipeWidgets(RecipeScreenContext context) {
+		MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), context.font()).setMaxRows(10).setMaxWidth(112);
+		widget.setX(context.recipePosition().left() + 5);
+		widget.setY(context.recipePosition().top() + 20);
+		context.widgets().addRecipeWidget(widget);
 	}
 
 	@Override

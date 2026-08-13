@@ -3,43 +3,39 @@ package cc.cassian.rrv.common.integration.jei;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
-import cc.cassian.rrv.client.util.ExtendedTooltipFlag;
+import cc.cassian.rrv.client.util.GuiWidgetAccess;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
-import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.gui.recipes.RecipesGui;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientRecipe> {
 	private final ReliableClientRecipeType recipeType;
 	private final IRecipeType<ReliableClientRecipe> recipeClass;
 
-	private RecipeViewMenu.SlotDefinition slotDefinition;
 	private RecipeViewMenu.SlotFillContext slotFillContext = new RecipeViewMenu.SlotFillContext();
 
 	JeiReliableRecipeCategory(ReliableClientRecipeType recipeType, IRecipeType<ReliableClientRecipe> recipeClass) {
@@ -88,10 +84,25 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 	}
 
 	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, ReliableClientRecipe recipe, IFocusGroup focuses) {
+		IRecipeCategory.super.createRecipeExtras(builder, recipe, focuses);
+	}
+
+	@Override
 	public void draw(ReliableClientRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
+		var left = 0;
+		var top = 0;
+		if (RRVClientUtil.currentScreen() instanceof RecipesGui recipesGui) {
+			left+=Minecraft.getInstance().getWindow().getGuiScale()*recipesGui.getLeftSideExtraWidth();
+			top+=Minecraft.getInstance().getWindow().getGuiScale()*recipesGui.getProperties().guiTop();
+		}
+		GuiWidgetAccess currentScreenWidgets = (GuiWidgetAccess) RRVClientUtil.currentScreen();
+		if (currentScreenWidgets.isEmpty()) {
+			recipe.addRecipeWidgets(new RecipeScreenContext(RRVClientUtil.currentScreen(), currentScreenWidgets, RRVClientUtil.currentScreen().getFont(), new ReliableClientRecipe.RecipePosition(left, top, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), null, (int) Minecraft.getInstance().mouseHandler.xpos(), (int) Minecraft.getInstance().mouseHandler.ypos(), 0));
+		}
 		if (recipeType.getGuiTexture() != null)
 			guiGraphics.blit(RenderPipelines.GUI_TEXTURED, recipeType.getGuiTexture(), 0, 0, 0, 0, recipeType.getDisplayWidth(), recipeType.getDisplayHeight(), recipeType.getDisplayWidth(), recipeType.getDisplayHeight());
-		recipe.renderRecipe(new RecipeScreenContext(RRVClientUtil.currentScreen(), RRVClientUtil.currentScreen().getFont(), new ReliableClientRecipe.RecipePosition(200, 100, 0, 0), guiGraphics, (int) mouseX, (int) mouseY, 0));
+		recipe.renderRecipe(new RecipeScreenContext(RRVClientUtil.currentScreen(), (GuiWidgetAccess) RRVClientUtil.currentScreen(), RRVClientUtil.currentScreen().getFont(), new ReliableClientRecipe.RecipePosition(left, top, 0, 0), guiGraphics, (int) mouseX, (int) mouseY, 0));
 	}
 
 	@Override
@@ -111,7 +122,8 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 		slotFillContext = new RecipeViewMenu.SlotFillContext();
 		recipe.bindSlots(slotFillContext);
 
-		slotDefinition = new RecipeViewMenu.SlotDefinition(null) {
+		// TODO do this better
+		RecipeViewMenu.SlotDefinition slotDefinition = new RecipeViewMenu.SlotDefinition(null) {
 			public void addItemSlot(int slotId, int x, int y) {
 				var slot = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, x, y);
 				SlotContent slotContent = slotFillContext.contentBySlot(slotId);
