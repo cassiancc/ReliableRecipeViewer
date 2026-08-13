@@ -1,4 +1,8 @@
 {
+  "depending-on-rrv.mdx": {
+    "icon": "Download",
+    "name": "Depending on RRV"
+  },
   "mods": "New Recipe Types",
   "index": "Index Editing",
   "adding-recipes": "Resource Recipes"
