@@ -75,8 +75,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
     //Default slot rendering
     public static final Identifier DEFAULT_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/default_slot.png");
-    public static final Identifier FOOD_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/food_slot.png");
-
 
     @Override
     public void onIntegrationInitialize() {
@@ -280,51 +278,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
     }
 
     private static void addLoot(EntityType<?> entityType, LootTable lootTable, @Nullable String withLore) {
-        var accessor = (LootTableAccessor) lootTable;
-        for (LootPool pool : accessor.getPools()) {
-            LootPoolAccessor lootPoolAccessor = (LootPoolAccessor) pool;
-
-            for (LootPoolEntryContainer container : lootPoolAccessor.entries()) {
-                if (container instanceof LootItem lootItem) {
-                    LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
-                    //? if <26.3
-                    LootPoolSingletonContainerAccessor containerAccessor = (LootPoolSingletonContainerAccessor) lootItemAccessor;
-
-                    ItemStack stack = new ItemStack(lootItemAccessor.getItem().value());
-
-                    //FIXME
-                    //? if <26.3 {
-                    containerAccessor.getFunctions().forEach(function -> {
-
-                        if (function instanceof SetPotionFunction setPotionFunction)
-                            stack.set(DataComponents.POTION_CONTENTS, stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).withPotion(((SetPotionFunctionAccessor) setPotionFunction).getPotion()));
-
-                    });
-                    //?}
-
-                    List<LootItemCondition> conditions = RrvUtil.getLootItemFunctions(lootPoolAccessor.conditions());
-                    for (LootItemCondition condition : conditions) {
-                        if (condition instanceof LootItemKilledByPlayerCondition)
-                            stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.player_kill").withStyle(ChatFormatting.GRAY)));
-                    }
-
-                    ItemView.addMobDrops(entityType, SlotContent.of(stack));
-                }
-                if (container instanceof CompositeEntryBase entryBase) {
-                    CompositeEntryBaseAccessor entryBaseAccessor = (CompositeEntryBaseAccessor) entryBase;
-                    entryBaseAccessor.getChildren().forEach(child -> {
-                        if (child instanceof LootItem lootItem) {
-                            LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
-                            ItemStack stack = new ItemStack(lootItemAccessor.getItem());
-                            if (withLore != null)
-                                stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable(withLore).withStyle(ChatFormatting.GRAY)));
-                            ItemView.addMobDrops(entityType, SlotContent.of(stack));
-                        }
-                    });
-                }
-            }
+        for (ItemStack itemStack : RrvUtil.getLoot(lootTable, withLore)) {
+            ItemView.addMobDrops(entityType, SlotContent.of(itemStack));
         }
     }
-
 
 }

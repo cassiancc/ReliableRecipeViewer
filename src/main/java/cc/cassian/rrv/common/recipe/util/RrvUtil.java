@@ -6,6 +6,13 @@ import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.LootPoolAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.LootTableAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.entries.CompositeEntryBaseAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.entries.LootItemAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.entries.LootPoolSingletonContainerAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetComponentsFunctionAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetPotionFunctionAccessor;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 //? if >26.2 {
@@ -19,11 +26,14 @@ import net.minecraft.util.random.WeightedList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -31,9 +41,20 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.CompositeEntryBase;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
+import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
 import net.minecraft.world.level.storage.loot.providers.number.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -289,6 +310,57 @@ public class RrvUtil {
 
     public static void sortByName(List<ItemStack> availableItems) {
         availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
+    }
+
+    public static List<ItemStack> getLoot(LootTable lootTable, @Nullable String withLore) {
+        var stacks = new ArrayList<ItemStack>();
+        var accessor = (LootTableAccessor) lootTable;
+        for (LootPool pool : accessor.getPools()) {
+            LootPoolAccessor lootPoolAccessor = (LootPoolAccessor) pool;
+
+            for (LootPoolEntryContainer container : lootPoolAccessor.entries()) {
+                if (container instanceof LootItem lootItem) {
+                    LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
+                    var containerAccessor = (LootPoolSingletonContainerAccessor) lootItemAccessor;
+
+                    ItemStack stack = new ItemStack(lootItemAccessor.getItem().value());
+
+                    //FIXME
+                    //? if <26.3 {
+                    containerAccessor.getFunctions().forEach(function -> {
+
+                        if (function instanceof SetPotionFunction setPotionFunction)
+                            stack.set(DataComponents.POTION_CONTENTS, stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).withPotion(((SetPotionFunctionAccessor) setPotionFunction).getPotion()));
+                        if (function instanceof SetComponentsFunction setComponentsFunction) {
+							stack.applyComponents(((SetComponentsFunctionAccessor) setComponentsFunction).getComponents());
+						}
+
+                    });
+                    //?}
+
+                    List<LootItemCondition> conditions = RrvUtil.getLootItemFunctions(lootPoolAccessor.conditions());
+                    for (LootItemCondition condition : conditions) {
+                        if (condition instanceof LootItemKilledByPlayerCondition)
+                            stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.player_kill").withStyle(ChatFormatting.GRAY)));
+                    }
+
+                    stacks.add(stack);
+                }
+                if (container instanceof CompositeEntryBase entryBase) {
+                    CompositeEntryBaseAccessor entryBaseAccessor = (CompositeEntryBaseAccessor) entryBase;
+                    entryBaseAccessor.getChildren().forEach(child -> {
+                        if (child instanceof LootItem lootItem) {
+                            LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
+                            ItemStack stack = new ItemStack(lootItemAccessor.getItem());
+                            if (withLore != null)
+                                stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable(withLore).withStyle(ChatFormatting.GRAY)));
+                            stacks.add(stack);
+                        }
+                    });
+                }
+            }
+        }
+        return stacks;
     }
 
 

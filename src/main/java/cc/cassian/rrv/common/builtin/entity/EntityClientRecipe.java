@@ -7,6 +7,7 @@ import cc.cassian.rrv.api.util.MobFood;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.RRVPlatform;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -38,7 +39,7 @@ import java.util.List;
 import static cc.cassian.rrv.common.recipe.ItemViewRecipes.MOB_FOOD;
 
 public class EntityClientRecipe implements ReliableClientRecipe {
-
+    private static final Identifier FOOD_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/food_slot.png");
     private static final Identifier FOOD_EMPTY = Identifier.withDefaultNamespace("hud/food_empty");
     private static final Identifier FOOD_FULL = Identifier.withDefaultNamespace("hud/food_full");
     private final EntityType<?> entityType;
@@ -176,7 +177,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         if (renderingFood) {
             int x = 16;
             int y = 84;
-            context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.FOOD_SLOT_TEXTURE, 9, y-5, 0, 0, 58, 18, 58, 18);
+            context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, FOOD_SLOT_TEXTURE, 9, y-5, 0, 0, 58, 18, 58, 18);
             context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_EMPTY, x, y, 9, 9);
             context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_FULL, x, y, 9, 9);
 

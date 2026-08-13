@@ -48,6 +48,7 @@
     "world.level.storage.loot.functions.EnchantRandomlyFunctionAccessor",
     "world.level.storage.loot.functions.EnchantWithLevelsFunctionAccessor",
     "world.level.storage.loot.functions.ExplorationMapFunctionAccessor",
+    "world.level.storage.loot.functions.SetComponentsFunctionAccessor",
     "world.level.storage.loot.functions.SetEnchantmentsFunctionAccessor",
     "world.level.storage.loot.functions.SetNameFunctionAccessor",
     "world.level.storage.loot.functions.SetPotionFunctionAccessor",

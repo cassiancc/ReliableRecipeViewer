@@ -126,7 +126,7 @@ dependencies {
 
     // JEI support
     compileOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
-    runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
+//    runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
 
 }
 
@@ -170,6 +170,7 @@ tasks {
     }
 }
 
+
 stonecutter {
     replacements.string {
         direction = eval(current.version, ">26.1")
@@ -178,57 +179,21 @@ stonecutter {
     replacements.string {
         direction = eval(current.version, ">=26.1")
         replace("GuiGraphics ", "GuiGraphicsExtractor ")
-    }
-    replacements.string {
-        direction = eval(current.version, ">=26.1")
         replace("GuiGraphics.", "GuiGraphicsExtractor.")
-    }
-    replacements.string {
-        direction = eval(current.version, ">=26.1")
         replace("GuiGraphics;", "GuiGraphicsExtractor;")
     }
     replacements.string {
         direction = eval(current.version, "<26.1")
         replace(".fakeItem(", ".renderFakeItem(")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace(".horizontalLine(", ".hLine(")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace(".verticalLine(", ".vLine(")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace("guiGraphics.text(", "guiGraphics.drawString(")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace("guiGraphics().text(", "guiGraphics().drawString(")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace("guiGraphics.textWithWordWrap(", "guiGraphics.drawWordWrap(")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace("guiGraphics().textWithWordWrap(", "guiGraphics().drawWordWrap(")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace("net.minecraft.world.item.ItemStackTemplate", "cc.cassian.rrv.backport.ItemStackTemplate")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace("extractBackground", "renderBackground")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace("net.fabricmc.fabric.api.networking.v1.context.PacketContext", "xyz.nucleoid.packettweaker.PacketContext")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
         replace("centeredText", "drawCenteredString")
     }
 }
