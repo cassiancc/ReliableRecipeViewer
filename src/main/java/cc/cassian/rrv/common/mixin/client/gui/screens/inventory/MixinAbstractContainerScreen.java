@@ -5,7 +5,6 @@ import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
 import cc.cassian.rrv.common.overlay.OverlayManager;
-import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -21,7 +20,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -112,39 +110,9 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
         return super.mouseClicked(mouseButtonEvent, b) | OverlayManager.INSTANCE.mouseClicked(mouseButtonEvent, b);
     }
 
-    @Inject(method = "onClose", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onClose", at = @At("HEAD"))
     private void injectOverlay$4(CallbackInfo ci) {
         RRVExtendedContainerScreen.clearOverlay();
-
-        if (((Object) this instanceof RecipeViewScreen viewScreen)) {
-            if (this.hoveredSlot != null) {
-                this.onStopHovering(this.hoveredSlot);
-            }
-
-            RRVClientUtil.setScreen(viewScreen.getMenu().getParentScreen());
-            ci.cancel();
-        }
-    }
-
-    //Optional Slots
-
-    //~ if >26 'render' ->'extract' {
-    @Inject(method = "extractSlotHighlightBack", at = @At("HEAD"), cancellable = true)
-    private void preventFromRender$0(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
-        if (rrv$checkOptionalSlot())
-            ci.cancel();
-    }
-
-    @Inject(method = "extractSlotHighlightFront", at = @At("HEAD"), cancellable = true)
-    private void preventFromRender$1(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
-        if (rrv$checkOptionalSlot())
-            ci.cancel();
-    }
-    //~}
-
-    @Unique
-	private boolean rrv$checkOptionalSlot() {
-        return this.hoveredSlot != null && !this.hoveredSlot.hasItem() && ((AbstractContainerScreen) (Object) this) instanceof RecipeViewScreen viewScreen && viewScreen.getMenu().isOptionalSlot(this.hoveredSlot.index);
     }
 
     @Override

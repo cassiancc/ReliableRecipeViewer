@@ -42,9 +42,6 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         //~ if >26 '.EntityModelLayerRegistry'-> '.ModelLayerRegistry' {
         net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
 
-        Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewer.RECIPE_VIEW_MENU);
-        MenuScreens.register(ReliableRecipeViewer.RECIPE_VIEW_MENU, RecipeViewScreen::new);
-
         ReliableRecipeViewerClient.loadConfigs();
 
         if (ModCompat.POLYMER) {

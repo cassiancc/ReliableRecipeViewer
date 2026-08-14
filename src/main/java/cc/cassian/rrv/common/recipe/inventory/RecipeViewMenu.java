@@ -27,7 +27,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
 
-public class RecipeViewMenu extends AbstractContainerMenu {
+public class RecipeViewMenu {
 
     //For screen and space calculation
     protected static final int MAX_POSSIBLE_HEIGHT = 214;
@@ -74,13 +74,13 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     private int currentCraftReference;
     private final List<RecipeTransferData> transferData;
 
+    public final NonNullList<Slot> slots = NonNullList.create();
+
     public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewScreen> viewHistory) {
         this(parentScreen,containerId, inventory,recipes, origin, originType, viewHistory, ReliableClientRecipeType.NONE);
     }
 
     public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewScreen> viewHistory, ReliableClientRecipeType clientRecipeType) {
-        super(ReliableRecipeViewer.RECIPE_VIEW_MENU, containerId);
-
         this.viewHistory = viewHistory;
 
         this.parentScreen = parentScreen;
@@ -158,10 +158,6 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     }
 
-    public RecipeViewMenu(int containerId, Inventory inventory) {
-        this(null, containerId, inventory, ReliableClientRecipe.PLACEHOLDER, ItemStack.EMPTY, ActionType.ANY, new ArrayList<>());
-    }
-
 
     public int getCurrentCraftReference() {
         return this.currentCraftReference;
@@ -212,16 +208,6 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     public OptionalSlotRenderer getOptionalSlotRenderer(int slot) {
         return this.optionalSlotRenderers.getOrDefault(slot, OptionalSlotRenderer.DEFAULT);
-    }
-
-    @Override
-    public ItemStack quickMoveStack(Player player, int slot) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public boolean stillValid(Player player) {
-        return this.viewContainer.stillValid(player);
     }
 
     public int getMaxPossiblePerPage() {
@@ -501,7 +487,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
                 HashMap<Integer, ItemStack> usedSlots = transferData.getUsedPlayerSlots().get(recipeSlot);
 
-                ItemStack required = usedSlots.values().stream().findFirst().orElseGet(() -> ItemStack.EMPTY).copy();
+                ItemStack required = usedSlots.values().stream().findFirst().orElse(ItemStack.EMPTY).copy();
 
                 int amount = 0;
                 for (ItemStack stack : usedSlots.values()) {
@@ -843,6 +829,26 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             }
             return false;
         }).toList();
+    }
+
+    protected Slot addSlot(final Slot slot) {
+        slot.index = this.slots.size();
+        this.slots.add(slot);
+        return slot;
+    }
+
+    public NonNullList<ItemStack> getItems() {
+        NonNullList<ItemStack> itemStacks = NonNullList.create();
+
+        for(Slot slot : this.slots) {
+            itemStacks.add(slot.getItem());
+        }
+
+        return itemStacks;
+    }
+
+    public Slot getSlot(final int index) {
+        return this.slots.get(index);
     }
 
 

@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.recipe.inventory;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.client.sharing.RecipeSharing;
+import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
@@ -17,7 +18,10 @@ import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
 import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
+import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
 import cc.cassian.rrv.common.overlay.ItemSlot;
+import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
@@ -30,6 +34,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -46,18 +51,23 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.spongepowered.asm.mixin.Unique;
 
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> implements GuiWidgetAccess {
+public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExtendedContainerScreen {
 
     private static final Identifier VIEW_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/recipe_view.png");
     private static final Identifier UNSELECTED_TOP_TABS = Identifier.withDefaultNamespace("container/creative_inventory/tab_top_unselected_2");
 
     private static final Identifier SELECTED_TOP_TABS = Identifier.withDefaultNamespace("container/creative_inventory/tab_top_selected_2");
+
+    private static final Identifier SLOT_HIGHLIGHT_BACK_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_back");
+    private static final Identifier SLOT_HIGHLIGHT_FRONT_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_front");
 
     //Timestamp when opening the view
     private final long timestamp;
@@ -71,14 +81,25 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
     public final List<Button> transferButtons;
     public final List<Button> shareButtons;
 
-    //View Type
+    //Recipe Type
     private final List<RecipeTypeButton> recipeTypeButtons;
     private int viewTypePage;
     private Button prevTypePage, nextTypePage;
     private ItemSlot workstationSlot;
 
+    // Screen Properties
+    protected int imageWidth;
+    protected int imageHeight;
+    protected int titleLabelX;
+    protected int titleLabelY;
+    protected final RecipeViewMenu menu;
+    protected @Nullable Slot hoveredSlot;
+    protected int leftPos;
+    protected int topPos;
+
     public RecipeViewScreen(RecipeViewMenu recipeViewMenu, Inventory inventory, Component component) {
-        super(recipeViewMenu, inventory, component);
+        super(component);
+        this.menu = recipeViewMenu;
 
         this.transferButtons = new ArrayList<>();
         this.recipeTypeButtons = new ArrayList<>();
@@ -93,7 +114,8 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
 
         this.guiTitle = component;
         this.page = this.createPageComponent();
-
+        this.titleLabelX = 8;
+        this.titleLabelY = 6;
 
         this.timestamp = inventory.player.level().getGameTime();
         recipeViewMenu.setViewScreen(this);
@@ -104,6 +126,9 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
         return Component.literal((this.getMenu().getCurrentPage() + 1) + "/" + (this.getMenu().getMaxPageIndex() + 1));
     }
 
+    public RecipeViewMenu getMenu() {
+        return this.menu;
+    }
 
     @Override
     public boolean mouseReleased(@NonNull MouseButtonEvent mouseButtonEvent) {
@@ -118,6 +143,10 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
 
     @Override
     public boolean keyPressed(@NonNull KeyEvent keyEvent) {
+        if (this.minecraft.options.keyInventory.matches(keyEvent)) {
+            this.onClose();
+            return true;
+        }
 
         if (ReliableRecipeViewerClient.GO_BACK_RECIPE.matches(keyEvent) && this.getMenu().goBack())
             return true;
@@ -135,13 +164,18 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
 			return true;
 		}
 
+        if (handleKeyPress(this, keyEvent)) {
+            return true;
+        }
+
         return super.keyPressed(keyEvent);
     }
 
 
     @Override
     protected void init() {
-        super.init();
+        this.leftPos = (this.width - this.imageWidth) / 2;
+        this.topPos = (this.height - this.imageHeight) / 2;
 
         this.prevRecipe = new ReliablePlainButton(Component.literal("<"), button -> this.getMenu().prevRecipe(button),
                 12, 12);
@@ -365,7 +399,6 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
 
 
     //~ if >26 'render' ->'extract' {
-    @Override
     protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         //~}
         guiGraphics.text(this.font, this.page, (this.imageWidth - font.width(this.page)) / 2, this.imageHeight - 12, -12566464, false);
@@ -380,6 +413,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
     //~}
     //~ if >26 'render'->'extract'
+        this.extractContents(guiGraphics, mouseX, mouseY, partialTicks);
         this.extractTooltip(guiGraphics, mouseX, mouseY);
         if (isHoveringOverTitle(mouseX, mouseY)) {
             guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
@@ -402,23 +436,34 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
     long lastChanged = 0;
 
     //~ if >26 'render' ->'extract' {
-    @Override
-    public void extractContents(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
-        super.extractContents(guiGraphics, mouseX, mouseY, a);
+    public void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        int xo = this.leftPos;
+        int yo = this.topPos;
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate((float)xo, (float)yo);
+        this.extractLabels(graphics, mouseX, mouseY);
+        this.hoveredSlot = this.getHoveredSlot(mouseX, mouseY);
+        this.extractSlotHighlightBack(graphics);
+        this.extractSlots(graphics);
+        this.extractSlotHighlightFront(graphics);
+
+        graphics.pose().popMatrix();
         //~}
         List<ItemStack> craftReferences = getMenu().getCraftReferences();
         if (!craftReferences.isEmpty() && Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER)) {
             var x = this.leftPos + 4;
             var y = this.topPos + this.imageHeight - 24;
             this.workstationSlot = new ItemSlot(craftReferences.get(menu.getCurrentCraftReference()), x, y, false);
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("workstation_slot"),  x-1, y-1, 22, 22);
-            this.workstationSlot.extractRenderState(guiGraphics, mouseX, mouseY, 0);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("workstation_slot"),  x-1, y-1, 22, 22);
+            this.workstationSlot.extractRenderState(graphics, mouseX, mouseY, 0);
         }
+        AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo(this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
+        RRVExtendedContainerScreen.extractOverlay(info, graphics, mouseX, mouseY, partialTicks);
     }
 
-    @Override
     protected @NonNull List<Component> getTooltipFromContainerItem(@NonNull ItemStack itemStack) {
-        List<Component> tooltip = super.getTooltipFromContainerItem(itemStack);
+        List<Component> tooltip = Screen.getTooltipFromItem(this.minecraft, itemStack);
 
         Component component = ReliableRecipeViewerClient.addNamespaceTooltip(itemStack, tooltip, false);
 
@@ -545,6 +590,9 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
         if (scrollY != 0)
             this.page = this.createPageComponent();
 
+        if (OverlayManager.INSTANCE.scrollMouse(mouseX, mouseY, scrollX, scrollY))
+            return true;
+
         return true;
     }
 
@@ -582,7 +630,7 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
 
         }
 
-        return super.mouseClicked(mouseButtonEvent, bl);
+        return super.mouseClicked(mouseButtonEvent, bl)  | OverlayManager.INSTANCE.mouseClicked(mouseButtonEvent, bl);
     }
 
     private boolean isHoveringOverTitle(double mouseX, double mouseY) {
@@ -600,18 +648,20 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
     }
 
     @Override
-    protected void containerTick() {
-        this.animationTickers.forEach(AnimationTicker::tick);
+    public final void tick() {
+        super.tick();
+        if (this.minecraft.player != null && this.minecraft.player.isAlive() && !this.minecraft.player.isRemoved()) {
+            this.animationTickers.forEach(AnimationTicker::tick);
 
-        if (this.minecraft == null || this.minecraft.player == null)
-            return;
+            long timeOpen = (this.minecraft.player.level().getGameTime() - this.timestamp);
 
-        long timeOpen = (this.minecraft.player.level().getGameTime() - this.timestamp);
+            if (timeOpen % 25 == 0 && timeOpen >= 25)
+                this.getMenu().tickContents();
 
-        if (timeOpen % 25 == 0 && timeOpen >= 25)
-            this.getMenu().tickContents();
-
-        this.getMenu().getCurrentDisplay().forEach(ReliableClientRecipe::tick);
+            this.getMenu().getCurrentDisplay().forEach(ReliableClientRecipe::tick);
+        } else {
+            this.minecraft.player.closeContainer();
+        }
     }
 
     public int getLeftPos() {
@@ -628,6 +678,88 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
 
     public int getGuiHeight() {
         return this.imageHeight;
+    }
+
+    @Override
+    public final void rrv$callInit() {
+        AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo(this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
+
+        OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
+                RRVClientUtil.CONTAINER,
+                info.leftPos(),
+                info.topPos(),
+                info.imageWidth(),
+                info.imageHeight()
+        ));
+        OverlayManager.INSTANCE.setCurrentInvInfo(info);
+        RRVExtendedContainerScreen.updateWidgets(this);
+    }
+
+    protected void extractSlots(final GuiGraphicsExtractor graphics) {
+        for (Slot slot : this.menu.slots) {
+            if (slot.isActive()) {
+                this.extractSlot(graphics, slot);
+            }
+        }
+    }
+
+    protected void extractTooltip(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY) {
+        if (this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
+            ItemStack item = this.hoveredSlot.getItem();
+            graphics.setTooltipForNextFrame(this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE));
+        }
+    }
+
+    protected void extractSlot(final GuiGraphicsExtractor guiGraphics, final Slot slot) {
+        int x = slot.x;
+        int y = slot.y;
+        ItemStack itemStack = slot.getItem();
+        boolean done = false;
+
+        if (itemStack.isEmpty() && slot.isActive()) {
+            Identifier icon = slot.getNoItemIcon();
+            if (icon != null) {
+                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, x, y, 16, 16);
+                done = true;
+            }
+        }
+
+        if (!done) {
+            int seed = slot.x + slot.y * this.imageWidth;
+            guiGraphics.fakeItem(itemStack, x, y, seed);
+            guiGraphics.itemDecorations(this.font, itemStack, x, y, null);
+        }
+
+    }
+
+    @Nullable Slot getHoveredSlot(final double x, final double y) {
+        for (Slot slot : this.menu.slots) {
+            if (slot.isActive() && this.isHovering(slot, x, y)) {
+                return slot;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean isHovering(final Slot slot, final double xm, final double ym) {
+        return this.isHovering(slot.x, slot.y, 16, 16, xm, ym);
+    }
+
+    protected boolean isHovering(final int left, final int top, final int width, final int height, double mouseX, double mouseY) {
+        mouseX -= this.leftPos;
+        mouseY -= this.topPos;
+        return mouseX >= (double)(left - 1) && mouseX < (double)(left + width + 1) && mouseY >= (double)(top - 1) && mouseY < (double)(top + height + 1);
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
+    public boolean isInGameUi() {
+        return true;
     }
 
     @Override
@@ -730,6 +862,46 @@ public class RecipeViewScreen extends AbstractContainerScreen<RecipeViewMenu> im
         }
     }
 
+    @Override
+    public ItemStack rrv$hoveredStack() {
+        return hoveredSlot != null ? hoveredSlot.getItem() : ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean rrv$triggerInitLater() {
+        return false;
+    }
+
+    //Optional Slots
+
+    //~ if >26 'render' ->'extract' {
+    public void extractSlotHighlightBack(GuiGraphicsExtractor graphics) {
+        if (!rrv$checkOptionalSlot()) {
+            if (this.hoveredSlot != null && this.hoveredSlot.isHighlightable()) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_BACK_SPRITE, this.hoveredSlot.x - 4, this.hoveredSlot.y - 4, 24, 24);
+            }
+		}
+    }
+
+    public void extractSlotHighlightFront(GuiGraphicsExtractor graphics) {
+        if (!rrv$checkOptionalSlot()) {
+            if (this.hoveredSlot != null && this.hoveredSlot.isHighlightable()) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_FRONT_SPRITE, this.hoveredSlot.x - 4, this.hoveredSlot.y - 4, 24, 24);
+            }
+		}
+    }
+    //~}
+
+    @Unique
+    private boolean rrv$checkOptionalSlot() {
+        return this.hoveredSlot != null && !this.hoveredSlot.hasItem() && getMenu().isOptionalSlot(this.hoveredSlot.index);
+    }
+
+    @Override
+    public void onClose() {
+        RRVExtendedContainerScreen.clearOverlay();
+        RRVClientUtil.setScreen(getMenu().getParentScreen());
+    }
 
     record RecipeTypeButton(RecipeViewScreen viewScreen, int x, int y, int width, int height, ReliableClientRecipeType recipeType,
                             int viewTypeId) {

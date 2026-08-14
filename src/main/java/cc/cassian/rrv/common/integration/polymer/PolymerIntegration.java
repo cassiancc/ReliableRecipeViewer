@@ -36,11 +36,6 @@ public class PolymerIntegration {
 			RegistrySyncUtils.setServerEntry(BuiltInRegistries.ITEM, entry.getValue());
 		}
 
-		RegistrySyncUtils.setServerEntry(BuiltInRegistries.MENU, ReliableRecipeViewer.RECIPE_VIEW_MENU);
-
-		if (RRVPlatform.INSTANCE.isClientSide()) {
-			PolymerMenuUtils.registerType(ReliableRecipeViewer.RECIPE_VIEW_MENU);
-		}
 		//~}
 		PolymerResourcePackUtils.addModAssets("rrv");
 
