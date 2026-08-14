@@ -10,7 +10,7 @@ import java.util.List;
 @Mixin(value = net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer.class)
 public interface LootPoolSingletonContainerAccessor {
 
-    //? if <26.2 {
+    //? if <26.3 {
     @Accessor("functions")
     List<LootItemFunction> getFunctions();
     //?}

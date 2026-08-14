@@ -7,6 +7,7 @@ public class ModCompat {
 	public static final boolean ITEM_DESCRIPTIONS = RRVPlatform.INSTANCE.isModLoaded("item_descriptions");
 	public static final boolean JADE = RRVPlatform.INSTANCE.isModLoaded("jade");
 	public static final boolean JEI = RRVPlatform.INSTANCE.isModLoaded("jei");
+	public static final boolean LAUNCHPAD = RRVPlatform.INSTANCE.isModLoaded("launchpad");
 	public static final boolean POLYDEX = RRVPlatform.INSTANCE.isModLoaded("polydex");
 	public static final boolean POLYMER = RRVPlatform.INSTANCE.isModLoaded("polymer-core") && RRVPlatform.INSTANCE.isModLoaded("polymer-resource-pack") && RRVPlatform.INSTANCE.isModLoaded("polymer-registry-sync-manipulator");
 	public static final boolean WTHIT = RRVPlatform.INSTANCE.isModLoaded("wthit");
