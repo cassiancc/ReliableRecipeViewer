@@ -25,7 +25,6 @@ public class IndexSourceConfigScreen extends ClientConfigScreen {
 
     public IndexSourceConfigScreen(Screen lastScreen) {
         super(TITLE, lastScreen);
-
         this.lastScreen = lastScreen;
     }
 
@@ -45,8 +44,8 @@ public class IndexSourceConfigScreen extends ClientConfigScreen {
         int column2 = 100;
 
         // headers
-        addHeader(helper, Component.translatable("rrv.client_settings.index_source"), column2);
-        addHeader(helper, Component.translatable("rrv.category_settings.state"), column2);
+        addHeader(helper, Component.translatable("rrv.client_settings.index_source"), column1);
+        addHeader(helper, Component.translatable("rrv.category_settings.state"));
         // spacers
         addSpacer(helper, 2);
 

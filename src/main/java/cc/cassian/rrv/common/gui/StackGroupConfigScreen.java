@@ -58,7 +58,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
 
         // headers
         addHeader(helper, Component.translatable("rrv.stack_group_settings.group"), column1);
-        addHeader(helper, Component.translatable("rrv.stack_group_settings.state"), column2);
+        addHeader(helper, Component.translatable("rrv.stack_group_settings.state"));
         addHeader(helper, Component.translatable("rrv.category_settings.priority"));
         // spacers
         addSpacer(helper, 3);

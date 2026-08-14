@@ -283,6 +283,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (super.mouseClicked(event, doubleClick)) {
             return true;
         }
+        if (Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED)) {
+            return false;
+        }
         if (isHoveringOverTitle(event.x(), event.y())) {
             if (showBookmarks())
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.CRAFTABLES);

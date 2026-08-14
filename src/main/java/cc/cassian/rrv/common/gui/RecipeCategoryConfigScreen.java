@@ -50,7 +50,7 @@ public class RecipeCategoryConfigScreen extends ClientConfigScreen {
 
         // headers
         addHeader(helper, Component.translatable("rrv.category_settings.category"), column1);
-        addHeader(helper, Component.translatable("rrv.category_settings.state").withStyle(ChatFormatting.UNDERLINE), column2);
+        addHeader(helper, Component.translatable("rrv.category_settings.state"));
         addHeader(helper, Component.translatable("rrv.category_settings.priority"));
         // spacers
         addSpacer(helper, 3);

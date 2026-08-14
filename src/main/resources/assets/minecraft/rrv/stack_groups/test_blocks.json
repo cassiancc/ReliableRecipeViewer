@@ -1,0 +1,13 @@
+{
+  "type": "rrv:group",
+  "contents": [
+    {
+      "type": "item",
+      "id": "minecraft:test_block"
+    },
+    {
+      "type": "item",
+      "id": "minecraft:test_instance_block"
+    }
+  ]
+}

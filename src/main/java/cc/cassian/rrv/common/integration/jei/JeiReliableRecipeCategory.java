@@ -13,6 +13,7 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -24,6 +25,11 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -85,24 +91,81 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, ReliableClientRecipe recipe, IFocusGroup focuses) {
-		IRecipeCategory.super.createRecipeExtras(builder, recipe, focuses);
+		int xpos = (int) Minecraft.getInstance().mouseHandler.xpos();
+		int ypos = (int) Minecraft.getInstance().mouseHandler.ypos();
+		GuiWidgetAccess guiWidgetAccess = new GuiWidgetAccess() {
+			public <T extends GuiEventListener & Renderable & NarratableEntry> T addRecipeWidget(T widget) {
+				builder.addGuiEventListener(new IJeiGuiEventListener() {
+					@Override
+					public ScreenRectangle getArea() {
+						return widget.getRectangle();
+					}
+
+					@Override
+					public boolean mouseClicked(double mouseX, double mouseY, int button) {
+						return widget.mouseClicked(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(button, 0)), false);
+					}
+
+					@Override
+					public void mouseMoved(double mouseX, double mouseY) {
+						widget.mouseMoved(mouseX, mouseY);
+					}
+
+					@Override
+					public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+						return widget.mouseDragged(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(button, 0)), dragX, dragY);
+					}
+
+					@Override
+					public boolean mouseReleased(double mouseX, double mouseY, int button) {
+						return widget.mouseReleased(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(button, 0)));
+					}
+
+					@Override
+					public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+						return widget.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+					}
+
+					@Override
+					public boolean keyPressed(double mouseX, double mouseY, int keyCode, int scanCode, int modifiers) {
+						return widget.keyPressed(new KeyEvent(keyCode, scanCode, modifiers));
+					}
+				});
+				builder.addDrawable(new IDrawable() {
+					@Override
+					public int getWidth() {
+						return widget.getRectangle().width();
+					}
+
+					@Override
+					public int getHeight() {
+						return widget.getRectangle().height();
+					}
+
+					@Override
+					public void draw(GuiGraphicsExtractor guiGraphicsExtractor, int xOffset, int yOffset) {
+						widget.extractRenderState(guiGraphicsExtractor, xpos, ypos, 0);
+					}
+				});
+				return widget;
+			}
+		};
+		recipe.addRecipeWidgets(new RecipeScreenContext(RRVClientUtil.currentScreen(), guiWidgetAccess, RRVClientUtil.currentScreen().getFont(), new ReliableClientRecipe.RecipePosition(0, 0, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), null, xpos, ypos, 0));
 	}
 
 	@Override
 	public void draw(ReliableClientRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
+
 		var left = 0;
 		var top = 0;
 		if (RRVClientUtil.currentScreen() instanceof RecipesGui recipesGui) {
-			left+=Minecraft.getInstance().getWindow().getGuiScale()*recipesGui.getLeftSideExtraWidth();
-			top+=Minecraft.getInstance().getWindow().getGuiScale()*recipesGui.getProperties().guiTop();
-		}
-		GuiWidgetAccess currentScreenWidgets = (GuiWidgetAccess) RRVClientUtil.currentScreen();
-		if (currentScreenWidgets.isEmpty()) {
-			recipe.addRecipeWidgets(new RecipeScreenContext(RRVClientUtil.currentScreen(), currentScreenWidgets, RRVClientUtil.currentScreen().getFont(), new ReliableClientRecipe.RecipePosition(left, top, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), null, (int) Minecraft.getInstance().mouseHandler.xpos(), (int) Minecraft.getInstance().mouseHandler.ypos(), 0));
+			left+= (int) (recipesGui.getArea().x()*1.2);
+			top+= (int) (recipesGui.getArea().y()*1.75);
 		}
 		if (recipeType.getGuiTexture() != null)
 			guiGraphics.blit(RenderPipelines.GUI_TEXTURED, recipeType.getGuiTexture(), 0, 0, 0, 0, recipeType.getDisplayWidth(), recipeType.getDisplayHeight(), recipeType.getDisplayWidth(), recipeType.getDisplayHeight());
-		recipe.renderRecipe(new RecipeScreenContext(RRVClientUtil.currentScreen(), (GuiWidgetAccess) RRVClientUtil.currentScreen(), RRVClientUtil.currentScreen().getFont(), new ReliableClientRecipe.RecipePosition(left, top, 0, 0), guiGraphics, (int) mouseX, (int) mouseY, 0));
+		Screen screen = RRVClientUtil.currentScreen();
+		recipe.renderRecipe(new RecipeScreenContext(screen, (GuiWidgetAccess) screen, screen.getFont(), new ReliableClientRecipe.RecipePosition(left, top, 0, 0), guiGraphics, (int) mouseX, (int) mouseY, 0));
 	}
 
 	@Override

@@ -6,7 +6,9 @@
   - Mob drops have been moved to the side and a tooltip has been added to clarify drops.
   - Now shows information about animal food below the entity preview.
   - Animal food can be overridden in the client integration via `ItemView#addMobFood`.
-- Client recipes can now override `addRecipeWidgets` and call `GuiWidgetAccess.widgets.addRecipeWidget` to add vanilla `Renderable`/`GuiEventListener` objects to the recipe layout. JEI support on this feature is still in development.
+- Client recipes can now override `addRecipeWidgets` and call `GuiWidgetAccess.widgets.addRecipeWidget` to add vanilla `Renderable`/`GuiEventListener` objects to the recipe layout.
+  - Note: JEI support on this feature still has some issues.
+- Active search filters can now be customized from the client config screen, including the text color and required prefix.
 
 ### Changed
 - Creative tabs depending on synchronized recipes are now displayed in RRV correctly.
@@ -15,5 +17,4 @@
 - Crash when spamming bookmarks key.
 - Tag descriptions provided by Item Descriptions now wrap correctly.
 - Potential crash loading worlds with Unique Recipe Output index source enabled.
-
-**FIXME**: JEI support for `addRecipeWidgets`.
+- Minor visual touch-ups to config screens.

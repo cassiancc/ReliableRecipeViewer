@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.integration.ModCompat;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
@@ -22,7 +23,7 @@ public record PrefixedFilter(String name, Function<String, List<ItemStack>> filt
 	public static final PrefixedFilter ID = new PrefixedFilter("id", ItemFilters::id, ItemFilters::id);
 	public static final PrefixedFilter ITEM_TAG = new PrefixedFilter("item_tag", ItemFilters::tag, ItemFilters::tag);
 	public static final PrefixedFilter CREATIVE_TAB = new PrefixedFilter("creative_tab", ItemFilters::creativeTab, ItemFilters::creativeTab);
-	public static final PrefixedFilter COLOR = new PrefixedFilter("color", ItemFilters::color, ItemFilters::color);
+	public static final PrefixedFilter COLOR = new PrefixedFilter("jei:color", ItemFilters::color, ItemFilters::color);
 
 	public PrefixedFilter(String name, Function<String, List<ItemStack>> filter, BiFunction<ItemStack, String, Boolean> advancedFilter) {
 		this.name = name;
@@ -31,10 +32,14 @@ public record PrefixedFilter(String name, Function<String, List<ItemStack>> filt
 		FILTERS.add(this);
 	}
 
-	public record Configuration(String prefix, ChatFormatting color, boolean enabled) {
+	public record Configuration(String prefix, TextColor color, boolean enabled) {
+		public Configuration(String prefix, ChatFormatting color, boolean enabled) {
+			this(prefix, TextColor.fromLegacyFormat(color), enabled);
+		}
+
 		public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 						Codec.STRING.fieldOf("prefix").forGetter(Configuration::prefix),
-						ChatFormatting.COLOR_CODEC.fieldOf("color").forGetter(Configuration::color),
+						TextColor.CODEC.fieldOf("color").forGetter((Configuration t) -> t.color),
 						Codec.BOOL.fieldOf("enabled").forGetter(Configuration::enabled)
 				)
 				.apply(instance, Configuration::new));
@@ -43,6 +48,7 @@ public record PrefixedFilter(String name, Function<String, List<ItemStack>> filt
 	private static final Codec<PrefixedFilter> SOURCE_CODEC = StringRepresentable.fromValues(()-> FILTERS.toArray(new PrefixedFilter[]{}));
 	public static final Codec<Map<PrefixedFilter, Configuration>> CODEC = Codec.unboundedMap(PrefixedFilter.SOURCE_CODEC, PrefixedFilter.Configuration.CODEC);
 
+	//~ if <26.2 'TextColor'->'ChatFormatting' {
 	public static final Map<PrefixedFilter, Configuration> DEFAULT = Map.of(
 			NAMESPACE, new Configuration("@", ChatFormatting.GOLD, true),
 			ID, new Configuration(":", ChatFormatting.GREEN, true),
@@ -50,8 +56,9 @@ public record PrefixedFilter(String name, Function<String, List<ItemStack>> filt
 			CREATIVE_TAB, new Configuration("%", ChatFormatting.BLUE, true),
 			COLOR, new Configuration("^", ChatFormatting.YELLOW, ModCompat.JEI)
 	);
+	//~}
 
-	public ChatFormatting color() {
+	public TextColor color() {
 		return Configs.CLIENT_SETTINGS.getSearchFilters().get(this).color();
 	}
 
