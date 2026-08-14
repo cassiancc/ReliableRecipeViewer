@@ -144,6 +144,7 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 
 					@Override
 					public void draw(GuiGraphicsExtractor guiGraphicsExtractor, int xOffset, int yOffset) {
+						//~ if <26 'extractRenderState'->'render'
 						widget.extractRenderState(guiGraphicsExtractor, xpos, ypos, 0);
 					}
 				});

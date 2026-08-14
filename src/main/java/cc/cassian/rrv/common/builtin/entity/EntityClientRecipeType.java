@@ -92,7 +92,10 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     public void renderIcon(RecipeViewScreen screen, int x, int y, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         List<ReliableClientRecipe> currentDisplay = screen.getMenu().getCurrentDisplay();
         if (!currentDisplay.isEmpty() && currentDisplay.getFirst() instanceof EntityClientRecipe entityClientRecipe) {
+            //~ if <26 'itemHolder'->'nullableItemHolder'
             var itemHolder = SpawnEggItem.byId(entityClientRecipe.getEntityType());
+            //? if <26
+            //var itemHolder = Optional.ofNullable(nullableItemHolder);
             if (itemHolder.isPresent()) {
                 guiGraphics.fakeItem(new ItemStack(itemHolder.get()), x, y);
                 return;
