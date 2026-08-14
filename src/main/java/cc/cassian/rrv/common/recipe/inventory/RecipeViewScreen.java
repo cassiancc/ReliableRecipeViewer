@@ -539,6 +539,8 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (OverlayManager.INSTANCE.scrollMouse(mouseX, mouseY, scrollX, scrollY))
+            return true;
 
         // scroll through workstations
         if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
@@ -589,9 +591,6 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 
         if (scrollY != 0)
             this.page = this.createPageComponent();
-
-        if (OverlayManager.INSTANCE.scrollMouse(mouseX, mouseY, scrollX, scrollY))
-            return true;
 
         return true;
     }
