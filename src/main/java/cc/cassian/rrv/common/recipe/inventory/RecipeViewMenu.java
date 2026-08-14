@@ -382,12 +382,6 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             }
         }
 
-        // The inventory items groups mod cannot properly handle containers menus with exactly one slot.
-        // So add a dummy slot when the inventory item groups mod is present and the menu has exactly one slot.
-        if (ModCompat.INVENTORY_ITEM_GROUPS && this.slots.size() == 1) {
-            this.addSlot(new RecipeSlot(new ViewContainer(1), 0, Integer.MIN_VALUE, Integer.MIN_VALUE, false));
-        }
-
         this.updateReferences();
     }
 
