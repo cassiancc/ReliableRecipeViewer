@@ -136,10 +136,7 @@ public class RRVClientUtil {
     }
 
     public static int compare(ReliableClientRecipe first, ReliableClientRecipe second) {
-        if (first.getType().equals(second.getType())) {
-            return Comparator.comparingInt(ReliableClientRecipe::getPriority).compare(second, first);
-        }
-        return Comparator.comparingInt((ReliableClientRecipe recipeType) -> recipeType.getType().getPriority()).compare(second, first);
+        return Comparator.comparingInt((ReliableClientRecipe value) -> value.getType().getPriority()).thenComparingInt(ReliableClientRecipe::getPriority).thenComparing(ReliableClientRecipe::entryId).compare(first, second);
     }
 
 	public static Player player() {

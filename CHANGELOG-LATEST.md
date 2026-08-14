@@ -14,7 +14,6 @@
 ### Fixed
 - Crash when spamming bookmarks key.
 - Tag descriptions provided by Item Descriptions now wrap correctly.
+- Potential crash loading worlds with Unique Recipe Output index source enabled.
 
-
-**FIXME**: Crash loading worlds with Unique Recipe Output index source!
 **FIXME**: JEI support for `addRecipeWidgets`.
