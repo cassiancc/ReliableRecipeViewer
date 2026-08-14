@@ -26,9 +26,6 @@ import org.jspecify.annotations.NonNull;
 public class StackGroupConfigScreen extends ClientConfigScreen {
 
     private static final Component TITLE = Component.translatable("rrv.client_settings.stack_groups");
-    private static final Component ENABLED = Component.translatable("rrv.stack_group_settings.enabled").withStyle(ChatFormatting.GREEN);
-    private static final Component DISABLED = Component.translatable("rrv.stack_group_settings.disabled").withStyle(ChatFormatting.RED);
-
     private final Screen lastScreen;
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
@@ -58,19 +55,13 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
 
         int column1 = (int) (this.width / 2.5);
         int column2 = 100;
-        int column3 = 20;
 
         // headers
-        helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatable("rrv.stack_group_settings.group").withStyle(ChatFormatting.UNDERLINE), font));
-        helper.addChild(new StringWidget(column2, font.lineHeight, Component.translatable("rrv.category_settings.state").withStyle(ChatFormatting.UNDERLINE), font));
-        MutableComponent priorityText = Component.translatable("rrv.category_settings.priority");
-        helper.addChild(new StringWidget(font.width(priorityText), font.lineHeight, priorityText.withStyle(ChatFormatting.UNDERLINE), font));
-//        helper.addChild(new SpacerElement(5, 5));
+        addHeader(helper, Component.translatable("rrv.stack_group_settings.group"), column1);
+        addHeader(helper, Component.translatable("rrv.stack_group_settings.state"), column2);
+        addHeader(helper, Component.translatable("rrv.category_settings.priority"));
         // spacers
-        helper.addChild(new SpacerElement(5, 5));
-        helper.addChild(new SpacerElement(5, 5));
-        helper.addChild(new SpacerElement(5, 5));
-//        helper.addChild(new SpacerElement(5, 5));
+        addSpacer(helper, 3);
 
         StackGroupManager.stackGroups.forEach((group) -> {
             ConfiguredStackGroup current = Configs.STACK_GROUPS.getOrDefault(group.getId());
@@ -153,12 +144,6 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
                 guiGraphics.disableScissor();
             }
         }
-    }
-
-    private GridLayout createGridLayout() {
-        var gridLayout = new GridLayout();
-        gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
-        return gridLayout;
     }
 
     private void save() {

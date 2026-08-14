@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.PrefixedFilter;
 
 import java.util.Map;
 
@@ -36,6 +37,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean prioritizeNativeRecipeScreens = true;
 	private boolean clientSettingsButton = true;
 	private boolean sidePanelSettingsButton = true;
+	private Map<PrefixedFilter, PrefixedFilter.Configuration> searchFilters = PrefixedFilter.DEFAULT;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -248,6 +250,14 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.sidePanelSettingsButton = sidePanelSettingsButton;
 	}
 
+	public Map<PrefixedFilter, PrefixedFilter.Configuration> getSearchFilters() {
+		return searchFilters;
+	}
+
+	public void setSearchFilters(Map<PrefixedFilter, PrefixedFilter.Configuration> searchFilters) {
+		this.searchFilters = searchFilters;
+	}
+
 	@Override
 	protected void loadData() {
 		boolean loadedDeprecatedConfig = false;
@@ -297,6 +307,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.clientSettingsButton = load("general", "client_settings_button", this.clientSettingsButton);
 		this.sidePanelSettingsButton = load("general", "side_panel_settings_button", this.sidePanelSettingsButton);
 		this.indexSource = load("advanced", "index_sources", this.indexSource, IndexSource.CODEC);
+		this.searchFilters = load("advanced", "search_filters", this.searchFilters, PrefixedFilter.CODEC);
 		if (ModCompat.JEI) {
 			this.jeiPanel = load("jei","panel", this.jeiPanel);
 			this.jeiRecipeScreen = load("jei", "recipe_screen", this.jeiRecipeScreen);
@@ -333,6 +344,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("style", "workstation_display", this.workstationDisplay, WorkstationDisplay.CODEC);
 		save("behaviour", "recipe_sharing", this.recipeSharing);
 		save("advanced", "index_sources", this.indexSource, IndexSource.CODEC);
+		save("advanced", "search_filters", this.searchFilters, PrefixedFilter.CODEC);
 		if (ModCompat.JEI) {
 			save("jei","panel", this.jeiPanel);
 			save("jei", "recipe_screen", this.jeiRecipeScreen);

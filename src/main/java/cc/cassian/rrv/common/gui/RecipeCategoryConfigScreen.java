@@ -22,8 +22,6 @@ import java.util.Comparator;
 public class RecipeCategoryConfigScreen extends ClientConfigScreen {
 
     private static final Component TITLE = Component.translatable("rrv.category_settings");
-    private static final Component ENABLED = Component.translatable("rrv.category_settings.enabled").withStyle(ChatFormatting.GREEN);
-    private static final Component DISABLED = Component.translatable("rrv.category_settings.disabled").withStyle(ChatFormatting.RED);
 
     private final Screen lastScreen;
 
@@ -49,19 +47,13 @@ public class RecipeCategoryConfigScreen extends ClientConfigScreen {
 
         int column1 = (int) (this.width / 2.5);
         int column2 = 100;
-        int column3 = 20;
 
         // headers
-        helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatable("rrv.category_settings.category").withStyle(ChatFormatting.UNDERLINE), font));
-        helper.addChild(new StringWidget(column2, font.lineHeight, Component.translatable("rrv.category_settings.state").withStyle(ChatFormatting.UNDERLINE), font));
-        MutableComponent priorityText = Component.translatable("rrv.category_settings.priority");
-        helper.addChild(new StringWidget(font.width(priorityText), font.lineHeight, priorityText.withStyle(ChatFormatting.UNDERLINE), font));
-//        helper.addChild(new SpacerElement(5, 5));
+        addHeader(helper, Component.translatable("rrv.category_settings.category"), column1);
+        addHeader(helper, Component.translatable("rrv.category_settings.state").withStyle(ChatFormatting.UNDERLINE), column2);
+        addHeader(helper, Component.translatable("rrv.category_settings.priority"));
         // spacers
-        helper.addChild(new SpacerElement(5, 5));
-        helper.addChild(new SpacerElement(5, 5));
-        helper.addChild(new SpacerElement(5, 5));
-//        helper.addChild(new SpacerElement(5, 5));
+        addSpacer(helper, 3);
 
         Configs.CATEGORIES.values().stream().sorted(Comparator.comparingInt(RecipeCategoryConfig.ConfiguredRecipeCategory::priority)).forEach((category) -> {
             Identifier id = category.id();
@@ -95,12 +87,6 @@ public class RecipeCategoryConfigScreen extends ClientConfigScreen {
         // done
 
         finalizeLayout(linearLayout, layout, this);
-    }
-
-    private GridLayout createGridLayout() {
-        var gridLayout = new GridLayout();
-        gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
-        return gridLayout;
     }
 
     @Override

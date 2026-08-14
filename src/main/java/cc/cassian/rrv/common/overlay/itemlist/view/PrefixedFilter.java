@@ -1,25 +1,72 @@
 package cc.cassian.rrv.common.overlay.itemlist.view;
 
+import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.integration.ModCompat;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
-public record PrefixedFilter(String prefix, ChatFormatting color, Function<String, List<ItemStack>> filter, BiFunction<ItemStack, String, Boolean> advancedFilter, boolean enabled) {
-	public static final PrefixedFilter NAMESPACE = new PrefixedFilter("@", ChatFormatting.GOLD, ItemFilters::modNamespace, ItemFilters::modNamespace, true);
-	public static final PrefixedFilter ID = new PrefixedFilter(":", ChatFormatting.GREEN, ItemFilters::id, ItemFilters::id, true);
-	public static final PrefixedFilter ITEM_TAG = new PrefixedFilter("#", ChatFormatting.LIGHT_PURPLE, ItemFilters::tag, ItemFilters::tag, true);
-	public static final PrefixedFilter CREATIVE_TAB = new PrefixedFilter("%", ChatFormatting.BLUE, ItemFilters::creativeTab, ItemFilters::creativeTab, true);
-	public static final PrefixedFilter COLOR = new PrefixedFilter("^", ChatFormatting.YELLOW, ItemFilters::color, ItemFilters::color, ModCompat.JEI);
+public record PrefixedFilter(String name, Function<String, List<ItemStack>> filter, BiFunction<ItemStack, String, Boolean> advancedFilter) implements StringRepresentable {
+	public static ArrayList<PrefixedFilter> FILTERS = new ArrayList<>();
+	public static final PrefixedFilter NAMESPACE = new PrefixedFilter("namespace", ItemFilters::modNamespace, ItemFilters::modNamespace);
+	public static final PrefixedFilter ID = new PrefixedFilter("id", ItemFilters::id, ItemFilters::id);
+	public static final PrefixedFilter ITEM_TAG = new PrefixedFilter("item_tag", ItemFilters::tag, ItemFilters::tag);
+	public static final PrefixedFilter CREATIVE_TAB = new PrefixedFilter("creative_tab", ItemFilters::creativeTab, ItemFilters::creativeTab);
+	public static final PrefixedFilter COLOR = new PrefixedFilter("color", ItemFilters::color, ItemFilters::color);
+
+	public PrefixedFilter(String name, Function<String, List<ItemStack>> filter, BiFunction<ItemStack, String, Boolean> advancedFilter) {
+		this.name = name;
+		this.filter = filter;
+		this.advancedFilter = advancedFilter;
+		FILTERS.add(this);
+	}
+
+	public record Configuration(String prefix, ChatFormatting color, boolean enabled) {
+		public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+						Codec.STRING.fieldOf("prefix").forGetter(Configuration::prefix),
+						ChatFormatting.COLOR_CODEC.fieldOf("color").forGetter(Configuration::color),
+						Codec.BOOL.fieldOf("enabled").forGetter(Configuration::enabled)
+				)
+				.apply(instance, Configuration::new));
+	}
+
+	private static final Codec<PrefixedFilter> SOURCE_CODEC = StringRepresentable.fromValues(()-> FILTERS.toArray(new PrefixedFilter[]{}));
+	public static final Codec<Map<PrefixedFilter, Configuration>> CODEC = Codec.unboundedMap(PrefixedFilter.SOURCE_CODEC, PrefixedFilter.Configuration.CODEC);
+
+	public static final Map<PrefixedFilter, Configuration> DEFAULT = Map.of(
+			NAMESPACE, new Configuration("@", ChatFormatting.GOLD, true),
+			ID, new Configuration(":", ChatFormatting.GREEN, true),
+			ITEM_TAG, new Configuration("#", ChatFormatting.LIGHT_PURPLE, true),
+			CREATIVE_TAB, new Configuration("%", ChatFormatting.BLUE, true),
+			COLOR, new Configuration("^", ChatFormatting.YELLOW, ModCompat.JEI)
+	);
+
+	public ChatFormatting color() {
+		return Configs.CLIENT_SETTINGS.getSearchFilters().get(this).color();
+	}
+
+	public String prefix() {
+		return Configs.CLIENT_SETTINGS.getSearchFilters().get(this).prefix();
+	}
+
+	@Override
+	public String getSerializedName() {
+		return name;
+	}
 
 	public static @Nullable PrefixedFilter findFilterInQuery(String query) {
 		for (PrefixedFilter value : PrefixedFilter.values()) {
-			if (query.contains(value.prefix)) {
+			if (query.contains(value.prefix())) {
 				return value;
 			}
 		}
@@ -28,7 +75,7 @@ public record PrefixedFilter(String prefix, ChatFormatting color, Function<Strin
 
 	public static boolean startsWithPrefix(String query) {
 		for (PrefixedFilter value : PrefixedFilter.values()) {
-			if (query.startsWith(value.prefix)) {
+			if (query.startsWith(value.prefix())) {
 				return true;
 			}
 		}
@@ -36,7 +83,6 @@ public record PrefixedFilter(String prefix, ChatFormatting color, Function<Strin
 	}
 
 	public static List<PrefixedFilter> values() {
-		return Stream.of(NAMESPACE, ID, ITEM_TAG, CREATIVE_TAB, COLOR).filter(p->p.enabled).toList();
+		return Configs.CLIENT_SETTINGS.getSearchFilters().entrySet().stream().filter(prefixedFilterBooleanEntry -> prefixedFilterBooleanEntry.getValue().enabled).map(Map.Entry::getKey).toList();
 	}
-
 }

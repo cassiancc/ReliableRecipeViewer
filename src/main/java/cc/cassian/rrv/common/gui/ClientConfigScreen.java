@@ -6,12 +6,14 @@ import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
@@ -25,6 +27,8 @@ import net.minecraft.util.StringRepresentable;
 public class ClientConfigScreen extends Screen {
 
     private static final Component TITLE = clientSetting("title");
+    public static final Component ENABLED = Component.translatable("rrv.category_settings.enabled").withStyle(ChatFormatting.GREEN);
+    public static final Component DISABLED = Component.translatable("rrv.category_settings.disabled").withStyle(ChatFormatting.RED);
     public static final int PADDING = 4;
 
     private final Screen lastScreen;
@@ -165,6 +169,10 @@ public class ClientConfigScreen extends Screen {
         indexSourceSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.index_source.tooltip")));
         advancedHelper.addChild(indexSourceSettings);
 
+        Button searchFilterSettings = Button.builder(Component.translatable("rrv.client_settings.prefixed_filters"), (button) -> RRVClientUtil.setScreen(new PrefixedFilterConfigScreen(this))).size(buttonWidth, 20).build();
+        searchFilterSettings.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.prefixed_filters.tooltip")));
+        advancedHelper.addChild(searchFilterSettings);
+
         Button recipeCategorySettings = Button.builder(Component.translatable("rrv.category_settings"), (button) -> RRVClientUtil.setScreen(new RecipeCategoryConfigScreen(this))).size(buttonWidth, 20).build();
         if (Minecraft.getInstance().level == null) {
             recipeCategorySettings.active = false;
@@ -219,10 +227,24 @@ public class ClientConfigScreen extends Screen {
         layout.arrangeElements();
     }
 
-    private GridLayout createGridLayout() {
+    GridLayout createGridLayout() {
         var gridLayout = new GridLayout();
         gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
         return gridLayout;
+    }
+
+    void addHeader(GridLayout.RowHelper helper, MutableComponent component) {
+        addHeader(helper, component, font.width(component));
+    }
+
+    void addHeader(GridLayout.RowHelper helper, MutableComponent component, int width) {
+        helper.addChild(new StringWidget(width, font.lineHeight, component.withStyle(ChatFormatting.UNDERLINE), font));
+    }
+
+    static void addSpacer(GridLayout.RowHelper helper, int count) {
+        for (int i = 0; i < count; i++) {
+            helper.addChild(new SpacerElement(5, 5));
+        }
     }
 
     public static MutableComponent clientSetting(String s) {
