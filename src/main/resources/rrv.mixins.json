@@ -25,6 +25,8 @@
     "world.entity.npc.TippedArrowForItemsAndEmeraldsAccessor",
     "world.entity.npc.TreasureMapForEmeraldsAccessor",
     "world.entity.npc.VillagerTradeAccessor",
+    "world.item.CreativeModeTabsAccessor",
+    "world.item.CreativeModeTabsMixin",
     "world.item.alchemy.PotionBrewingAccessor",
     "world.item.crafting.BookCloningRecipeAccessor",
     "world.item.crafting.DecoratedPotRecipeAccessor",

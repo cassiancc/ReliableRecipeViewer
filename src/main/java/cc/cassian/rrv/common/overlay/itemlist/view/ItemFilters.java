@@ -13,6 +13,7 @@ import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
+import cc.cassian.rrv.common.mixin.world.item.CreativeModeTabsAccessor;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
@@ -20,6 +21,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -27,6 +29,7 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.*;
 
 import java.io.OutputStreamWriter;
@@ -41,8 +44,6 @@ public class ItemFilters {
     public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
     /// A list of [ItemStack]s that can be shown in the item view. Cleared when the player disconnects from a world, reloads resource packs, or changes the index source. Rebuilt by calling [ItemFilters#fullStackList()].
     private static final List<ItemStack> CACHED_STACKS = new ArrayList<>();
-    /// Whether the contents of the creative search tab has been populated. When false, [ItemFilters#fullStackList()] will repopulate the creative tabs.
-    private static boolean creativeTabsCached;
 
     /// Standard filtering for single-word searches.
     public static List<ItemStack> filter(String newQuery) {
@@ -317,8 +318,12 @@ public class ItemFilters {
             Player player = RRVClientUtil.player();
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.CREATIVE)) {
-                if (!creativeTabsCached && player != null) {
-                    CreativeModeTabs.tryRebuildTabContents(player.level().enabledFeatures(), RrvUtil.hasPermission(player), player.registryAccess());
+                FeatureFlagSet enabledFeatures = player.level().enabledFeatures();
+                boolean hasPermissions = RrvUtil.hasPermission(player);
+                RegistryAccess registryAccess = player.registryAccess();
+                boolean creativeTabsCached = CreativeModeTabsAccessor.getCachedParameters() == null || CreativeModeTabsAccessor.getCachedParameters().needsUpdate(enabledFeatures, hasPermissions, registryAccess);
+                if (player != null && !creativeTabsCached) {
+                    CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
                 }
 
                 results.addAll(new ArrayList<>(CreativeModeTabs.searchTab().getSearchTabDisplayItems()).stream()
@@ -417,12 +422,14 @@ public class ItemFilters {
         }
     }
 
+    /// Clear the cached stacks and force a rebuild.
 	public static void clearCaches() {
+        ReliableRecipeViewer.LOGGER.info("RRV: Rebuilding cached index!");
 		CACHED_STACKS.clear();
-        creativeTabsCached = false;
         ItemViewOverlay.INSTANCE.firstPage();
 	}
 
+    /// Whether the cache needs to be rebuilt.
 	public static boolean needsCache() {
 		return CACHED_STACKS.isEmpty();
 	}
