@@ -117,7 +117,7 @@ public class ClientConfigScreen extends Screen {
 
         addChild(behaviorHelper, "stack_groups", Configs.STACK_GROUPS.areStackGroupsEnabled(), (u, b) -> {
             Configs.STACK_GROUPS.setStackGroupsEnabled(b);
-            ItemFilters.clearCaches();
+            ItemFilters.clearCaches(true);
         });
 
 

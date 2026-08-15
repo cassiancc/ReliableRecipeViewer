@@ -22,7 +22,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "disconnectFromWorld", at = @At("HEAD"))
     private void cleanup(CallbackInfo ci) {
-        ItemFilters.clearCaches();
+        ItemFilters.clearCaches(true);
         ItemViewOverlay.INSTANCE.setWarned(false);
         if (ItemViewOverlay.INSTANCE.getSearchbar() != null) {
             ItemViewOverlay.INSTANCE.getSearchbar().clear();

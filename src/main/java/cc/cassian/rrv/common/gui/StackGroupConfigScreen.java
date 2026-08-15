@@ -149,7 +149,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
     private void save() {
         Configs.STACK_GROUPS.save();
         StackGroupManager.reload();
-        ItemFilters.clearCaches();
+        ItemFilters.clearCaches(true);
     }
 
     @Override

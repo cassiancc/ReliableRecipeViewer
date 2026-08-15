@@ -44,6 +44,9 @@ public class ItemFilters {
     public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
     /// A list of [ItemStack]s that can be shown in the item view. Cleared when the player disconnects from a world, reloads resource packs, or changes the index source. Rebuilt by calling [ItemFilters#fullStackList()].
     private static final List<ItemStack> CACHED_STACKS = new ArrayList<>();
+    /// A list of [ItemStack]s from the Unique Recipe Output index soruce.
+    private static final List<ItemStack> CACHED_RECIPE_OUTPUTS = new ArrayList<>();
+
 
     /// Standard filtering for single-word searches.
     public static List<ItemStack> filter(String newQuery) {
@@ -344,12 +347,20 @@ public class ItemFilters {
             }
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT)) {
-                var list = new ArrayList<ItemStack>();
-                ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(RRVClientUtil::compare).forEach(r-> {
-                    addUniqueItem(r.getResults(), list, results);
+                if (CACHED_RECIPE_OUTPUTS.isEmpty()) {
+                    var list = new ArrayList<ItemStack>();
+                    ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(RRVClientUtil::compare).forEach(r-> {
+                        addUniqueItem(r.getResults(), list);
+                    });
+                    RrvUtil.sortByName(list);
+                    CACHED_RECIPE_OUTPUTS.addAll(list);
+                }
+
+                CACHED_RECIPE_OUTPUTS.forEach(stack -> {
+                    if (results.stream().noneMatch(c-> makeDefaultChecks(stack, c))) {
+                        results.add(stack);
+                    }
                 });
-                RrvUtil.sortByName(list);
-                results.addAll(list);
             }
 
             if (ModCompat.POLYMER)
@@ -364,10 +375,10 @@ public class ItemFilters {
         return CACHED_STACKS;
     }
 
-    private static void addUniqueItem(List<SlotContent> r, ArrayList<ItemStack> list, List<ItemStack> results) {
+    private static void addUniqueItem(List<SlotContent> r, ArrayList<ItemStack> list) {
         r.forEach(l-> {
             l.getValidContents().forEach(stack -> {
-                if (list.stream().noneMatch(c-> makeDefaultChecks(stack, c)) && results.stream().noneMatch(c-> makeDefaultChecks(stack, c))) {
+                if (list.stream().noneMatch(c-> makeDefaultChecks(stack, c))) {
                     list.add(stack);
                 }
             });
@@ -423,14 +434,30 @@ public class ItemFilters {
     }
 
     /// Clear the cached stacks and force a rebuild.
-	public static void clearCaches() {
+    public static void clearCaches() {
+        clearCaches(false);
+    }
+
+    /// Clear the cached stacks and force a rebuild.
+	public static void clearCaches(boolean clearCachedRecipeOutputs) {
         ReliableRecipeViewer.LOGGER.info("RRV: Rebuilding cached index!");
 		CACHED_STACKS.clear();
+        if (clearCachedRecipeOutputs) {
+            clearCachedRecipeOutputs();
+        }
         ItemViewOverlay.INSTANCE.firstPage();
 	}
 
+    /// Clear the cached stacks and force a rebuild.
+    public static void clearCachedRecipeOutputs() {
+        CACHED_RECIPE_OUTPUTS.clear();
+    }
+
     /// Whether the cache needs to be rebuilt.
 	public static boolean needsCache() {
+        if (CACHED_RECIPE_OUTPUTS.isEmpty() && Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT)) {
+            return true;
+        }
 		return CACHED_STACKS.isEmpty();
 	}
 }

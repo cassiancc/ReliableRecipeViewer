@@ -180,6 +180,7 @@ public class ClientRecipeCache {
         }
 
         ClientRecipeCache.INSTANCE.clear();
+        ItemFilters.clearCachedRecipeOutputs();
 
         for (ItemViewRecipes.ClientRecipeProvider clientRecipeProvider : ItemViewRecipes.INSTANCE.getClientRecipeProviders()) {
             List<ReliableClientRecipe> recipes = new ArrayList<>();

@@ -206,7 +206,7 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public void setIndexSource(Map<IndexSource, Boolean> indexSource) {
 		this.indexSource = indexSource;
-		ItemFilters.clearCaches();
+		ItemFilters.clearCaches(true);
 	}
 
 	public boolean isJeiPanel() {
