@@ -455,7 +455,13 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
         }
 
-        RRVClientUtil.setScreen(new RecipeViewScreen(recipeViewMenu, clientPlayer.getInventory(), Component.empty()));
+        if (RRVClientUtil.currentScreen() instanceof RecipeViewScreen recipeViewScreen) {
+            recipeViewScreen.setMenu(recipeViewMenu);
+            recipeViewScreen.checkGui();
+            recipeViewMenu.setViewScreen(recipeViewScreen);
+        } else {
+            RRVClientUtil.setScreen(new RecipeViewScreen(recipeViewMenu, clientPlayer.getInventory(), Component.empty()));
+        }
     }
 
 

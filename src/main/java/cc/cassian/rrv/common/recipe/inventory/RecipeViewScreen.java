@@ -93,7 +93,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     protected int imageHeight;
     protected int titleLabelX;
     protected int titleLabelY;
-    protected final RecipeViewMenu menu;
+    protected RecipeViewMenu menu;
     protected @Nullable Slot hoveredSlot;
     protected int leftPos;
     protected int topPos;
@@ -257,7 +257,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         }
     }
 
-    protected void checkGui() {
+    public void checkGui() {
         this.clearRecipeWidgets();
 
         RecipeViewMenu menu = this.getMenu();
@@ -901,6 +901,10 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         RRVExtendedContainerScreen.clearOverlay();
         RRVClientUtil.setScreen(getMenu().getParentScreen());
     }
+
+	public void setMenu(RecipeViewMenu recipeViewMenu) {
+		menu = recipeViewMenu;
+	}
 
     record RecipeTypeButton(RecipeViewScreen viewScreen, int x, int y, int width, int height, ReliableClientRecipeType recipeType,
                             int viewTypeId) {
