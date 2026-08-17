@@ -8,6 +8,7 @@ import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.PrefixedFilter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClientConfig extends AbstractRrvConfig {
@@ -308,6 +309,14 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.sidePanelSettingsButton = load("general", "side_panel_settings_button", this.sidePanelSettingsButton);
 		this.indexSource = load("advanced", "index_sources", this.indexSource, IndexSource.CODEC);
 		this.searchFilters = load("advanced", "search_filters", this.searchFilters, PrefixedFilter.CODEC);
+		PrefixedFilter.DEFAULT.forEach((filter, configuration)->{
+			if (this.searchFilters.keySet().stream().noneMatch(f-> f.name().equals(filter.name()))) {
+				this.searchFilters = new HashMap<>(searchFilters);
+				this.searchFilters.put(filter, configuration);
+				save();
+			}
+		});
+
 		if (ModCompat.JEI) {
 			this.jeiPanel = load("jei","panel", this.jeiPanel);
 			this.jeiRecipeScreen = load("jei", "recipe_screen", this.jeiRecipeScreen);

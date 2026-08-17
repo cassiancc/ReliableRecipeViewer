@@ -22,6 +22,7 @@ public record PrefixedFilter(String name, Function<String, List<ItemStack>> filt
 	public static final PrefixedFilter NAMESPACE = new PrefixedFilter("namespace", ItemFilters::modNamespace, ItemFilters::modNamespace);
 	public static final PrefixedFilter ID = new PrefixedFilter("id", ItemFilters::id, ItemFilters::id);
 	public static final PrefixedFilter ITEM_TAG = new PrefixedFilter("item_tag", ItemFilters::tag, ItemFilters::tag);
+	public static final PrefixedFilter DATA_COMPONENT = new PrefixedFilter("data_component", ItemFilters::component, ItemFilters::component);
 	public static final PrefixedFilter CREATIVE_TAB = new PrefixedFilter("creative_tab", ItemFilters::creativeTab, ItemFilters::creativeTab);
 	public static final PrefixedFilter COLOR = new PrefixedFilter("jei:color", ItemFilters::color, ItemFilters::color);
 
@@ -53,6 +54,7 @@ public record PrefixedFilter(String name, Function<String, List<ItemStack>> filt
 			NAMESPACE, new Configuration("@", ChatFormatting.GOLD, true),
 			ID, new Configuration(":", ChatFormatting.GREEN, true),
 			ITEM_TAG, new Configuration("#", ChatFormatting.LIGHT_PURPLE, true),
+			DATA_COMPONENT, new Configuration("$", ChatFormatting.GRAY, true),
 			CREATIVE_TAB, new Configuration("%", ChatFormatting.BLUE, true),
 			COLOR, new Configuration("^", ChatFormatting.YELLOW, ModCompat.JEI)
 	);

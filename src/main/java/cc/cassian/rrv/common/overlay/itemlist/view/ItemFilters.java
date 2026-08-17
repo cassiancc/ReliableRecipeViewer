@@ -23,6 +23,7 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -246,6 +247,49 @@ public class ItemFilters {
 
         //~ if >26 'getTags' -> 'tags'
         if (itemStack.tags().anyMatch(tag->tag.location().toString().toLowerCase(Locale.ROOT).contains(query))) {
+            result.set(true);
+        }
+
+        return result.get();
+    }
+
+
+    /// Filters by data component
+    /// @param query The query
+    /// @return A list of matching item stacks
+    public static List<ItemStack> component(String query) {
+        List<ItemStack> firstPrio = new ArrayList<>();
+        List<ItemStack> secondPrio = new ArrayList<>();
+        List<ItemStack> thirdPrio = new ArrayList<>();
+
+        for (ItemStack stack : fullStackList()) {
+
+            for (TypedDataComponent<?> component : stack.getComponents()) {
+                String componentId = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(component.type()).getPath().toString().toLowerCase(Locale.ROOT);
+
+                if (componentId.equals(query))
+                    add(firstPrio, stack);
+                else if (componentId.startsWith(query))
+                    add(secondPrio, stack);
+                else if (componentId.contains(query))
+                    add(thirdPrio, stack);
+            }
+        }
+
+        List<ItemStack> results = new ArrayList<>(firstPrio);
+        secondPrio.stream().filter(o -> !results.contains(o)).forEach(results::add);
+        thirdPrio.stream().filter(o -> !results.contains(o)).forEach(results::add);
+        return results;
+    }
+
+    /// Filters by an item's tags
+    /// @param itemStack The item stack
+    /// @param query The query
+    /// @return Whether the item stack matches the items tags
+    public static boolean component(ItemStack itemStack, String query) {
+        AtomicBoolean result = new AtomicBoolean(false);
+
+        if (itemStack.getComponents().stream().anyMatch(tag->BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(tag.type()).toString().toLowerCase(Locale.ROOT).contains(query))) {
             result.set(true);
         }
 

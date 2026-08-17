@@ -256,7 +256,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         }
     }
 
-    private void checkGui() {
+    protected void checkGui() {
         this.clearRecipeWidgets();
 
         RecipeViewMenu menu = this.getMenu();
