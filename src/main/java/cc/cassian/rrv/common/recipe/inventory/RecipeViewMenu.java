@@ -39,7 +39,6 @@ import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScrol
 public class RecipeViewMenu {
 
     //For screen and space calculation
-    protected static final int MAX_POSSIBLE_HEIGHT = 214;
     protected static final int BUFFER_ZONE = 16;
     protected static final int TOP_SPACE = 24;
     protected static final int BOTTOM_SPACE = 24;
@@ -789,10 +788,11 @@ public class RecipeViewMenu {
 
         int recipeHeight = this.getClientRecipeType().getDisplayHeight();
 
-        int technicallyFitting = Math.min(this.getRecipes().size(), MAX_POSSIBLE_HEIGHT / recipeHeight);
+        int maxPossibleHeight = (int) (RRVClientUtil.currentScreen().height * 0.87346);
+        int technicallyFitting = Math.min(this.getRecipes().size(), maxPossibleHeight / recipeHeight);
         int imageheightRequired = (technicallyFitting * recipeHeight) + (technicallyFitting * BUFFER_ZONE + TOP_SPACE + BOTTOM_SPACE);
 
-        while (imageheightRequired > MAX_POSSIBLE_HEIGHT) {
+        while (imageheightRequired > maxPossibleHeight) {
             technicallyFitting -= 1;
 
             imageheightRequired = (technicallyFitting * recipeHeight) + (technicallyFitting * BUFFER_ZONE + TOP_SPACE + BOTTOM_SPACE);

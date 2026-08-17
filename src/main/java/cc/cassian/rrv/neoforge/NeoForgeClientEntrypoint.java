@@ -4,6 +4,7 @@
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.util.RRVClientUtil;
+import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
@@ -12,11 +13,13 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? if >26
 import cc.cassian.rrv.fabric.FabricClientUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -26,10 +29,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -66,15 +66,10 @@ public class NeoForgeClientEntrypoint {
     }
 
     @SubscribeEvent
-    public static void onMenuRegistry(RegisterEvent event) {
-        event.register(Registries.MENU, menuTypeRegisterHelper -> {
-            menuTypeRegisterHelper.register(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "recipe_view"), ReliableRecipeViewer.RECIPE_VIEW_MENU);
-        });
-    }
-
-    @SubscribeEvent
-    public static void onMenuScreenRegistry(RegisterMenuScreensEvent event) {
-        event.register(ReliableRecipeViewer.RECIPE_VIEW_MENU, RecipeViewScreen::new);
+    public static void extractBackground(ScreenEvent.Render.Background event) {
+        if (event.getScreen() instanceof RRVExtendedContainerScreen) {
+			OverlayManager.INSTANCE.renderAllBackground(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+		}
     }
 
     @SubscribeEvent
@@ -108,14 +103,12 @@ public class NeoForgeClientEntrypoint {
 		else if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED)) {
 			ClientRecipeCache.INSTANCE.buildRecipeCache(false);
 		}
+		Minecraft.getInstance().execute(()->{
+			if (ItemFilters.needsCache() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
+				ItemFilters.fullStackList();
+			}
+		});
     }
-
-	@SubscribeEvent
-	public static void loadStackList(LevelEvent.Load event) {
-		if (ItemFilters.needsCache() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
-			ItemFilters.fullStackList();
-		}
-	}
 
     @SubscribeEvent
     public static void receiveRecipes(ItemTooltipEvent event) {

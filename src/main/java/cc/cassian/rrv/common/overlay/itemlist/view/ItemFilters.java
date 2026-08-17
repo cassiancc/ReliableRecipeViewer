@@ -321,12 +321,14 @@ public class ItemFilters {
             Player player = RRVClientUtil.player();
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.CREATIVE)) {
-                FeatureFlagSet enabledFeatures = player.level().enabledFeatures();
-                boolean hasPermissions = RrvUtil.hasPermission(player);
-                RegistryAccess registryAccess = player.registryAccess();
-                boolean creativeTabsCached = CreativeModeTabsAccessor.getCachedParameters() == null || CreativeModeTabsAccessor.getCachedParameters().needsUpdate(enabledFeatures, hasPermissions, registryAccess);
-                if (player != null && !creativeTabsCached) {
-                    CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
+                if (player != null) {
+                    FeatureFlagSet enabledFeatures = player.level().enabledFeatures();
+                    boolean hasPermissions = RrvUtil.hasPermission(player);
+                    RegistryAccess registryAccess = player.registryAccess();
+                    boolean creativeTabsCached = CreativeModeTabsAccessor.getCachedParameters() == null || CreativeModeTabsAccessor.getCachedParameters().needsUpdate(enabledFeatures, hasPermissions, registryAccess);
+                    if (!creativeTabsCached) {
+                        CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
+                    }
                 }
 
                 results.addAll(new ArrayList<>(CreativeModeTabs.searchTab().getSearchTabDisplayItems()).stream()

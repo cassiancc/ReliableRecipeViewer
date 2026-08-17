@@ -61,7 +61,8 @@ import java.util.List;
 
 public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExtendedContainerScreen {
 
-    private static final Identifier VIEW_LOCATION = Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "textures/gui/recipe_view.png");
+    private static final Identifier RECIPE_SCREEN = ReliableRecipeViewer.of("recipe_screen");
+    private static final Identifier VIEW_LOCATION = ReliableRecipeViewer.of("textures/gui/recipe_view.png");
     private static final Identifier UNSELECTED_TOP_TABS = Identifier.withDefaultNamespace("container/creative_inventory/tab_top_unselected_2");
 
     private static final Identifier SELECTED_TOP_TABS = Identifier.withDefaultNamespace("container/creative_inventory/tab_top_selected_2");
@@ -772,8 +773,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         // render deselected icons
         renderRecipeTypeButtons(guiGraphics, mouseX, mouseY, partialTicks, false);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.getTopPos(), 0.0F, 0.0F, this.imageWidth, this.imageHeight - 3, 256, 256);
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos, this.getTopPos() + (this.imageHeight - 3), 0, 256 - 3, this.imageWidth, 3, 256, 256);
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, RECIPE_SCREEN, leftPos, topPos, imageWidth, imageHeight+topPos-30, -1);
 
 
         ReliableClientRecipeType recipeType = this.getMenu().getClientRecipeType();

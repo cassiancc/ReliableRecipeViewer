@@ -40,13 +40,6 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
 		}
     }
 
-	@Inject(method = "extractBackground", at = @At("RETURN"))
-	private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-		Screen screen = (Screen) (Object) this;
-		if (screen instanceof RRVExtendedContainerScreen)
-			OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
-	}
-
 	@Inject(method = "defaultHandleGameClickEvent", at = @At("HEAD"), cancellable = true)
 	private static void click(ClickEvent event, Minecraft minecraft, Screen activeScreen, CallbackInfo ci) {
 		if (event instanceof ClickEvent.Custom(

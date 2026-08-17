@@ -10,7 +10,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -26,8 +25,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = AbstractContainerScreen.class, priority = 900)
-public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMenu> extends Screen
-        implements MenuAccess<T>, RRVExtendedContainerScreen {
+public abstract class MixinAbstractContainerScreen extends Screen
+        implements RRVExtendedContainerScreen {
 
     @Shadow
     protected int leftPos;
@@ -44,11 +43,6 @@ public abstract class MixinAbstractContainerScreen<T extends AbstractContainerMe
     @Shadow
     @Nullable
     protected Slot hoveredSlot;
-
-    @Shadow
-    public abstract T getMenu();
-
-    @Shadow protected abstract void onStopHovering(Slot slot);
 
     protected MixinAbstractContainerScreen(Component component) {
         super(component);
