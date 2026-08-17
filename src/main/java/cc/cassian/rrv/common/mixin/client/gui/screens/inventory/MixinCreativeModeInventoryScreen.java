@@ -46,10 +46,8 @@ public abstract class MixinCreativeModeInventoryScreen extends AbstractContainer
             if(OverlayManager.INSTANCE.isTextWidgetFocused()) {
                 box.keyPressed(keyEvent);
 
-                //~ if >26.2 'GLFW.GLFW_KEY'->'InputConstants.KEY' {
-                if ((keyEvent.key() != GLFW.GLFW_KEY_ESCAPE && keyEvent.key() != GLFW.GLFW_KEY_TAB))
+                if (!keyEvent.isEscape() && !keyEvent.isCycleFocus())
                     cir.setReturnValue(true);
-                //~}
             }
 
         }

@@ -46,7 +46,7 @@ public abstract class MixinAbstractRecipeBookScreen<T extends RecipeBookMenu> ex
         if (OverlayManager.INSTANCE.isTextWidgetFocused() && this.getFocused() instanceof EditBox box) {
             box.keyPressed(keyEvent);
 
-            if ((keyEvent.key() != 256 && keyEvent.key() != 258))
+            if (!keyEvent.isEscape() && !keyEvent.isCycleFocus())
                 cir.setReturnValue(true);
         }
 
