@@ -68,18 +68,18 @@ public class RecipeViewMenu {
 
     private RecipeViewScreen viewScreen;
     private final Screen parentScreen;
-    private final ArrayList<RecipeViewScreen> viewHistory;
+    private final ArrayList<RecipeViewMenu> viewHistory;
 
     private int currentCraftReference;
     private final List<RecipeTransferData> transferData;
 
     public final NonNullList<Slot> slots = NonNullList.create();
 
-    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewScreen> viewHistory) {
+    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewMenu> viewHistory) {
         this(parentScreen,containerId, inventory,recipes, origin, originType, viewHistory, ReliableClientRecipeType.NONE);
     }
 
-    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewScreen> viewHistory, ReliableClientRecipeType clientRecipeType) {
+    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewMenu> viewHistory, ReliableClientRecipeType clientRecipeType) {
         this.viewHistory = viewHistory;
 
         this.parentScreen = parentScreen;
@@ -166,31 +166,48 @@ public class RecipeViewMenu {
         return this.parentScreen;
     }
 
-    public ArrayList<RecipeViewScreen> getViewHistory() {
+    public ArrayList<RecipeViewMenu> getViewHistory() {
         return this.viewHistory;
     }
 
     public boolean goBack() {
-        if (this.viewScreen != null && this.viewHistory.indexOf(this.viewScreen) > 0) {
-            RRVClientUtil.setScreen(this.viewHistory.get(this.viewHistory.indexOf(this.viewScreen) - 1));
-            return true;
+        if (this.viewScreen != null) {
+            RecipeViewMenu menu = this.viewScreen.menu;
+            if (this.viewHistory.indexOf(menu) > 0) {
+                setScreen(Minecraft.getInstance().player, this.viewHistory.get(this.viewHistory.indexOf(menu) - 1));
+                return true;
+            }
         }
 
         return false;
     }
 
     public boolean goForward() {
-        if (this.viewScreen != null && this.viewHistory.size() - 1 > this.viewHistory.indexOf(this.viewScreen)) {
-            RRVClientUtil.setScreen(this.viewHistory.get(this.viewHistory.indexOf(this.viewScreen) + 1));
-            return true;
+        if (this.viewScreen != null) {
+            RecipeViewMenu menu = this.viewScreen.menu;
+            if (this.viewHistory.size() - 1 > this.viewHistory.indexOf(menu)) {
+                setScreen(Minecraft.getInstance().player, this.viewHistory.get(this.viewHistory.indexOf(menu) + 1));
+                return true;
+            }
         }
 
         return false;
     }
 
+    /// Update this menu's associated screen.
     public void setViewScreen(RecipeViewScreen viewScreen) {
         this.viewScreen = viewScreen;
-        this.viewHistory.add(viewScreen);
+        this.viewHistory.add(viewScreen.menu);
+    }
+
+    /// Create a new [RecipeViewScreen] or update it to use the provided menu.
+    public static void setScreen(LocalPlayer clientPlayer, RecipeViewMenu recipeViewMenu) {
+        if (RRVClientUtil.currentScreen() instanceof RecipeViewScreen recipeViewScreen) {
+            recipeViewScreen.setMenu(recipeViewMenu);
+            recipeViewMenu.setViewScreen(recipeViewScreen);
+        } else {
+            RRVClientUtil.setScreen(new RecipeViewScreen(recipeViewMenu, clientPlayer.getInventory(), Component.empty()));
+        }
     }
 
     public ItemStack getOrigin() {

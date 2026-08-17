@@ -176,6 +176,7 @@ stonecutter {
     replacements.string {
         direction = eval(current.version, "<26.1")
         replace(".fakeItem(", ".renderFakeItem(")
+        replace(".itemDecorations(", ".renderItemDecorations(")
         replace(".horizontalLine(", ".hLine(")
         replace(".verticalLine(", ".vLine(")
         replace("guiGraphics.text(", "guiGraphics.drawString(")

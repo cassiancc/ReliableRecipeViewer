@@ -439,7 +439,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         Screen parent = RRVClientUtil.currentScreen();
 
-        ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
+        ArrayList<RecipeViewMenu> viewHistory = new ArrayList<>();
 
         if (parent instanceof RecipeViewScreen viewScreen) {
             parent = viewScreen.getMenu().getParentScreen();
@@ -455,13 +455,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
         }
 
-        if (RRVClientUtil.currentScreen() instanceof RecipeViewScreen recipeViewScreen) {
-            recipeViewScreen.setMenu(recipeViewMenu);
-            recipeViewScreen.checkGui();
-            recipeViewMenu.setViewScreen(recipeViewScreen);
-        } else {
-            RRVClientUtil.setScreen(new RecipeViewScreen(recipeViewMenu, clientPlayer.getInventory(), Component.empty()));
-        }
+        RecipeViewMenu.setScreen(clientPlayer, recipeViewMenu);
     }
 
 

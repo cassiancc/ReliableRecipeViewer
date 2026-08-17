@@ -52,7 +52,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.spongepowered.asm.mixin.Unique;
 
 
 import java.awt.*;
@@ -257,7 +256,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         }
     }
 
-    public void checkGui() {
+    private void checkGui() {
         this.clearRecipeWidgets();
 
         RecipeViewMenu menu = this.getMenu();
@@ -306,7 +305,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 			int guiTop = getTopPos() + menu.guiOffsetTop(i);
 			int finalI = i;
 			RecipeViewMenu.DisplayInfo info = new RecipeViewMenu.DisplayInfo(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight());
-           currentRecipe.addRecipeWidgets(new RecipeScreenContext(this,this, this.font, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), null, (int) Minecraft.getInstance().mouseHandler.xpos(), (int) Minecraft.getInstance().mouseHandler.ypos(), 0));
+            currentRecipe.addRecipeWidgets(new RecipeScreenContext(this,this, this.font, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), null, (int) Minecraft.getInstance().mouseHandler.xpos(), (int) Minecraft.getInstance().mouseHandler.ypos(), 0));
 
             if (!ItemViewOverlay.INSTANCE.wasWarned()) {
                 // transfer button
@@ -399,9 +398,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     }
 
 
-    //~ if >26 'render' ->'extract' {
     protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-        //~}
         guiGraphics.text(this.font, this.page, (this.imageWidth - font.width(this.page)) / 2, this.imageHeight - 12, -12566464, false);
 
         var color = isHoveringOverTitle(mouseX, mouseY) ? -5606651 : -12566464;
@@ -436,10 +433,11 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 
     long lastChanged = 0;
 
-    //~ if >26 'render' ->'extract' {
+    //~ if >26 'render' ->'extract'
     public void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int xo = this.leftPos;
         int yo = this.topPos;
+        //~ if >26 'render(' ->'extractRenderState('
         super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().pushMatrix();
         graphics.pose().translate((float)xo, (float)yo);
@@ -450,7 +448,6 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         this.extractSlotHighlightFront(graphics);
 
         graphics.pose().popMatrix();
-        //~}
         List<ItemStack> craftReferences = getMenu().getCraftReferences();
         if (!craftReferences.isEmpty() && Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER)) {
             var x = this.leftPos + 4;
@@ -763,12 +760,8 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     }
 
     @Override
-    //? if >26 {
     public void extractBackground(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
-    //?} else {
-        /*public void renderBg(@NonNull GuiGraphicsExtractor guiGraphics, float partialTicks, int mouseX, int mouseY) {
-    *///?}
 
         // render deselected icons
         renderRecipeTypeButtons(guiGraphics, mouseX, mouseY, partialTicks, false);
@@ -873,9 +866,8 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 
     //Optional Slots
 
-    //~ if >26 'render' ->'extract' {
     public void extractSlotHighlightBack(GuiGraphicsExtractor graphics) {
-        if (!rrv$checkOptionalSlot()) {
+        if (!checkOptionalSlot()) {
             if (this.hoveredSlot != null && this.hoveredSlot.isHighlightable()) {
                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_BACK_SPRITE, this.hoveredSlot.x - 4, this.hoveredSlot.y - 4, 24, 24);
             }
@@ -883,16 +875,14 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     }
 
     public void extractSlotHighlightFront(GuiGraphicsExtractor graphics) {
-        if (!rrv$checkOptionalSlot()) {
+        if (!checkOptionalSlot()) {
             if (this.hoveredSlot != null && this.hoveredSlot.isHighlightable()) {
                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_FRONT_SPRITE, this.hoveredSlot.x - 4, this.hoveredSlot.y - 4, 24, 24);
             }
 		}
     }
-    //~}
 
-    @Unique
-    private boolean rrv$checkOptionalSlot() {
+    private boolean checkOptionalSlot() {
         return this.hoveredSlot != null && !this.hoveredSlot.hasItem() && getMenu().isOptionalSlot(this.hoveredSlot.index);
     }
 
@@ -903,7 +893,8 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     }
 
 	public void setMenu(RecipeViewMenu recipeViewMenu) {
-		menu = recipeViewMenu;
+		this.menu = recipeViewMenu;
+        checkGui();
 	}
 
     record RecipeTypeButton(RecipeViewScreen viewScreen, int x, int y, int width, int height, ReliableClientRecipeType recipeType,

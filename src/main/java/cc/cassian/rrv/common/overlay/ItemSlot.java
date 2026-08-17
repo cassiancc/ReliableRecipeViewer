@@ -220,7 +220,6 @@ public class ItemSlot {
 
         // render recipe
         if (recipe != null && showDecorations) {
-            //~ if >26 'renderItemDecorations'-> 'itemDecorations'
             guiGraphics.itemDecorations(mc.font, this.stack, this.x+2, this.y+2);
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_stack_highlight"), this.x + 3, this.y + 2, 16, 16);
         }
