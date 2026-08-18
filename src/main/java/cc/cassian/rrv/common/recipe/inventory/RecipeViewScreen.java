@@ -143,6 +143,10 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 
     @Override
     public boolean keyPressed(@NonNull KeyEvent keyEvent) {
+        if (handleKeyPress(this, keyEvent)) {
+            return true;
+        }
+
         if (this.minecraft.options.keyInventory.matches(keyEvent)) {
             this.onClose();
             return true;
@@ -163,10 +167,6 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 			ItemViewOverlay.INSTANCE.openRecipeView(this.workstationSlot.getStack(), ActionType.RESULT);
 			return true;
 		}
-
-        if (handleKeyPress(this, keyEvent)) {
-            return true;
-        }
 
         return super.keyPressed(keyEvent);
     }
