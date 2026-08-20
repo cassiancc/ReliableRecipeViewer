@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.options.*;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -118,6 +119,7 @@ public class ClientConfigScreen extends Screen {
         addChild(behaviorHelper, "stack_groups", Configs.STACK_GROUPS.areStackGroupsEnabled(), (u, b) -> {
             Configs.STACK_GROUPS.setStackGroupsEnabled(b);
             ItemFilters.clearCaches(true);
+            StackGroupManager.reload();
         });
 
 

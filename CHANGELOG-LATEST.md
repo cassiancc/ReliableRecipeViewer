@@ -10,3 +10,4 @@
 
 ### Fixed
 - Removing search filters from the config file no longer removes them as options in the config screen.
+- Enabling stack groups ingame now works correctly.
