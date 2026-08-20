@@ -375,12 +375,13 @@ public class ItemFilters {
                     }
                 }
 
-                results.addAll(new ArrayList<>(CreativeModeTabs.searchTab().getSearchTabDisplayItems()).stream()
-                        //? fabric {
-                        .map(RRVClientUtil::applyPolymerCheck)
-                        //?}
-                        .toList()
-                );
+                CreativeModeTabs.searchTab().getSearchTabDisplayItems().forEach(c->{
+                    //? fabric {
+                    results.add(RRVClientUtil.applyPolymerCheck(c.copy()));
+                    //?} else {
+                    /*results.add(c.copy());
+                    *///?}
+                });
             }
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.REGISTRY)) {

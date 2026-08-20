@@ -15,11 +15,14 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplays;
 
 import java.util.List;
 
 public class SmeltingClientRecipe implements ReliableClientRecipe {
 
+    public static final SlotContent FUEL = SlotContent.of(SlotDisplay.AnyFuel.INSTANCE);
     private final SlotContent input, result;
     private final AnimationTicker smeltingTicker;
     private final Identifier id;
@@ -41,6 +44,7 @@ public class SmeltingClientRecipe implements ReliableClientRecipe {
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
         slotFillContext.bindSlot(0, this.input);
+        slotFillContext.bindSlot(1, FUEL);
         slotFillContext.bindSlot(2, this.result);
     }
 

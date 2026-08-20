@@ -20,6 +20,8 @@ import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 
+import static cc.cassian.rrv.common.builtin.smelting.SmeltingClientRecipe.FUEL;
+
 public class BlastingClientRecipe implements ReliableClientRecipe {
 
     private final SlotContent input, result;
@@ -43,6 +45,7 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
     @Override
     public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
         slotFillContext.bindSlot(0, this.input);
+        slotFillContext.bindSlot(1, FUEL);
         slotFillContext.bindSlot(2, this.result);
     }
 
