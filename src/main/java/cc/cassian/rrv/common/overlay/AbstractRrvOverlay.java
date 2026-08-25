@@ -25,6 +25,8 @@ import java.util.List;
 
 /**
  * Abstract base class for all overlays
+ *
+ * CLIENT-ONLY
  */
 public abstract class AbstractRrvOverlay {
 

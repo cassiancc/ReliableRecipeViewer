@@ -5,6 +5,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.options.NamespaceTooltip;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import cc.cassian.rrv.common.config.Configs;
@@ -50,6 +51,8 @@ public class ReliableRecipeViewerClient {
     public static void bootstrap() {
         OverlayManager.registerOverlay(ItemViewOverlay.INSTANCE);
         OverlayManager.registerOverlay(SidePanelOverlay.INSTANCE);
+
+        ItemFilters.RESET_OVERLAY = ItemViewOverlay.INSTANCE::firstPage;
     }
 
     public static void loadConfigs() {

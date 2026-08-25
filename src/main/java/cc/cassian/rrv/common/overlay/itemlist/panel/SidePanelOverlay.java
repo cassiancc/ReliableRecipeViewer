@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
+/// CLIENT-ONLY
 public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     public static final SidePanelOverlay INSTANCE = new SidePanelOverlay();

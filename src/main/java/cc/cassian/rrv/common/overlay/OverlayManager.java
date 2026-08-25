@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
+/// CLIENT-ONLY
 public class OverlayManager {
 
     public static final OverlayManager INSTANCE = new OverlayManager();
@@ -33,7 +34,6 @@ public class OverlayManager {
     private boolean newScreenQueued = false;
 
     private final List<BlockingGuiComponent> guiBlockings = new ArrayList<>();
-
 
     public boolean hasQueuedWidgetUpdate() {
         return this.queuedWidgetUpdate;

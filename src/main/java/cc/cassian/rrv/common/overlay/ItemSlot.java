@@ -30,7 +30,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/// Representation of one slot later rendered in the overlay
+/**
+ * Representation of one slot later rendered in the overlay
+ *
+ * CLIENT-ONLY
+ */
 public class ItemSlot {
 
     private static final Identifier SLOT_HIGHLIGHT_BACK_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_back");

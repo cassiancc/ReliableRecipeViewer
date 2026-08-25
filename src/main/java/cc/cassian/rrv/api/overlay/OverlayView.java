@@ -8,6 +8,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 
+/// CLIENT-ONLY
 public final class OverlayView {
 	private static final ArrayList<OverlayKeybindSlotHandler> GLOBAL_SLOT_KEYBIND_HANDLERS = new ArrayList<>();
 
@@ -18,11 +19,13 @@ public final class OverlayView {
 	public static final Identifier CRAFTABLES = Identifier.fromNamespaceAndPath("rrv", "craftables");
 	public static final Identifier BOOKMARKS = Identifier.fromNamespaceAndPath("rrv", "bookmarks");
 
-	public static void registerGlobalOverlayKeybindSlotHandler(OverlayKeybindSlotHandler handler) {
+	@SuppressWarnings("unused")
+    public static void registerGlobalOverlayKeybindSlotHandler(OverlayKeybindSlotHandler handler) {
 		GLOBAL_SLOT_KEYBIND_HANDLERS.add(handler);
 	}
 
-	public static void registerGlobalOverlayKeybindSlotHandler(KeyMapping keyMapping, OverlayKeybindSlotHandler handler) {
+	@SuppressWarnings("unused")
+    public static void registerGlobalOverlayKeybindSlotHandler(KeyMapping keyMapping, OverlayKeybindSlotHandler handler) {
 		GLOBAL_SLOT_KEYBIND_HANDLERS.add(new KeySpecificHandler(keyMapping, handler));
 	}
 

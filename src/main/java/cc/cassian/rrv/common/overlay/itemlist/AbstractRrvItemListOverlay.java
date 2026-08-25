@@ -22,6 +22,7 @@ import java.util.List;
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
+/// CLIENT-ONLY
 public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
     public ReliableSpriteIconButton next = null;
