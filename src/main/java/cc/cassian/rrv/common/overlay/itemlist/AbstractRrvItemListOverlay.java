@@ -7,8 +7,6 @@ import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -24,7 +22,7 @@ import java.util.List;
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
-@Environment(EnvType.CLIENT)
+/// CLIENT-ONLY
 public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
     public ReliableSpriteIconButton next = null;

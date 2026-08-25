@@ -12,8 +12,6 @@ import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -32,8 +30,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/// Representation of one slot later rendered in the overlay
-@Environment(EnvType.CLIENT)
+/**
+ * Representation of one slot later rendered in the overlay
+ *
+ * CLIENT-ONLY
+ */
 public class ItemSlot {
 
     private static final Identifier SLOT_HIGHLIGHT_BACK_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_back");

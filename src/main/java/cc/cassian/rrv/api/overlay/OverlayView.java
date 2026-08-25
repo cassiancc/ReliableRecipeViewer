@@ -1,8 +1,6 @@
 package cc.cassian.rrv.api.overlay;
 
 import cc.cassian.rrv.common.overlay.ItemSlot;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.resources.Identifier;
@@ -10,7 +8,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 
-@Environment(EnvType.CLIENT)
+/// CLIENT-ONLY
 public final class OverlayView {
 	private static final ArrayList<OverlayKeybindSlotHandler> GLOBAL_SLOT_KEYBIND_HANDLERS = new ArrayList<>();
 
