@@ -487,6 +487,8 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemViewRecipes.addAllWorldInteractionRecipes(worldInteractionRecipes);
 
         var axes = SlotContent.of(ItemTags.AXES);
+		var shovels = SlotContent.of(ItemTags.SHOVELS);
+		var hoes = SlotContent.of(ItemTags.HOES);
 
         //? if >26.2 {
 		/*Registry<BlockTransformer> blockTransformers = Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BLOCK_TRANSFORMER);
