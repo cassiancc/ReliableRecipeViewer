@@ -26,7 +26,6 @@
     "world.entity.npc.TreasureMapForEmeraldsAccessor",
     "world.entity.npc.VillagerTradeAccessor",
     "world.item.CreativeModeTabsAccessor",
-    "world.item.CreativeModeTabsMixin",
     "world.item.alchemy.PotionBrewingAccessor",
     "world.item.crafting.BookCloningRecipeAccessor",
     "world.item.crafting.DecoratedPotRecipeAccessor",
@@ -76,6 +75,7 @@
     "client.renderer.item.MixinSpecialModelWrapper",
     "client.renderer.special.MixinSpecialModelRenderers",
     "integration.ControlifyRecipeViewScreenMixin",
-    "integration.jei.JeiRecipesGuiMixin"
+    "integration.jei.JeiRecipesGuiMixin",
+    "world.item.CreativeModeTabsMixin"
   ]
 }

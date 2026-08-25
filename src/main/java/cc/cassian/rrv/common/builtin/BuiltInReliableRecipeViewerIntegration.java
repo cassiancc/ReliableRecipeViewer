@@ -145,11 +145,9 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 				addLoot(entityType, getLootTable(defaultLootTable.get()), null);
 
 				List<SlotContent> loot = new ArrayList<>(ItemViewRecipes.MOB_DROPS.get(entityType).stream().map(slotContent -> {
-                    if (ItemViewRecipes.MODIFIED_MOB_DROPS.stream().anyMatch((mobDropModifyContext)->mobDropModifyContext.entityTypePredicate().test(entityType))) {
-                        for (MobDropModifyContext modifiedMobDrop : ItemViewRecipes.MODIFIED_MOB_DROPS) {
-                            if (modifiedMobDrop.slotContentPredicate().test(slotContent)) {
-                                return modifiedMobDrop.newDrop();
-                            }
+                    for (MobDropModifyContext modifiedMobDrop : ItemViewRecipes.MODIFIED_MOB_DROPS.stream().filter((mobDropModifyContext) -> mobDropModifyContext.entityTypePredicate().test(entityType)).toList()) {
+                        if (modifiedMobDrop.slotContentPredicate().test(slotContent)) {
+                            return modifiedMobDrop.newDrop();
                         }
                     }
                     return slotContent;

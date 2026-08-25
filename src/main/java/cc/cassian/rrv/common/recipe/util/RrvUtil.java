@@ -1,7 +1,6 @@
 package cc.cassian.rrv.common.recipe.util;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
-import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
@@ -18,6 +17,7 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 //? if >26.2 {
 /*import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import net.minecraft.core.HolderSet;
 import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
 import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
 import net.minecraft.util.random.Weighted;
@@ -300,6 +300,17 @@ public class RrvUtil {
 				}
                 yield 0f;
 			}
+            case Product(HolderSet<NumberProvider> operands)-> {
+                float value = 1.0F;
+
+                for(Holder<NumberProvider> operand : operands) {
+                    Float numberProvidedFloat = getNumberProvidedFloat(operand);
+                    if (numberProvidedFloat != null)
+                        value *= numberProvidedFloat;
+                }
+
+                yield value;
+            }
 			default -> {
 				LOGGER.error("RRV: Failed to load number provider from key: {}, was unrecognized type {}", numberProviderReference.unwrapKey(), number.getClass());
 				yield null;

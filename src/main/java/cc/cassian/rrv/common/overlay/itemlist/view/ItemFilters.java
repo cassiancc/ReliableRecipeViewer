@@ -20,7 +20,6 @@ import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.TypedDataComponent;
@@ -444,7 +443,9 @@ public class ItemFilters {
     }
 
     ///  Exports the contents of the index in a format compatible with resource packs.
-    public static void exportFullStackList(Button button) {
+    ///
+    /// @return Text mentioning the result of the export.
+    public static Component exportFullStackList() {
         try (var output = Files.newOutputStream(RRVPlatform.INSTANCE.getDataDirectory().resolve("rrv_index.json")); var writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
             JsonObject index = new JsonObject();
             JsonArray encodedStacks = new JsonArray();
@@ -472,11 +473,11 @@ public class ItemFilters {
             index.add("values", encodedStacks);
             index.add("aliases", encodedAliases);
             ReliableRecipeViewer.GSON.toJson(index, writer);
-            button.setMessage(ClientConfigScreen.clientSetting("export_item_view.success"));
             Util.getPlatform().openPath(RRVPlatform.INSTANCE.getDataDirectory());
+            return ClientConfigScreen.clientSetting("export_item_view.success");
         } catch (Exception e) {
-            button.setMessage(ClientConfigScreen.clientSetting("export_item_view.failed"));
             ReliableRecipeViewer.LOGGER.error("Unable to export full stack list!", e);
+            return ClientConfigScreen.clientSetting("export_item_view.failed");
         }
     }
 

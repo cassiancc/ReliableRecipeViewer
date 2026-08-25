@@ -199,7 +199,7 @@ public class ClientConfigScreen extends Screen {
         advancedHelper.addChild(stackGroupSettings);
 
 
-        Button exportItemViewButton = Button.builder(clientSetting("export_item_view"), ItemFilters::exportFullStackList).size(buttonWidth, 20).build();
+        Button exportItemViewButton = Button.builder(clientSetting("export_item_view"), button1 -> button1.setMessage(ItemFilters.exportFullStackList())).size(buttonWidth, 20).build();
         if (Minecraft.getInstance().level == null) {
             exportItemViewButton.active = false;
             exportItemViewButton.setTooltip(Tooltip.create(Component.translatable("rrv.client_settings.export_item_view.needs_world")));

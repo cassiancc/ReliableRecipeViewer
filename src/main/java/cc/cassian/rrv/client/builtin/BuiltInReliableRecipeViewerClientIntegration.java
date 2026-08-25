@@ -61,7 +61,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.BlockTransformer;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.component.BlockTransformerMappings;
 *///?}
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
@@ -488,13 +487,18 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemViewRecipes.addAllWorldInteractionRecipes(worldInteractionRecipes);
 
         var axes = SlotContent.of(ItemTags.AXES);
-        var shovels = SlotContent.of(ItemTags.SHOVELS);
-        var hoes = SlotContent.of(ItemTags.HOES);
 
         //? if >26.2 {
-        /*WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.AXE.transforms(), worldInteractionRecipes, axes);
-        WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.SHOVEL.transforms(), worldInteractionRecipes, shovels);
-        WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.HOE.transforms(), worldInteractionRecipes, hoes);
+		/*Registry<BlockTransformer> blockTransformers = Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BLOCK_TRANSFORMER);
+		for (Map.Entry<ResourceKey<BlockTransformer>, BlockTransformer> blockTransformer : blockTransformers.entrySet()) {
+			WorldInteractionRecipeUtil.addTransformerRecipes(blockTransformer.getValue().transforms(), worldInteractionRecipes, SlotContent.ofItemList(BuiltInRegistries.ITEM.stream().filter(c-> {
+				ItemStack stack = c.getDefaultInstance();
+				if (stack.has(DataComponents.BLOCK_TRANSFORMER)) {
+					return stack.get(DataComponents.BLOCK_TRANSFORMER).unwrapKey().get().equals(blockTransformer.getKey());
+				}
+				return false;
+			}).toList()));
+		}
         *///?}
 
         BuiltInRegistries.ITEM.entrySet().forEach(itemEntry -> {
@@ -534,15 +538,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_solidify"), SlotContent.of(block), SlotContent.of(new FluidStack(Fluids.WATER)), SlotContent.of(((ConcretePowderBlockAccessor) concretePowderBlock).getConcrete())));
                 }
             }
-            //? if >26.2 {
-            /*ItemStack stack = itemEntry.getValue().getDefaultInstance();
-            if (stack.has(DataComponents.BLOCK_TRANSFORMER)) {
-                List<BlockTransformer.BlockTransformData> transforms = stack.get(DataComponents.BLOCK_TRANSFORMER).transforms();
-                if (!transforms.equals(BlockTransformerMappings.AXE.transforms()) && !transforms.equals(BlockTransformerMappings.SHOVEL.transforms()) && !transforms.equals(BlockTransformerMappings.HOE.transforms())) {
-                    WorldInteractionRecipeUtil.addTransformerRecipes(transforms, worldInteractionRecipes, SlotContent.of(stack));
-                }
-            }
-            *///?}
         });
 
         // honeycomb
