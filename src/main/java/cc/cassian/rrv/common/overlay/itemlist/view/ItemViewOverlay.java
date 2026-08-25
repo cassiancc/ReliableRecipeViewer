@@ -42,6 +42,8 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NonNull;
 
@@ -312,9 +314,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                 guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
 
-                if (!slot.hasItem()
-                        || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())
-                        && ItemFilters.getTooltipMatch(slot.getItem(), this.currentQuery) == 0) {
+                if (this.shouldDarkenSlot(slot)) {
                     guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
                 }
                 guiGraphics.pose().popMatrix();
@@ -323,6 +323,23 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         }
 
 
+    }
+
+    public boolean shouldDarkenSlot(Slot slot) {
+        if (!this.itemFilterMode)
+            return false;
+
+        return !slot.hasItem() || this.shouldDarkenSlot(slot.getItem());
+    }
+
+    public boolean shouldDarkenSlot(ItemStack stack) {
+        if (!this.itemFilterMode)
+            return false;
+
+        Item item = stack.getItem();
+
+        return this.availableItems.stream().noneMatch(other -> other.getItem() == item)
+                && ItemFilters.getTooltipMatch(stack, this.currentQuery) == 0;
     }
 
     public void createSearchbarElement(InventoryPositionInfo info) {
