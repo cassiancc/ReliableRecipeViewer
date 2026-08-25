@@ -6,6 +6,8 @@ import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -26,6 +28,7 @@ import java.util.List;
 /**
  * Abstract base class for all overlays
  */
+@Environment(EnvType.CLIENT)
 public abstract class AbstractRrvOverlay {
 
     private final List<ItemSlot> itemSlots = new ArrayList<>();

@@ -1,10 +1,13 @@
 package cc.cassian.rrv.api.overlay;
 
 import cc.cassian.rrv.common.overlay.ItemSlot;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
+@Environment(EnvType.CLIENT)
 @FunctionalInterface
 public interface OverlayKeybindSlotHandler {
 	/**

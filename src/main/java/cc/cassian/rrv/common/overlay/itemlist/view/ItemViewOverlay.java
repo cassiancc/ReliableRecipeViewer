@@ -30,6 +30,8 @@ import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -51,6 +53,7 @@ import java.util.List;
 
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
+@Environment(EnvType.CLIENT)
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public static final ItemViewOverlay INSTANCE = new ItemViewOverlay();

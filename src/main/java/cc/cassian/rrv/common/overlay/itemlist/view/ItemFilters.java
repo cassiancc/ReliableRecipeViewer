@@ -32,6 +32,7 @@ import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.*;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +49,8 @@ public class ItemFilters {
     /// A list of [ItemStack]s from the Unique Recipe Output index soruce.
     private static final List<ItemStack> CACHED_RECIPE_OUTPUTS = new ArrayList<>();
 
+    @ApiStatus.Internal
+    public static Runnable RESET_OVERLAY = () -> {};
 
     /// Standard filtering for single-word searches.
     public static List<ItemStack> filter(String newQuery) {
@@ -492,7 +495,7 @@ public class ItemFilters {
         if (clearCachedRecipeOutputs) {
             clearCachedRecipeOutputs();
         }
-        ItemViewOverlay.INSTANCE.firstPage();
+        RESET_OVERLAY.run();
 	}
 
     /// Clear the cached stacks and force a rebuild.

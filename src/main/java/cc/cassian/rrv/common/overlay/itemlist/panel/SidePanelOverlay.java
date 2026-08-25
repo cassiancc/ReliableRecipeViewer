@@ -22,6 +22,8 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -49,6 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
+@Environment(EnvType.CLIENT)
 public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     public static final SidePanelOverlay INSTANCE = new SidePanelOverlay();
