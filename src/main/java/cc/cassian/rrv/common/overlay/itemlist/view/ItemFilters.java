@@ -371,10 +371,7 @@ public class ItemFilters {
                     FeatureFlagSet enabledFeatures = player.level().enabledFeatures();
                     boolean hasPermissions = RrvUtil.hasPermission(player);
                     RegistryAccess registryAccess = player.registryAccess();
-                    boolean creativeTabsCached = CreativeModeTabsAccessor.getCachedParameters() != null || CreativeModeTabsAccessor.getCachedParameters().needsUpdate(enabledFeatures, hasPermissions, registryAccess);
-                    if (!creativeTabsCached) {
-                        CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
-                    }
+                    CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
                 }
 
                 CreativeModeTabs.searchTab().getSearchTabDisplayItems().forEach(c->{
