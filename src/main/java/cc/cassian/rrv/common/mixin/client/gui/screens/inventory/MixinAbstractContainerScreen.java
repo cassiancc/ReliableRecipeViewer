@@ -58,8 +58,6 @@ public abstract class MixinAbstractContainerScreen extends Screen
 
     @Override
     public final void rrv$callInit() {
-        RRVExtendedContainerScreen.populateStacksForSearch(this, this.minecraft);
-
         AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo(this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
 
         OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(

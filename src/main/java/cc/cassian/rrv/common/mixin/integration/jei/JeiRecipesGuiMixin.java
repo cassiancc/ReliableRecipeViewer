@@ -70,8 +70,6 @@ public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedCo
 	public final void rrv$callInit() {
 		if (minecraft == null || Configs.CLIENT_SETTINGS.isJeiPanel()) return;
 
-        RRVExtendedContainerScreen.populateStacksForSearch(this, this.minecraft);
-
         AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo(
 				this,
 				this.width, this.height, this.area.x(), this.area.y(), this.area.width(), this.area.height());
