@@ -101,7 +101,7 @@ public interface RRVExtendedContainerScreen {
 	}
 
     static void populateStacksForSearch(Screen screen, Minecraft minecraft) {
-        if (screen instanceof CreativeModeInventoryScreen) {
+        /*if (screen instanceof CreativeModeInventoryScreen) {
             return;
         }
         var connection = minecraft.getConnection();
@@ -112,7 +112,7 @@ public interface RRVExtendedContainerScreen {
         if (player == null) {
             return;
         }
-        CreativeModeTabs.tryRebuildTabContents(connection.enabledFeatures(), true, player.level().registryAccess());
+        CreativeModeTabs.tryRebuildTabContents(connection.enabledFeatures(), true, player.level().registryAccess());*/
     }
 
 	boolean rrv$triggerInitLater();
