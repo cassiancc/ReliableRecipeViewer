@@ -7,6 +7,7 @@ import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.Unique;
@@ -97,6 +99,21 @@ public interface RRVExtendedContainerScreen {
 	default void rrv$callInit() {
 		throw new UnsupportedOperationException();
 	}
+
+    static void populateStacksForSearch(Screen screen, Minecraft minecraft) {
+        if (screen instanceof CreativeModeInventoryScreen) {
+            return;
+        }
+        var connection = minecraft.getConnection();
+        if (connection == null) {
+            return;
+        }
+        var player = minecraft.player;
+        if (player == null) {
+            return;
+        }
+        CreativeModeTabs.tryRebuildTabContents(connection.enabledFeatures(), true, player.level().registryAccess());
+    }
 
 	boolean rrv$triggerInitLater();
 }
