@@ -110,7 +110,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
             if (l == 0 && (gameTime-lastChanged > i)) {
                 lastChanged = gameTime;
                 index++;
-                if (index>SPAWN_EGGS.size()) {
+                if (index>=SPAWN_EGGS.size()) {
                     index = 0;
                 }
             }
