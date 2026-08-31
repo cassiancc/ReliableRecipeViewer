@@ -30,7 +30,7 @@ public class UpgradingClientRecipe implements ReliableClientRecipe {
     }
 
     // The identifier of this recipe, used for clientside operations like recipe hiding. Only available/required since v8.0.0.
-    // If this recipe does not have a file associated with it, prefix the path with ' e.g. `minecraft:/code_driven_recipe` so that users do not look for a nonexistent file.
+    // If this recipe does not have a file associated with it, prefix the path with '/' e.g. `minecraft:/code_driven_recipe` so that users do not look for a nonexistent file.
     public Identifier getId() {
         return id;
     }
