@@ -194,7 +194,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
             }
 
         }
-        if (context.mouseX() >= 75 && context.mouseX() <= 75 + 30 && context.mouseY() >= 20 && context.mouseY() <= 20+30) {
+        if (context.mouseX() >= 72 && context.mouseX() < 72 + 30 && context.mouseY() >= 19 && context.mouseY() < 19 + 30) {
             context.guiGraphics().setTooltipForNextFrame(context.font(), Tooltip.create(Component.translatable("view.rrv.type.entity.drops")).toCharSequence(Minecraft.getInstance()), xo, yo);
         }
 
