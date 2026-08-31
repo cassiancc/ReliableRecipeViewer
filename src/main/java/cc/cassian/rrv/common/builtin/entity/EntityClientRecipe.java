@@ -201,8 +201,8 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     }
 
     private void renderEntity(RecipeScreenContext context) {
-        int x = 10;
-        int y = 8;
+        int x = 9;
+        int y = 7;
 
         if (hasFieldGuideSprite) {
             context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, fieldGuideSprite, x, y, 0, 0, 55, 55, 55, 55);
@@ -220,8 +220,8 @@ public class EntityClientRecipe implements ReliableClientRecipe {
                     this.previewEntity,
                     context.recipePosition().left() + x,
                     context.recipePosition().top() + y,
-                    context.recipePosition().left() + x + 55,
-                    context.recipePosition().top() + y + 55,
+                    context.recipePosition().left() + x + 56,
+                    context.recipePosition().top() + y + 56,
                     scale, new Vector3f(0.0F, (50F / scale / 2.0F), 0.0F),
                     new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + context.partialTicks()) / 180.0F * Mth.PI, 0.0F), null);
 
