@@ -28,6 +28,7 @@ import java.util.List;
 public class RRVClientUtil {
     private static final ArrayList<String> INITIALIZED_MODS = new ArrayList<>();
     public static final Identifier CONTAINER = Identifier.withDefaultNamespace("container");
+    public static Boolean hasPermissions = null;
 
     public static ArrayList<String> getInitializedMods() {
         return INITIALIZED_MODS;
@@ -141,5 +142,12 @@ public class RRVClientUtil {
 
 	public static Player player() {
 		return Minecraft.getInstance().player;
+	}
+
+	public static boolean showOperatorItems(Player player) {
+        if (hasPermissions != null) {
+            return hasPermissions;
+        }
+		return player.canUseGameMasterBlocks() && Minecraft.getInstance().options.operatorItemsTab().get();
 	}
 }
