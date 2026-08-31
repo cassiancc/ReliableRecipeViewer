@@ -189,7 +189,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 		    if (context.screen() instanceof RRVExtendedContainerScreen recipeViewScreen && !recipeViewScreen.rrv$hoveredStack().isEmpty())
 			    return;
 
-            if (context.mouseX() >= 9 && context.mouseX() <= 9 + 58 && context.mouseY() >= y && context.mouseY() <= y+18) {
+            if (context.mouseX() >= 9 && context.mouseX() < 9 + 58 && context.mouseY() >= 79 && context.mouseY() < 79 + 18) {
                 context.guiGraphics().setTooltipForNextFrame(context.font(), Tooltip.create(Component.translatable("view.rrv.type.entity.food")).toCharSequence(Minecraft.getInstance()), xo, yo);
             }
 
