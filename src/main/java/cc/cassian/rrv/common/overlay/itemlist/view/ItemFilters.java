@@ -13,7 +13,6 @@ import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
-import cc.cassian.rrv.common.mixin.world.item.CreativeModeTabsAccessor;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
@@ -369,7 +368,7 @@ public class ItemFilters {
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.CREATIVE)) {
                 if (player != null) {
                     FeatureFlagSet enabledFeatures = player.level().enabledFeatures();
-                    boolean hasPermissions = RrvUtil.hasPermission(player);
+                    boolean hasPermissions = RRVClientUtil.showOperatorItems(player);
                     RegistryAccess registryAccess = player.registryAccess();
                     CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
                 }
