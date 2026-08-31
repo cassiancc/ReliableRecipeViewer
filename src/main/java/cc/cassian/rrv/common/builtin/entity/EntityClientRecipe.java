@@ -166,7 +166,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
         this.renderEntity(context);
 
-		this.hovered = context.mouseX() >= 10 && context.mouseX() <= 10 + 64 && context.mouseY() >= 0 && context.mouseY() <= 64;
+		this.hovered = context.mouseX() >= 5 && context.mouseX() < 5 + 64 && context.mouseY() >= 3 && context.mouseY() < 3 + 64;
 
         int xo = context.recipePosition().left() + context.mouseX();
         int yo = context.recipePosition().top() + context.mouseY();
@@ -189,20 +189,20 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 		    if (context.screen() instanceof RRVExtendedContainerScreen recipeViewScreen && !recipeViewScreen.rrv$hoveredStack().isEmpty())
 			    return;
 
-            if (context.mouseX() >= 9 && context.mouseX() <= 9 + 58 && context.mouseY() >= y && context.mouseY() <= y+18) {
+            if (context.mouseX() >= 9 && context.mouseX() < 9 + 58 && context.mouseY() >= 79 && context.mouseY() < 79 + 18) {
                 context.guiGraphics().setTooltipForNextFrame(context.font(), Tooltip.create(Component.translatable("view.rrv.type.entity.food")).toCharSequence(Minecraft.getInstance()), xo, yo);
             }
 
         }
-        if (context.mouseX() >= 75 && context.mouseX() <= 75 + 30 && context.mouseY() >= 20 && context.mouseY() <= 20+30) {
+        if (context.mouseX() >= 72 && context.mouseX() < 72 + 30 && context.mouseY() >= 19 && context.mouseY() < 19 + 30) {
             context.guiGraphics().setTooltipForNextFrame(context.font(), Tooltip.create(Component.translatable("view.rrv.type.entity.drops")).toCharSequence(Minecraft.getInstance()), xo, yo);
         }
 
     }
 
     private void renderEntity(RecipeScreenContext context) {
-        int x = 10;
-        int y = 8;
+        int x = 9;
+        int y = 7;
 
         if (hasFieldGuideSprite) {
             context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, fieldGuideSprite, x, y, 0, 0, 55, 55, 55, 55);
@@ -220,8 +220,8 @@ public class EntityClientRecipe implements ReliableClientRecipe {
                     this.previewEntity,
                     context.recipePosition().left() + x,
                     context.recipePosition().top() + y,
-                    context.recipePosition().left() + x + 55,
-                    context.recipePosition().top() + y + 55,
+                    context.recipePosition().left() + x + 56,
+                    context.recipePosition().top() + y + 56,
                     scale, new Vector3f(0.0F, (50F / scale / 2.0F), 0.0F),
                     new Quaternionf().rotationXYZ((float) Math.toRadians(180.0F), (this.animationTick + context.partialTicks()) / 180.0F * Mth.PI, 0.0F), null);
 

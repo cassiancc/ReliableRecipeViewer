@@ -6,9 +6,7 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -86,7 +84,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     }
 
     int index = 0;
-    long lastChanged = 0;
+    float ticks = 0;
 
     @Override
     public void renderIcon(RecipeViewScreen screen, int x, int y, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -101,23 +99,15 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
                 return;
             }
         }
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level != null) {
-            long gameTime = level.getGameTime();
-            int i = 20; // change every second
-            long l = gameTime % i;
 
-            if (l == 0 && (gameTime-lastChanged > i)) {
-                lastChanged = gameTime;
-                index++;
-                if (index>SPAWN_EGGS.size()) {
-                    index = 0;
-                }
-            }
-            guiGraphics.fakeItem(SPAWN_EGGS.get(index), x, y);
-        } else {
-            ReliableClientRecipeType.super.renderIcon(screen, x, y, guiGraphics, mouseX, mouseY, partialTicks);
+        ticks += partialTicks;
+        if (ticks >= 20) {
+            ticks = 0;
+            index++;
+            if (index >= SPAWN_EGGS.size()) index = 0;
         }
+
+        guiGraphics.fakeItem(SPAWN_EGGS.get(index), x, y);
     }
 
     @Override
