@@ -24,7 +24,7 @@ public class CompostingClientRecipe implements ReliableClientRecipe {
         //~ if >26 'getItemHolder'->'typeHolder'
         this.id = item.typeHolder().unwrapKey().orElseThrow().identifier().withPrefix("/").withSuffix("_composting");
         this.compost = SlotContent.of(item);
-        this.compostingChance = Math.round(i * 100);
+        this.compostingChance = Math.round(i);
     }
 
     @Override

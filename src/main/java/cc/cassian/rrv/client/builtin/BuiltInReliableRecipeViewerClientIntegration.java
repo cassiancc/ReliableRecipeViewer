@@ -574,7 +574,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 		/*ItemView.addClientRecipeWrapper(CompostingServerRecipe.TYPE, (unwrapped -> List.of(new CompostingClientRecipe(unwrapped.getCompostedItem().getDefaultInstance(), unwrapped.getLayers()))));
 		 *///?} else {
 		ComposterBlock.COMPOSTABLES.forEach((itemLike, aFloat) -> {
-			recipeList.add(new CompostingClientRecipe(itemLike.asItem().getDefaultInstance(), aFloat));
+			recipeList.add(new CompostingClientRecipe(itemLike.asItem().getDefaultInstance(), aFloat*100));
 		});
 		//?}
 	}

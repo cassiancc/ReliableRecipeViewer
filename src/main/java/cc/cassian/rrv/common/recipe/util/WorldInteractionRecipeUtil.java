@@ -28,7 +28,7 @@ public class WorldInteractionRecipeUtil {
 
 	/*public static void addTransformerRecipes(List<BlockTransformer.BlockTransformData> transforms, ArrayList<WorldInteractionClientRecipe> recipeList, SlotContent tool) {
 		for (BlockTransformer.BlockTransformData transform : transforms) {
-			BlockStateProvider blockStateProvider = transform.blockStateProvider();
+			BlockStateProvider blockStateProvider = transform.blockStateProvider().value();
 
 			if (blockStateProvider instanceof RuleBasedStateProvider ruleBasedStateProvider) {
 				for (RuleBasedStateProvider.Rule rule : ruleBasedStateProvider.rules()) {
@@ -47,9 +47,9 @@ public class WorldInteractionRecipeUtil {
 	}
 
 	private static void createTransformerRecipeFromRule(ArrayList<WorldInteractionClientRecipe> recipeList, SlotContent tool, RuleBasedStateProvider.Rule rule, SlotContent before) {
-		if (rule.then() instanceof SimpleStateProvider simpleStateProvider) {
+		if (rule.then().value() instanceof SimpleStateProvider simpleStateProvider) {
 			createTransformerRecipe(recipeList, tool, simpleStateProvider, before);
-		} else if (rule.then() instanceof CopyPropertiesProvider(BlockStateProvider source)) {
+		} else if (rule.then().value() instanceof CopyPropertiesProvider(BlockStateProvider source)) {
 			createTransformerRecipe(recipeList, tool, source, before);
 		}
 	}

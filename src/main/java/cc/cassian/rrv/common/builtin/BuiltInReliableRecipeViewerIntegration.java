@@ -58,8 +58,7 @@ import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
 //? if >26.2 {
-/*import net.minecraft.world.level.storage.loot.providers.number.ResolvableNumber;
-import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
+/*import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
 import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
 import net.minecraft.world.flag.FeatureFlags;
 *///?}
@@ -245,15 +244,15 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
             for (Item item : BuiltInRegistries.ITEM) {
                 ItemStack stack = item.getDefaultInstance();
                 if (stack.has(DataComponents.COOKING_FUEL)) {
-                    ResolvableNumber burnTime = Objects.requireNonNull(stack.get(DataComponents.COOKING_FUEL)).burnTime();
-                    var providedValue = RrvUtil.getNumberProvidedFloat(burnTime);
+                    var burnTime = Objects.requireNonNull(stack.get(DataComponents.COOKING_FUEL)).burnTime();
+                    var providedValue = RrvUtil.getNumberProvidedInt(burnTime);
                     if (providedValue != null) {
                         recipeList.add(new BurningServerRecipe(item, providedValue));
                     }
                 }
                 if (stack.has(DataComponents.COMPOSTABLE)) {
-                    ResolvableNumber layers = Objects.requireNonNull(stack.get(DataComponents.COMPOSTABLE)).layers();
-                    var providedValue = RrvUtil.getNumberProvidedFloat(layers);
+                    var layers = Objects.requireNonNull(stack.get(DataComponents.COMPOSTABLE)).layers();
+                    var providedValue = RrvUtil.getNumberProvidedInt(layers);
                     if (providedValue != null) {
                         recipeList.add(new CompostingServerRecipe(item, providedValue));
                     }

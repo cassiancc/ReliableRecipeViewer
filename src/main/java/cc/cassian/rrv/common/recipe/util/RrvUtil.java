@@ -56,6 +56,11 @@ import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
 import net.minecraft.world.level.storage.loot.providers.number.*;
+//? if >26.2 {
+/*import net.minecraft.world.level.storage.loot.providers.number.floats.*;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
+*///?}
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
@@ -266,44 +271,44 @@ public class RrvUtil {
 
     //? if >26.2 {
     /*/// Query a resolvable number. Used for fuel values and composting.
-    public static @Nullable Float getNumberProvidedFloat(ResolvableNumber number) {
-        if (number instanceof ResolvableNumber.Constant(float value)) {
+    public static @Nullable Float getNumberProvidedFloat(ResolvableFloat number) {
+        if (number instanceof ResolvableFloat.Constant(float value)) {
             return value;
-        } else if (number instanceof ResolvableNumber.Reference(ResourceKey<NumberProvider> providerResourceKey)) {
+        } else if (number instanceof ResolvableFloat.Reference(ResourceKey<ContextFloatProvider> providerResourceKey)) {
 			return RrvUtil.getNumberProvidedFloat(providerResourceKey);
         }
         return null;
     }
 
     /// Query a basic number provider. Used for fuel values and composting.
-    public static @Nullable Float getNumberProvidedFloat(ResourceKey<NumberProvider> key) {
-        var numberProviderReference = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.NUMBER_PROVIDER).getOrThrow(key);
+    public static @Nullable Float getNumberProvidedFloat(ResourceKey<ContextFloatProvider> key) {
+        var numberProviderReference = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.CONTEXT_FLOAT_PROVIDER).getOrThrow(key);
         return getNumberProvidedFloat(numberProviderReference);
 	}
 
-    public static @Nullable Float getNumberProvidedFloat(Holder<NumberProvider> numberProviderReference) {
-        NumberProvider number = numberProviderReference.value();
+    public static @Nullable Float getNumberProvidedFloat(Holder<ContextFloatProvider> numberProviderReference) {
+        ContextFloatProvider number = numberProviderReference.value();
 		return switch (number) {
 			case ConstantValue(float value) ->
                     value;
 			case ConditionalValue conditionalValue ->
                     getNumberProvidedFloat(conditionalValue.onFalse());
-			case NumberDispatcher(List<NumberDispatcher.Case> cases, Holder<NumberProvider> defaultValue) ->
+			case NumberDispatcher(List<NumberDispatcher.Case<ContextFloatProvider>> cases, Holder<ContextFloatProvider> defaultValue) ->
                     getNumberProvidedFloat(defaultValue);
             // Compostables (and frankly number providers in general) are really strangely written. https://github.com/misode/mcmeta/blob/data-json/data/minecraft/number_provider/compostable/low.json
-            case WeightedListValue(WeightedList<Holder<NumberProvider>> distribution) -> {
+            case WeightedListValue(WeightedList<Holder<ContextFloatProvider>> distribution) -> {
 				var unwrapped = distribution.unwrap();
-				for (Weighted<Holder<NumberProvider>> holder : unwrapped) {
+				for (Weighted<Holder<ContextFloatProvider>> holder : unwrapped) {
 					if (Objects.equals(getNumberProvidedFloat(holder.value()), 1.0f)) {
 						yield (float)(holder.weight() * 0.01);
 					}
 				}
                 yield 0f;
 			}
-            case Product(HolderSet<NumberProvider> operands)-> {
+            case Product(HolderSet<ContextFloatProvider> operands)-> {
                 float value = 1.0F;
 
-                for(Holder<NumberProvider> operand : operands) {
+                for(Holder<ContextFloatProvider> operand : operands) {
                     Float numberProvidedFloat = getNumberProvidedFloat(operand);
                     if (numberProvidedFloat != null)
                         value *= numberProvidedFloat;
@@ -312,11 +317,76 @@ public class RrvUtil {
                 yield value;
             }
 			default -> {
-				LOGGER.error("RRV: Failed to load number provider from key: {}, was unrecognized type {}", numberProviderReference.unwrapKey(), number.getClass());
+				LOGGER.error("RRV: Failed to load float number provider from key: {}, was unrecognized type {}", numberProviderReference.unwrapKey(), number.getClass());
 				yield null;
 			}
 		};
     }
+
+    /// Query a resolvable number. Used for fuel values and composting.
+    public static @Nullable Integer getNumberProvidedInt(ResolvableInt number) {
+        if (number instanceof ResolvableInt.Constant(int value)) {
+            return value;
+        } else if (number instanceof ResolvableInt.Reference(ResourceKey<ContextIntProvider> providerResourceKey)) {
+            return RrvUtil.getNumberProvidedInt(providerResourceKey);
+        }
+        return null;
+    }
+
+    /// Query a basic number provider. Used for fuel values and composting.
+    public static @Nullable Integer getNumberProvidedInt(ResourceKey<ContextIntProvider> key) {
+        var numberProviderReference = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.CONTEXT_INT_PROVIDER).getOrThrow(key);
+        return getNumberProvidedInt(numberProviderReference);
+    }
+
+    public static @Nullable Integer getNumberProvidedInt(Holder<ContextIntProvider> numberProviderReference) {
+		ContextIntProvider number = numberProviderReference.value();
+        return switch (number) {
+            case net.minecraft.world.level.storage.loot.providers.number.ints.ConstantValue(int value) ->
+                    value;
+            case net.minecraft.world.level.storage.loot.providers.number.ints.ConditionalValue conditionalValue ->
+                    getNumberProvidedInt(conditionalValue.onFalse());
+            case net.minecraft.world.level.storage.loot.providers.number.ints.NumberDispatcher(List<DispatcherProvider.Case<ContextIntProvider>> cases, Holder<ContextIntProvider> defaultValue) ->
+                    getNumberProvidedInt(defaultValue);
+            // Compostables (and frankly number providers in general) are really strangely written. https://github.com/misode/mcmeta/blob/data-json/data/minecraft/number_provider/compostable/low.json
+            case net.minecraft.world.level.storage.loot.providers.number.ints.WeightedListValue(WeightedList<Holder<ContextIntProvider>> distribution) -> {
+                var unwrapped = distribution.unwrap();
+                for (Weighted<Holder<ContextIntProvider>> holder : unwrapped) {
+                    if (Objects.equals(getNumberProvidedInt(holder.value()), 1)) {
+                        yield (int)(holder.weight());
+                    }
+                }
+                yield 0;
+            }
+            case net.minecraft.world.level.storage.loot.providers.number.ints.Product(HolderSet<ContextIntProvider> operands)-> {
+                int value = 1;
+
+                for(Holder<ContextIntProvider> operand : operands) {
+                    Integer numberProvidedFloat = getNumberProvidedInt(operand);
+                    if (numberProvidedFloat != null)
+                        value *= numberProvidedFloat;
+                }
+
+                yield value;
+            }
+            case net.minecraft.world.level.storage.loot.providers.number.ints.Quotient(Holder<ContextIntProvider> left, Holder<ContextIntProvider> right)-> {
+                Integer value = null;
+
+                Integer leftNumber = getNumberProvidedInt(left);
+                Integer rightNumber = getNumberProvidedInt(right);
+                if (leftNumber != null && rightNumber != null) {
+                    value = leftNumber / rightNumber;
+                }
+
+                yield value;
+            }
+            default -> {
+                LOGGER.error("RRV: Failed to load integer number provider from key: {}, was unrecognized type {}", numberProviderReference.unwrapKey(), number.getClass());
+                yield null;
+            }
+        };
+    }
+
     *///?}
 
     public static void sortByName(List<ItemStack> availableItems) {
