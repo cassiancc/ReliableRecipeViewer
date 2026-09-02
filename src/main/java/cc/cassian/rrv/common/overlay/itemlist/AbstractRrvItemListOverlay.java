@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
@@ -55,7 +56,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     @Override
     protected boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY) {
 
-        if (ReliableRecipeViewerClient.isCheatmodeActive()) {
+        if (ReliableRecipeViewerClient.isCheatmodeActive() && !slotsBeingUpdated) {
             for (ItemSlot slot : this.itemSlots()) {
                 if (!slot.isHovered())
                     continue;
@@ -75,10 +76,6 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
         if (scrolledY > 0)
             prevPage(null);
-
-        if (scrolledY != 0)
-            this.updateSlots();
-
 
         return true;
     }
@@ -124,6 +121,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
     @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (slotsBeingUpdated) return false;
         for (ItemSlot itemSlot : this.itemSlots()) {
             if (itemSlot.isHovered()) {
                 itemSlot.onClicked(event);
@@ -134,41 +132,46 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return false;
     }
 
+    protected boolean slotsBeingUpdated = false;
 
     /**
      * Responsible for adding the item entries to the overlay
      */
     public void updateSlots() {
-        this.itemSlots().clear();
+        slotsBeingUpdated = true;
+        Util.backgroundExecutor().execute(()->{
+            this.itemSlots().clear();
 
-        int currentStackPos = this.startIndex;
+            int currentStackPos = this.startIndex;
 
-        for (int y = this.itemStartY; y <= this.itemEndY - ITEM_ENTRY_SIZE; y += ITEM_ENTRY_SIZE) {
-            for (int x = this.itemStartX; x <= this.itemEndX - ITEM_ENTRY_SIZE; x += ITEM_ENTRY_SIZE) {
+            for (int y = this.itemStartY; y <= this.itemEndY - ITEM_ENTRY_SIZE; y += ITEM_ENTRY_SIZE) {
+                for (int x = this.itemStartX; x <= this.itemEndX - ITEM_ENTRY_SIZE; x += ITEM_ENTRY_SIZE) {
 
-                if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
-                    if (this.isPositionBlocked(x, y, ITEM_ENTRY_SIZE, ITEM_ENTRY_SIZE))
+                    if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
+                        if (this.isPositionBlocked(x, y, ITEM_ENTRY_SIZE, ITEM_ENTRY_SIZE))
+                            continue;
+
+                        if (currentStackPos < this.availableItems().size())
+                            this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
+
+                        currentStackPos++;
                         continue;
+                    }
 
-                    if (currentStackPos < this.availableItems().size())
-                        this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
+                    if (x >= this.effectiveX && x <= this.effectiveX + this.effectiveWidth - ITEM_ENTRY_SIZE && y >= this.effectiveY && y <= this.effectiveY + this.effectiveHeight - ITEM_ENTRY_SIZE) {
 
-                    currentStackPos++;
-                    continue;
+                        if (currentStackPos < this.availableItems().size())
+                            this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
+
+                        currentStackPos++;
+                    }
+
                 }
-
-                if (x >= this.effectiveX && x <= this.effectiveX + this.effectiveWidth - ITEM_ENTRY_SIZE && y >= this.effectiveY && y <= this.effectiveY + this.effectiveHeight - ITEM_ENTRY_SIZE) {
-
-                    if (currentStackPos < this.availableItems().size())
-                        this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
-
-                    currentStackPos++;
-                }
-
             }
-        }
 
-        this.fittingPerPage = currentStackPos - this.startIndex;
+            this.fittingPerPage = currentStackPos - this.startIndex;
+            slotsBeingUpdated = false;
+        });
 
     }
 

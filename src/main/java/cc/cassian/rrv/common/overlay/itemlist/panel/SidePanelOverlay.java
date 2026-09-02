@@ -130,12 +130,11 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(Reason reason) {
-        var screen = RRVClientUtil.currentScreen();
-        if (isRecipeViewScreen(screen) && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
-        this.availableItems.clear();
-
 		Util.backgroundExecutor().execute(() -> {
+            var screen = RRVClientUtil.currentScreen();
+            if (isRecipeViewScreen(screen) && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
+            if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
+            this.availableItems.clear();
             var availableItems = new ArrayList<ItemStack>();
             if (showCraftables()) {
                 Minecraft client = Minecraft.getInstance();
@@ -180,12 +179,8 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 this.availableItems.addAll(expandedItems);
                 this.updateSlots();
             }
-
         });
-        if (!showCraftables()) {
-            availableItems.addAll(StackGroupManager.expandGroupsInList(BookmarkManager.INSTANCE.displayItems()));
-            Minecraft.getInstance().execute(this::updateSlots);
-        }
+
         updateButtons();
     }
 

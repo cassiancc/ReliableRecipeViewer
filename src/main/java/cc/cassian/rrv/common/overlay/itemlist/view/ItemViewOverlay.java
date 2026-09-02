@@ -41,6 +41,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
@@ -221,17 +222,21 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     }
 
     public void updateDisplayedItems() {
-        List<ItemStack> items = this.filteredItems;
-        if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
-            boolean isSearching = isSearchingStackGroups();
-            if (isSearching) {
-                items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
+        slotsBeingUpdated = true;
+        Util.backgroundExecutor().execute(()->{
+            List<ItemStack> items = this.filteredItems;
+            if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
+                boolean isSearching = isSearchingStackGroups();
+                if (isSearching) {
+                    items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
+                }
+                items = StackGroupManager.applyGrouping(items, isSearching);
             }
-            items = StackGroupManager.applyGrouping(items, isSearching);
-        }
-        this.availableItems = items;
-        this.availableItems.removeIf(ItemView::isExcludedItem);
-        this.updateSlots();
+            this.availableItems = items;
+            this.availableItems.removeIf(ItemView::isExcludedItem);
+            this.updateSlots();
+            slotsBeingUpdated = false;
+        });
     }
 
     @Override
@@ -286,13 +291,17 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, -1);
         }
 
-
-        ItemSlot.currentFrameSlots = this.itemSlots();
-        for (ItemSlot slot : this.itemSlots()) {
-            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        if (!slotsBeingUpdated) {
+            ItemSlot.currentFrameSlots = this.itemSlots();
+            for (ItemSlot slot : this.itemSlots()) {
+                if (slot == null) {
+					slotsBeingUpdated = true;
+                    return;
+				}
+                slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+            }
+            ItemSlot.currentFrameSlots = null;
         }
-        ItemSlot.currentFrameSlots = null;
-
 
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
 
