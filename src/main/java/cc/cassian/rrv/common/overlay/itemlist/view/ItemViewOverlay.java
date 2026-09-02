@@ -96,7 +96,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (prev != enabled) {
             this.searchbar.visible = enabled;
         }
-        updateButtons(getPageCountText());
+        updateButtons();
     }
 
     @Override
@@ -105,7 +105,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         super.onScreenChanged(info);
         this.updateQuery(this.getCurrentQuery());
         this.createSearchbarElement(OverlayManager.INSTANCE.currentInfo());
-        this.createButtons(getPageCountText(), checkedX()+10, itemEndX - 28, checkedX()+4, itemEndX - 16);
+        this.createButtons(createTitleText(), checkedX()+10, itemEndX - 28, checkedX()+4, itemEndX - 16);
     }
 
     @Override
@@ -218,7 +218,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
 
-        this.updateButtons(getPageCountText());
+        this.updateButtons();
     }
 
     public void updateDisplayedItems() {

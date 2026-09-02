@@ -170,6 +170,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
             }
 
             this.fittingPerPage = currentStackPos - this.startIndex;
+            Minecraft.getInstance().execute(this::updateButtons);
             slotsBeingUpdated = false;
         });
 
@@ -210,6 +211,10 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
             maxPageIndex++;
 
         return maxPageIndex;
+    }
+
+    protected Component createTitleText() {
+        return getPageCountText();
     }
 
     protected Component getPageCountText() {
@@ -268,6 +273,10 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         next.setPosition(buttonEnd, buttonY);
 
         updateButtons(title);
+    }
+
+    protected void updateButtons() {
+        updateButtons(createTitleText());
     }
 
     protected void updateButtons(Component title) {
