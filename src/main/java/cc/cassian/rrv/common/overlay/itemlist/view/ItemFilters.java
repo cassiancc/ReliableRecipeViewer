@@ -20,7 +20,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -31,6 +30,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.*;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -78,9 +78,9 @@ public class ItemFilters {
     /// @param query The query
     /// @return A list of matching item stacks
     public static List<ItemStack> defaultFilter(String query) {
-        List<ItemStack> firstPrio = new ArrayList<>();
-        List<ItemStack> secondPrio = new ArrayList<>();
-        List<ItemStack> thirdPrio = new ArrayList<>();
+        List<ItemStack> firstPrio = new ArrayList<>(); // exact matches
+        List<ItemStack> secondPrio = new ArrayList<>(); // partial matches, aliases, tooltips
+        List<ItemStack> thirdPrio = new ArrayList<>(); // single word matches, partial tooltip matches
 
         for (ItemStack stack : fullStackList()) {
 
@@ -95,19 +95,20 @@ public class ItemFilters {
             else if (lowerCaseQuery.contains(" ") && Arrays.stream(lowerCaseQuery.split(" ")).allMatch(itemName::contains)) {
                 thirdPrio.add(stack);
             }
-            else if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
-                int compCheck = ItemFilters.getTooltipMatch(stack, query);
-                if (compCheck == 1)
-                    secondPrio.add(stack);
-                if (compCheck == 2)
-                    thirdPrio.add(stack);
-            } else if (!aliases.isEmpty()) {
+            else if (!aliases.isEmpty()) {
                 aliases.forEach(alias -> {
                     if (alias.toLowerCase(Locale.ROOT).contains(lowerCaseQuery)) {
                         if (!secondPrio.contains(stack))
                             secondPrio.add(stack);
                     }
                 });
+            }
+            else {
+                int compCheck = ItemFilters.getTooltipMatch(stack, query);
+                if (compCheck == 1)
+                    secondPrio.add(stack);
+                if (compCheck == 2)
+                    thirdPrio.add(stack);
             }
         }
 
@@ -341,19 +342,30 @@ public class ItemFilters {
         List<Component> lore = RRVClientUtil.getTooltipFromItem(stack);
 
         for (Component line : lore) {
-            if (line.getContents() instanceof TranslatableContents translatableContents) {
-                var key = RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT);
-                if (key.startsWith(query))
-                    return 1;
-
-                if (key.contains(query))
-                    return 2;
-            }
-
-
+            Integer x = getMatch(query, line);
+            if (x != null) return x;
         }
 
         return 0;
+    }
+
+    private static @Nullable Integer getMatch(String query, Component line) {
+        if (line.getContents() instanceof TranslatableContents translatableContents) {
+            var key = RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT);
+            System.out.println(key);
+            if (key.startsWith(query))
+                return 1;
+
+            if (key.contains(query))
+                return 2;
+
+            for (Object arg : translatableContents.getArgs()) {
+                if (arg instanceof Component component) {
+                    return getMatch(query, component);
+                }
+            }
+        }
+        return null;
     }
 
     /// @return A cached list of all items that can be displayed in the ViewOverlay
@@ -373,9 +385,10 @@ public class ItemFilters {
                     CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
                 }
 
-                CreativeModeTabs.searchTab().getSearchTabDisplayItems().forEach(c->{
+                new ArrayList<>(CreativeModeTabs.searchTab().getSearchTabDisplayItems()).forEach(c->{
+                    ItemStack copy = c.copy();
                     //? fabric {
-                    results.add(RRVClientUtil.applyPolymerCheck(c.copy()));
+                    results.add(RRVClientUtil.applyPolymerCheck(copy));
                     //?} else {
                     /*results.add(c.copy());
                     *///?}
