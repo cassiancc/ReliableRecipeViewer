@@ -56,7 +56,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     @Override
     protected boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY) {
 
-        if (ReliableRecipeViewerClient.isCheatmodeActive() && !slotsBeingUpdated) {
+        if (ReliableRecipeViewerClient.isCheatmodeActive() && !slotsBeingUpdated()) {
             for (ItemSlot slot : this.itemSlots()) {
                 if (!slot.isHovered())
                     continue;
@@ -79,6 +79,10 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
         return true;
     }
+
+	protected boolean slotsBeingUpdated() {
+		return slotUpdaters > 0;
+	}
 
     protected void prevPage(Button button) {
         int fittingPerPage = this.fittingPerPage();
@@ -121,7 +125,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
     @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (slotsBeingUpdated) return false;
+        if (slotsBeingUpdated()) return false;
         for (ItemSlot itemSlot : this.itemSlots()) {
             if (itemSlot.isHovered()) {
                 itemSlot.onClicked(event);
@@ -132,13 +136,13 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return false;
     }
 
-    protected boolean slotsBeingUpdated = false;
+    protected int slotUpdaters = 0;
 
     /**
      * Responsible for adding the item entries to the overlay
      */
     public void updateSlots() {
-        slotsBeingUpdated = true;
+        slotUpdaters += 1;
         Util.backgroundExecutor().execute(()->{
             this.itemSlots().clear();
 
@@ -171,7 +175,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
             this.fittingPerPage = currentStackPos - this.startIndex;
             Minecraft.getInstance().execute(this::updateButtons);
-            slotsBeingUpdated = false;
+            slotUpdaters -= 1;
         });
 
     }

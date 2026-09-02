@@ -184,45 +184,49 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
      * @param newQuery The text that will be searched for.
      */
     private void updateQuery(String newQuery) {
-        if (!newQuery.equals(this.currentQuery))
-            this.startIndex = 0;
+        slotUpdaters += 1;
+        Util.backgroundExecutor().execute(() -> {
+            if (!newQuery.equals(this.currentQuery))
+                this.startIndex = 0;
 
-        this.currentQuery = newQuery;
+            this.currentQuery = newQuery;
 
-        // advanced filtering
-        if (newQuery.contains(" ")) {
+            // advanced filtering
+            if (newQuery.contains(" ")) {
 
-            ArrayList<String> objects = new ArrayList<>();
+                ArrayList<String> objects = new ArrayList<>();
 
-            for (String query : newQuery.split(" ")) {
-                if (!PrefixedFilter.startsWithPrefix(query)) {
-                    objects.add(query);
+                for (String query : newQuery.split(" ")) {
+                    if (!PrefixedFilter.startsWithPrefix(query)) {
+                        objects.add(query);
+                    }
                 }
+
+                this.filteredItems.clear();
+                this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects).strip()));
+
+                for (String query : getCurrentQueries()) {
+                    ItemFilters.advancedFilter(filteredItems, query);
+                }
+                // standard filtering
+            } else {
+                this.filteredItems.clear();
+                this.filteredItems.addAll(ItemFilters.filter(newQuery));
             }
 
-            this.filteredItems.clear();
-            this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects).strip()));
+            this.filteredItems.removeIf(ItemView::isExcludedItem);
 
-            for (String query : getCurrentQueries()) {
-                ItemFilters.advancedFilter(filteredItems, query);
-            }
-        // standard filtering
-        } else {
-            this.filteredItems.clear();
-            this.filteredItems.addAll(ItemFilters.filter(newQuery));
-        }
+            this.updateDisplayedItems();
 
-        this.filteredItems.removeIf(ItemView::isExcludedItem);
+            SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
 
-        this.updateDisplayedItems();
-
-        SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
-
-        this.updateButtons();
+            Minecraft.getInstance().execute(this::updateButtons);
+            slotUpdaters -= 1;
+        });
     }
 
     public void updateDisplayedItems() {
-        slotsBeingUpdated = true;
+        slotUpdaters += 1;
         Util.backgroundExecutor().execute(()->{
             List<ItemStack> items = this.filteredItems;
             if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
@@ -235,7 +239,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             this.availableItems = items;
             this.availableItems.removeIf(ItemView::isExcludedItem);
             this.updateSlots();
-            slotsBeingUpdated = false;
+            slotUpdaters -= 1;
         });
     }
 
@@ -291,11 +295,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, -1);
         }
 
-        if (!slotsBeingUpdated) {
+        if (!slotsBeingUpdated()) {
             ItemSlot.currentFrameSlots = this.itemSlots();
             for (ItemSlot slot : this.itemSlots()) {
                 if (slot == null) {
-					slotsBeingUpdated = true;
+					slotUpdaters += 1;
                     return;
 				}
                 slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
