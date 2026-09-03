@@ -297,21 +297,27 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         if (!slotsBeingUpdated()) {
             ItemSlot.currentFrameSlots = this.itemSlots();
-            for (ItemSlot slot : this.itemSlots()) {
-                if (slot == null) {
-					slotUpdaters += 1;
-                    return;
-				}
-                slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-            }
+            extractSlots(this.itemSlots(), guiGraphics, mouseX, mouseY, partialTicks);
             ItemSlot.currentFrameSlots = null;
+        } else {
+            extractSlots(this.lastItemSlots(), guiGraphics, mouseX, mouseY, partialTicks);
         }
 
         this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
 
 
-        drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex(), false);
+        if (!currentlyIndexing()) {
+            drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex(), false);
+        }
+    }
 
+    public void extractSlots(List<ItemSlot> slots, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        for (ItemSlot slot : slots) {
+            if (slot == null) {
+                return;
+            }
+            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        }
     }
 
     public void renderItemHighlighting(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {

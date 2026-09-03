@@ -103,11 +103,6 @@ public class NeoForgeClientEntrypoint {
 		else if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED)) {
 			ClientRecipeCache.INSTANCE.buildRecipeCache(false);
 		}
-		Minecraft.getInstance().execute(()->{
-			if (ItemFilters.needsCache() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
-				ItemFilters.fullStackList();
-			}
-		});
     }
 
     @SubscribeEvent

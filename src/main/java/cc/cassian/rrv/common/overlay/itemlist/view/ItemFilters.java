@@ -352,7 +352,6 @@ public class ItemFilters {
     private static @Nullable Integer getMatch(String query, Component line) {
         if (line.getContents() instanceof TranslatableContents translatableContents) {
             var key = RrvUtil.get(translatableContents.getKey()).toLowerCase(Locale.ROOT);
-            System.out.println(key);
             if (key.startsWith(query))
                 return 1;
 
@@ -373,6 +372,7 @@ public class ItemFilters {
     /// **Also includes all stack-sensitives**
     public static List<ItemStack> fullStackList() {
         if (needsCache()) {
+            ReliableRecipeViewer.LOGGER.debug("RRV: Rebuilding cached index!");
             List<ItemStack> results = new ArrayList<>();
 
             Player player = RRVClientUtil.player();
@@ -382,7 +382,9 @@ public class ItemFilters {
                     FeatureFlagSet enabledFeatures = player.level().enabledFeatures();
                     boolean hasPermissions = RRVClientUtil.showOperatorItems(player);
                     RegistryAccess registryAccess = player.registryAccess();
-                    CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
+                    if (!player.hasInfiniteMaterials()) {
+                        CreativeModeTabs.tryRebuildTabContents(enabledFeatures, hasPermissions, registryAccess);
+                    }
                 }
 
                 new ArrayList<>(CreativeModeTabs.searchTab().getSearchTabDisplayItems()).forEach(c->{
@@ -500,7 +502,7 @@ public class ItemFilters {
 
     /// Clear the cached stacks and force a rebuild.
 	public static void clearCaches(boolean clearCachedRecipeOutputs) {
-        ReliableRecipeViewer.LOGGER.info("RRV: Rebuilding cached index!");
+        ReliableRecipeViewer.LOGGER.debug("RRV: Clearing cached index!");
 		CACHED_STACKS.clear();
         if (clearCachedRecipeOutputs) {
             clearCachedRecipeOutputs();

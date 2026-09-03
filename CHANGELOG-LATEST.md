@@ -1,4 +1,2 @@
-### Fixed
-- Creative tabs not updating correctly (thanks @SkyNotTheLimit, @OffsetMonkey538)
-- Incorrect behaviour on entity page (thanks @OffsetMonkey538)
-- Incorrect javadocs in `ReliableClientRecipeType`.
+### Changed
+- Search, indexing, and similar logic to update item slots is now completely handled off the main thread. This cuts down on large lag spikes, though the item view may take a second to appear.

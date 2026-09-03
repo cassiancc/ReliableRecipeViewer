@@ -5,6 +5,8 @@ import cc.cassian.rrv.api.overlay.OverlayKeybindSlotHandler;
 import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
@@ -31,6 +33,7 @@ import java.util.List;
 public abstract class AbstractRrvOverlay {
 
     private final List<ItemSlot> itemSlots = new ArrayList<>();
+    private final List<ItemSlot> lastItemSlots = new ArrayList<>();
 
     protected int x, y, width, height;
 
@@ -144,9 +147,25 @@ public abstract class AbstractRrvOverlay {
 
     protected abstract boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY);
 
-
+    /**
+	 * The current list of item slots. These are updated on a background thread to prevent large lag spikes. If they are actively being modified (see {@link AbstractRrvItemListOverlay#slotsBeingUpdated()}, check {@link AbstractRrvOverlay#lastItemSlots()})
+	 */
     public List<ItemSlot> itemSlots() {
         return this.itemSlots;
+    }
+
+    /**
+     * The last safe (not actively being modified) list of item slots. For the current list, see {@link AbstractRrvOverlay#itemSlots()}
+    */
+    public List<ItemSlot> lastItemSlots() {
+        return this.lastItemSlots;
+    }
+
+    /**
+     * Whether there is not currently a list of items to display. If this is the case, no decorations are rendered.
+     */
+    protected boolean currentlyIndexing() {
+        return ItemFilters.needsCache() && this.itemSlots().isEmpty() && this.lastItemSlots.isEmpty();
     }
 
     public void onScreenChanged(InventoryPositionInfo info) {

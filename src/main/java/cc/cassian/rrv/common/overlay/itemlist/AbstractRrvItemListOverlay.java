@@ -6,6 +6,7 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -80,7 +81,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return true;
     }
 
-	protected boolean slotsBeingUpdated() {
+	public boolean slotsBeingUpdated() {
 		return slotUpdaters > 0;
 	}
 
@@ -143,6 +144,10 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
      */
     public void updateSlots() {
         slotUpdaters += 1;
+        Minecraft.getInstance().execute(()->{
+            this.lastItemSlots().clear();
+            this.lastItemSlots().addAll(this.itemSlots());
+        });
         Util.backgroundExecutor().execute(()->{
             this.itemSlots().clear();
 
@@ -276,6 +281,11 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         back.setPosition(buttonStart, buttonY);
         next.setPosition(buttonEnd, buttonY);
 
+        if (currentlyIndexing()) {
+            back.visible = false;
+            next.visible = false;
+        }
+
         updateButtons(title);
     }
 
@@ -285,7 +295,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
     protected void updateButtons(Component title) {
         if (back != null) {
-            boolean enabled = showButtons(title);
+            boolean enabled = showButtons(title) && !currentlyIndexing();
             back.visible = enabled;
             next.visible = enabled;
             if (enabled && getMaxPageIndex() > 0) {
@@ -295,6 +305,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
                 next.active = false;
                 back.active = false;
             }
+            ItemViewOverlay.INSTANCE.getSearchbar().setHint(Component.translatable(currentlyIndexing() ? "rrv.indexing" : "rrv.search_hint"));
         }
     }
 
