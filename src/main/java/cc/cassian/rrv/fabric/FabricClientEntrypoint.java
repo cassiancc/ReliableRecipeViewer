@@ -67,6 +67,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
                 ScreenEvents.afterBackground(screen).register((screen2, guiGraphics, mouseX, mouseY, partialTicks)->{
                     OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
                 });
+                //~ if <26 'Extract'->'Render'
                 ScreenEvents.beforeExtract(screen).register((screen2, guiGraphics, mouseX, mouseY, partialTicks)->{
                     OverlayManager.EXCLUSION_AREA_EVENTS.forEach(event-> event.addExclusionAreas(screen2, OverlayManager.INSTANCE, partialTicks));
                 });
