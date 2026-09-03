@@ -164,7 +164,7 @@ public abstract class AbstractRrvOverlay {
     /**
      * Whether there is not currently a list of items to display. If this is the case, no decorations are rendered.
      */
-    protected boolean currentlyIndexing() {
+    public boolean currentlyIndexing() {
         return ItemFilters.needsCache() && this.itemSlots().isEmpty() && this.lastItemSlots.isEmpty();
     }
 

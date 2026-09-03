@@ -2,8 +2,11 @@ package cc.cassian.rrv.common.recipe.item;
 
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.extra.FluidStack;
+//? fabric {
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+//?}
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -15,6 +18,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class FluidItem extends BlockItem {
@@ -32,12 +36,24 @@ public class FluidItem extends BlockItem {
         return this.fluid;
     }
 
+    @Override
+    public Component getName(ItemStack itemStack) {
+        //? fabric
+        return FluidVariantAttributes.getName(FluidStack.fromItemStack(itemStack).toFluidVariant());
+        //? neoforge
+        //return super.getName(itemStack);
+    }
 
     @Override
     public void appendHoverText(ItemStack itemStack, TooltipContext tooltipContext, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
-        super.appendHoverText(itemStack, tooltipContext, tooltipDisplay, consumer, tooltipFlag);
-
         FluidStack fluidStack = FluidStack.fromItemStack(itemStack);
+        //? fabric {
+		ArrayList<Component> tooltip = new ArrayList<>();
+        FluidVariantRendering.getHandlerOrDefault(getFluid()).appendTooltip(fluidStack.toFluidVariant(), tooltip, tooltipFlag);
+        tooltip.forEach(consumer);
+        //?} else {
+        /*super.appendHoverText(itemStack, tooltipContext, tooltipDisplay, consumer, tooltipFlag);
+        *///?}
         if (Configs.CLIENT_SETTINGS.isFluidUnitDroplets())
             consumer.accept(Component.translatable("rrv.fluid_droplets.unit", String.format("%,d", fluidStack.amount()*81)).withStyle(ChatFormatting.GRAY));
         else

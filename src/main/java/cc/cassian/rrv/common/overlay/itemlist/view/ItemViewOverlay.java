@@ -295,28 +295,11 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, -1);
         }
 
-        if (!slotsBeingUpdated()) {
-            ItemSlot.currentFrameSlots = this.itemSlots();
-            extractSlots(this.itemSlots(), guiGraphics, mouseX, mouseY, partialTicks);
-            ItemSlot.currentFrameSlots = null;
-        } else {
-            extractSlots(this.lastItemSlots(), guiGraphics, mouseX, mouseY, partialTicks);
-        }
-
-        this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
-
-
         if (!currentlyIndexing()) {
-            drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex(), false);
-        }
-    }
+            extractSlots(guiGraphics, mouseX, mouseY, partialTicks);
 
-    public void extractSlots(List<ItemSlot> slots, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        for (ItemSlot slot : slots) {
-            if (slot == null) {
-                return;
-            }
-            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+            this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
+            drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex(), false);
         }
     }
 

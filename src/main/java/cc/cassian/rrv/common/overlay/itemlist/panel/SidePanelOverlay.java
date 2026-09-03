@@ -356,15 +356,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, colour);
         }
 
-        try {
-            ItemSlot.currentFrameSlots = this.itemSlots();
-            for (ItemSlot slot : this.itemSlots()) {
-                if (slot == null) return;
-                slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-            }
-            ItemSlot.currentFrameSlots = null;
-        } catch (ConcurrentModificationException ignored) {
-        }
+        extractSlots(guiGraphics, mouseX, mouseY, partialTicks);
 
         drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
     }
