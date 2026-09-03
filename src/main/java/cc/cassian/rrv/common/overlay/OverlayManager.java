@@ -1,9 +1,10 @@
 package cc.cassian.rrv.common.overlay;
 
+import cc.cassian.rrv.api.client.ExclusionAreaManager;
+import cc.cassian.rrv.api.event.OverlayManagementEvents;
 import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -22,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 /// CLIENT-ONLY
-public class OverlayManager {
+public class OverlayManager implements ExclusionAreaManager {
 
     public static final OverlayManager INSTANCE = new OverlayManager();
 
@@ -33,6 +34,7 @@ public class OverlayManager {
     private boolean queuedWidgetUpdate = false;
     private boolean newScreenQueued = false;
 
+    public static List<OverlayManagementEvents.AddExclusionAreasEvent> EXCLUSION_AREA_EVENTS = new ArrayList<>();
     private final List<BlockingGuiComponent> guiBlockings = new ArrayList<>();
 
     public boolean hasQueuedWidgetUpdate() {
@@ -58,7 +60,7 @@ public class OverlayManager {
         return this.newScreenQueued;
     }
 
-    //Update all overlays and collect widgets
+    /// Update all overlays and collect widgets
     public void onScreenChanged() {
         PRESENT_OVERLAYS.forEach(overlay -> overlay.onScreenChanged(this.currentInfo()));
 
@@ -70,7 +72,7 @@ public class OverlayManager {
 
     }
 
-    //Update widget lists
+    /// Update widget lists
     public void updateOverlaysAndWidgets(boolean always) {
         if (!always && !this.newScreenQueued)
             return;
@@ -94,7 +96,7 @@ public class OverlayManager {
         return this.currentInvInfo;
     }
 
-    //Returns whether an editbox overlay widget is focused
+    /// Returns whether an [EditBox] overlay widget is focused
     public boolean isTextWidgetFocused() {
 
         if (this.currentInvInfo.screen().getFocused() == null)
@@ -228,7 +230,7 @@ public class OverlayManager {
     public void renderAll(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks));
 
-        if (RRVPlatform.INSTANCE.isDevelopment() && RRVClientUtil.showDebugScreen())
+        if (RRVClientUtil.showDebugScreen())
             this.renderDebug(guiGraphics, mouseX, mouseY, partialTicks);
     }
 

@@ -3,6 +3,7 @@ package cc.cassian.rrv.client.util;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
+import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
@@ -77,7 +78,7 @@ public class RRVClientUtil {
     }
 
     public static boolean showDebugScreen() {
-        return false;
+        return Configs.CLIENT_SETTINGS.showExclusionAreas();
     }
 
     public static boolean matchesAnyTransferClass(ReliableClientRecipe clientRecipe, Screen playerScreen) {

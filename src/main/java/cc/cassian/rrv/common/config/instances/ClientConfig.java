@@ -39,6 +39,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean clientSettingsButton = true;
 	private boolean sidePanelSettingsButton = true;
 	private Map<PrefixedFilter, PrefixedFilter.Configuration> searchFilters = PrefixedFilter.DEFAULT;
+	private boolean showExclusionAreas = false;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -322,6 +323,7 @@ public class ClientConfig extends AbstractRrvConfig {
 			this.jeiRecipeScreen = load("jei", "recipe_screen", this.jeiRecipeScreen);
 			this.prioritizeNativeRecipeScreens = load("jei", "prioritize_native_screens", this.prioritizeNativeRecipeScreens);
 		}
+		this.showExclusionAreas = load("development", "show_exclusion_areas", this.showExclusionAreas);
 
 		if (loadedDeprecatedConfig) {
 			ReliableRecipeViewer.LOGGER.info("Upgraded config file from v8.6 to v8.7.");
@@ -359,6 +361,7 @@ public class ClientConfig extends AbstractRrvConfig {
 			save("jei", "recipe_screen", this.jeiRecipeScreen);
 			save("jei", "prioritize_native_screens", this.prioritizeNativeRecipeScreens);
 		}
+		save("development", "show_exclusion_areas", this.showExclusionAreas);
 
 		// remove deprecated config fields from v8.6.x and below
 		remove("enabled");
@@ -385,5 +388,13 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	private void remove(String oldKey) {
 		this.data().remove(oldKey);
+	}
+
+	public boolean showExclusionAreas() {
+		return showExclusionAreas;
+	}
+
+	public void setShowExclusionAreas(boolean showExclusionAreas) {
+		this.showExclusionAreas = showExclusionAreas;
 	}
 }

@@ -72,6 +72,13 @@ public class NeoForgeClientEntrypoint {
 		}
     }
 
+	@SubscribeEvent
+	public static void extractBackground(ScreenEvent.Render.Pre neoEvent) {
+		if (neoEvent.getScreen() instanceof RRVExtendedContainerScreen) {
+			OverlayManager.EXCLUSION_AREA_EVENTS.forEach(event-> event.addExclusionAreas(neoEvent.getScreen(), OverlayManager.INSTANCE, neoEvent.getPartialTick()));
+		}
+	}
+
     @SubscribeEvent
     public static void onModelLayerRegistry(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);

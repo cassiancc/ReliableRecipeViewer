@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay;
 
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.Identifier;
 
 import java.awt.*;
@@ -14,6 +15,10 @@ import java.awt.*;
  */
 public record BlockingGuiComponent(Identifier id, int x, int y, int width, int height) {
 
+    @SuppressWarnings("unused") // helper method for mods like Trinkets that use Rect2i
+    public BlockingGuiComponent(Identifier id, Rect2i rectangle) {
+        this(id, rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+    }
 
     public boolean hasIntersectionWith(int x, int y, int width, int height) {
 

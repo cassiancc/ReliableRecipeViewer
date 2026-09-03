@@ -136,44 +136,49 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
             if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
             this.availableItems.clear();
             var availableItems = new ArrayList<ItemStack>();
-            if (showCraftables()) {
-                Minecraft client = Minecraft.getInstance();
-                LocalPlayer player = client.player;
-                if (player == null) {
-                    return;
-                }
-                // when searching, use the last unfiltered list rather than constantly querying the recipe manager
-                if (!reason.equals(Reason.SEARCH)) {
-                    this.inventory = player.getInventory().getNonEquipmentItems();
+			switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
+                case CRAFTABLES -> {
+                    Minecraft client = Minecraft.getInstance();
+                    LocalPlayer player = client.player;
+                    if (player == null) {
+                        return;
+                    }
+                    // when searching, use the last unfiltered list rather than constantly querying the recipe manager
+                    if (!reason.equals(Reason.SEARCH)) {
+                        this.inventory = player.getInventory().getNonEquipmentItems();
 
-                    // search by what craftables the workstation supports
-                    if (!(screen instanceof CreativeModeInventoryScreen))
-                        inventory.forEach(inventoryItem -> {
-                            ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, availableItems, true));
-                        });
-
-                    // if the workstation is not supported, search by what craftables exist
-                    if (availableItems.isEmpty()) {
-                        try {
+                        // search by what craftables the workstation supports
+                        if (!(screen instanceof CreativeModeInventoryScreen))
                             inventory.forEach(inventoryItem -> {
-                                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, availableItems, false));
+                                ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, availableItems, true));
                             });
-                        } catch (ConcurrentModificationException ignored) {}
+
+                        // if the workstation is not supported, search by what craftables exist
+                        if (availableItems.isEmpty()) {
+                            try {
+                                inventory.forEach(inventoryItem -> {
+                                    ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, availableItems, false));
+                                });
+                            } catch (ConcurrentModificationException ignored) {}
+                        }
+
+                        // save last available items for when searching occurs
+                        this.lastAvailableItems = new ArrayList<>(availableItems);
+                    } else {
+                        availableItems.addAll(lastAvailableItems);
                     }
 
-                    // save last available items for when searching occurs
-                    this.lastAvailableItems = new ArrayList<>(availableItems);
-                } else {
-                    availableItems.addAll(lastAvailableItems);
+                    filter(availableItems);
+                    RrvUtil.sortByName(availableItems);
+                    if (screen == this.currentScreen && this.availableItems.isEmpty()) {
+                        this.availableItems.addAll(availableItems);
+                        Minecraft.getInstance().execute(this::updateSlots);
+                    }
                 }
-
-                filter(availableItems);
-                RrvUtil.sortByName(availableItems);
-                if (screen == this.currentScreen && this.availableItems.isEmpty()) {
-                    this.availableItems.addAll(availableItems);
-                    Minecraft.getInstance().execute(this::updateSlots);
+                case BOOKMARKS -> {
+                    availableItems.addAll(BookmarkManager.INSTANCE.displayItems());
                 }
-            }
+			}
             List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(availableItems);
             if (screen == this.currentScreen && this.availableItems.isEmpty()) {
                 this.availableItems.addAll(expandedItems);
