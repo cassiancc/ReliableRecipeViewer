@@ -6,7 +6,9 @@ import cc.cassian.rrv.common.extra.FluidStack;
 //? fabric {
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
-//?}
+//?} else {
+/*import net.neoforged.neoforge.event.EventHooks;
+*///?}
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -47,13 +49,15 @@ public class FluidItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack itemStack, TooltipContext tooltipContext, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
         FluidStack fluidStack = FluidStack.fromItemStack(itemStack);
+        ArrayList<Component> tooltip = new ArrayList<>();
         //? fabric {
-		ArrayList<Component> tooltip = new ArrayList<>();
-        FluidVariantRendering.getHandlerOrDefault(getFluid()).appendTooltip(fluidStack.toFluidVariant(), tooltip, tooltipFlag);
+		FluidVariantRendering.getHandlerOrDefault(getFluid()).appendTooltip(fluidStack.toFluidVariant(), tooltip, tooltipFlag);
+        //?} else if <26 {
+        /*EventHooks.onFluidTooltip(fluidStack.toLoaderFluidStack(), null, tooltip, tooltipFlag, tooltipContext);
+        *///?} else {
+        /*EventHooks.onFluidTooltip(fluidStack.toLoaderFluidStack(), tooltipContext.player(), tooltip, tooltipFlag, tooltipContext);
+         *///?}
         tooltip.forEach(consumer);
-        //?} else {
-        /*super.appendHoverText(itemStack, tooltipContext, tooltipDisplay, consumer, tooltipFlag);
-        *///?}
         if (Configs.CLIENT_SETTINGS.isFluidUnitDroplets())
             consumer.accept(Component.translatable("rrv.fluid_droplets.unit", String.format("%,d", fluidStack.amount()*81)).withStyle(ChatFormatting.GRAY));
         else

@@ -13,15 +13,12 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -144,6 +141,10 @@ public abstract class AbstractRrvOverlay {
     }
 
     protected abstract boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick);
+
+    protected boolean isMouseOver(double mouseX, double mouseY) {
+		return mouseX >= getX() && mouseX <= getX() + getWidth() && mouseY >= getY() && mouseY <= getY() + getHeight();
+	}
 
     protected abstract boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY);
 

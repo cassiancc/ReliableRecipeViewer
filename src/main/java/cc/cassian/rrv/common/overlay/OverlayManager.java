@@ -195,7 +195,7 @@ public class OverlayManager implements ExclusionAreaManager {
             if (!overlay.isEnabled() || !overlay.isEnoughSpaceToRender())
                 continue;
 
-            if (!(event.x() >= overlay.getX() && event.x() <= overlay.getX() + overlay.getWidth() && event.y() >= overlay.getY() && event.y() <= overlay.getY() + overlay.getHeight()))
+            if (!overlay.isMouseOver((int) event.x(), (int) event.y()))
                 continue;
 
             if (overlay.mouseClicked(event, doubleClick))

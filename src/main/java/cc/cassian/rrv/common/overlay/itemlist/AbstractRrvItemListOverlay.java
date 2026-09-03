@@ -86,6 +86,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 	}
 
     protected void prevPage(Button button) {
+        var index = this.startIndex;
         int fittingPerPage = this.fittingPerPage();
         if (fittingPerPage == 0) return;
         if (this.startIndex == 0 && shouldWrapScroll(button)) {
@@ -95,9 +96,10 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         }
         if (getPage()>getMaxPageIndex()) {
             firstPage();
-        }
+		}
 
-        this.updateSlots();
+        if (index != startIndex)
+            this.updateSlots();
     }
 
     private void lastPage() {
@@ -106,6 +108,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     }
 
     protected void nextPage(Button button) {
+        var index = this.startIndex;
         var currentIndex = this.startIndex;
         int fittingPerPage = this.fittingPerPage();
         if (fittingPerPage == 0) return;
@@ -117,7 +120,8 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         if (getPage()>getMaxPageIndex()) {
             this.startIndex = currentIndex;
         }
-        this.updateSlots();
+        if (index != startIndex)
+            this.updateSlots();
     }
 
     public void firstPage() {

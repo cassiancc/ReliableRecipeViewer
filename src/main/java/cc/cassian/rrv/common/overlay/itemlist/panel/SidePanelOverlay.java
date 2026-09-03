@@ -116,6 +116,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(Reason reason) {
+        slotUpdaters += 1;
 		Util.backgroundExecutor().execute(() -> {
             var screen = RRVClientUtil.currentScreen();
             if (isRecipeViewScreen(screen) && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
@@ -126,6 +127,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 this.availableItems.addAll(expandedItems);
                 this.updateSlots();
             }
+            slotUpdaters -= 1;
         });
 
         updateButtons();
@@ -192,7 +194,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     private boolean isHoveringOverTitle(double mouseX, double mouseY) {
-        if (next.isHovered() || back.isHovered()) {
+        if (next.isHovered() || back.isHovered() || !this.isMouseOver(mouseX, mouseY)) {
             return false;
         }
         int left = 0;
