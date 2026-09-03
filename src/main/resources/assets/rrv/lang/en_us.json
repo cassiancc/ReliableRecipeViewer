@@ -185,6 +185,8 @@
   "rrv.client_settings.prefixed_filters.namespace.tooltip": "Search items by their mod's namespace.",
   "rrv.client_settings.prefixed_filters.data_component": "Data Component",
   "rrv.client_settings.prefixed_filters.data_component.tooltip": "Search items by their data components.",
+  "rrv.client_settings.prefixed_filters.tooltips": "Tooltips",
+  "rrv.client_settings.prefixed_filters.tooltips.tooltip": "Search items by their tooltips.",
   "rrv.client_settings.wrap_scrolling": "Wrap Scrolling",
   "rrv.client_settings.wrap_scrolling.tooltip": "Determines how the mod should handle attempting to scroll past the end of the list.",
   "rrv.client_settings.wrap_scrolling.enabled": "Enabled",

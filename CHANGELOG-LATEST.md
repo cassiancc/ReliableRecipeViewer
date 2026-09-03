@@ -4,7 +4,7 @@
 - Development option to see exclusion areas (only in config file).
 
 ### Changed
-- All tooltips are now indexed by search, instead of just enchantment tooltips.
+- All tooltips are now indexed by search, instead of just enchantment tooltips. Tooltip search can also be disabled, but this will make it hard to find vanilla items like enchanted books or music discs.
 - Search, indexing, and similar logic to update item slots is now completely handled off the main thread. This cuts down on large lag spikes, though the item view may take a second to appear.
 
 ### Fixed

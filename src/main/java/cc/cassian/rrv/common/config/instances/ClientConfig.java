@@ -40,6 +40,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean sidePanelSettingsButton = true;
 	private Map<PrefixedFilter, PrefixedFilter.Configuration> searchFilters = PrefixedFilter.DEFAULT;
 	private boolean showExclusionAreas = false;
+	private boolean searchTooltips = true;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -260,6 +261,26 @@ public class ClientConfig extends AbstractRrvConfig {
 		this.searchFilters = searchFilters;
 	}
 
+	private void remove(String oldKey) {
+		this.data().remove(oldKey);
+	}
+
+	public boolean showExclusionAreas() {
+		return showExclusionAreas;
+	}
+
+	public void setShowExclusionAreas(boolean showExclusionAreas) {
+		this.showExclusionAreas = showExclusionAreas;
+	}
+
+	public boolean isSearchTooltips() {
+		return searchTooltips;
+	}
+
+	public void setSearchTooltips(boolean searchTooltips) {
+		this.searchTooltips = searchTooltips;
+	}
+
 	@Override
 	protected void loadData() {
 		boolean loadedDeprecatedConfig = false;
@@ -324,6 +345,7 @@ public class ClientConfig extends AbstractRrvConfig {
 			this.prioritizeNativeRecipeScreens = load("jei", "prioritize_native_screens", this.prioritizeNativeRecipeScreens);
 		}
 		this.showExclusionAreas = load("development", "show_exclusion_areas", this.showExclusionAreas);
+		this.searchTooltips = load("advanced", "search_tooltips", this.searchTooltips);
 
 		if (loadedDeprecatedConfig) {
 			ReliableRecipeViewer.LOGGER.info("Upgraded config file from v8.6 to v8.7.");
@@ -362,6 +384,7 @@ public class ClientConfig extends AbstractRrvConfig {
 			save("jei", "prioritize_native_screens", this.prioritizeNativeRecipeScreens);
 		}
 		save("development", "show_exclusion_areas", this.showExclusionAreas);
+		save("advanced", "search_tooltips", this.searchTooltips);
 
 		// remove deprecated config fields from v8.6.x and below
 		remove("enabled");
@@ -384,17 +407,5 @@ public class ClientConfig extends AbstractRrvConfig {
 		remove("workstationDisplay");
 		remove("recipeSharing");
 		remove("indexSource");
-	}
-
-	private void remove(String oldKey) {
-		this.data().remove(oldKey);
-	}
-
-	public boolean showExclusionAreas() {
-		return showExclusionAreas;
-	}
-
-	public void setShowExclusionAreas(boolean showExclusionAreas) {
-		this.showExclusionAreas = showExclusionAreas;
 	}
 }

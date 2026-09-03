@@ -103,7 +103,7 @@ public class ItemFilters {
                     }
                 });
             }
-            else {
+            else if (Configs.CLIENT_SETTINGS.isSearchTooltips()) {
                 int compCheck = ItemFilters.getTooltipMatch(stack, query);
                 if (compCheck == 1)
                     secondPrio.add(stack);

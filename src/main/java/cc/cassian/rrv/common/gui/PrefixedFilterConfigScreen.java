@@ -99,6 +99,13 @@ public class PrefixedFilterConfigScreen extends ClientConfigScreen {
             helper.addChild(colorBox);
         });
 
+        helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatable("rrv.client_settings.prefixed_filters.tooltips").withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.translatable("rrv.client_settings.prefixed_filters."+ "tooltips.tooltip")))), font));
+        CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, Configs.CLIENT_SETTINGS.isSearchTooltips()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal("tooltip"), (button, value) -> {
+            Configs.CLIENT_SETTINGS.setSearchTooltips(value);
+        });
+        helper.addChild(button1);
+
+
         linearLayout.addChild(general);
 
         // done
