@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
@@ -200,12 +201,14 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     }
 
     private static void extractSlots(List<ItemSlot> slots, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        for (ItemSlot slot : slots) {
-            if (slot == null) {
-                return;
+        try {
+            for (ItemSlot slot : slots) {
+                if (slot == null) {
+                    return;
+                }
+                slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
             }
-            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-        }
+        } catch (ConcurrentModificationException ignored) {}
     }
 
     public int fittingPerPage() {

@@ -1,5 +1,10 @@
 ## [8.10.1]
 
+### Fixed
+- Hotfix side panel slots not being clickable.
+
+## [8.10]
+
 ### Added
 - New events to allow addons to add exclusion areas without mixing RRV code into their main code, see `OverlayManagementEvents#registerExclusionArea`.
 - Fluid names (on Fabric) and tooltips now use the loader's fluid name and tooltip APIs.

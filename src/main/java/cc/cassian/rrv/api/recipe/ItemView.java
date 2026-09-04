@@ -484,7 +484,7 @@ public class ItemView {
     }
 
     public static boolean isExcludedItem(ItemStack stack) {
-        if (stack.isEmpty() || EXCLUDED_ITEM_STACKS.contains(ItemStackTemplate.fromNonEmptyStack(stack))) return true;
+        if (stack == null || stack.isEmpty() || EXCLUDED_ITEM_STACKS.contains(ItemStackTemplate.fromNonEmptyStack(stack))) return true;
         if (stack.has(DataComponents.POTION_CONTENTS)) {
             Optional<Holder<Potion>> potion = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
             if (potion.isPresent()) {
