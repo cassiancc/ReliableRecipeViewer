@@ -184,7 +184,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
             this.fittingPerPage = currentStackPos - this.startIndex;
             Minecraft.getInstance().execute(this::updateButtons);
-            slotUpdaters -= 1;
+            slotUpdaters = 0;
         });
 
     }
