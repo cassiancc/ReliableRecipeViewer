@@ -32,6 +32,7 @@ public abstract class MixinAbstractRecipeBookScreen<T extends RecipeBookMenu> ex
         this.rrv$callInit();
     }
 
+    //~ if >26 || neoforge 'method_64513'->'lambda$initButton$0'
     @Inject(method = "lambda$initButton$0", at = @At("HEAD"), cancellable = true)
     private void injectButton(CallbackInfo ci) {
         if (Configs.CLIENT_SETTINGS.isRecipeBookButton()) {
@@ -45,7 +46,7 @@ public abstract class MixinAbstractRecipeBookScreen<T extends RecipeBookMenu> ex
         if (OverlayManager.INSTANCE.isTextWidgetFocused() && this.getFocused() instanceof EditBox box) {
             box.keyPressed(keyEvent);
 
-            if ((keyEvent.key() != 256 && keyEvent.key() != 258))
+            if (!keyEvent.isEscape() && !keyEvent.isCycleFocus())
                 cir.setReturnValue(true);
         }
 

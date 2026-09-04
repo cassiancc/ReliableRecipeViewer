@@ -23,8 +23,6 @@ public class ReliableRecipeViewer {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public static final MenuType<RecipeViewMenu> RECIPE_VIEW_MENU = new MenuType<>(RecipeViewMenu::new, FeatureFlagSet.of());
-
     public static RrvNetworkManager networkManager(){
         return RrvNetworkManager.INSTANCE;
     }

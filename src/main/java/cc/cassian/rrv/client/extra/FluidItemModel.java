@@ -13,7 +13,7 @@ import net.minecraft.util.Unit;
 public class FluidItemModel extends Model<Unit> {
 
     public FluidItemModel(ModelPart modelPart) {
-        super(modelPart, RenderTypes::itemTranslucent);
+        super(modelPart, RenderTypes::entityTranslucent);
     }
 
     public static LayerDefinition createFluidLayer() {

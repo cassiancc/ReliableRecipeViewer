@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    id("net.fabricmc.fabric-loom")
+    id("dev.kikugie.loom-back-compat")
     id("dev.kikugie.postprocess.jsonlang")
     id("me.modmuss50.mod-publish-plugin")
     id("maven-publish")
@@ -43,13 +43,6 @@ jsonlang {
 
 repositories {
     mavenLocal()
-    maven {
-        name = "Terraformers (Mod Menu)"
-        url = uri("https://maven.terraformersmc.com/releases/")
-        content {
-            includeGroupAndSubgroups("com.terraformersmc")
-        }
-    }
     maven {
         name = "Xander Maven"
         url = uri("https://maven.isxander.dev/releases")
@@ -102,51 +95,70 @@ repositories {
             includeGroupAndSubgroups("lol.bai")
         }
     }
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = uri("https://maven.blamejared.com/")
+        content {
+            includeGroup("mezz.jei")
+        }
+    }
     mavenCentral()
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:${property("deps.minecraft")}")
+    loomx.applyMojangMappings()
 
-    implementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
-    implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
-    compileOnly("com.terraformersmc:modmenu:${property("deps.modmenu")}")
+    modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
+    modCompileOnly("maven.modrinth:modmenu:${property("deps.modmenu")}")
 
-    compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
+    modCompileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
+        exclude(group = "com.terraformersmc")
         exclude(group = "maven.modrinth")
         exclude(group = "net.caffeinemc")
     }
-    compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+    modCompileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 
     compileOnly("folk.sisby:kaleido-config:0.3.3+1.3.2")
 
-    compileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
-    compileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
-    compileOnly("eu.pb4:polydex:${property("deps.polydex")}")
-    compileOnly("maven.modrinth:jade:${property("deps.jade")}")
-    compileOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
-    if (hasProperty("deps.badpackets")) {
-        localRuntime("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
-        localRuntime("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
+    modCompileOnly("eu.pb4:polymer-core:${property("deps.polymer")}")
+    modCompileOnly("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
+    modCompileOnly("maven.modrinth:jade:${property("deps.jade")}")
+    modCompileOnly("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
+    modCompileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+        exclude(group = "mcp.mobius.waila")
+        exclude(group = "lol.bai")
     }
-    compileOnly("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+    modLocalRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
         exclude(group = "mcp.mobius.waila")
         exclude(group = "lol.bai")
     }
 
+    if (stonecutter.eval(mcVersion, ">26")) {
+        modCompileOnly("eu.pb4:polydex:${property("deps.polydex")}")
+    } else {
+        modCompileOnly("maven.modrinth:polydex:${property("deps.polydex")}")
+    }
 
     if (stonecutter.eval(mcVersion, "<26.3")) {
-        localRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
-            exclude(group = "mcp.mobius.waila")
-            exclude(group = "lol.bai")
+        modLocalRuntime("maven.modrinth:modmenu:${property("deps.modmenu")}")
+
+        modCompileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
+        modLocalRuntime("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
+//        modLocalRuntime("eu.pb4:polydex:${property("deps.polydex")}")
+        modLocalRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
+        modLocalRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
+        modLocalRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
+        modLocalRuntime("eu.pb4:polymer-virtual-entity:${property("deps.polymer")}")
+        modLocalRuntime("maven.modrinth:jade:${property("deps.jade")}")
+        if (hasProperty("deps.badpackets")) {
+            localRuntime("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
+            localRuntime("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
         }
-        localRuntime("com.terraformersmc:modmenu:${property("deps.modmenu")}")
-//        localRuntime("eu.pb4:polydex:${property("deps.polydex")}")
-        localRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
-        localRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
-        localRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
-        localRuntime("eu.pb4:polymer-virtual-entity:${property("deps.polymer")}")
-        localRuntime("maven.modrinth:jade:${property("deps.jade")}")
+    } else {
+        compileOnly("mezz.jei:jei-26.2-fabric:30.11.0.66")
     }
 }
 
@@ -154,6 +166,27 @@ stonecutter {
     replacements.string {
         direction = eval(current.version, ">26.1")
         replace("EntityType.", "EntityTypes.")
+    }
+    replacements.string {
+        direction = eval(current.version, ">=26.1")
+        replace("GuiGraphics ", "GuiGraphicsExtractor ")
+        replace("GuiGraphics.", "GuiGraphicsExtractor.")
+        replace("GuiGraphics;", "GuiGraphicsExtractor;")
+    }
+    replacements.string {
+        direction = eval(current.version, "<26.1")
+        replace(".fakeItem(", ".renderFakeItem(")
+        replace(".itemDecorations(", ".renderItemDecorations(")
+        replace(".horizontalLine(", ".hLine(")
+        replace(".verticalLine(", ".vLine(")
+        replace("guiGraphics.text(", "guiGraphics.drawString(")
+        replace("guiGraphics().text(", "guiGraphics().drawString(")
+        replace("guiGraphics.textWithWordWrap(", "guiGraphics.drawWordWrap(")
+        replace("guiGraphics().textWithWordWrap(", "guiGraphics().drawWordWrap(")
+        replace("net.minecraft.world.item.ItemStackTemplate", "cc.cassian.rrv.backport.ItemStackTemplate")
+        replace("extractBackground", "renderBackground")
+        replace("net.fabricmc.fabric.api.networking.v1.context.PacketContext", "xyz.nucleoid.packettweaker.PacketContext")
+        replace("centeredText", "drawCenteredString")
     }
 }
 
@@ -164,7 +197,7 @@ tasks {
 
     register<Copy>("buildAndCollect") {
         group = "build"
-        from(jar.map { it.archiveFile })
+        from(loomx.modJar.map { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
         dependsOn("build")
     }
@@ -172,7 +205,11 @@ tasks {
 
 java {
     withSourcesJar()
-    val javaCompat = JavaVersion.VERSION_25
+    val javaCompat = if (stonecutter.eval(stonecutter.current.version, ">=26")) {
+        JavaVersion.VERSION_25
+    } else {
+        JavaVersion.VERSION_21
+    }
     sourceCompatibility = javaCompat
     targetCompatibility = javaCompat
 }
@@ -185,9 +222,7 @@ val additionalVersions: List<String> = additionalVersionsStr
     ?: emptyList()
 
 publishMods {
-    file = tasks.jar.map { it.archiveFile.get() }
-    additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
-
+    file = loomx.modJar.map { it.archiveFile.get() }
     type = if (stonecutter.eval(stonecutter.current.version, ">=26.3")) {
         BETA
     } else {
@@ -199,14 +234,19 @@ publishMods {
     modLoaders.add("fabric")
 
     modrinth {
+        additionalFile(loomx.modSourcesJar) {
+            type.set(SOURCES_JAR)
+        }
         projectId = property("publish.modrinth") as String
         accessToken = env.MODRINTH_API_KEY.orNull()
         minecraftVersions.add(property("deps.minecraft").toString())
         minecraftVersions.addAll(additionalVersions)
         requires("fabric-api")
+        environment = CLIENT_AND_SERVER
     }
 
     curseforge {
+        additionalFiles.from(loomx.modSourcesJar.map { it.archiveFile.get() })
         projectId = property("publish.curseforge") as String
         accessToken = env.CURSEFORGE_API_KEY.orNull()
         minecraftVersions.add(property("publish.curseforge_minecraft_version").toString())

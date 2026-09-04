@@ -22,8 +22,13 @@ public class RRVMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (mixinClassName.toLowerCase(Locale.ROOT).contains("controlify") && !RRVPlatform.INSTANCE.isLoadingLoaded("controlify")) return false;
+		if (compatMixin(mixinClassName, "controlify")) return false;
+		else if (compatMixin(mixinClassName, "jei")) return false;
 		return true;
+	}
+
+	private static boolean compatMixin(String mixinClassName, String modName) {
+		return mixinClassName.toLowerCase(Locale.ROOT).startsWith("cc.cassian.rrv.common.mixin.integration."+ modName) && !RRVPlatform.INSTANCE.isLoadingLoaded(modName);
 	}
 
 	@Override

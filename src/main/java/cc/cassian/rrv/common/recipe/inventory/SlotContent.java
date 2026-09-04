@@ -3,12 +3,12 @@ package cc.cassian.rrv.common.recipe.inventory;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
-import cc.cassian.rrv.common.integration.ModCompat;
-import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
+import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? neoforge {
@@ -18,21 +18,23 @@ import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 //? fabric {
 import net.fabricmc.fabric.api.recipe.v1.ingredient.DefaultCustomIngredients;
 //?}
+//? if >26.2 {
+/*import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.predicates.PotionsPredicate;
+import net.minecraft.world.item.alchemy.PotionContents;
+*///?}
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.component.predicates.PotionsPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -43,7 +45,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiPredicate;
-import java.util.function.UnaryOperator;
+import java.util.function.Predicate;
 
 public class SlotContent {
 
@@ -105,10 +107,23 @@ public class SlotContent {
     }
 
     public static SlotContent of(SlotDisplay slotDisplay) {
-        return SlotContent.of(slotDisplay, RrvUtil.getLevel());
+        Level level = RrvUtil.getLevel();
+        return SlotContent.of(slotDisplay, level);
     }
 
-    public void setType(ActionType type) {
+	public boolean contains(Item item) {
+		return getValidContents().stream().anyMatch(i->i.is(item));
+	}
+
+    public boolean contains(TagKey<Item> itemTag) {
+        return (this.itemTag().isPresent() && this.itemTag().get().equals(itemTag)) || getValidContents().stream().anyMatch(i->i.is(itemTag));
+    }
+
+    public boolean contains(ItemStack stack) {
+        return getValidContents().contains(stack);
+    }
+
+	public void setType(ActionType type) {
         this.type = type;
     }
 
@@ -296,7 +311,12 @@ public class SlotContent {
 
         return SlotContent.of(DefaultCustomIngredients.components(potionIngredient.ingredient(), patch.build()));
     }
+
+    public static SlotContent of(net.minecraft.world.item.crafting.TransmuteResult transmuteResult, Item fallback) {
+        return SlotContent.of(new ItemStackTemplate(transmuteResult.item().orElse(fallback.builtInRegistryHolder()), transmuteResult.count(), transmuteResult.components()));
+    }
     *///?}
+
 
     public static SlotContent of(FluidStack fluidStack) {
         if (fluidStack == null) return SlotContent.of();
@@ -359,6 +379,7 @@ public class SlotContent {
 
     public static SlotContent of(Ingredient ingredient) {
         if (ingredient == null) return SlotContent.of();
+        if (RrvUtil.getLevel() == null) return SlotContent.withoutLevel(ingredient);
         SlotContent slotContent = SlotContent.of(ingredient.display());
         //? neoforge {
         /*ingredient.getValues().unwrap().ifLeft(slotContent::bindItemTag);
@@ -370,6 +391,20 @@ public class SlotContent {
         ingredient.values.unwrap().ifLeft(slotContent::bindItemTag);
         //?}
         return slotContent;
+    }
+
+    private static SlotContent withoutLevel(Ingredient ingredient) {
+        if (ingredient == null) return SlotContent.of();
+
+        Either<TagKey<Item>, List<Holder<Item>>> ingredientContent = ((IngredientAccessor) (Object) ingredient).getValues().unwrap();
+
+        if (ingredientContent.right().isPresent()) {
+            List<ItemStack> stacks = new ArrayList<>();
+            ingredientContent.right().get().forEach(holder -> stacks.add(new ItemStack(holder.value())));
+            return new SlotContent(stacks);
+        }
+
+        return ingredientContent.left().isPresent() ? SlotContent.of(ingredientContent.left().get()) : SlotContent.of(Items.AIR);
     }
 
     public static Optional<HolderSet.Named<Item>> getItemsFromTag(TagKey<Item> tag) {

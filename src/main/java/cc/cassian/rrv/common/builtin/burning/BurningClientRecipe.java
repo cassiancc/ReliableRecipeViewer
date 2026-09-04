@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.burning;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -11,7 +12,9 @@ import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
@@ -28,20 +31,22 @@ public class BurningClientRecipe implements ReliableClientRecipe {
     private final Identifier id;
 
     public BurningClientRecipe(Item item, int i) {
-        this.id = item.builtInRegistryHolder().key().identifier().withPrefix("/").withSuffix("_burning");
+        this.id = BuiltInRegistries.ITEM.getKey(item).withPrefix("/").withSuffix("_burning");
         this.fuel = SlotContent.of(item);
         this.burnTime = i;
 
-        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), (int) this.burnTime);
+        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + (int) this.burnTime), (int) this.burnTime);
     }
 
-    public BurningClientRecipe(ItemStack item, float i) {
+    //? if >26.2 {
+    /*public BurningClientRecipe(ItemStack item, float i) {
         this.id = item.typeHolder().unwrapKey().get().identifier().withPrefix("/").withSuffix("_burning");
         this.fuel = SlotContent.of(item);
         this.burnTime = i;
 
-        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + this.burnTime), (int) this.burnTime);
+        this.ticker = AnimationTicker.create(Identifier.withDefaultNamespace("burning_tick_" + (int) this.burnTime), (int) this.burnTime);
     }
+    *///?}
 
     @Override
     public ReliableClientRecipeType getType() {
@@ -75,12 +80,12 @@ public class BurningClientRecipe implements ReliableClientRecipe {
 
 
     @Override
-    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderRecipe(RecipeScreenContext context) {
         // burn sprite
         int burnProgress = Math.round(this.ticker.getProgress() * 14);
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 22, 5 + (14 - burnProgress), 0, 14 - burnProgress, 14, burnProgress, 128, 128);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, BuiltInReliableRecipeViewerIntegration.WIDGETS, 22, 5 + (14 - burnProgress), 0, 14 - burnProgress, 14, burnProgress, 128, 128);
         // burn text
         Font font = Minecraft.getInstance().font;
-        guiGraphics.text(font, Component.translatable("view.rrv.type.burning.ticks", this.burnTime), 40, 25 / 2 - font.lineHeight / 2, 0xFF808080, false);
+        context.guiGraphics().text(font, Component.translatable("view.rrv.type.burning.ticks", this.burnTime), 40, 25 / 2 - font.lineHeight / 2, 0xFF808080, false);
     }
 }

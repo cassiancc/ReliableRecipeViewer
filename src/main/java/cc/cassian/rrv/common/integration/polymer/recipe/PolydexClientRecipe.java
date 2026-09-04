@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.integration.polymer.recipe;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
@@ -11,6 +12,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -38,11 +40,11 @@ public class PolydexClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void renderRecipe(RecipeScreenContext context) {
 		tryOpen(openType, origin);
 		tickCount++;
 		if (tickCount >= 20) {
-			guiGraphics.textWithWordWrap(Minecraft.getInstance().font, FormattedText.of("Polydex has no recipes for this entry."), 20, 20, 160, -16777216, false);
+			context.guiGraphics().textWithWordWrap(Minecraft.getInstance().font, FormattedText.of("Polydex has no recipes for this entry."), 20, 20, 160, -16777216, false);
 		}
 	}
 

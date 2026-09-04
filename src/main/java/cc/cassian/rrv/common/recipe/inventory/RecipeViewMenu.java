@@ -10,6 +10,8 @@ import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.recipe.JeiClientRecipe;
+import cc.cassian.rrv.common.integration.jei.recipe.JeiClientRecipeType;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipe;
 import cc.cassian.rrv.common.integration.polymer.recipe.PolydexClientRecipeType;
 import cc.cassian.rrv.common.network.payload.transfer.ServerboundTransferPayload;
@@ -25,19 +27,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
 
-public class RecipeViewMenu extends AbstractContainerMenu {
+public class RecipeViewMenu {
 
     //For screen and space calculation
-    protected static final int MAX_POSSIBLE_HEIGHT = 214;
     protected static final int BUFFER_ZONE = 16;
     protected static final int TOP_SPACE = 24;
     protected static final int BOTTOM_SPACE = 24;
@@ -48,6 +49,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     private List<? extends ReliableClientRecipe> recipes;
     private ReliableClientRecipeType clientRecipeType;
 
+    /// Maximum amount of recipes possible to display on a single page.
     private int maxPossiblePerPage;
     private int maxPageIndex;
     private int currentPage;
@@ -66,18 +68,18 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     private RecipeViewScreen viewScreen;
     private final Screen parentScreen;
-    private final ArrayList<RecipeViewScreen> viewHistory;
+    private final ArrayList<RecipeViewMenu> viewHistory;
 
     private int currentCraftReference;
     private final List<RecipeTransferData> transferData;
 
-    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewScreen> viewHistory) {
+    public final NonNullList<Slot> slots = NonNullList.create();
+
+    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewMenu> viewHistory) {
         this(parentScreen,containerId, inventory,recipes, origin, originType, viewHistory, ReliableClientRecipeType.NONE);
     }
 
-    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewScreen> viewHistory, ReliableClientRecipeType clientRecipeType) {
-        super(ReliableRecipeViewer.RECIPE_VIEW_MENU, containerId);
-
+    public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewMenu> viewHistory, ReliableClientRecipeType clientRecipeType) {
         this.viewHistory = viewHistory;
 
         this.parentScreen = parentScreen;
@@ -136,6 +138,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             this.viewTypeOrder.add(PolydexClientRecipeType.INSTANCE);
         }
 
+        if (ModCompat.JEI) {
+            this.sortedByType.put(JeiClientRecipeType.INSTANCE, List.of(new JeiClientRecipe(originType, origin)));
+            this.viewTypeOrder.add(JeiClientRecipeType.INSTANCE);
+        }
+
         if (recipes.isEmpty())
             ReliableRecipeViewer.LOGGER.error("Attempting to open Menu with 0 recipes");
 
@@ -150,10 +157,6 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
     }
 
-    public RecipeViewMenu(int containerId, Inventory inventory) {
-        this(null, containerId, inventory, ReliableClientRecipe.PLACEHOLDER, ItemStack.EMPTY, ActionType.ANY, new ArrayList<>());
-    }
-
 
     public int getCurrentCraftReference() {
         return this.currentCraftReference;
@@ -163,31 +166,48 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         return this.parentScreen;
     }
 
-    public ArrayList<RecipeViewScreen> getViewHistory() {
+    public ArrayList<RecipeViewMenu> getViewHistory() {
         return this.viewHistory;
     }
 
     public boolean goBack() {
-        if (this.viewScreen != null && this.viewHistory.indexOf(this.viewScreen) > 0) {
-            RRVClientUtil.setScreen(this.viewHistory.get(this.viewHistory.indexOf(this.viewScreen) - 1));
-            return true;
+        if (this.viewScreen != null) {
+            RecipeViewMenu menu = this.viewScreen.menu;
+            if (this.viewHistory.indexOf(menu) > 0) {
+                setScreen(Minecraft.getInstance().player, this.viewHistory.get(this.viewHistory.indexOf(menu) - 1));
+                return true;
+            }
         }
 
         return false;
     }
 
     public boolean goForward() {
-        if (this.viewScreen != null && this.viewHistory.size() - 1 > this.viewHistory.indexOf(this.viewScreen)) {
-            RRVClientUtil.setScreen(this.viewHistory.get(this.viewHistory.indexOf(this.viewScreen) + 1));
-            return true;
+        if (this.viewScreen != null) {
+            RecipeViewMenu menu = this.viewScreen.menu;
+            if (this.viewHistory.size() - 1 > this.viewHistory.indexOf(menu)) {
+                setScreen(Minecraft.getInstance().player, this.viewHistory.get(this.viewHistory.indexOf(menu) + 1));
+                return true;
+            }
         }
 
         return false;
     }
 
+    /// Update this menu's associated screen.
     public void setViewScreen(RecipeViewScreen viewScreen) {
         this.viewScreen = viewScreen;
-        this.viewHistory.add(viewScreen);
+        this.viewHistory.add(viewScreen.menu);
+    }
+
+    /// Create a new [RecipeViewScreen] or update it to use the provided menu.
+    public static void setScreen(LocalPlayer clientPlayer, RecipeViewMenu recipeViewMenu) {
+        if (RRVClientUtil.currentScreen() instanceof RecipeViewScreen recipeViewScreen) {
+            recipeViewScreen.setMenu(recipeViewMenu);
+            recipeViewMenu.setViewScreen(recipeViewScreen);
+        } else {
+            RRVClientUtil.setScreen(new RecipeViewScreen(recipeViewMenu, clientPlayer.getInventory(), Component.empty()));
+        }
     }
 
     public ItemStack getOrigin() {
@@ -205,17 +225,6 @@ public class RecipeViewMenu extends AbstractContainerMenu {
     public OptionalSlotRenderer getOptionalSlotRenderer(int slot) {
         return this.optionalSlotRenderers.getOrDefault(slot, OptionalSlotRenderer.DEFAULT);
     }
-
-    @Override
-    public ItemStack quickMoveStack(Player player, int slot) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public boolean stillValid(Player player) {
-        return this.viewContainer.stillValid(player);
-    }
-
 
     public int getMaxPossiblePerPage() {
         return this.maxPossiblePerPage;
@@ -328,15 +337,15 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             recipe.getIngredients().forEach(slotContent -> slotContent.setType(ActionType.INPUT));
             recipe.getResults().forEach(slotContent -> {
                 slotContent.setType(ActionType.RESULT);
-                slotContent.bindResult(recipe.entryId());
+                slotContent.bindResult(recipe.entryId()); //FIXME this should only be applied to the stacks on the screen, not the actual recipe's stacks
             });
 
             SlotDefinition slotDefinition = new SlotDefinition(viewContainer);
             this.clientRecipeType.placeSlots(slotDefinition);
-            for (Slot slot : slotDefinition.getItemSlots()) {
-                int id = slot.getContainerSlot() + (i * this.getClientRecipeType().getSlotCount());
-
-                this.addSlot(new RecipeSlot(slot.container, id, slot.x + this.guiOffsetLeft(), slot.y + this.guiOffsetTop(i), slotDefinition.highlightWithoutContents));
+            for (SlotPlacement function : slotDefinition.getItemSlots()) {
+                var properties = function.properties();
+                var slot = function.function().apply(new RecipeSlot.Properties(properties.container(), properties.slotId()+ (i * this.getClientRecipeType().getSlotCount()), properties.x() + this.guiOffsetLeft(), properties.y() + this.guiOffsetTop(i), properties.highlightWithoutContents()));
+                this.addSlot(slot);
             }
 
             SlotFillContext slotFillContext = new SlotFillContext();
@@ -344,7 +353,8 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
             for (int j = 0; j < this.getClientRecipeType().getSlotCount(); j++) {
                 int slotId = j + (i * this.getClientRecipeType().getSlotCount());
-                this.viewContainer.setItem(slotId, slotFillContext.contentBySlot(j).getByIndex(slotFillContext.contentBySlot(j).index()));
+                ItemStack stackByIndex = slotFillContext.contentBySlot(j).getByIndex(slotFillContext.contentBySlot(j).index());
+                this.viewContainer.setItem(slotId, stackByIndex);
 
                 if (slotFillContext.getAdditionalTooltips().containsKey(j))
                     this.additionalStackModifiers.put(slotId, slotFillContext.getAdditionalTooltips().get(j));
@@ -372,12 +382,6 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             for (int i = 0; i < this.getDisplayableCraftReferences(); i++) {
                 this.addSlot(new RecipeSlot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i, false));
             }
-        }
-
-        // The inventory items groups mod cannot properly handle containers menus with exactly one slot.
-        // So add a dummy slot when the inventory item groups mod is present and the menu has exactly one slot.
-        if (ModCompat.INVENTORY_ITEM_GROUPS && this.slots.size() == 1) {
-            this.addSlot(new RecipeSlot(new ViewContainer(1), 0, Integer.MIN_VALUE, Integer.MIN_VALUE, false));
         }
 
         this.updateReferences();
@@ -499,7 +503,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
                 HashMap<Integer, ItemStack> usedSlots = transferData.getUsedPlayerSlots().get(recipeSlot);
 
-                ItemStack required = usedSlots.values().stream().findFirst().orElseGet(() -> ItemStack.EMPTY).copy();
+                ItemStack required = usedSlots.values().stream().findFirst().orElse(ItemStack.EMPTY).copy();
 
                 int amount = 0;
                 for (ItemStack stack : usedSlots.values()) {
@@ -801,10 +805,11 @@ public class RecipeViewMenu extends AbstractContainerMenu {
 
         int recipeHeight = this.getClientRecipeType().getDisplayHeight();
 
-        int technicallyFitting = Math.min(this.getRecipes().size(), MAX_POSSIBLE_HEIGHT / recipeHeight);
+        int maxPossibleHeight = (int) (RRVClientUtil.currentScreen().height * 0.87346);
+        int technicallyFitting = Math.min(this.getRecipes().size(), maxPossibleHeight / recipeHeight);
         int imageheightRequired = (technicallyFitting * recipeHeight) + (technicallyFitting * BUFFER_ZONE + TOP_SPACE + BOTTOM_SPACE);
 
-        while (imageheightRequired > MAX_POSSIBLE_HEIGHT) {
+        while (imageheightRequired > maxPossibleHeight) {
             technicallyFitting -= 1;
 
             imageheightRequired = (technicallyFitting * recipeHeight) + (technicallyFitting * BUFFER_ZONE + TOP_SPACE + BOTTOM_SPACE);
@@ -843,30 +848,53 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         }).toList();
     }
 
+    protected Slot addSlot(final Slot slot) {
+        slot.index = this.slots.size();
+        this.slots.add(slot);
+        return slot;
+    }
+
+    public NonNullList<ItemStack> getItems() {
+        NonNullList<ItemStack> itemStacks = NonNullList.create();
+
+        for(Slot slot : this.slots) {
+            itemStacks.add(slot.getItem());
+        }
+
+        return itemStacks;
+    }
+
+    public Slot getSlot(final int index) {
+        return this.slots.get(index);
+    }
+
 
     public static class SlotDefinition {
 
-        private final HashMap<Integer, Slot> itemSlots;
+        public final HashMap<Integer, SlotPlacement> itemSlots;
 		private final ViewContainer viewContainer;
-		private boolean highlightWithoutContents = true;
+        private boolean highlightWithoutContents = true;
 
-        public SlotDefinition(ViewContainer viewContainer) {
+		public SlotDefinition(ViewContainer viewContainer) {
 			this.viewContainer = viewContainer;
 			this.itemSlots = new HashMap<>();
         }
 
         public void addItemSlot(int slotId, int x, int y) {
-            this.itemSlots.put(slotId, new RecipeSlot(viewContainer, slotId, x, y, highlightWithoutContents));
+            this.itemSlots.put(slotId, new SlotPlacement(new RecipeSlot.Properties(viewContainer, slotId, x, y, highlightWithoutContents), properties -> new RecipeSlot(properties)));
+        }
+
+        public void addItemSlot(int slotId, int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
+            this.itemSlots.put(slotId, new SlotPlacement(new RecipeSlot.Properties(viewContainer,slotId, x, y, highlightWithoutContents), recipeSlot));
         }
 
         public void setHighlightWithoutContents(boolean highlightWithoutContents) {
             this.highlightWithoutContents = highlightWithoutContents;
-        }
+		}
 
-        private List<Slot> getItemSlots() {
+        private List<SlotPlacement> getItemSlots() {
             return this.itemSlots.values().stream().toList();
         }
-
 
     }
 
@@ -877,7 +905,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
         private final HashMap<Integer, AdditionalStackModifier> additionalTooltips;
         private final HashMap<Integer, StackValidator> stackValidators;
 
-        private final HashMap<Integer, OptionalSlotRenderer> optionalSlotRenderers;
+        protected final HashMap<Integer, OptionalSlotRenderer> optionalSlotRenderers;
 
         public SlotFillContext() {
             this.contents = new HashMap<>();
@@ -934,7 +962,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             return this.contents;
         }
 
-        protected HashMap<Integer, OptionalSlotRenderer> getOptionalSlotRenderers() {
+        public HashMap<Integer, OptionalSlotRenderer> getOptionalSlotRenderers() {
             return this.optionalSlotRenderers;
         }
 
@@ -942,7 +970,7 @@ public class RecipeViewMenu extends AbstractContainerMenu {
             return this.contents.getOrDefault(slotId, SlotContent.of(List.of()));
         }
 
-        private HashMap<Integer, AdditionalStackModifier> getAdditionalTooltips() {
+        public HashMap<Integer, AdditionalStackModifier> getAdditionalTooltips() {
             return this.additionalTooltips;
         }
 

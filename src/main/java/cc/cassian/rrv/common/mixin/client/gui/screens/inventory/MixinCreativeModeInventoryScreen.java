@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens.inventory;
 
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -8,6 +9,7 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 //? if >26.2 {
 /*import com.mojang.blaze3d.platform.InputConstants;
@@ -31,6 +33,11 @@ public abstract class MixinCreativeModeInventoryScreen extends AbstractContainer
         super(abstractContainerMenu, inventory, component);
     }
 
+    @Inject(method = "hasPermissions", at = @At("RETURN"))
+    private void copyPermissions(Player player, CallbackInfoReturnable<Boolean> cir) {
+        RRVClientUtil.hasPermissions = cir.getReturnValue();
+    }
+
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
     private void injectSearchBar$0(CharacterEvent characterEvent, CallbackInfoReturnable<Boolean> cir) {
         if (OverlayManager.INSTANCE.isTextWidgetFocused() && this.getFocused() instanceof EditBox box && box.charTyped(characterEvent))
@@ -46,10 +53,8 @@ public abstract class MixinCreativeModeInventoryScreen extends AbstractContainer
             if(OverlayManager.INSTANCE.isTextWidgetFocused()) {
                 box.keyPressed(keyEvent);
 
-                //~ if >26.2 'GLFW.GLFW_KEY'->'InputConstants.KEY' {
-                if ((keyEvent.key() != GLFW.GLFW_KEY_ESCAPE && keyEvent.key() != GLFW.GLFW_KEY_TAB))
+                if (!keyEvent.isEscape() && !keyEvent.isCycleFocus())
                     cir.setReturnValue(true);
-                //~}
             }
 
         }

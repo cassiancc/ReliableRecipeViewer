@@ -6,6 +6,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.recipe.InternalRecipeManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
@@ -15,6 +16,7 @@ import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
 import cc.cassian.rrv.common.integration.polymer.PolymerHelpers;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
@@ -27,7 +29,7 @@ import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -36,9 +38,13 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NonNull;
 
@@ -48,15 +54,13 @@ import java.util.List;
 
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
+/// CLIENT-ONLY
 public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     public static final ItemViewOverlay INSTANCE = new ItemViewOverlay();
     private static final Identifier SETTINGS_WHEEL = ReliableRecipeViewer.of("settings_wheel");
 
     private SearchBar searchbar = null;
-
-    public ReliableSpriteIconButton next = null;
-    public ReliableSpriteIconButton back = null;
 
     private static final int HEADER_HEIGHT = 30;
     private static final int FOOTER_HEIGHT = 20;
@@ -75,7 +79,13 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     public boolean isEnabled() {
-        return super.isEnabled() && (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) || (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching()));
+        return
+                super.isEnabled() &&
+                (
+                        Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.ENABLED) ||
+                        (Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching())
+                ) &&
+                !Configs.CLIENT_SETTINGS.isJeiPanel();
     }
 
     @Override
@@ -89,57 +99,56 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         updateButtons();
     }
 
-
     @Override
     public void onScreenChanged(InventoryPositionInfo info) {
         this.initForScreen(info.screen(), info);
         super.onScreenChanged(info);
         this.updateQuery(this.getCurrentQuery());
         this.createSearchbarElement(OverlayManager.INSTANCE.currentInfo());
-        this.createButtons(OverlayManager.INSTANCE.currentInfo());
+        this.createButtons(createTitleText(), checkedX()+10, itemEndX - 28, checkedX()+4, itemEndX - 16);
     }
-
 
     @Override
     protected void placeWidgets(ScreenContext ctx) {
-
+        super.placeWidgets(ctx);
         ctx.addRenderable(this.searchbar);
-        ctx.addRenderable(this.next);
-        ctx.addRenderable(this.back);
 
         InventoryPositionInfo info = OverlayManager.INSTANCE.currentInfo();
 
+        int buttonSize = buttonSize();
 
         //---- Client Settings Button ----
         ReliableSpriteIconButton settingsButton = new ReliableSpriteIconButton(
-                        18,
+                buttonSize,
                         Component.translatable("rrv.client_settings.btn"),
                         14,
                         SETTINGS_WHEEL,
-                _ -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
+                button -> RRVClientUtil.setScreen(new ClientConfigScreen(info.screen()))
         );
 
         int position = 0;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
-            position = info.screenWidth() - 18;
+            position = info.screenWidth() - buttonSize;
         }
 
-        settingsButton.setPosition(position, info.screenHeight() - 18);
+        settingsButton.setPosition(position, info.screenHeight() - buttonSize);
+        settingsButton.visible = Configs.CLIENT_SETTINGS.isClientSettingsButtonEnabled();
+
+        if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
+            JeiCompatibilityUtil.placeSettingsButton(settingsButton);
+        }
 
         ctx.addRenderable(settingsButton);
         //---- Side Panel Settings Button ----
-        ReliableSpriteIconButton sidePanelButton = new SidePanelButton();
-
-        int sidePanelButtonPosition = position + 20;
-        if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
-            sidePanelButtonPosition = info.screenWidth() - 40;
-        }
-        sidePanelButton.setPosition(sidePanelButtonPosition, info.screenHeight() - 18);
-
+        ReliableSpriteIconButton sidePanelButton = new SidePanelButton(position, info);
         ctx.addRenderable(sidePanelButton);
     }
 
-    private void initForScreen(AbstractContainerScreen<? extends AbstractContainerMenu> screen, InventoryPositionInfo invInfo) {
+    protected int buttonSize() {
+        return Configs.CLIENT_SETTINGS.isJeiPanel() ? 20 : 18;
+    }
+
+    private void initForScreen(Screen screen, InventoryPositionInfo invInfo) {
 
         //-14 for cleaner appearance
         this.width = invInfo.screenWidth() - ((invInfo.screenWidth() - 176) / 2 + 176) - 14;
@@ -175,64 +184,64 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
      * @param newQuery The text that will be searched for.
      */
     private void updateQuery(String newQuery) {
-        if (!newQuery.equals(this.currentQuery))
-            this.startIndex = 0;
+        slotUpdaters += 1;
+        Util.backgroundExecutor().execute(() -> {
+            if (!newQuery.equals(this.currentQuery))
+                this.startIndex = 0;
 
-        this.currentQuery = newQuery;
+            this.currentQuery = newQuery;
 
-        // advanced filtering
-        if (newQuery.contains(" ")) {
+            // advanced filtering
+            if (newQuery.contains(" ")) {
 
-            ArrayList<String> objects = new ArrayList<>();
+                ArrayList<String> objects = new ArrayList<>();
 
-            for (String query : newQuery.split(" ")) {
-                if (!PrefixedFilter.startsWithPrefix(query)) {
-                    objects.add(query);
+                for (String query : newQuery.split(" ")) {
+                    if (!PrefixedFilter.startsWithPrefix(query)) {
+                        objects.add(query);
+                    }
                 }
+
+                this.filteredItems.clear();
+                this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects).strip()));
+
+                for (String query : getCurrentQueries()) {
+                    ItemFilters.advancedFilter(filteredItems, query);
+                }
+                // standard filtering
+            } else {
+                this.filteredItems.clear();
+                this.filteredItems.addAll(ItemFilters.filter(newQuery));
             }
 
-            this.filteredItems.clear();
-            this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects).strip()));
+            this.filteredItems.removeIf(ItemView::isExcludedItem);
 
-            for (String query : getCurrentQueries()) {
-                ItemFilters.advancedFilter(filteredItems, query);
-            }
-        // standard filtering
-        } else {
-            this.filteredItems.clear();
-            this.filteredItems.addAll(ItemFilters.filter(newQuery));
-        }
+            this.updateDisplayedItems();
 
-        this.filteredItems.removeIf(ItemView::isExcludedItem);
+            SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
 
-        this.updateDisplayedItems();
-
-        SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
-
-        this.updateButtons();
+            Minecraft.getInstance().execute(this::updateButtons);
+            slotUpdaters -= 1;
+        });
     }
 
     public void updateDisplayedItems() {
-        List<ItemStack> items = this.filteredItems;
-        if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
-            boolean isSearching = isSearchingStackGroups();
-            if (isSearching) {
-                items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
+        slotUpdaters += 1;
+        Util.backgroundExecutor().execute(()->{
+            List<ItemStack> items = this.filteredItems;
+            if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
+                boolean isSearching = isSearchingStackGroups();
+                if (isSearching) {
+                    items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
+                }
+                items = StackGroupManager.applyGrouping(items, isSearching);
             }
-            items = StackGroupManager.applyGrouping(items, isSearching);
-        }
-        this.availableItems = items;
-        this.availableItems.removeIf(ItemView::isExcludedItem);
-        this.updateSlots();
+            this.availableItems = items;
+            this.availableItems.removeIf(ItemView::isExcludedItem);
+            this.updateSlots();
+            slotUpdaters -= 1;
+        });
     }
-
-    private void updateButtons() {
-        if (back != null) {
-            back.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
-            next.visible = this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons();
-        }
-	}
-
 
     @Override
     protected boolean keyPressed(KeyEvent event) {
@@ -275,8 +284,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         Font font = client.font;
 
 
-        var page = Component.literal((this.getPage() + 1) + "/" + (this.getMaxPageIndex() + 1));
-
+        var page = getPageCountText();
 
         if (this.fittingPerPage() > 0) {
             int titleX = checkedX() + checkedWidth() / 2;
@@ -287,45 +295,55 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, -1);
         }
 
+        if (!currentlyIndexing()) {
+            extractSlots(guiGraphics, mouseX, mouseY, partialTicks);
 
-        ItemSlot.currentFrameSlots = this.itemSlots();
-        for (ItemSlot slot : this.itemSlots()) {
-            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+            this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
+            drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex(), false);
         }
-        ItemSlot.currentFrameSlots = null;
-
-
-        this.renderItemHighlighting(OverlayManager.INSTANCE.currentInfo().screen(), guiGraphics, mouseX, mouseY, partialTicks);
-
-
-        drawProgressBar(guiGraphics, !Configs.CLIENT_SETTINGS.isRightIndex(), false);
-
     }
 
-
-    public void renderItemHighlighting(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderItemHighlighting(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.itemFilterMode)
             return;
 
+        if (screen instanceof AbstractContainerScreen<?> abstractContainerScreen) {
 
-        screen.getMenu().slots.forEach(slot -> {
+            abstractContainerScreen.getMenu().slots.forEach(slot -> {
 
-            if (!slot.isActive() || !slot.isHighlightable())
-                return;
+                if (!slot.isActive() || !slot.isHighlightable())
+                    return;
 
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
+                guiGraphics.pose().pushMatrix();
+                guiGraphics.pose().translate(OverlayManager.INSTANCE.currentInfo().leftPos() - 1, OverlayManager.INSTANCE.currentInfo().topPos() - 1);
 
-            if (!slot.hasItem()
-                    || this.availableItems.stream().noneMatch(stack -> stack.getItem() == slot.getItem().getItem())
-                    && ItemFilters.getTooltipMatch(slot.getItem(), this.currentQuery) == 0) {
-                guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
-            }
-            guiGraphics.pose().popMatrix();
+                if (this.shouldDarkenSlot(slot)) {
+                    guiGraphics.fill(slot.x, slot.y, slot.x + 18, slot.y + 18, new Color(0, 0, 0, 128).getRGB());
+                }
+                guiGraphics.pose().popMatrix();
 
-        });
+            });
+        }
+
+
     }
 
+    public boolean shouldDarkenSlot(Slot slot) {
+        if (!this.itemFilterMode)
+            return false;
+
+        return !slot.hasItem() || this.shouldDarkenSlot(slot.getItem());
+    }
+
+    public boolean shouldDarkenSlot(ItemStack stack) {
+        if (!this.itemFilterMode)
+            return false;
+
+        Item item = stack.getItem();
+
+        return this.availableItems.stream().noneMatch(other -> other.getItem() == item)
+                && ItemFilters.getTooltipMatch(stack, this.currentQuery) == 0;
+    }
 
     public void createSearchbarElement(InventoryPositionInfo info) {
         boolean wrapMode = Configs.CLIENT_SETTINGS.isItemWrapMode();
@@ -358,27 +376,18 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         newSearchbar.setResponder(this::updateQuery);
         newSearchbar.setHint(Component.translatable("rrv.search_hint"));
 
-        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.DISABLED);
+        updateSearchBarVisibility(newSearchbar);
 
         this.searchbar = newSearchbar;
     }
 
-    public void createButtons(InventoryPositionInfo info){
+    private void updateSearchBarVisibility(SearchBar newSearchbar) {
+        if (newSearchbar == null) return;
+        newSearchbar.visible = !Configs.CLIENT_SETTINGS.isShowItemView().equals(OverlayDisplay.DISABLED) && !Configs.CLIENT_SETTINGS.isJeiPanel();
+    }
 
-        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ReliableRecipeViewer.of("back"), this::prevPage);
-        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ReliableRecipeViewer.of("next"), this::nextPage);
-
-        int buttonY = 5;
-        int buttonEnd = itemEndX - 16;
-        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-            buttonY+=25;
-            buttonEnd-=13;
-        }
-
-        back.setPosition(checkedX()+10, buttonY);
-        next.setPosition(buttonEnd, buttonY);
-
-        updateButtons();
+    public void updateSearchBarVisibility() {
+        updateSearchBarVisibility(this.searchbar);
     }
 
     /// Open a recipe view screen showing all recipes that either result in or create an item stack - dependent on the supplied [ActionType].
@@ -391,7 +400,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (stack.isEmpty()) return;
 
         if (!InternalRecipeManager.INSTANCE.isRecipesSynced() && !warned) {
-            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("recipe_sync.rrv.denied"));
+            RRVClientUtil.sendMessage(Component.translatable("recipe_sync.rrv.denied"));
             warned = true;
             if (Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.WHEN_NEEDED) || Configs.CLIENT_SETTINGS.localFallbackAllowed().equals(LocalFallback.ENABLED)) {
                 ClientRecipeCache.INSTANCE.buildRecipeCache(false);
@@ -400,6 +409,13 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
+
+        String namespace = RRVPlatform.INSTANCE.getModNamespaceForItem(stack);
+        boolean isFromModWithIntegration = RrvUtil.getInitializedMods().contains(namespace) && RRVClientUtil.getInitializedMods().contains(namespace);
+        if (Configs.CLIENT_SETTINGS.isJeiRecipeScreen() && (!Configs.CLIENT_SETTINGS.isPrioritizeNativeRecipeScreens() || !isFromModWithIntegration) && JeiCompatibilityUtil.hasRecipesForItem(stack, openType) && !stack.hasNonDefault(DataComponents.ITEM_MODEL) && !(ModCompat.POLYMER && PolymerHelpers.isPolymerServerItem(stack))) {
+            JeiCompatibilityUtil.openJEI(stack, openType, RRVClientUtil.currentScreen());
+            return;
+        }
 
         List<ReliableClientRecipe> foundRecipes = switch (openType) {
             case INPUT -> ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(stack);
@@ -411,7 +427,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             }
         };
 
-        if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack))) {
+        if (!foundRecipes.isEmpty() || (ModCompat.POLYDEX && PolymerHelpers.isPolymerServerItem(stack)) || (ModCompat.JEI && JeiCompatibilityUtil.hasRecipesForItem(stack, openType))) {
             openRecipeView(stack, openType, clientPlayer, foundRecipes, type, false);
         }
     }
@@ -443,7 +459,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         Screen parent = RRVClientUtil.currentScreen();
 
-        ArrayList<RecipeViewScreen> viewHistory = new ArrayList<>();
+        ArrayList<RecipeViewMenu> viewHistory = new ArrayList<>();
 
         if (parent instanceof RecipeViewScreen viewScreen) {
             parent = viewScreen.getMenu().getParentScreen();
@@ -459,7 +475,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
         }
 
-        RRVClientUtil.setScreen(new RecipeViewScreen(recipeViewMenu, clientPlayer.getInventory(), Component.empty()));
+        RecipeViewMenu.setScreen(clientPlayer, recipeViewMenu);
     }
 
 

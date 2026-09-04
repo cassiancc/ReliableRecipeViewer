@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.crafting;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -7,6 +8,7 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -14,6 +16,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
@@ -58,15 +61,13 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
 	}
 
     @Override
-    public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        ReliableClientRecipe.super.renderRecipe(screen, recipePosition, guiGraphics, mouseX, mouseY, partialTicks);
+    public void renderRecipe(RecipeScreenContext context) {
         if (shapeless) {
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("crafting_shapeless"), 23, 14, 0, 0, 95, 3, 23, 14);
-            if ((mouseX > 95 && mouseX < 120) && (mouseY>0 && mouseY < 14)) {
-                guiGraphics.setComponentTooltipForNextFrame(screen.getFont(), List.of(Component.translatable("view.rrv.type.crafting.shapeless")), mouseX+recipePosition.left(), mouseY+recipePosition.top());
+            context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("crafting_shapeless"), 23, 14, 0, 0, 95, 3, 23, 14);
+            if ((context.mouseX() > 95 && context.mouseX() < 120) && (context.mouseY()>0 && context.mouseY() < 14)) {
+                context.guiGraphics().setComponentTooltipForNextFrame(context.font(), List.of(Component.translatable("view.rrv.type.crafting.shapeless")), context.mouseX()+context.recipePosition().left(), context.mouseY()+context.recipePosition().top());
             }
         }
-
     }
 
     @Override
@@ -188,6 +189,10 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         public Builder setResult(SlotContent result) {
             this.result = result;
             return this;
+        }
+
+        public Builder setResult(ItemStack result) {
+            return setResult(SlotContent.of(result));
         }
 
         public Builder setResult(ItemStackTemplate result) {

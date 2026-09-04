@@ -15,8 +15,8 @@ import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayl
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStartStackSensitivesPayload;
 //? neoforge
 //import cc.cassian.rrv.neoforge.NeoForgeEntrypoint;
+//? fabric
 import cc.cassian.rrv.fabric.FabricUtil;
-import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;

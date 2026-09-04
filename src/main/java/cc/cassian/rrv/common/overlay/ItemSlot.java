@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.overlay;
 import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -29,7 +30,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/// Representation of one slot later rendered in the overlay
+/**
+ * Representation of one slot later rendered in the overlay
+ *
+ * CLIENT-ONLY
+ */
 public class ItemSlot {
 
     private static final Identifier SLOT_HIGHLIGHT_BACK_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_back");
@@ -37,17 +42,17 @@ public class ItemSlot {
     public static final int ITEM_ENTRY_SIZE = 19;
 
     private final ItemStack stack;
-    private final int x;
-    private final int y;
     private final boolean showHighlight;
+    private final int x, y;
+    private final boolean showDecorations;
 
     private boolean hovered;
 
     private int currentCheatmodeCount = 1;
 
-    public ItemSlot(ItemStack stack, int x, int y) {
+    public ItemSlot(ItemStack stack, int x, int y, boolean showDecorations) {
         this.stack = stack;
-
+        this.showDecorations = showDecorations;
         this.x = x;
         this.y = y;
         this.showHighlight = true;
@@ -206,7 +211,7 @@ public class ItemSlot {
 
             ReliableRecipeViewerClient.addNamespaceTooltip(stack, tooltip, true);
 
-            if (recipe != null) {
+            if (recipe != null && showDecorations) {
                 tooltip.add(Component.translatable("view.rrv.recipe_id", Component.literal(recipe).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD));
             }
 
@@ -220,7 +225,7 @@ public class ItemSlot {
         guiGraphics.fakeItem(this.stack, this.x + 2, this.y + 2);
 
         // render recipe
-        if (recipe != null) {
+        if (recipe != null && showDecorations) {
             guiGraphics.itemDecorations(mc.font, this.stack, this.x+2, this.y+2);
             if (showHighlight)
                 guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("recipe_stack_highlight"), this.x + 3, this.y + 2, 16, 16);
@@ -266,7 +271,7 @@ public class ItemSlot {
             CompoundTag compoundTag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
             if (compoundTag.contains("rrv_result")) {
                 Identifier id = Identifier.parse(compoundTag.get("rrv_result").asString().get());
-                ItemViewOverlay.INSTANCE.openRecipeView(id, Minecraft.getInstance().hasControlDown());
+                ItemViewOverlay.INSTANCE.openRecipeView(id, RRVClientUtil.isKeyDown(ReliableRecipeViewerClient.USE_QUICK_CRAFT));
                 return;
             }
         }

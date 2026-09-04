@@ -5,20 +5,35 @@ import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.mixin.world.item.crafting.IngredientAccessor;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.LootPoolAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.LootTableAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.entries.CompositeEntryBaseAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.entries.LootItemAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.entries.LootPoolSingletonContainerAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetComponentsFunctionAccessor;
+import cc.cassian.rrv.common.mixin.world.level.storage.loot.functions.SetPotionFunctionAccessor;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 //? if >26.2 {
 /*import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import net.minecraft.core.HolderSet;
+import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
+import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
+import net.minecraft.util.random.Weighted;
+import net.minecraft.util.random.WeightedList;
 *///?}
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -26,13 +41,28 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.CompositeEntryBase;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
+import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
+import net.minecraft.world.level.storage.loot.providers.number.*;
+//? if >26.2 {
+/*import net.minecraft.world.level.storage.loot.providers.number.floats.*;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
+*///?}
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
@@ -44,6 +74,10 @@ import static net.minecraft.server.permissions.Permissions.*;
 @NullMarked
 public class RrvUtil {
     private static final ArrayList<String> INITIALIZED_MODS = new ArrayList<>();
+
+    public static Collection<String> getInitializedMods() {
+        return INITIALIZED_MODS;
+    }
 
     public static boolean hasPermission(Player sender) {
         return sender.permissions().hasPermission(COMMANDS_GAMEMASTER);
@@ -127,7 +161,7 @@ public class RrvUtil {
         return BuiltInRegistries.BLOCK.getResourceKey(block).map(ResourceKey::identifier);
     }
 
-    public static Level getLevel() {
+    public static @Nullable Level getLevel() {
         MinecraftServer server = ServerRecipeManager.INSTANCE.getServer();
         if (server != null) {
             return server.overworld();
@@ -210,10 +244,9 @@ public class RrvUtil {
                 ReliableRecipeViewer.LOGGER.debug("RRV: Skipped initializing integration for multi-loader mod: {}", modId);
             }
             return;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration from mod: {} due to {}", modId, e);
         }
-
-        ReliableRecipeViewer.LOGGER.error("RRV: Failed to load integration from mod: {}", modId);
     }
 
     //? if >26.2 {
@@ -234,6 +267,182 @@ public class RrvUtil {
     public static <T> List<T> getLootItemFunctions(List<T> tradeModifiers) {
         return tradeModifiers;
     }
-    //?}
+	//?}
+
+    //? if >26.2 {
+    /*/// Query a resolvable number. Used for fuel values and composting.
+    public static @Nullable Float getNumberProvidedFloat(ResolvableFloat number) {
+        if (number instanceof ResolvableFloat.Constant(float value)) {
+            return value;
+        } else if (number instanceof ResolvableFloat.Reference(ResourceKey<ContextFloatProvider> providerResourceKey)) {
+			return RrvUtil.getNumberProvidedFloat(providerResourceKey);
+        }
+        return null;
+    }
+
+    /// Query a basic number provider. Used for fuel values and composting.
+    public static @Nullable Float getNumberProvidedFloat(ResourceKey<ContextFloatProvider> key) {
+        var numberProviderReference = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.CONTEXT_FLOAT_PROVIDER).getOrThrow(key);
+        return getNumberProvidedFloat(numberProviderReference);
+	}
+
+    public static @Nullable Float getNumberProvidedFloat(Holder<ContextFloatProvider> numberProviderReference) {
+        ContextFloatProvider number = numberProviderReference.value();
+		return switch (number) {
+			case ConstantValue(float value) ->
+                    value;
+			case ConditionalValue conditionalValue ->
+                    getNumberProvidedFloat(conditionalValue.onFalse());
+			case NumberDispatcher(List<NumberDispatcher.Case<ContextFloatProvider>> cases, Holder<ContextFloatProvider> defaultValue) ->
+                    getNumberProvidedFloat(defaultValue);
+            // Compostables (and frankly number providers in general) are really strangely written. https://github.com/misode/mcmeta/blob/data-json/data/minecraft/number_provider/compostable/low.json
+            case WeightedListValue(WeightedList<Holder<ContextFloatProvider>> distribution) -> {
+				var unwrapped = distribution.unwrap();
+				for (Weighted<Holder<ContextFloatProvider>> holder : unwrapped) {
+					if (Objects.equals(getNumberProvidedFloat(holder.value()), 1.0f)) {
+						yield (float)(holder.weight() * 0.01);
+					}
+				}
+                yield 0f;
+			}
+            case Product(HolderSet<ContextFloatProvider> operands)-> {
+                float value = 1.0F;
+
+                for(Holder<ContextFloatProvider> operand : operands) {
+                    Float numberProvidedFloat = getNumberProvidedFloat(operand);
+                    if (numberProvidedFloat != null)
+                        value *= numberProvidedFloat;
+                }
+
+                yield value;
+            }
+			default -> {
+				LOGGER.error("RRV: Failed to load float number provider from key: {}, was unrecognized type {}", numberProviderReference.unwrapKey(), number.getClass());
+				yield null;
+			}
+		};
+    }
+
+    /// Query a resolvable number. Used for fuel values and composting.
+    public static @Nullable Integer getNumberProvidedInt(ResolvableInt number) {
+        if (number instanceof ResolvableInt.Constant(int value)) {
+            return value;
+        } else if (number instanceof ResolvableInt.Reference(ResourceKey<ContextIntProvider> providerResourceKey)) {
+            return RrvUtil.getNumberProvidedInt(providerResourceKey);
+        }
+        return null;
+    }
+
+    /// Query a basic number provider. Used for fuel values and composting.
+    public static @Nullable Integer getNumberProvidedInt(ResourceKey<ContextIntProvider> key) {
+        var numberProviderReference = ServerRecipeManager.INSTANCE.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.CONTEXT_INT_PROVIDER).getOrThrow(key);
+        return getNumberProvidedInt(numberProviderReference);
+    }
+
+    public static @Nullable Integer getNumberProvidedInt(Holder<ContextIntProvider> numberProviderReference) {
+		ContextIntProvider number = numberProviderReference.value();
+        return switch (number) {
+            case net.minecraft.world.level.storage.loot.providers.number.ints.ConstantValue(int value) ->
+                    value;
+            case net.minecraft.world.level.storage.loot.providers.number.ints.ConditionalValue conditionalValue ->
+                    getNumberProvidedInt(conditionalValue.onFalse());
+            case net.minecraft.world.level.storage.loot.providers.number.ints.NumberDispatcher(List<DispatcherProvider.Case<ContextIntProvider>> cases, Holder<ContextIntProvider> defaultValue) ->
+                    getNumberProvidedInt(defaultValue);
+            // Compostables (and frankly number providers in general) are really strangely written. https://github.com/misode/mcmeta/blob/data-json/data/minecraft/number_provider/compostable/low.json
+            case net.minecraft.world.level.storage.loot.providers.number.ints.WeightedListValue(WeightedList<Holder<ContextIntProvider>> distribution) -> {
+                var unwrapped = distribution.unwrap();
+                for (Weighted<Holder<ContextIntProvider>> holder : unwrapped) {
+                    if (Objects.equals(getNumberProvidedInt(holder.value()), 1)) {
+                        yield (int)(holder.weight());
+                    }
+                }
+                yield 0;
+            }
+            case net.minecraft.world.level.storage.loot.providers.number.ints.Product(HolderSet<ContextIntProvider> operands)-> {
+                int value = 1;
+
+                for(Holder<ContextIntProvider> operand : operands) {
+                    Integer numberProvidedFloat = getNumberProvidedInt(operand);
+                    if (numberProvidedFloat != null)
+                        value *= numberProvidedFloat;
+                }
+
+                yield value;
+            }
+            case net.minecraft.world.level.storage.loot.providers.number.ints.Quotient(Holder<ContextIntProvider> left, Holder<ContextIntProvider> right)-> {
+                Integer value = null;
+
+                Integer leftNumber = getNumberProvidedInt(left);
+                Integer rightNumber = getNumberProvidedInt(right);
+                if (leftNumber != null && rightNumber != null) {
+                    value = leftNumber / rightNumber;
+                }
+
+                yield value;
+            }
+            default -> {
+                LOGGER.error("RRV: Failed to load integer number provider from key: {}, was unrecognized type {}", numberProviderReference.unwrapKey(), number.getClass());
+                yield null;
+            }
+        };
+    }
+
+    *///?}
+
+    public static void sortByName(List<ItemStack> availableItems) {
+        availableItems.sort(Comparator.comparing(i -> i.getDisplayName().getString()));
+    }
+
+    public static List<ItemStack> getLoot(LootTable lootTable, @Nullable String withLore) {
+        var stacks = new ArrayList<ItemStack>();
+        var accessor = (LootTableAccessor) lootTable;
+        for (LootPool pool : accessor.getPools()) {
+            LootPoolAccessor lootPoolAccessor = (LootPoolAccessor) pool;
+
+            for (LootPoolEntryContainer container : lootPoolAccessor.entries()) {
+                if (container instanceof LootItem lootItem) {
+                    LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
+                    var containerAccessor = (LootPoolSingletonContainerAccessor) lootItemAccessor;
+
+                    ItemStack stack = new ItemStack(lootItemAccessor.getItem().value());
+
+                    //FIXME
+                    //? if <26.3 {
+                    containerAccessor.getFunctions().forEach(function -> {
+
+                        if (function instanceof SetPotionFunction setPotionFunction)
+                            stack.set(DataComponents.POTION_CONTENTS, stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).withPotion(((SetPotionFunctionAccessor) setPotionFunction).getPotion()));
+                        if (function instanceof SetComponentsFunction setComponentsFunction) {
+							stack.applyComponents(((SetComponentsFunctionAccessor) setComponentsFunction).getComponents());
+						}
+
+                    });
+                    //?}
+
+                    List<LootItemCondition> conditions = RrvUtil.getLootItemFunctions(lootPoolAccessor.conditions());
+                    for (LootItemCondition condition : conditions) {
+                        if (condition instanceof LootItemKilledByPlayerCondition)
+                            stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable("view.rrv.type.entity.player_kill").withStyle(ChatFormatting.GRAY)));
+                    }
+
+                    stacks.add(stack);
+                }
+                if (container instanceof CompositeEntryBase entryBase) {
+                    CompositeEntryBaseAccessor entryBaseAccessor = (CompositeEntryBaseAccessor) entryBase;
+                    entryBaseAccessor.getChildren().forEach(child -> {
+                        if (child instanceof LootItem lootItem) {
+                            LootItemAccessor lootItemAccessor = (LootItemAccessor) lootItem;
+                            ItemStack stack = new ItemStack(lootItemAccessor.getItem());
+                            if (withLore != null)
+                                stack.set(DataComponents.LORE, stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).withLineAdded(Component.translatable(withLore).withStyle(ChatFormatting.GRAY)));
+                            stacks.add(stack);
+                        }
+                    });
+                }
+            }
+        }
+        return stacks;
+    }
+
 
 }

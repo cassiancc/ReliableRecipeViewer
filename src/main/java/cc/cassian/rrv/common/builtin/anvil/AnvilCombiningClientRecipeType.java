@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType {
 
-	protected static final AnvilCombiningClientRecipeType INSTANCE = new AnvilCombiningClientRecipeType();
+	public static final AnvilCombiningClientRecipeType INSTANCE = new AnvilCombiningClientRecipeType();
 
 	private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/anvil.png");
 

@@ -8,6 +8,8 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.config.options.SidePanel;
+import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
@@ -15,21 +17,20 @@ import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NonNull;
 
@@ -40,15 +41,14 @@ import java.util.List;
 
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
+/// CLIENT-ONLY
 public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     public static final SidePanelOverlay INSTANCE = new SidePanelOverlay();
 
-    public SpriteIconButton next = null;
-    public SpriteIconButton back = null;
-
     private static final int HEADER_HEIGHT = 30;
     private static final int FOOTER_HEIGHT = 20;
+    private Screen currentScreen;
 
     public SidePanelOverlay() {
         super(-1, -1, -1, -1);
@@ -63,43 +63,30 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                     Configs.CLIENT_SETTINGS.isShowSidePanel().equals(OverlayDisplay.ENABLED) ||
                     (Configs.CLIENT_SETTINGS.isShowSidePanel().equals(OverlayDisplay.WHEN_SEARCHING) && ItemViewOverlay.INSTANCE.isSearching()) ||
                     (Configs.CLIENT_SETTINGS.isShowSidePanel().equals(OverlayDisplay.WITH_ITEM_VIEW) && ItemViewOverlay.INSTANCE.isEnabled())
-                );
+                ) &&
+                !Configs.CLIENT_SETTINGS.isJeiPanel();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        boolean prev = this.isEnabled();
-        super.setEnabled(enabled);
-
-        if (prev != enabled && enabled) {
-            this.next.visible = true;
-            this.back.visible = true;
-        }
-
-        if (prev != enabled && !enabled) {
-            this.next.visible = false;
-            this.back.visible = false;
-        }
+		super.setEnabled(enabled);
+        updateButtons();
     }
-
 
     @Override
     public void onScreenChanged(InventoryPositionInfo info) {
         this.initForScreen(info.screen(), info);
         super.onScreenChanged(info);
         this.updateSidePanelIndex(Reason.SCREEN_CHANGE);
-        this.createButtons(OverlayManager.INSTANCE.currentInfo());
-        SidePanel.currentScreen = info.screen();
+        this.createButtons(createTitleText(), checkedX()+16, itemEndX - 24, checkedX()+2, itemEndX - 15);
+        this.currentScreen = info.screen();
     }
 
-
-    @Override
-    protected void placeWidgets(ScreenContext ctx) {
-        ctx.addRenderable(this.next);
-        ctx.addRenderable(this.back);
+    public MutableComponent createTitleText() {
+        return Component.translatable("rrv." + Configs.CLIENT_SETTINGS.getSidePanel().getSerializedName());
     }
 
-    private void initForScreen(AbstractContainerScreen<? extends AbstractContainerMenu> screen, InventoryPositionInfo invInfo) {
+    private void initForScreen(Screen screen, InventoryPositionInfo invInfo) {
 
         //-14 for cleaner appearance
         this.width = screen.width - ((screen.width - 176) / 2 + 176) - 14 - 2 * ITEM_ENTRY_SIZE;
@@ -133,14 +120,35 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(Reason reason) {
-        var screen = RRVClientUtil.currentScreen();
-        if (screen instanceof RecipeViewScreen && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
-        this.availableItems.clear();
-        availableItems.addAll(SidePanel.populateSlots(reason, screen));
-        this.updateSlots();
+        slotUpdaters += 1;
+		Util.backgroundExecutor().execute(() -> {
+            var screen = RRVClientUtil.currentScreen();
+            if (isRecipeViewScreen(screen) && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
+            if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
+            this.availableItems.clear();
+            List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(Configs.CLIENT_SETTINGS.getSidePanel().getStacks(new SidePanelContents(reason, Minecraft.getInstance().player, screen instanceof CreativeModeInventoryScreen)));
+            if (screen == this.currentScreen && this.availableItems.isEmpty()) {
+                this.availableItems.addAll(expandedItems);
+                this.updateSlots();
+            }
+            slotUpdaters -= 1;
+        });
+
+        updateButtons();
     }
 
+    public void updateButtons() {
+        this.updateButtons(createTitleText());
+    }
+
+    @Override
+    public boolean showButtons(Component title) {
+        return super.showButtons(title) && !Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED);
+    }
+
+    private static boolean isRecipeViewScreen(Screen screen) {
+        return screen instanceof RecipeViewScreen || (ModCompat.JEI && JeiCompatibilityUtil.isJeiRecipeViewScreen(screen));
+    }
 
     @Override
     protected boolean keyPressed(KeyEvent event) {
@@ -149,7 +157,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
         for (ItemSlot slot : this.itemSlots()) {
-            if (!slot.isHovered())
+            if (slot==null || !slot.isHovered())
                 continue;
 
             if (ReliableRecipeViewerClient.ADD_BOOKMARK_KEYBIND.matches(event)) {
@@ -167,18 +175,16 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
 
     @Override
     protected @NonNull Identifier getReportedOverlayId() {
-        return switch (Configs.CLIENT_SETTINGS.getSidePanel()) {
-            case BOOKMARKS -> OverlayView.BOOKMARKS;
-            case CRAFTABLES -> OverlayView.CRAFTABLES;
-            case UNLOCKED -> OverlayView.UNLOCKED;
-            default -> OverlayView.UNKNOWN;
-        };
+        return Configs.CLIENT_SETTINGS.getSidePanel().getId();
     }
 
     @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (super.mouseClicked(event, doubleClick)) {
             return true;
+        }
+        if (Configs.CLIENT_SETTINGS.getSidePanel().equals(SidePanel.DISABLED)) {
+            return false;
         }
         if (isHoveringOverTitle(event.x(), event.y())) {
             SidePanel.next(true);
@@ -189,6 +195,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     }
 
     private boolean isHoveringOverTitle(double mouseX, double mouseY) {
+        if (next.isHovered() || back.isHovered() || !this.isMouseOver(mouseX, mouseY)) {
+            return false;
+        }
         int left = 0;
         if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
             left = OverlayManager.INSTANCE.currentInfo().screenWidth() - this.width;
@@ -196,7 +205,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         int xMin = left + this.width / 2 - 59;
         int xMax = left + this.width / 2 + 60;
         int verticalPadding = Configs.CLIENT_SETTINGS.isRecipeBookTheme() ? 25 : 0;
-        return (mouseX > xMin && mouseX < xMax) && (mouseY >= (1+verticalPadding) && mouseY <= (21+verticalPadding));
+        return (mouseX > xMin && mouseX < xMax) && (mouseY >= (1+verticalPadding) && mouseY <= (19+verticalPadding));
     }
 
     public static boolean showUnlocks() {
@@ -229,7 +238,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
 
         Minecraft client = Minecraft.getInstance();
-        var screen = RRVClientUtil.currentScreen();
         Font font = client.font;
 
 
@@ -239,55 +247,22 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (isHoveringOverTitle(mouseX, mouseY)) {
             colour = -256;
             guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
-            guiGraphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable(pageKey + ".hint1"), Component.translatable(pageKey + ".hint2"), Component.translatable("rrv.switch_tabs.hint")), mouseX, mouseY+10);
+            guiGraphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable(pageKey + ".hint1"), Component.translatable(pageKey + ".hint2"), Component.translatable("rrv.switch_tabs.hint")), mouseX, mouseY + 10);
         }
 
         if (this.fittingPerPage() > 0) {
             int titleX = (checkedX() + checkedWidth()) / 2;
             int titleY = checkedY() + 10;
             if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-                titleX+=3;
-                titleY+=25;
+                titleX += 3;
+                titleY += 25;
             }
             this.drawScaledString(font, guiGraphics, page, titleX, titleY, colour);
-		}
-
-        try {
-            ItemSlot.currentFrameSlots = this.itemSlots();
-            for (ItemSlot slot : this.itemSlots()) {
-                slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-            }
-            ItemSlot.currentFrameSlots = null;
-        } catch (ConcurrentModificationException ignored) {}
-
-        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
-    }
-
-    public void createButtons(InventoryPositionInfo info){
-
-        back = SpriteIconButton.builder(Component.literal("<"), (button)-> {
-            int fittingPerPage = this.fittingPerPage();
-            this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
-            this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "back"), 10, 10).width(16).build();
-        next = SpriteIconButton.builder(Component.literal(">"), (button)->{
-            int fittingPerPage = this.fittingPerPage();
-            this.startIndex = Math.min(this.startIndex + fittingPerPage, this.availableItems.size() - (this.availableItems.size() - (this.availableItems.size() / fittingPerPage) * fittingPerPage));
-            this.updateSlots();
-        }, true).sprite(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "next"), 10, 10).width(16).build();
-
-        int buttonY = 5;
-        int buttonEnd = itemEndX - 16;
-        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-            buttonY+=25;
-            buttonEnd-=13;
         }
 
-        back.setPosition(itemStartX+2, buttonY);
-        next.setPosition(buttonEnd, buttonY);
+        extractSlots(guiGraphics, mouseX, mouseY, partialTicks);
 
-        next.visible = false;
-        back.visible = false;
+        drawProgressBar(guiGraphics, Configs.CLIENT_SETTINGS.isRightIndex(), true);
     }
 
     public enum Reason {

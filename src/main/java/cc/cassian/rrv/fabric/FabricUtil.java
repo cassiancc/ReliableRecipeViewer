@@ -1,3 +1,4 @@
+//? if fabric || >26 {
 package cc.cassian.rrv.fabric;
 
 import cc.cassian.rrv.api.ReliableRecipeViewerPlugin;
@@ -24,3 +25,4 @@ public class FabricUtil {
 		RecipeSynchronization.synchronizeRecipeSerializer(serializer);
 	}
 }
+//?}

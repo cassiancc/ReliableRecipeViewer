@@ -6,9 +6,12 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
-@Mixin(targets = "net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer")
+//~ if >26.2 'LootPoolSingletonContainer'->'SingleEntryContainerBase'
+@Mixin(value = net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer.class)
 public interface LootPoolSingletonContainerAccessor {
 
+    //? if <26.3 {
     @Accessor("functions")
     List<LootItemFunction> getFunctions();
+    //?}
 }

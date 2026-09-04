@@ -28,6 +28,7 @@ public abstract class MixinEditBox extends AbstractWidget {
     }
 
     //~ if >26.2 '(Lcom/mojang/blaze3d/pipeline/RenderPipeline'->'(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline' {
+    //~ if >26 'renderWidget'->'extractWidgetRenderState'
     @WrapOperation(method = "extractWidgetRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"))
     private void extractRenderStateFilterMode(GuiGraphicsExtractor instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height, Operation<Void> original) {
     //~}

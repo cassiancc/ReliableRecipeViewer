@@ -33,7 +33,7 @@ Reliable Recipe Viewer is a fork of [Extended Item View](https://modrinth.com/mo
 - Additional GUI improvements, like a scroll bar for the item index, a way to see all recipes by clicking on the recipe type, buttons to change the item index page, and more.
 - Additional recipe types for special crafting recipes, item tags, repairing, and resource pack-driven info, world interaction, and anvil combining recipes.
 - Compatibility improvements, showing mod name translations, tag translations, support for component ingredients, and more.
-- Improved mod compatibility with [Reliable Remover](https://modrinth.com/mod/reliable-remover), [Polydex](https://modrinth.com/mod/polydex), [Controlify](https://modrinth.com/mod/controlify), and more.
+- Improved mod compatibility with [JEI](https://modrinth.com/mod/jei), [Sinytra Connector](https://modrinth.com/mod/connector), [Reliable Remover](https://modrinth.com/mod/reliable-remover), [Polydex](https://modrinth.com/mod/polydex), [Controlify](https://modrinth.com/mod/controlify), and more.
 - Fixes for multiple bugs seen in the original project.
 
 </details>
@@ -49,9 +49,11 @@ Developers wishing to integrate their mods with Reliable Recipe Viewer or config
 - How do I get started adding compatibility with RRV?
   - Please see the docs on the [Modded Minecraft Wiki](https://moddedmc.wiki/en/project/rrv/latest/docs)!
 - What mods are compatible with RRV?
-  - Please see the [Modrinth Collection](https://modrinth.com/collection/divCExF5), which lists every mod that I know has RRV integration. If you are a developer, and you've added support for RRV, please reach out in the Discord and I'll add your mod!
+  - Please see the [Modrinth Collection](https://modrinth.com/collection/divCExF5), which lists every mod that I know has RRV integration. Larger modpacks may also wish to install [JEI](https://modrinth.com/mod/jei) and [RRV Addons](https://modrinth.com/mod/rrv-addons). If you are a developer, and you've added support for RRV, please reach out in the Discord and I'll add your mod to the collection!
 - Where can I ask questions about RRV?
   - I am happy to answer RRV related questions in my [Discord](https://discord.cassian.cc/).
+- What versions receive support?
+  - RRV is currently actively maintained for 26.1.2, 26.2, and the latest snapshot of 26.3. Latest snapshot support is a priority, and older versions will be maintained for as long as they remain in use. Older versions of Minecraft may have outdated feature sets or bugs.
 
 ## License
 [![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](https://github.com/cassiancc/reliablerecipeviewer)

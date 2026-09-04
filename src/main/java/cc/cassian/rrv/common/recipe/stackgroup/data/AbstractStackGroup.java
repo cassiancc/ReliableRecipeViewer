@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.recipe.stackgroup.data;
 
+import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.config.options.ConfiguredStackGroup;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -41,6 +42,9 @@ public abstract class AbstractStackGroup {
         String fallbackKey = "stackgroup.emixx." + path;
         if (Language.getInstance().has(fallbackKey)) {
             return Component.translatable(fallbackKey);
+        }
+        if (RRVPlatform.INSTANCE.isDevelopment()) {
+            return Component.literal(key);
         }
         return Component.literal(WordUtils.capitalize(path.replace("_", " ")));
     }

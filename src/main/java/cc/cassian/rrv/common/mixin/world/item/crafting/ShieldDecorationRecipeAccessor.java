@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ShieldDecorationRecipe.class)
 public interface ShieldDecorationRecipeAccessor {
+    //? if >26 {
     @Accessor
     Ingredient getBanner();
 
@@ -17,4 +18,5 @@ public interface ShieldDecorationRecipeAccessor {
 
     @Accessor
     ItemStackTemplate getResult();
+    //?}
 }

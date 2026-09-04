@@ -5,29 +5,33 @@ import cc.cassian.rrv.api.overlay.OverlayKeybindSlotHandler;
 import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.overlay.itemlist.AbstractRrvItemListOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Abstract base class for all overlays
+ *
+ * CLIENT-ONLY
  */
 public abstract class AbstractRrvOverlay {
 
     private final List<ItemSlot> itemSlots = new ArrayList<>();
+    private final List<ItemSlot> lastItemSlots = new ArrayList<>();
+    private boolean needsBackground = true;
 
     protected int x, y, width, height;
 
@@ -92,6 +96,14 @@ public abstract class AbstractRrvOverlay {
         this.enabled = enabled;
     }
 
+    public boolean needsBackground() {
+        return needsBackground;
+    }
+
+    public void setNeedsBackground(boolean needsBackground) {
+        this.needsBackground = needsBackground;
+    }
+
     public boolean isEnabled() {
         return this.enabled;
     }
@@ -104,7 +116,7 @@ public abstract class AbstractRrvOverlay {
         //Basic keybinds
 
         for (ItemSlot slot : this.itemSlots()) {
-            if (!slot.isHovered())
+            if (slot == null || !slot.isHovered())
                 continue;
 
             Identifier overlayId = this.getReportedOverlayId();
@@ -139,11 +151,31 @@ public abstract class AbstractRrvOverlay {
 
     protected abstract boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick);
 
+    protected boolean isMouseOver(double mouseX, double mouseY) {
+		return mouseX >= getX() && mouseX <= getX() + getWidth() && mouseY >= getY() && mouseY <= getY() + getHeight();
+	}
+
     protected abstract boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY);
 
-
+    /**
+	 * The current list of item slots. These are updated on a background thread to prevent large lag spikes. If they are actively being modified (see {@link AbstractRrvItemListOverlay#slotsBeingUpdated()}, check {@link AbstractRrvOverlay#lastItemSlots()})
+	 */
     public List<ItemSlot> itemSlots() {
         return this.itemSlots;
+    }
+
+    /**
+     * The last safe (not actively being modified) list of item slots. For the current list, see {@link AbstractRrvOverlay#itemSlots()}
+    */
+    public List<ItemSlot> lastItemSlots() {
+        return this.lastItemSlots;
+    }
+
+    /**
+     * Whether there is not currently a list of items to display. If this is the case, no decorations are rendered.
+     */
+    public boolean currentlyIndexing() {
+        return ItemFilters.needsCache() && this.itemSlots().isEmpty() && this.lastItemSlots.isEmpty();
     }
 
     public void onScreenChanged(InventoryPositionInfo info) {
@@ -169,7 +201,7 @@ public abstract class AbstractRrvOverlay {
 
 
     protected boolean isPositionBlocked(int x, int y, int width, int height) {
-        List<BlockingGuiComponent> relevantComponents = OverlayManager.INSTANCE.allGuiBlockings().stream().filter(blockingGuiComponent -> this.getBlockingPredicate().isBlocking(blockingGuiComponent)).toList();
+        List<BlockingGuiComponent> relevantComponents = OverlayManager.INSTANCE.exclusionAreas().stream().filter(blockingGuiComponent -> this.getBlockingPredicate().isBlocking(blockingGuiComponent)).toList();
 
 
         for (BlockingGuiComponent blocking : relevantComponents) {
@@ -190,10 +222,10 @@ public abstract class AbstractRrvOverlay {
         this.effectiveHeight = this.height;
 
 
-        if (OverlayManager.INSTANCE.allGuiBlockings().isEmpty())
+        if (OverlayManager.INSTANCE.exclusionAreas().isEmpty())
             return;
 
-        List<BlockingGuiComponent> relevantBlockings = OverlayManager.INSTANCE.allGuiBlockings().stream().filter(blockingGuiComponent -> blockingGuiComponent.hasIntersectionWith(this.x, this.y, this.width, this.height)).toList();
+        List<BlockingGuiComponent> relevantBlockings = OverlayManager.INSTANCE.exclusionAreas().stream().filter(blockingGuiComponent -> blockingGuiComponent.hasIntersectionWith(this.x, this.y, this.width, this.height)).toList();
         if (relevantBlockings.isEmpty())
             return;
 
@@ -249,7 +281,7 @@ public abstract class AbstractRrvOverlay {
 
     }
 
-    public record InventoryPositionInfo(AbstractContainerScreen<? extends AbstractContainerMenu> screen,
+    public record InventoryPositionInfo(Screen screen,
                                         int screenWidth, int screenHeight, int leftPos, int topPos, int imageWidth,
                                         int imageHeight) {
 

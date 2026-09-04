@@ -179,6 +179,7 @@ public class StackGroupNameWidget extends AbstractWidget {
     }
 
     @Override
+    //~ if >26 'renderWidget'-> 'extractWidgetRenderState'
     protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         isTitleHovered = titleContains(mouseX, mouseY);
 

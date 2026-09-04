@@ -10,7 +10,7 @@ import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
 public class InfoClientRecipeType implements ReliableClientRecipeType {
-	protected static final InfoClientRecipeType INSTANCE = new InfoClientRecipeType();
+	public static final InfoClientRecipeType INSTANCE = new InfoClientRecipeType();
 	private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/info.png");
 
 	@Override

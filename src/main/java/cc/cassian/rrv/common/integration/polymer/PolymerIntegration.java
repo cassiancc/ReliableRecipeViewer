@@ -9,6 +9,7 @@ import cc.cassian.rrv.common.integration.polymer.api.ItemViewServerModifier;
 import cc.cassian.rrv.common.integration.polymer.network.*;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+//~ if >26 'ScreenHandlerUtils'->'MenuUtils' {
 import eu.pb4.polymer.core.api.other.PolymerMenuUtils;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.rsm.api.RegistrySyncUtils;
@@ -35,15 +36,13 @@ public class PolymerIntegration {
 			RegistrySyncUtils.setServerEntry(BuiltInRegistries.ITEM, entry.getValue());
 		}
 
-		RegistrySyncUtils.setServerEntry(BuiltInRegistries.MENU, ReliableRecipeViewer.RECIPE_VIEW_MENU);
-
-		if (RRVPlatform.INSTANCE.isClientSide()) {
-			PolymerMenuUtils.registerType(ReliableRecipeViewer.RECIPE_VIEW_MENU);
-		}
+		//~}
 		PolymerResourcePackUtils.addModAssets("rrv");
 
 
+		//~ if <26 'clientboundPlay'->'playS2C'
 		PayloadTypeRegistry<RegistryFriendlyByteBuf> clientBoundPayloads = PayloadTypeRegistry.clientboundPlay();
+		//~ if <26 'serverboundPlay'->'playC2S'
 		PayloadTypeRegistry<RegistryFriendlyByteBuf> serverBoundPayloads = PayloadTypeRegistry.serverboundPlay();
 
 		clientBoundPayloads.register(ItemStackRemoverSetPayload.PACKET_ID, ItemStackRemoverSetPayload.CODEC);

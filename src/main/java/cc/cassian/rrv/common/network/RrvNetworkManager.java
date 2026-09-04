@@ -78,6 +78,7 @@ public class RrvNetworkManager {
      */
     public <T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, PayloadHandler<ServerContext, T> serverHandler) {
         //? fabric {
+        //~ if <26 'serverboundPlay'->'playC2S'
         PayloadTypeRegistry.serverboundPlay().register(type, codec);
         ServerPlayNetworking.registerGlobalReceiver(type, ((payload, context) -> {
             serverHandler.handle(new ServerContext(context.server(), context.player()), payload);
@@ -120,6 +121,7 @@ public class RrvNetworkManager {
      */
     public static <T extends CustomPacketPayload> void registerClientboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
         //? fabric {
+        //~ if <26 'clientboundPlay'->'playS2C'
         PayloadTypeRegistry.clientboundPlay().register(type, codec);
         //?}
     }

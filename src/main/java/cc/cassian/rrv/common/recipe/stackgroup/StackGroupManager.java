@@ -3,6 +3,8 @@ package cc.cassian.rrv.common.recipe.stackgroup;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.stackgroup.data.AbstractStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.IdentifierStackGroup;
 import cc.cassian.rrv.common.recipe.stackgroup.data.RegexStackGroup;
@@ -44,10 +46,10 @@ public class StackGroupManager {
         registerType("rrv:tag", StackGroupManager::parseTagGroup);
         registerType("rrv:component", StackGroupManager::parseComponentGroup);
         registerType("rrv:regex", StackGroupManager::parseRegexGroup);
-        registerType("rrv:pressure_plates", (_, _) -> new PressurePlateItemGroup());
-        registerType("rrv:minecarts", (_, _) -> new MinecartItemGroup());
-        registerType("rrv:infested_blocks", (_, _) -> new InfestedBlockItemGroup());
-        registerType("rrv:coral", (_, _) -> new CoralItemGroup());
+        registerType("rrv:pressure_plates", (identifier, object) -> new PressurePlateItemGroup());
+        registerType("rrv:minecarts", (identifier, object) -> new MinecartItemGroup());
+        registerType("rrv:infested_blocks", (identifier, object) -> new InfestedBlockItemGroup());
+        registerType("rrv:coral", (identifier, object) -> new CoralItemGroup());
     }
 
     public static void registerType(String type, BiFunction<Identifier, JsonObject, AbstractStackGroup> factory) {
@@ -338,7 +340,7 @@ public class StackGroupManager {
 
             AbstractStackGroup group = getGroupForItem(stack);
             if (group != null && group.isEnabled) {
-                groupMatches.computeIfAbsent(group, _ -> new ArrayList<>()).add(stack);
+                groupMatches.computeIfAbsent(group, abstractStackGroup -> new ArrayList<>()).add(stack);
             }
         }
 
@@ -397,16 +399,16 @@ public class StackGroupManager {
 
     public static List<ItemStack> getGroupItems(AbstractStackGroup group) {
         List<ItemStack> items = new ArrayList<>();
-        BuiltInRegistries.ITEM.forEach(item -> {
-            ItemStack stack = new ItemStack(item);
-            ClientRecipeCache.INSTANCE.streamStackSensitives(item).forEach(e -> {
-                if (group.match(e))
-                    items.add(e);
+        if (ItemViewOverlay.INSTANCE.currentlyIndexing()) return List.of();
+        try {
+            ItemFilters.fullStackList().forEach(stack -> {
+                if (group.match(stack)) {
+                    items.add(stack);
+                }
             });
-            if (group.match(stack)) {
-                items.add(stack);
-            }
-        });
+        } catch (ConcurrentModificationException ignored) {
+            // this is rare and needs further investigation
+        }
 
         sortByGroupOrder(items, group.getId());
         return items;

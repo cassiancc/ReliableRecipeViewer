@@ -1,11 +1,12 @@
 {
   "required": true,
   "package": "cc.cassian.rrv.neoforge.mixin",
-  "compatibilityLevel": "JAVA_25",
+  "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "mixins": [
     "neoforge.client.network.MixinRegistryManager",
-    "neoforge.client.network.RegistrySnapshotAccessor"
+    "neoforge.client.network.RegistrySnapshotAccessor",
+    "neoforge.common.BasicItemListingAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -3,6 +3,7 @@ package cc.cassian.rrv.client.sharing;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.recipe.ClientUnlockManager;
+import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePayload;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 public class RecipeSharing {
 	public static void sendMessage(ReliableClientRecipe recipe, Component sender) {
-		Minecraft.getInstance().player.sendSystemMessage(getMessage(recipe, sender));
+		RRVClientUtil.sendMessage(getMessage(recipe, sender));
 	}
 
 	private static MutableComponent getMessage(ReliableClientRecipe recipe, Component sender) {
@@ -32,14 +33,18 @@ public class RecipeSharing {
 	private static MutableComponent getRecipeName(ReliableClientRecipe recipe) {
 		Identifier recipeId = recipe.entryId();
 		return Component.translatable("rrv.sharing.recipe",
-				recipeId).withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)
+				recipeId.toString()).withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)
 				.withClickEvent(new ClickEvent.Custom(ReliableRecipeViewer.of("click_recipe"), Optional.of(StringTag.valueOf(recipeId.toString()))))
-				.withHoverEvent(new ShowRecipe(recipe.getType().getDisplayName().copy(), recipe.getType().getId().getNamespace(), recipe.getResults().getFirst().next()))
+				.withHoverEvent(new ShowRecipe(recipe.getType().getDisplayName().copy(), recipe.getType().getId().getNamespace(), !recipe.getResults().isEmpty() ? recipe.getResults().getFirst().next() : ItemStack.EMPTY))
 		);
 	}
 
 	public static void shareRecipe(ReliableClientRecipe currentRecipe) {
-		ClientNetworkManager.sendPacketToServer(new ServerboundShareRecipePayload(currentRecipe.getId()));
+		shareRecipe(currentRecipe.getId());
+	}
+
+	public static void shareRecipe(Identifier currentRecipe) {
+		ClientNetworkManager.sendPacketToServer(new ServerboundShareRecipePayload(currentRecipe));
 	}
 
     public static void clickRecipe(Identifier recipeId) {

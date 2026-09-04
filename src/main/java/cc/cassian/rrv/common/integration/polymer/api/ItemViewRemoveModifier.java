@@ -20,7 +20,10 @@ public interface ItemViewRemoveModifier {
                 for (ItemStackRemover callback : listeners) {
                     Stream<ItemStack> itemStackStream = callback.get()
                             .stream()
-                            .map(stack -> PolymerItemUtils.createItemStack(stack, PacketContext.get(), ServerRecipeManager.INSTANCE.getServer().registryAccess()));
+                            .map(stack -> PolymerItemUtils.createItemStack(stack, PacketContext.get()
+                                    //? if >26
+                                    , ServerRecipeManager.INSTANCE.getServer().registryAccess()
+                            ));
                     stacks.addAll(itemStackStream.toList());
                 }
                 return stacks;

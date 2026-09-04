@@ -1,13 +1,18 @@
 package cc.cassian.rrv.api.recipe;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
@@ -103,13 +108,34 @@ public interface ReliableClientRecipe {
         return List.of();
     }
 
+    /// Allows adding [net.minecraft.client.gui.components.Renderable] components to the recipe screen. Note that the [RecipeScreenContext] provided by this method does not have access to the [GuiGraphicsExtractor] and will return null.
+    default void addRecipeWidgets(RecipeScreenContext context) {
+
+    }
+
+    /// Deprecated: use [ReliableClientRecipe#renderRecipe(cc.cassian.rrv.api.client.RecipeScreenContext)], which provides the same functionality while allowing for recipes to be rendered on screens other than a [RecipeViewScreen].
     /// @param screen       The current recipe screen
     /// @param guiGraphics  The [GuiGraphicsExtractor] supplied by Minecraft
     /// @param mouseX       The current x-position of the mouse **relative to the position of the rendered recipe**
     /// @param mouseY       The current y-position of the mouse **relative to the position of the rendered recipe**
     /// @param partialTicks partialTicks
+    @Deprecated(since = "8.7.0")
     default void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
+    }
+
+    /// Allows rendering custom content to the recipe screen.
+    default void renderRecipe(RecipeScreenContext context) {
+        if (context.screen() instanceof RecipeViewScreen recipeViewScreen) {
+            renderRecipe(recipeViewScreen, context.recipePosition(), context.guiGraphics(), context.mouseX(), context.mouseY(), context.partialTicks());
+        } else {
+            try {
+                renderRecipe(null, context.recipePosition(), context.guiGraphics(), context.mouseX(), context.mouseY(), context.partialTicks());
+            } catch (Exception e) {
+                context.guiGraphics().textWithWordWrap(Minecraft.getInstance().font, FormattedText.of("Failed to render recipe."), 20, 20, 160, -16777216, false);
+                ReliableRecipeViewer.LOGGER.error("Failed to render recipe", e);
+            }
+        }
     }
 
     /// Called on every game tick

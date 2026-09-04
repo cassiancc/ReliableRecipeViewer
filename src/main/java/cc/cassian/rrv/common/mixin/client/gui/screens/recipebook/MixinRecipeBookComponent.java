@@ -51,13 +51,13 @@ public abstract class MixinRecipeBookComponent {
 
 
         if (!this.visible) {
-            OverlayManager.INSTANCE.removeGuiBlocking(Identifier -> Identifier.getPath().startsWith("recipetabbutton_"), false);
-            OverlayManager.INSTANCE.removeGuiBlocking(Identifier.withDefaultNamespace("recipebook"), false);
+            OverlayManager.INSTANCE.removeExclusionArea(Identifier -> Identifier.getPath().startsWith("recipetabbutton_"), false);
+            OverlayManager.INSTANCE.removeExclusionArea(Identifier.withDefaultNamespace("recipebook"), false);
             return;
         }
 
         //Width and height hardcoded
-        OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
+        OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(
                 Identifier.withDefaultNamespace("recipebook"),
                 this.getXOrigin(),
                 this.getYOrigin(),
@@ -71,14 +71,14 @@ public abstract class MixinRecipeBookComponent {
     @Inject(method = "updateTabs", at = @At("TAIL"))
     private void injectBlocking$2(CallbackInfo ci) {
 
-        OverlayManager.INSTANCE.removeGuiBlocking(Identifier -> Identifier.getPath().startsWith("recipetabbutton_"), false);
+        OverlayManager.INSTANCE.removeExclusionArea(Identifier -> Identifier.getPath().startsWith("recipetabbutton_"), false);
 
 
         for (int i = 0; i < this.tabButtons.size(); i++) {
             RecipeBookTabButton tabButton = this.tabButtons.get(i);
 
             if (tabButton.visible)
-                OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
+                OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(
                         Identifier.withDefaultNamespace("recipetabbutton_" + i),
                         tabButton.getX(),
                         tabButton.getY(),

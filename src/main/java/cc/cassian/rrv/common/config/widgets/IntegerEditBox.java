@@ -17,7 +17,7 @@ public class IntegerEditBox extends EditBox {
                 Integer.parseInt(text);
             } catch (NumberFormatException e) {
                 valid = false;
-                return Component.literal(text).withStyle(ChatFormatting.RED).getVisualOrderText();
+                return Component.literal(text).withStyle(ChatFormatting.RED, ChatFormatting.ITALIC).getVisualOrderText();
             }
             valid = true;
             return null;

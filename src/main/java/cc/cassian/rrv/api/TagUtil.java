@@ -46,6 +46,7 @@ public class TagUtil {
         return ItemStack.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(ItemStack.EMPTY);
     }
 
+    //? if >26 {
     /**
      * Decodes an {@link ItemStackTemplate} on the client side
      * @param tag The tag to decode
@@ -54,6 +55,7 @@ public class TagUtil {
     public static @Nullable ItemStackTemplate decodeItemStackTemplateOnClient(CompoundTag tag) {
         return ItemStackTemplate.CODEC.parse(ClientRecipeManager.INSTANCE.createSerializationContext(), tag).result().orElse(null);
     }
+    //?}
 
     /**
      * Encodes an {@link ItemStack} on the client side

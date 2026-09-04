@@ -1,0 +1,58 @@
+modLoader="javafml"
+
+loaderVersion="${neoforge_loader_version_range}"
+
+license="${mod_license}"
+
+issueTrackerURL="https://github.com/cassiancc/ReliableRecipeViewer/issues"
+
+[[mods]]
+
+# The modid of the mod
+modId="${mod_id}" #mandatory
+
+# The version number of the mod
+version="${mod_version}" #mandatory
+
+# A display name for the mod
+displayName="${mod_name}" #mandatory
+
+# A URL to query for updates for this mod. See the JSON update specification https://docs.neoforged.net/docs/misc/updatechecker/
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
+
+displayURL="https://modrinth.com/mod/rrv"
+
+bannerFile= "assets/rrv/icon.png" #optional
+iconFile= "assets/rrv/icon.png" #optional
+
+#credits="" #optional
+
+authors="${mod_authors}" #optional
+
+description='''${mod_description}'''
+
+rrv="cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration"
+rrv_client="cc.cassian.rrv.client.builtin.BuiltInReliableRecipeViewerClientIntegration"
+
+[[mixins]]
+config="${mod_id}.mixins.json"
+
+[[mixins]]
+config="${mod_id}.neoforge.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
+[[dependencies.${mod_id}]] #optional
+modId="neoforge" #mandatory
+type="required" #mandatory
+versionRange="${neoforge_version_range}" #mandatory
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"

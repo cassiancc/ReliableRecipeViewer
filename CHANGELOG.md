@@ -1,3 +1,137 @@
+## [8.9.2]
+
+### Fixed
+- Creative tabs not updating correctly (thanks @SkyNotTheLimit, @OffsetMonkey538)
+- Incorrect behaviour on entity page (thanks @OffsetMonkey538)
+- Incorrect javadocs in `ReliableClientRecipeType`.
+
+## [8.9.1]
+
+### Added
+- Support for 26.3-snapshot-10.
+- Clarification for client-only and internal API classes (thanks @SkyNotTheLimit!)
+- Exposed `ItemViewOverlay#shouldDarkenSlot` (thanks @SkyNotTheLimit!)
+
+### Fixed
+- Crash reloading creative tabs on dedicated servers.
+
+## [8.9.0]
+
+### Added
+- If present, sprites provided to a Field Guide resource pack will now override the renders shown in entity recipes.
+- A new search filter for Data Components.
+
+### Changed
+- Recipe screen is no longer an `AbstractContainerScreen`, fixing many compatibility issues from mods expecting it to work like a standard container (#5, #37).
+- Maximum recipes per screen are now calculated based on the screen's height, fixing rendering issues on smaller GUI scales (#61).
+- Background rendering is now handled through Fabric/NeoForge events, fixing compatibility with mods that cancel or do not render the background texture (#65)
+- Opening new recipe screens no longer causes the search bar/buttons to flicker.
+
+### Fixed
+- Removing search filters from the config file no longer removes them as options in the config screen.
+- Enabling stack groups ingame now works correctly.
+
+## [8.8.0]
+
+### Added
+- Completely redesigned the category formerly known as "Mob Drops".
+  - Renamed to Entities, and changed the category icon to spawn eggs rather than a sword.
+  - Hovering over an entity will now show whether they are hostile via text colour, the name of the mod that adds the entity, and Item Descriptions if present.
+  - Doubled the size of the rendered entity.
+  - Mob drops have been moved to the side and a tooltip has been added to clarify drops.
+  - Now shows information about animal food below the entity preview.
+  - Animal food can be overridden in the client integration via `ItemView#addMobFood`.
+- Client recipes can now override `addRecipeWidgets` and call `GuiWidgetAccess.widgets.addRecipeWidget` to add vanilla `Renderable`/`GuiEventListener` objects to the recipe layout.
+  - Note: JEI support on this feature still has some issues.
+- Active search filters can now be customized from the client config screen, including the text color and required prefix.
+
+### Changed
+- Creative tabs depending on synchronized recipes are now displayed in RRV correctly.
+
+### Fixed
+- Crash when spamming bookmarks key.
+- Tag descriptions provided by Item Descriptions now wrap correctly.
+- Potential crash loading worlds with Unique Recipe Output index source enabled.
+- Minor visual touch-ups to config screens.
+
+## [8.7.3]
+
+### Changed
+- Stack group translation keys are now shown in development.
+- Reintroduced a fixed version of the performance optimization removed in 8.7.2.
+
+### Fixed
+- Crash from incorrectly generated Identifier in burning recipes.
+- Partial search matches for multiple words now work correctly.
+- Typo preventing entity tooltip from working.
+- Support NeoForge's redesigned mod menu on 26.2.
+
+## [8.7.2]
+
+### Added
+- Support for 26.3-snapshot-7.
+- Added stack group for Cloneable Maps.
+
+### Fixed
+- Removed broken optimization causing creative search to not work. Will be further tested for v8.8.
+
+## [8.7.1]
+
+### Fixed
+- Unique recipe output index source now works correctly.
+
+## [8.7.0]
+
+### Added
+- RRV is now partially compatible with JEI. This is still in an experimental stage and is not currently recommended, but should at least offer some way to see recipes from mods with only one integration.
+  - With JEI present, RRV recipes will be bridged to JEI's recipe manager, and JEI's recipe screen will be accessible from RRV's recipe screen in a similar fashion to the existing Polydex integration.
+  - You can also now switch between RRV and JEI's panels and recipe screens in the config. The default is RRV's panels and JEI's recipe screen. These can be used interchangeably, with the default setting clicking an item in RRV's panel will open a JEI recipe screen.
+  - Note: Even with JEI's recipe screen enabled, Polymer items, items with custom item models, and items from mods with RRV integrations will still use the RRV recipe screen, as JEI does not handle these as well as RRV does. RRV's recipe screen can also be manually viewed by clicking the RRV button next to the recipe.
+  - Recipes implementing `renderRecipe` should now use `renderRecipe(RecipeScreenContext)` to allow rendering recipes without an RRV `RecipeViewScreen`.
+  - With JEI present, RRV can search by item colour with the ^ prefix.
+  - Known issues:
+    - Bookmarking recipes does not work correctly.
+    - Optional slot renderers with custom textures only display normal slots.
+    - Animations do not tick.
+    - Any recipes reliant on a `RecipeViewScreen` will not render correctly.
+    - Any mods that require mixins into RRV's recipe screen will not render on JEI.
+    - Recipes that are synchronized via `ReliableServerRecipe` are not displayed in JEI, as they do not exist when JEI's plugin is initialized.
+- Quick crafting keybind can now be rebound from Left Control.
+- Recipe outputs with unique components can now be added to the index by enabling the Unique Recipe Output index source. This should improve the experience when playing with datapacks like Matcha Flavoured.
+- Index sources can now be mixed and matched from their own screen.
+- Recipe type buttons can now be scrolled through.
+- Add-ons can now safely extend `RecipeSlot` without losing their custom additions.
+- Backport to 1.21.11.
+- 26.3 will now show Fuel Recipes again.
+- Added a client recipe type for Composting.
+- Side panel will now show previous/next buttons if there's space.
+- Previous/next buttons will now become greyed out when unusable.
+- Mob drops can now be modified with the API via `ItemView#modifyMobDrops`.
+- Full stack list is now computed in the background rather than when the inventory is first opened.
+- Added an API for adding default checks to items.
+
+### Changed
+- Client config file has been reorganized to match the categories found in the ingame config screen. Configs from 8.6.4 and below will be safely upgraded to this new format.
+- Integrations failing to load will now provide a full stacktrace.
+
+### Fixed
+- Incorrectly set unknown keybind causing OpenGL spam.
+- Incorrect mouse button bindings on 26.3.
+- Next/prev page buttons no longer show up if they do not have enough space to render.
+- Ingredients used without access to a world now partially work.
+- Stack groups not matching correctly on items added via creative tabs or when the index has been modified.
+- Crash sharing recipes without any outputs.
+- Stack group config can no longer be opened if stack groups are disabled.
+
+## [8.6.4]
+
+### Added
+- Support for 26.3-snapshot-5. This version has initially been released as a beta.
+  - Fuel recipes are not currently supported.
+
+### Fixed
+- Crash from duplicated recipes when using Launchpad (thanks Su5eD!)
+
 ## [8.6.3]
 
 ### Added

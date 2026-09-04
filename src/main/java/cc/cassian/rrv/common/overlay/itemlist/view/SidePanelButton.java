@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.overlay.itemlist.view;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.SidePanel;
+import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -12,8 +13,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
 
@@ -22,8 +21,19 @@ import static cc.cassian.rrv.common.config.options.SidePanel.*;
 public class SidePanelButton extends ReliableSpriteIconButton {
     private static final Identifier SIDE_PANEL_TOGGLE = ReliableRecipeViewer.of("side_panel_button");
 
-    public SidePanelButton() {
-        super(18, getTooltip(), 14, SIDE_PANEL_TOGGLE, SidePanelButton::nextSidePanel);
+    public SidePanelButton(int position, AbstractRrvOverlay.InventoryPositionInfo info) {
+        super(ItemViewOverlay.INSTANCE.buttonSize(), getTooltip(), 14, SIDE_PANEL_TOGGLE, SidePanelButton::nextSidePanel);
+        int buttonSize = ItemViewOverlay.INSTANCE.buttonSize();
+        int sidePanelButtonPosition = position + buttonSize + 2;
+        if (!Configs.CLIENT_SETTINGS.isRightIndex()) {
+            sidePanelButtonPosition = info.screenWidth() - (buttonSize + 2) * 2;
+        }
+        this.setPosition(sidePanelButtonPosition, info.screenHeight() - buttonSize);
+        this.visible = Configs.CLIENT_SETTINGS.isSidePanelSettingsButtonEnabled();
+
+        if (Configs.CLIENT_SETTINGS.isJeiPanel()) {
+            this.visible = false;
+        }
     }
 
     public static void nextSidePanel(Button button) {
@@ -35,6 +45,7 @@ public class SidePanelButton extends ReliableSpriteIconButton {
         if (!Configs.CLIENT_SETTINGS.getSidePanel().equals(DISABLED)) {
             SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.BUTTON);
         }
+        SidePanelOverlay.INSTANCE.updateButtons();
         button.setTooltip(Tooltip.create(getTooltip()));
     }
 
@@ -43,6 +54,7 @@ public class SidePanelButton extends ReliableSpriteIconButton {
     }
 
     @Override
+    //~ if >26 'render'-> 'extract'
     protected void extractSprite(final GuiGraphicsExtractor graphics, final int x, final int y) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("side_panel_"+ Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase(Locale.ROOT)), x, y, this.spriteWidth, this.spriteHeight, this.alpha);
     }

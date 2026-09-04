@@ -19,6 +19,10 @@ public class ReliableSpriteIconButton extends SpriteIconButton.CenteredIcon {
 	public ReliableSpriteIconButton(int size, Component message, int spriteSize, Identifier sprite, Identifier hovered, OnPress onPress) {
 		super(size, size, message, spriteSize, spriteSize, new WidgetSprites(sprite, hovered), onPress, message, null);
 	}
+
+	public ReliableSpriteIconButton(int size, Component message, int spriteSize, Identifier sprite, Identifier hovered, Identifier disabled, OnPress onPress) {
+		super(size, size, message, spriteSize, spriteSize, new WidgetSprites(sprite, disabled, hovered), onPress, message, null);
+	}
 	//?} else {
 	/*public ReliableSpriteIconButton(int size, Component message, int spriteSize, Identifier sprite, OnPress onPress) {
 		super(size, size, message, spriteSize, spriteSize, 0, 0, new WidgetSprites(sprite), onPress, message, Supplier::get, false);
@@ -26,6 +30,10 @@ public class ReliableSpriteIconButton extends SpriteIconButton.CenteredIcon {
 
 	public ReliableSpriteIconButton(int size, Component message, int spriteSize, Identifier sprite, Identifier hovered, OnPress onPress) {
 		super(size, size, message, spriteSize, spriteSize, 0, 0, new WidgetSprites(sprite, hovered), onPress, message, Supplier::get, false);
+	}
+
+	public ReliableSpriteIconButton(int size, Component message, int spriteSize, Identifier sprite, Identifier hovered, Identifier disabled, OnPress onPress) {
+		super(size, size, message, spriteSize, spriteSize, 0, 0, new WidgetSprites(sprite, disabled, hovered), onPress, message, Supplier::get, false);
 	}
 	*///?}
 

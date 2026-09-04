@@ -26,9 +26,6 @@ import org.jspecify.annotations.NonNull;
 public class StackGroupConfigScreen extends ClientConfigScreen {
 
     private static final Component TITLE = Component.translatable("rrv.client_settings.stack_groups");
-    private static final Component ENABLED = Component.translatable("rrv.stack_group_settings.enabled").withStyle(ChatFormatting.GREEN);
-    private static final Component DISABLED = Component.translatable("rrv.stack_group_settings.disabled").withStyle(ChatFormatting.RED);
-
     private final Screen lastScreen;
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
@@ -58,19 +55,13 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
 
         int column1 = (int) (this.width / 2.5);
         int column2 = 100;
-        int column3 = 20;
 
         // headers
-        helper.addChild(new StringWidget(column1, font.lineHeight, Component.translatable("rrv.stack_group_settings.group").withStyle(ChatFormatting.UNDERLINE), font));
-        helper.addChild(new StringWidget(column2, font.lineHeight, Component.translatable("rrv.category_settings.state").withStyle(ChatFormatting.UNDERLINE), font));
-        MutableComponent priorityText = Component.translatable("rrv.category_settings.priority");
-        helper.addChild(new StringWidget(font.width(priorityText), font.lineHeight, priorityText.withStyle(ChatFormatting.UNDERLINE), font));
-//        helper.addChild(new SpacerElement(5, 5));
+        addHeader(helper, Component.translatable("rrv.stack_group_settings.group"), column1);
+        addHeader(helper, Component.translatable("rrv.stack_group_settings.state"));
+        addHeader(helper, Component.translatable("rrv.category_settings.priority"));
         // spacers
-        helper.addChild(new SpacerElement(5, 5));
-        helper.addChild(new SpacerElement(5, 5));
-        helper.addChild(new SpacerElement(5, 5));
-//        helper.addChild(new SpacerElement(5, 5));
+        addSpacer(helper, 3);
 
         StackGroupManager.stackGroups.forEach((group) -> {
             ConfiguredStackGroup current = Configs.STACK_GROUPS.getOrDefault(group.getId());
@@ -81,7 +72,7 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
             if (expanded) expandedWidget = nameWidget;
             helper.addChild(nameWidget);
             // enable
-            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, current.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(group.getId().toString()), (_, value) -> {
+            CycleButton<Boolean> button1 = CycleButton.booleanBuilder(ENABLED, DISABLED, current.enabled()).displayState(CycleButton.DisplayState.VALUE).create(0, 0, column2, 20, Component.literal(group.getId().toString()), (button, value) -> {
                 ConfiguredStackGroup latest = Configs.STACK_GROUPS.getOrDefault(group.getId());
                 Configs.STACK_GROUPS.set(group.getId(), new ConfiguredStackGroup(group.getId(), value, latest.priority(), latest.order()));
 			});
@@ -137,9 +128,11 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
         this.rebuildWidgets();
     }
 
+    //~ if >26 'render'->'extractRenderState' {
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+    //~}
         if (expandedWidget != null) {
             guiGraphics.nextStratum();
             boolean clipped = scrollArea != null;
@@ -153,16 +146,10 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
         }
     }
 
-    private GridLayout createGridLayout() {
-        var gridLayout = new GridLayout();
-        gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
-        return gridLayout;
-    }
-
     private void save() {
         Configs.STACK_GROUPS.save();
         StackGroupManager.reload();
-        ItemFilters.clearCaches();
+        ItemFilters.clearCaches(true);
     }
 
     @Override

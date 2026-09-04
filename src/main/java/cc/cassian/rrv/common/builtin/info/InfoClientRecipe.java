@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.builtin.info;
 
+import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -68,24 +69,11 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public void renderRecipe(RecipeViewScreen screen, RecipePosition recipePosition, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		if (!rendered) {
-			MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), Minecraft.getInstance().font).setMaxRows(10).setMaxWidth(112);
-			widget.setX(recipePosition.left() + 5);
-			widget.setY(recipePosition.top() + 20);
-			screen.addRecipeWidget(widget);
-			rendered = true;
-		}
-	}
-
-	@Override
-	public void initRecipe() {
-		rendered = false;
-	}
-
-	@Override
-	public void fadeRecipe() {
-		rendered = false;
+	public void addRecipeWidgets(RecipeScreenContext context) {
+		MultiLineTextWidget widget = new MultiLineTextWidget(5, 20, text.withoutShadow(), context.font()).setMaxRows(10).setMaxWidth(112);
+		widget.setX(context.recipePosition().left() + 5);
+		widget.setY(context.recipePosition().top() + 20);
+		context.widgets().addRecipeWidget(widget);
 	}
 
 	@Override
@@ -96,6 +84,10 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	@Override
 	public List<SlotContent> getResults() {
 		return List.of(this.key);
+	}
+
+	public MutableComponent getText() {
+		return text;
 	}
 
 	@Override

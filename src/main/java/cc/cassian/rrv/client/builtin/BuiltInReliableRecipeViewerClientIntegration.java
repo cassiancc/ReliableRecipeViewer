@@ -4,6 +4,19 @@ import cc.cassian.rrv.api.CommonTags;
 import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+//? if >26.2 {
+/*import cc.cassian.rrv.common.builtin.burning.BurningServerRecipe;
+import cc.cassian.rrv.common.builtin.composting.CompostingServerRecipe;
+*///?} else {
+import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
+import net.minecraft.world.entity.npc.villager.Villager;
+//?}
+import cc.cassian.rrv.common.builtin.composting.CompostingClientRecipe;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.item.ItemStackTemplate;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.blasting.BlastingClientRecipe;
 import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
@@ -22,12 +35,12 @@ import cc.cassian.rrv.common.builtin.stonecutting.StonecutterClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
+//~ if >26 'backport' -> 'common.builtin.villager'
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.IndexSource;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.recipe.ConcretePowderBlockAccessor;
-import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import cc.cassian.rrv.common.mixin.world.item.crafting.*;
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
@@ -35,9 +48,7 @@ import cc.cassian.rrv.client.recipe.ResourceRecipeManager;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? fabric {
-import cc.cassian.rrv.common.recipe.util.WorldInteractionRecipeUtil;
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 //?}
 import net.minecraft.client.Minecraft;
@@ -46,10 +57,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 //? if >26.2 {
-/*import net.minecraft.core.component.BlockTransformer;
+/*import cc.cassian.rrv.common.recipe.util.WorldInteractionRecipeUtil;
+import net.minecraft.core.component.BlockTransformer;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.component.BlockTransformerMappings;
 *///?}
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
@@ -66,7 +77,6 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 //?}
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.*;
@@ -79,7 +89,7 @@ import net.minecraft.world.level.material.Fluids;
 //import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiPredicate;
 
 import static cc.cassian.rrv.client.recipe.ResourceRecipeManager.*;
 import static cc.cassian.rrv.common.recipe.util.RrvUtil.blockName;
@@ -87,7 +97,13 @@ import static cc.cassian.rrv.common.recipe.util.RrvUtil.getItemsFromIngredient;
 
 public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRecipeViewerClientPlugin {
 
-    static <T> void excludeTag(Registry<T> registry, TagKey<T> tag) {
+	public static final BiPredicate<ItemStack, ItemStack> TRIM_CHECK = ItemViewRecipes.makeTrimCheck();
+	public static final BiPredicate<ItemStack, ItemStack> ENCHANTMENT_CHECK = ItemViewRecipes.makeEnchantmentCheck();
+	public static final BiPredicate<ItemStack, ItemStack> FIREWORK_ROCKET_CHECK = ItemViewRecipes.makeFireworkRocketCheck();
+	public static final BiPredicate<ItemStack, ItemStack> STEW_CHECK = ItemViewRecipes.makeStewCheck();
+	public static final BiPredicate<ItemStack, ItemStack> POTION_CHECK = ItemViewRecipes.makePotionCheck();
+
+	static <T> void excludeTag(Registry<T> registry, TagKey<T> tag) {
         registry.get(tag).ifPresent(named -> named.stream().filter(Holder::isBound).filter(Holder::isBound).map(Holder::value).forEach(t -> {
             switch (t) {
                 case Item item -> ItemView.excludeItems(item);
@@ -106,19 +122,64 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             //? neoforge
             //ItemView.excludeItems(Items.AIR);
             ItemView.excludeItemStack(new ItemStack(Items.POTION), new ItemStack(Items.SPLASH_POTION), new ItemStack(Items.LINGERING_POTION), new ItemStack(Items.ENCHANTED_BOOK), new ItemStack(Items.TIPPED_ARROW), new ItemStack(Items.SUSPICIOUS_STEW));
-            if (!Configs.CLIENT_SETTINGS.getIndexSource().equals(IndexSource.REGISTRY))
+            if (Configs.CLIENT_SETTINGS.getIndexSource().containsKey(IndexSource.CREATIVE))
                 ItemView.excludeItemStack(new ItemStack(Items.SUSPICIOUS_STEW));
             excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
             excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
             hideRecipes();
             StackGroupManager.reload();
+			ItemView.addItemCheck(DataComponents.ITEM_MODEL);
+			ItemView.addItemCheck(DataComponents.PAINTING_VARIANT);
+			ItemView.addItemCheck(POTION_CHECK);
+			ItemView.addItemCheck(STEW_CHECK);
+			ItemView.addItemCheck(FIREWORK_ROCKET_CHECK);
+			ItemView.addItemCheck(ENCHANTMENT_CHECK);
+			ItemView.addItemCheck(TRIM_CHECK);
+			ItemView.addMobFood(EntityType.ALLAY, SlotContent.of(ItemTags.DUPLICATES_ALLAYS), Component.translatable("view.rrv.type.entity.allay_duplication")); // allay duplication isn't food but may as well be
+			ItemView.addMobFood(EntityType.ARMADILLO, ItemTags.ARMADILLO_FOOD);
+			ItemView.addMobFood(EntityType.AXOLOTL, ItemTags.AXOLOTL_FOOD);
+			ItemView.addMobFood(EntityType.BEE, ItemTags.BEE_FOOD);
+			ItemView.addMobFood(EntityType.CAMEL, ItemTags.CAMEL_FOOD);
+			ItemView.addMobFood(EntityType.CAMEL_HUSK, ItemTags.CAMEL_HUSK_FOOD);
+			ItemView.addMobFood(EntityType.CAT, ItemTags.CAT_FOOD);
+			ItemView.addMobFood(EntityType.CHICKEN, ItemTags.CHICKEN_FOOD);
+			ItemView.addMobFood(EntityType.COW, ItemTags.COW_FOOD);
+			ItemView.addMobFood(EntityType.FOX, ItemTags.FOX_FOOD);
+			ItemView.addMobFood(EntityType.FROG, ItemTags.FROG_FOOD);
+			ItemView.addMobFood(EntityType.GOAT, ItemTags.GOAT_FOOD);
+			ItemView.addMobFood(EntityType.HAPPY_GHAST, ItemTags.HAPPY_GHAST_FOOD);
+			ItemView.addMobFood(EntityType.HOGLIN, ItemTags.HOGLIN_FOOD);
+			ItemView.addMobFood(EntityType.HORSE, ItemTags.HORSE_FOOD);
+			ItemView.addMobFood(EntityType.DONKEY, ItemTags.HORSE_FOOD);
+			ItemView.addMobFood(EntityType.LLAMA, ItemTags.LLAMA_FOOD);
+			var mooshroomFood = new ArrayList<>(SlotContent.of(ItemTags.COW_FOOD).getValidContents());
+			mooshroomFood.addAll(SlotContent.of(CommonTags.FLOWERS).getValidContents());
+			ItemView.addMobFood(EntityType.MOOSHROOM, SlotContent.of(mooshroomFood)); // mooshrooms can eat suspicious stew foods
+			ItemView.addMobFood(EntityType.MULE, ItemTags.HORSE_FOOD);
+			ItemView.addMobFood(EntityType.NAUTILUS, ItemTags.NAUTILUS_FOOD);
+			ItemView.addMobFood(EntityType.OCELOT, ItemTags.OCELOT_FOOD);
+			ItemView.addMobFood(EntityType.PARROT, ItemTags.PARROT_FOOD);
+			ItemView.addMobFood(EntityType.PANDA, ItemTags.PANDA_FOOD);
+			ItemView.addMobFood(EntityType.PIG, ItemTags.PIG_FOOD);
+			ItemView.addMobFood(EntityType.RABBIT, ItemTags.RABBIT_FOOD);
+			ItemView.addMobFood(EntityType.SNIFFER, ItemTags.SNIFFER_FOOD);
+			ItemView.addMobFood(EntityType.STRIDER, ItemTags.STRIDER_FOOD);
+			ItemView.addMobFood(EntityType.TRADER_LLAMA, ItemTags.LLAMA_FOOD);
+			//? if >26.2 {
+			/*ItemView.addMobFood(EntityType.VILLAGER, SlotContent.ofItemList(BuiltInRegistries.ITEM.stream().filter(p->p.getDefaultInstance().has(DataComponents.VILLAGER_FOOD)).toList()));
+			*///?} else {
+			ItemView.addMobFood(EntityType.VILLAGER, SlotContent.ofItemList(Villager.FOOD_POINTS.keySet().stream().toList()));
+			//?}
+			ItemView.addMobFood(EntityType.WOLF, ItemTags.WOLF_FOOD);
+			ItemView.addMobFood(EntityType.ZOMBIE_HORSE, ItemTags.ZOMBIE_HORSE_FOOD);
         });
 
         //Wrapper
         ItemView.addClientRecipeWrapper(VillagerServerRecipe.TYPE, unwrapped -> unwrapped.getClientOffers().stream().map(VillagerClientRecipe::new).toList());
         ItemView.addClientRecipeWrapper(EntityServerRecipe.TYPE, unwrapped -> {
             if (unwrapped.getEntityType() == null) return Collections.emptyList();
+			if (unwrapped.getDrops().isEmpty() && !ItemViewRecipes.MOB_FOOD.containsKey(unwrapped.getEntityType())) return Collections.emptyList();
 			return List.of(new EntityClientRecipe(unwrapped));
 		});
         ItemView.addClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe.Builder(null, unwrapped.getIngredients()).setResult(unwrapped.getResult()).build()));
@@ -137,7 +198,9 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.CAMPFIRE_COOKING).forEach(smokingRecipeRecipeHolder -> recipeList.add(new CampfireClientRecipe(smokingRecipeRecipeHolder)));
             // Fuel
             addFuelRecipes(recipeList, level);
-            // Smithing
+			// Composting
+			addCompostingRecipes(recipeList);
+			// Smithing
             addSmithingRecipes(recipeList);
             // Stonecutting
             ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.STONECUTTING).forEach(stonecutterRecipeRecipeHolder -> recipeList.add(new StonecutterClientRecipe(stonecutterRecipeRecipeHolder)));
@@ -170,7 +233,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         });
     }
 
-    private static void addCraftingRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
+	private static void addCraftingRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
         ClientRecipeManager.INSTANCE.getRecipesForType(RecipeType.CRAFTING).forEach(craftingRecipeHolder -> {
             var id = craftingRecipeHolder.id().identifier();
             var recipe = craftingRecipeHolder.value();
@@ -198,20 +261,30 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setSize(shapedRecipe.getWidth(), shapedRecipe.getHeight()).setResult(shapedRecipe.result).build());
 					}
 					case TransmuteRecipe transmuteRecipe -> {
-						TransmuteRecipeAccessor accessor = (TransmuteRecipeAccessor) recipe;
+						TransmuteRecipeAccessor accessor = (TransmuteRecipeAccessor) transmuteRecipe;
 
 						List<ItemStackTemplate> results = new ArrayList<>();
 
 						var ingredients = getItemsFromIngredient(accessor.getInput());
 
-						ingredients.forEach(_ -> results.add(accessor.getResult()));
+						ingredients.forEach(item -> {
+							//? if >26.2 {
+							/*var result = new ItemStackTemplate(accessor.getResult().item().orElse(ingredients.getFirst().builtInRegistryHolder()), accessor.getResult().count(), accessor.getResult().components());
+							*///?} else if >26 {
+							var result = accessor.getResult();
+							//?} else {
+							/*var result = new ItemStackTemplate(accessor.getResult());
+							*///?}
+							results.add(result);
+						});
 
 						if (!ingredients.isEmpty() && !results.isEmpty())
 							recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getInput(), accessor.getMaterial()).setResult(results).build());
 
 					}
+					//? if >26 {
 					case DyeRecipe dyeRecipe -> {
-						DyeRecipeAccessor accessor = (DyeRecipeAccessor) recipe;
+						DyeRecipeAccessor accessor = (DyeRecipeAccessor) dyeRecipe;
 
 						List<Item> ingredients = getItemsFromIngredient(accessor.getTarget());
 
@@ -225,7 +298,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getDye()).setResult(results).setDependentIndex(1).build());
 					}
 					case ImbueRecipe imbueRecipe -> {
-						ImbueRecipeAccessor accessor = (ImbueRecipeAccessor) recipe;
+						ImbueRecipeAccessor accessor = (ImbueRecipeAccessor) imbueRecipe;
 
 
 						Registry<Potion> potionRegistry = level.registryAccess().lookupOrThrow(Registries.POTION);
@@ -240,7 +313,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						});
 					}
 					case DecoratedPotRecipe decoratedPotRecipe -> {
-						DecoratedPotRecipeAccessor accessor = (DecoratedPotRecipeAccessor) recipe;
+						DecoratedPotRecipeAccessor accessor = (DecoratedPotRecipeAccessor) decoratedPotRecipe;
 
 						HashMap<Integer, SlotContent> ingredients = new HashMap<>();
 						ingredients.put(1, SlotContent.of(accessor.getLeftPattern()));
@@ -263,16 +336,19 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(results)).setDependentIndex(7).build());
 					}
 					case BookCloningRecipe bookCloningRecipe -> {
-						BookCloningRecipeAccessor accessor = (BookCloningRecipeAccessor) recipe;
+						BookCloningRecipeAccessor accessor = (BookCloningRecipeAccessor) bookCloningRecipe;
 						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getSource(), accessor.getMaterial()).setResult(accessor.getResult().withCount(2)).build());
 					}
 					case MapExtendingRecipe mapExtendingRecipe -> {
-						MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) recipe;
+						MapExtendingRecipeAccessor accessor = (MapExtendingRecipeAccessor) mapExtendingRecipe;
 						HashMap<Integer, SlotContent> ingredients = fillCraftingGrid(SlotContent.of(accessor.getMap()), SlotContent.of(accessor.getMaterial()));
-						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult())).build());
+						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult()
+								//? if >26.2
+								//, getItemsFromIngredient(accessor.getMap()).getFirst()
+						)).build());
 					}
 					case FireworkRocketRecipe fireworkRocketRecipe -> {
-						FireworkRocketRecipeAccessor accessor = (FireworkRocketRecipeAccessor) recipe;
+						FireworkRocketRecipeAccessor accessor = (FireworkRocketRecipeAccessor) fireworkRocketRecipe;
 						List<SlotContent> ingredients = new ArrayList<>(List.of(
 								SlotContent.of(accessor.getFuel()),
 								SlotContent.of(accessor.getShell())
@@ -285,7 +361,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						recipeList.add(new CraftingClientRecipe.Builder(id, ingredients).setResult(SlotContent.of(accessor.getResult().apply(DataComponentPatch.builder().set(DataComponents.FIREWORKS, new Fireworks(3, List.of())).build()))).setPriority(20).build());
 					}
 					case ShieldDecorationRecipe shieldDecorationRecipe -> {
-						ShieldDecorationRecipeAccessor accessor = (ShieldDecorationRecipeAccessor) recipe;
+						ShieldDecorationRecipeAccessor accessor = (ShieldDecorationRecipeAccessor) shieldDecorationRecipe;
 						ArrayList<ItemStack> results = new ArrayList<>();
 						for (Item item : getItemsFromIngredient(accessor.getBanner())) {
 							if (item instanceof BannerItem bannerItem) {
@@ -295,6 +371,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						}
 						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getBanner()).setResult(SlotContent.of(results)).setDependentIndex(1).build());
 					}
+					//?}
 					case RepairItemRecipe repairItemRecipe ->
 						// Repairing
 							addRepairingRecipes(recipeList);
@@ -321,11 +398,9 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
     }
 
     private static void addFuelRecipes(List<ReliableClientRecipe> recipeList, ClientLevel level) {
-        //FIXME
 		//? if >26.2 {
-
-		//?} else {
-
+		/*ItemView.addClientRecipeWrapper(BurningServerRecipe.TYPE, (unwrapped -> List.of(new BurningClientRecipe(unwrapped.getFuel().getDefaultInstance(), unwrapped.getBurnTime()))));
+		*///?} else {
 		FuelValues fuelValues = level.fuelValues();
         fuelValues.fuelItems().forEach(item -> {
             //? fabric
@@ -346,9 +421,14 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                             trimRecipe.additionIngredient().orElse(null), trimRecipe.baseIngredient(),
                             trimRecipe.templateIngredient().orElse(null), trimRecipe.pattern));
                 } else if (smithingRecipe instanceof SmithingTransformRecipe transformRecipe) {
-                    recipeList.add(SmithingClientRecipe.transformationRecipe(smithingRecipeRecipeHolder.id().identifier(),
+					//? if >26 {
+					var result = transformRecipe.result;
+					//?} else {
+					/*var result = new ItemStackTemplate(transformRecipe.result);
+					*///?}
+					recipeList.add(SmithingClientRecipe.transformationRecipe(smithingRecipeRecipeHolder.id().identifier(),
                             transformRecipe.additionIngredient().orElse(null), transformRecipe.baseIngredient(),
-                            transformRecipe.templateIngredient().orElse(null), transformRecipe.result));
+                            transformRecipe.templateIngredient().orElse(null), result));
                 }
             } catch (Exception e) {
                 // Log smithing recipes that throw out an exception on parse
@@ -407,19 +487,27 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
         ItemViewRecipes.addAllWorldInteractionRecipes(worldInteractionRecipes);
 
         var axes = SlotContent.of(ItemTags.AXES);
-        var shovels = SlotContent.of(ItemTags.SHOVELS);
-        var hoes = SlotContent.of(ItemTags.HOES);
+		var shovels = SlotContent.of(ItemTags.SHOVELS);
+		var hoes = SlotContent.of(ItemTags.HOES);
 
         //? if >26.2 {
-        /*WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.AXE.transforms(), worldInteractionRecipes, axes);
-        WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.SHOVEL.transforms(), worldInteractionRecipes, shovels);
-        WorldInteractionRecipeUtil.addTransformerRecipes(BlockTransformerMappings.HOE.transforms(), worldInteractionRecipes, hoes);
+		/*Registry<BlockTransformer> blockTransformers = Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BLOCK_TRANSFORMER);
+		for (Map.Entry<ResourceKey<BlockTransformer>, BlockTransformer> blockTransformer : blockTransformers.entrySet()) {
+			WorldInteractionRecipeUtil.addTransformerRecipes(blockTransformer.getValue().transforms(), worldInteractionRecipes, SlotContent.ofItemList(BuiltInRegistries.ITEM.stream().filter(c-> {
+				ItemStack stack = c.getDefaultInstance();
+				if (stack.has(DataComponents.BLOCK_TRANSFORMER)) {
+					return stack.get(DataComponents.BLOCK_TRANSFORMER).unwrapKey().get().equals(blockTransformer.getKey());
+				}
+				return false;
+			}).toList()));
+		}
         *///?}
 
         BuiltInRegistries.ITEM.entrySet().forEach(itemEntry -> {
             if (itemEntry.getValue() instanceof FluidItem fluidItem) {
                 Item bucket = fluidItem.getFluid().getBucket();
                 if (bucket == null || bucket.getDefaultInstance().isEmpty()) return;
+				//~ if >26 'ItemStack'->'ItemStackTemplate'
                 worldInteractionRecipes.add(new WorldInteractionClientRecipe(itemEntry.getKey().identifier().withPath("/world_interaction/%s_bucketing"::formatted), SlotContent.of(new FluidStack(fluidItem.getFluid())), SlotContent.of(Optional.ofNullable(bucket.getCraftingRemainder()).orElse(new ItemStackTemplate(Items.BUCKET))), SlotContent.of(bucket)));
             }
 
@@ -452,15 +540,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_solidify"), SlotContent.of(block), SlotContent.of(new FluidStack(Fluids.WATER)), SlotContent.of(((ConcretePowderBlockAccessor) concretePowderBlock).getConcrete())));
                 }
             }
-            //? if >26.2 {
-            /*ItemStack stack = itemEntry.getValue().getDefaultInstance();
-            if (stack.has(DataComponents.BLOCK_TRANSFORMER)) {
-                List<BlockTransformer.BlockTransformData> transforms = stack.get(DataComponents.BLOCK_TRANSFORMER).transforms();
-                if (!transforms.equals(BlockTransformerMappings.AXE.transforms()) && !transforms.equals(BlockTransformerMappings.SHOVEL.transforms()) && !transforms.equals(BlockTransformerMappings.HOE.transforms())) {
-                    WorldInteractionRecipeUtil.addTransformerRecipes(transforms, worldInteractionRecipes, SlotContent.of(stack));
-                }
-            }
-            *///?}
         });
 
         // honeycomb
@@ -489,6 +568,16 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         return worldInteractionRecipes;
     }
+
+	private void addCompostingRecipes(List<ReliableClientRecipe> recipeList) {
+		//? if >26.2 {
+		/*ItemView.addClientRecipeWrapper(CompostingServerRecipe.TYPE, (unwrapped -> List.of(new CompostingClientRecipe(unwrapped.getCompostedItem().getDefaultInstance(), unwrapped.getLayers()))));
+		 *///?} else {
+		ComposterBlock.COMPOSTABLES.forEach((itemLike, aFloat) -> {
+			recipeList.add(new CompostingClientRecipe(itemLike.asItem().getDefaultInstance(), aFloat*100));
+		});
+		//?}
+	}
 
 
 }

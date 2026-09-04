@@ -1,13 +1,15 @@
 package cc.cassian.rrv.common.overlay;
 
+import cc.cassian.rrv.api.client.ExclusionAreaManager;
+import cc.cassian.rrv.api.event.OverlayManagementEvents;
 import cc.cassian.rrv.client.util.RRVInputUtil;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
-import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -21,7 +23,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
-public class OverlayManager {
+/// CLIENT-ONLY
+public class OverlayManager implements ExclusionAreaManager {
 
     public static final OverlayManager INSTANCE = new OverlayManager();
 
@@ -32,8 +35,8 @@ public class OverlayManager {
     private boolean queuedWidgetUpdate = false;
     private boolean newScreenQueued = false;
 
-    private final List<BlockingGuiComponent> guiBlockings = new ArrayList<>();
-
+    public static List<OverlayManagementEvents.AddExclusionAreasEvent> EXCLUSION_AREA_EVENTS = new ArrayList<>();
+    private final List<BlockingGuiComponent> exclusionAreas = new ArrayList<>();
 
     public boolean hasQueuedWidgetUpdate() {
         return this.queuedWidgetUpdate;
@@ -58,7 +61,7 @@ public class OverlayManager {
         return this.newScreenQueued;
     }
 
-    //Update all overlays and collect widgets
+    /// Update all overlays and collect widgets
     public void onScreenChanged() {
         PRESENT_OVERLAYS.forEach(overlay -> overlay.onScreenChanged(this.currentInfo()));
 
@@ -70,7 +73,7 @@ public class OverlayManager {
 
     }
 
-    //Update widget lists
+    /// Update widget lists
     public void updateOverlaysAndWidgets(boolean always) {
         if (!always && !this.newScreenQueued)
             return;
@@ -94,7 +97,7 @@ public class OverlayManager {
         return this.currentInvInfo;
     }
 
-    //Returns whether an editbox overlay widget is focused
+    /// Returns whether an [EditBox] overlay widget is focused
     public boolean isTextWidgetFocused() {
 
         if (this.currentInvInfo.screen().getFocused() == null)
@@ -193,7 +196,7 @@ public class OverlayManager {
             if (!overlay.isEnabled() || !overlay.isEnoughSpaceToRender())
                 continue;
 
-            if (!(event.x() >= overlay.getX() && event.x() <= overlay.getX() + overlay.getWidth() && event.y() >= overlay.getY() && event.y() <= overlay.getY() + overlay.getHeight()))
+            if (!overlay.isMouseOver((int) event.x(), (int) event.y()))
                 continue;
 
             if (overlay.mouseClicked(event, doubleClick))
@@ -222,23 +225,32 @@ public class OverlayManager {
 
     public void renderAllBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (Configs.CLIENT_SETTINGS.drawBackground())
-            PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.extractBackground(guiGraphics, mouseX, mouseY, partialTicks));
+            PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> {
+                if (overlay.needsBackground())
+				    overlay.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
+                overlay.setNeedsBackground(false);
+			});
     }
 
     public void renderAll(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks));
+        PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> {
+			overlay.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+            overlay.setNeedsBackground(true);
+		});
 
-        if (RRVPlatform.INSTANCE.isDevelopment() && RRVClientUtil.showDebugScreen())
+        if (RRVClientUtil.showDebugScreen())
             this.renderDebug(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     public void renderDebug(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
+		ArrayList<net.minecraft.network.chat.Component> underMouse = new ArrayList<>();
+        Font font = Minecraft.getInstance().font;
+        this.exclusionAreas.forEach(blockingGuiComponent -> {
+            String name = blockingGuiComponent.id().toString();
+            guiGraphics.text(font, name, blockingGuiComponent.x(), blockingGuiComponent.y(), -1);
 
-        this.guiBlockings.forEach(blockingGuiComponent -> {
-            guiGraphics.text(Minecraft.getInstance().font, blockingGuiComponent.id().toString(), blockingGuiComponent.x(), blockingGuiComponent.y(), -1);
-
-            Random rand = new Random(blockingGuiComponent.id().toString().chars().sum());
+            Random rand = new Random(name.chars().sum());
             int debugColor = new Color(rand.nextInt(255 + 1), rand.nextInt(255 + 1), rand.nextInt(255 + 1)).getRGB();
 
             guiGraphics.horizontalLine(blockingGuiComponent.x(), blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y(), debugColor);
@@ -246,14 +258,26 @@ public class OverlayManager {
 
             guiGraphics.verticalLine(blockingGuiComponent.x(), blockingGuiComponent.y(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
             guiGraphics.verticalLine(blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
-
+            if (blockingGuiComponent.hasIntersectionWith(mouseX, mouseY, 8, 8)) {
+                underMouse.add(net.minecraft.network.chat.Component.literal(name));
+            }
         });
 
+        if (!underMouse.isEmpty()) {
+            guiGraphics.setComponentTooltipForNextFrame(font, underMouse, mouseX, mouseY);
+        }
+
     }
 
 
+    /// See {@link OverlayManager#removeExclusionArea(Identifier, boolean)}
+    @Deprecated(since = "8.10.0")
     public void removeGuiBlocking(Identifier id, boolean updateOverlays) {
-        this.guiBlockings.removeIf(blockingGuiComponent -> blockingGuiComponent.id().equals(id));
+        removeExclusionArea(id, updateOverlays);
+    }
+
+    public void removeExclusionArea(Identifier id, boolean updateOverlays) {
+        this.exclusionAreas.removeIf(blockingGuiComponent -> blockingGuiComponent.id().equals(id));
 
         if (updateOverlays) {
             this.updateOverlaysAndWidgets(true);
@@ -261,8 +285,14 @@ public class OverlayManager {
 
     }
 
+    /// See {@link OverlayManager#removeExclusionArea(Predicate, boolean)}
+    @Deprecated
     public void removeGuiBlocking(Predicate<Identifier> filter, boolean updateOverlays) {
-        this.guiBlockings.removeIf(blockingGuiComponent -> filter.test(blockingGuiComponent.id()));
+        removeExclusionArea(filter, updateOverlays);
+    }
+
+    public void removeExclusionArea(Predicate<Identifier> filter, boolean updateOverlays) {
+        this.exclusionAreas.removeIf(blockingGuiComponent -> filter.test(blockingGuiComponent.id()));
 
         if (updateOverlays) {
             this.updateOverlaysAndWidgets(true);
@@ -270,21 +300,32 @@ public class OverlayManager {
 
     }
 
-    public void setGuiBlocking(BlockingGuiComponent comp) {
-        HashSet<BlockingGuiComponent> old = new HashSet<>(this.guiBlockings);
-        this.removeGuiBlocking(comp.id(), false);
-        this.guiBlockings.add(comp);
+    /// Deprecated, see {@link #setExclusionArea(BlockingGuiComponent)}
+    @Deprecated(since = "8.10.0")
+    public void setGuiBlocking(BlockingGuiComponent area) {
+        setExclusionArea(area);
+    }
 
-        if (!(old.containsAll(this.guiBlockings) && old.size() == this.guiBlockings.size())) {
+    public void setExclusionArea(BlockingGuiComponent area) {
+        HashSet<BlockingGuiComponent> old = new HashSet<>(this.exclusionAreas);
+        this.removeExclusionArea(area.id(), false);
+        this.exclusionAreas.add(area);
+
+        if (!(old.containsAll(this.exclusionAreas) && old.size() == this.exclusionAreas.size())) {
             this.setQueuedWidgetUpdate(true);
         }
-
-
     }
 
 
+    /// See {@link #exclusionAreas}
+    @Deprecated(since = "8.10.0")
     public List<BlockingGuiComponent> allGuiBlockings() {
-        return this.guiBlockings;
+        return exclusionAreas();
+    }
+
+    @Override
+    public List<BlockingGuiComponent> exclusionAreas() {
+        return this.exclusionAreas;
     }
 
 

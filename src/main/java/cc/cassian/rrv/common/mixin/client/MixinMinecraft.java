@@ -24,7 +24,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "disconnectFromWorld", at = @At("HEAD"))
     private void cleanup(CallbackInfo ci) {
         ClientUnlockManager.INSTANCE.clearRecipes();
-        ItemFilters.clearCaches();
+        ItemFilters.clearCaches(true);
         ItemViewOverlay.INSTANCE.setWarned(false);
         if (ItemViewOverlay.INSTANCE.getSearchbar() != null) {
             ItemViewOverlay.INSTANCE.getSearchbar().clear();
@@ -40,7 +40,7 @@ public abstract class MixinMinecraft {
     //? <26.2 {
     @Inject(method = "setScreen", at = @At("HEAD"))
     private void clearBlockings(Screen screen, CallbackInfo ci){
-        OverlayManager.INSTANCE.allGuiBlockings().clear();
+        OverlayManager.INSTANCE.exclusionAreas().clear();
     }
     //?}
 }

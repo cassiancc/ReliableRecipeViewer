@@ -43,6 +43,7 @@ public class FabricPlatformImpl implements RRVPlatform {
 
     @Override
     public String getModNamespaceForItem(ItemStack stack) {
+        //~ if >26 'getItemHolder'-> 'typeHolder'
         var holderNamespace = stack.typeHolder().unwrapKey().map(ResourceKey::identifier).map(Identifier::getNamespace).orElse("");
         if (holderNamespace.isEmpty()) {
             return "";

@@ -66,6 +66,18 @@ public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
         return true;
     }
 
+    public SlotContent getLeft() {
+        return left;
+    }
+
+    public SlotContent getRight() {
+        return right;
+    }
+
+    public SlotContent getResult() {
+        return result;
+    }
+
     @Override
     public List<Class<? extends AbstractContainerScreen<?>>> getTransferClasses() {
         return List.of(AnvilScreen.class);

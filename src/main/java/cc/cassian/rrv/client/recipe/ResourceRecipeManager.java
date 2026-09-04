@@ -60,7 +60,7 @@ public class ResourceRecipeManager {
 					parsedRecipe.entrySet().forEach(entry -> {
 						if (entry.getKey().contains(":")) {
 							var key = Identifier.parse(entry.getKey());
-							if (Configs.CATEGORIES.CATEGORIES.containsKey(key)) {
+							if (Configs.CATEGORIES.hasCategory(key)) {
 								entry.getValue().getAsJsonArray().forEach(jsonElement -> ItemView.excludeRecipe(key, Identifier.parse(jsonElement.getAsString())));
 							}
 						}

@@ -1,17 +1,23 @@
 package cc.cassian.rrv.common.builtin.entity;
 
 import cc.cassian.rrv.api.overlay.ButtonData;
+import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
+import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 
 import java.util.List;
+import java.util.Optional;
 
 public class EntityClientRecipeType implements ReliableClientRecipeType {
 
@@ -19,10 +25,10 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     private static final List<ItemStack> SPAWN_EGGS = BuiltInRegistries.ITEM.stream().filter(item -> item instanceof SpawnEggItem).map(ItemStack::new).toList();
     private static final ReferenceCondition REFERENCE_CONDITION = (craftReference, viewRecipe) -> {
 
-        if(!(craftReference.getItem() instanceof SpawnEggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
+        if(!(craftReference.getItem() instanceof SpawnEggItem spawnEggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
             return true;
 
-        return SpawnEggItem.getType(craftReference) == entityViewRecipe.getEntityType();
+        return spawnEggItem.getType(craftReference) == entityViewRecipe.getEntityType();
 
     };
     private static final Identifier BACKGROUND = ReliableRecipeViewer.of("textures/gui/type/entity.png");
@@ -50,16 +56,18 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     //Mob loot should not exceed 54 slots
     @Override
     public int getSlotCount() {
-        return 54;
+        return 55;
     }
 
     @Override
     public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
         slotDefinition.setHighlightWithoutContents(false);
 
+        slotDefinition.addItemSlot(0, 42, 80);
+
         for (int row = 0; row < 6; row++) {
-            for (int i = 0; i < 9; i++) {
-                slotDefinition.addItemSlot(row * 9 + i, i * 18 + 1, 45 + row * 18);
+            for (int i = 0; i < 3; i++) {
+                slotDefinition.addItemSlot(row * 9 + i+1, i * 18 + 106, 9 + row * 18);
             }
         }
 
@@ -72,7 +80,34 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public ItemStack getIcon() {
-        return new ItemStack(Items.IRON_SWORD);
+        return new ItemStack(Items.CREEPER_SPAWN_EGG);
+    }
+
+    int index = 0;
+    float ticks = 0;
+
+    @Override
+    public void renderIcon(RecipeViewScreen screen, int x, int y, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        List<ReliableClientRecipe> currentDisplay = screen.getMenu().getCurrentDisplay();
+        if (!currentDisplay.isEmpty() && currentDisplay.getFirst() instanceof EntityClientRecipe entityClientRecipe) {
+            //~ if <26 'itemHolder'->'nullableItemHolder'
+            var itemHolder = SpawnEggItem.byId(entityClientRecipe.getEntityType());
+            //? if <26
+            //var itemHolder = Optional.ofNullable(nullableItemHolder);
+            if (itemHolder.isPresent()) {
+                guiGraphics.fakeItem(new ItemStack(itemHolder.get()), x, y);
+                return;
+            }
+        }
+
+        ticks += partialTicks;
+        if (ticks >= 20) {
+            ticks = 0;
+            index++;
+            if (index >= SPAWN_EGGS.size()) index = 0;
+        }
+
+        guiGraphics.fakeItem(SPAWN_EGGS.get(index), x, y);
     }
 
     @Override
@@ -87,6 +122,6 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
     @Override
     public ButtonData placeRecipeShareButton(RecipeViewMenu.DisplayInfo info) {
-        return new ButtonData(info.guiLeft() + getDisplayWidth() - 12, info.guiTop()+30, true);
+        return new ButtonData(info.guiLeft() + getDisplayWidth() - 14, info.guiTop()+64, true);
     }
 }

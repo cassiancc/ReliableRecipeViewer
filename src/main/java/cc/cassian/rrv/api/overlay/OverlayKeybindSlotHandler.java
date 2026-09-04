@@ -5,6 +5,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
+/// CLIENT-ONLY
 @FunctionalInterface
 public interface OverlayKeybindSlotHandler {
 	/**

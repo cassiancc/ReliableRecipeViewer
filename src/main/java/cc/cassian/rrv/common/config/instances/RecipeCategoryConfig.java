@@ -11,12 +11,25 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
 public class RecipeCategoryConfig extends AbstractRrvConfig {
 
-	public final LinkedHashMap<Identifier, ConfiguredRecipeCategory> CATEGORIES = new LinkedHashMap<>();
+	private final LinkedHashMap<Identifier, ConfiguredRecipeCategory> CATEGORIES = new LinkedHashMap<>();
+
+	public ConfiguredRecipeCategory get(Identifier id) {
+		return CATEGORIES.get(id);
+	}
+
+	public Collection<ConfiguredRecipeCategory> values() {
+		return CATEGORIES.values();
+	}
+
+	public boolean hasCategory(Identifier key) {
+		return CATEGORIES.containsKey(key);
+	}
 
 	public void addNewCategory(Identifier id, Integer priority, boolean enabled) {
 		CATEGORIES.putIfAbsent(id, new ConfiguredRecipeCategory(id, priority, enabled));

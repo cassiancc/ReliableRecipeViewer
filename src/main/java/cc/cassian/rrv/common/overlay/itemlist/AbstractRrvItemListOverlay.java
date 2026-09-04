@@ -1,14 +1,20 @@
 package cc.cassian.rrv.common.overlay.itemlist;
 
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.ItemSlot;
+import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
@@ -19,8 +25,11 @@ import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScrol
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 import static cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay.showBookmarks;
 
+/// CLIENT-ONLY
 public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
 
+    public ReliableSpriteIconButton next = null;
+    public ReliableSpriteIconButton back = null;
     protected int itemStartX, itemStartY, itemEndX, itemEndY;
     protected int startIndex;
     private int fittingPerPage;
@@ -49,7 +58,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     @Override
     protected boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY) {
 
-        if (ReliableRecipeViewerClient.isCheatmodeActive()) {
+        if (ReliableRecipeViewerClient.isCheatmodeActive() && !slotsBeingUpdated()) {
             for (ItemSlot slot : this.itemSlots()) {
                 if (!slot.isHovered())
                     continue;
@@ -70,46 +79,59 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         if (scrolledY > 0)
             prevPage(null);
 
-        if (scrolledY != 0)
-            this.updateSlots();
-
-
         return true;
     }
 
+	public boolean slotsBeingUpdated() {
+		return slotUpdaters > 0;
+	}
+
     protected void prevPage(Button button) {
+        var index = this.startIndex;
         int fittingPerPage = this.fittingPerPage();
         if (fittingPerPage == 0) return;
         if (this.startIndex == 0 && shouldWrapScroll(button)) {
-            int size = this.availableItems.size();
-            this.startIndex = size - (size - (size / fittingPerPage) * fittingPerPage);
+            lastPage();
         } else {
             this.startIndex = Math.max(0, this.startIndex - fittingPerPage);
         }
         if (getPage()>getMaxPageIndex()) {
-            this.startIndex = 0;
-        }
+            firstPage();
+		}
 
-        this.updateSlots();
+        if (index != startIndex)
+            this.updateSlots();
+    }
+
+    private void lastPage() {
+        int size = this.availableItems.size();
+        this.startIndex = size - (size - (size / this.fittingPerPage()) * this.fittingPerPage());
     }
 
     protected void nextPage(Button button) {
+        var index = this.startIndex;
         var currentIndex = this.startIndex;
         int fittingPerPage = this.fittingPerPage();
         if (fittingPerPage == 0) return;
         int size = this.availableItems.size();
         this.startIndex = Math.min(this.startIndex + fittingPerPage, size - (size - (size / fittingPerPage) * fittingPerPage));
         if (currentIndex == this.startIndex && shouldWrapScroll(button)) {
-            this.startIndex = 0;
+            firstPage();
         }
         if (getPage()>getMaxPageIndex()) {
             this.startIndex = currentIndex;
         }
-        this.updateSlots();
+        if (index != startIndex)
+            this.updateSlots();
+    }
+
+    public void firstPage() {
+        this.startIndex = 0;
     }
 
     @Override
     protected boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (slotsBeingUpdated()) return false;
         for (ItemSlot itemSlot : this.itemSlots()) {
             if (itemSlot.isHovered()) {
                 itemSlot.onClicked(event);
@@ -120,44 +142,72 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return false;
     }
 
+    protected int slotUpdaters = 0;
 
     /**
      * Responsible for adding the item entries to the overlay
      */
     public void updateSlots() {
-        this.itemSlots().clear();
+        slotUpdaters += 1;
+        Minecraft.getInstance().execute(()->{
+            this.lastItemSlots().clear();
+            this.lastItemSlots().addAll(this.itemSlots());
+        });
+        Util.backgroundExecutor().execute(()->{
+            this.itemSlots().clear();
 
-        int currentStackPos = this.startIndex;
+            int currentStackPos = this.startIndex;
 
-        for (int y = this.itemStartY; y <= this.itemEndY - ITEM_ENTRY_SIZE; y += ITEM_ENTRY_SIZE) {
-            for (int x = this.itemStartX; x <= this.itemEndX - ITEM_ENTRY_SIZE; x += ITEM_ENTRY_SIZE) {
+            for (int y = this.itemStartY; y <= this.itemEndY - ITEM_ENTRY_SIZE; y += ITEM_ENTRY_SIZE) {
+                for (int x = this.itemStartX; x <= this.itemEndX - ITEM_ENTRY_SIZE; x += ITEM_ENTRY_SIZE) {
 
-                if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
-                    if (this.isPositionBlocked(x, y, ITEM_ENTRY_SIZE, ITEM_ENTRY_SIZE))
+                    if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
+                        if (this.isPositionBlocked(x, y, ITEM_ENTRY_SIZE, ITEM_ENTRY_SIZE))
+                            continue;
+
+                        if (currentStackPos < this.availableItems().size())
+                            this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
+
+                        currentStackPos++;
                         continue;
+                    }
 
-                    if (currentStackPos < this.availableItems().size())
-                        this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y));
+                    if (x >= this.effectiveX && x <= this.effectiveX + this.effectiveWidth - ITEM_ENTRY_SIZE && y >= this.effectiveY && y <= this.effectiveY + this.effectiveHeight - ITEM_ENTRY_SIZE) {
 
-                    currentStackPos++;
-                    continue;
+                        if (currentStackPos < this.availableItems().size())
+                            this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
+
+                        currentStackPos++;
+                    }
+
                 }
-
-                if (x >= this.effectiveX && x <= this.effectiveX + this.effectiveWidth - ITEM_ENTRY_SIZE && y >= this.effectiveY && y <= this.effectiveY + this.effectiveHeight - ITEM_ENTRY_SIZE) {
-
-                    if (currentStackPos < this.availableItems().size())
-                        this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y));
-
-                    currentStackPos++;
-                }
-
             }
-        }
 
-        this.fittingPerPage = currentStackPos - this.startIndex;
+            this.fittingPerPage = currentStackPos - this.startIndex;
+            Minecraft.getInstance().execute(this::updateButtons);
+            slotUpdaters -= 1;
+        });
 
     }
 
+    public void extractSlots(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        if (!slotsBeingUpdated()) {
+            ItemSlot.currentFrameSlots = this.itemSlots();
+            extractSlots(this.itemSlots(), guiGraphics, mouseX, mouseY, partialTicks);
+            ItemSlot.currentFrameSlots = null;
+        } else {
+            extractSlots(this.lastItemSlots(), guiGraphics, mouseX, mouseY, partialTicks);
+        }
+    }
+
+    private static void extractSlots(List<ItemSlot> slots, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        for (ItemSlot slot : slots) {
+            if (slot == null) {
+                return;
+            }
+            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        }
+    }
 
     public int fittingPerPage() {
         return this.fittingPerPage;
@@ -195,6 +245,14 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return maxPageIndex;
     }
 
+    protected Component createTitleText() {
+        return getPageCountText();
+    }
+
+    protected Component getPageCountText() {
+        return Component.literal((this.getPage() + 1) + "/" + (this.getMaxPageIndex() + 1));
+    }
+
     protected void drawProgressBar(GuiGraphicsExtractor guiGraphics, boolean rightIndex, boolean sidePanel) {
         if (Configs.CLIENT_SETTINGS.isShowProgressBar()) {
             double scrollPage = this.getPage();
@@ -217,6 +275,65 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
             guiGraphics.fill(x, y, x + maxWidth, y+4, new Color(white, white, white, 32).getRGB());
             guiGraphics.fill(x, y, getWidth(x, maxWidth, scrollPage, rightIndex), y+4, new Color(white, white, white, 255).getRGB());
         }
+    }
+
+    @Override
+    protected void placeWidgets(ScreenContext ctx) {
+        super.placeWidgets(ctx);
+        ctx.addRenderable(this.back);
+        ctx.addRenderable(this.next);
+    }
+
+    /// @param buttonStart - x position of the back page button in the recipe book theme.
+    /// @param buttonEnd - x position of the next page button in the recipe book theme.
+    /// @param classicButtonStart - x position of the back page button in the classic theme.
+    /// @param classicButtonEnd - x position of the next page button in the classic theme.
+    public void createButtons(Component title, int buttonStart, int buttonEnd, int classicButtonStart, int classicButtonEnd) {
+
+        back = new ReliableSpriteIconButton(16, Component.translatable("rrv.previous_page"), 10, ReliableRecipeViewer.of("back"), ReliableRecipeViewer.of("back"), ReliableRecipeViewer.of("back_disabled"), this::prevPage);
+        next = new ReliableSpriteIconButton(16, Component.translatable("rrv.next_page"), 10, ReliableRecipeViewer.of("next"), ReliableRecipeViewer.of("next"), ReliableRecipeViewer.of("next_disabled"), this::nextPage);
+
+        int buttonY = 5;
+        if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
+            buttonY+=25;
+        } else {
+            buttonStart = classicButtonStart;
+            buttonEnd = classicButtonEnd;
+        }
+
+        back.setPosition(buttonStart, buttonY);
+        next.setPosition(buttonEnd, buttonY);
+
+        if (currentlyIndexing()) {
+            back.visible = false;
+            next.visible = false;
+        }
+
+        updateButtons(title);
+    }
+
+    protected void updateButtons() {
+        updateButtons(createTitleText());
+    }
+
+    protected void updateButtons(Component title) {
+        if (back != null) {
+            boolean enabled = showButtons(title) && !currentlyIndexing();
+            back.visible = enabled;
+            next.visible = enabled;
+            if (enabled && getMaxPageIndex() > 0) {
+                next.active = true;
+                back.active = true;
+            } else {
+                next.active = false;
+                back.active = false;
+            }
+            ItemViewOverlay.INSTANCE.getSearchbar().setHint(Component.translatable(currentlyIndexing() ? "rrv.indexing" : "rrv.search_hint"));
+        }
+    }
+
+    public boolean showButtons(Component title) {
+		return this.isEnabled() && Configs.CLIENT_SETTINGS.isShowButtons() && (getWidth() - 16) > Minecraft.getInstance().font.width(title) + (back.getWidth() + next.getWidth());
     }
 
     protected int getWidth(double x, int width, double scrollPage, boolean rightIndex) {

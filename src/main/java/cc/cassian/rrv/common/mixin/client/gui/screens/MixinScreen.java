@@ -1,7 +1,7 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens;
 
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
-import cc.cassian.rrv.client.sharing.RecipeSharing;
+import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.resources.Identifier;
@@ -27,10 +26,10 @@ import java.util.Optional;
 @Mixin(Screen.class)
 public abstract class MixinScreen extends AbstractContainerEventHandler implements Renderable {
 
-
-    @Final
+	@Final
 	@Shadow protected Font font;
 
+	//~ if >26 'render'->'extractRenderState'
     @Inject(method = "extractRenderState", at = @At("RETURN"))
     private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics, int i, int j, float f, CallbackInfo ci){
         String statusMsg = ClientRecipeManager.INSTANCE.status().get();
@@ -42,8 +41,10 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
 
 	@Inject(method = "extractBackground", at = @At("RETURN"))
 	private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-		if ((Screen) (Object) this instanceof AbstractContainerScreen<?>)
+		Screen screen = (Screen) (Object) this;
+		if (screen instanceof RRVExtendedContainerScreen) {
 			OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
+		}
 	}
 
 	@Inject(method = "defaultHandleGameClickEvent", at = @At("HEAD"), cancellable = true)

@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+//? if >26 {
 package cc.cassian.rrv.common.builtin.villager;
 
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
@@ -75,7 +76,8 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.storage.loot.functions.*;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.*;
-import org.jspecify.annotations.NonNull;
+//? if >26.2
+//import net.minecraft.world.level.storage.loot.providers.number.ints.*;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
@@ -330,10 +332,14 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 		VillagerServerRecipe.registerFunctionProcessor(ExplorationMapFunction.class, (function, cost1, cost2, offerStacks, doubleTradePriceEnchantments, extraData) -> {
 			ExplorationMapFunctionAccessor accessor = (ExplorationMapFunctionAccessor) function;
 
+			//? if >26.2 {
+			/*return List.of(new SubTradeGroup(cost1, cost2, offerStacks, extraData));
+			*///?} else {
 			ItemStack stack = new ItemStack(Items.FILLED_MAP);
 			MapItemSavedData.addTargetDecoration(stack, BlockPos.ZERO, "+", accessor.getDecorationType());
-
 			return List.of(new SubTradeGroup(cost1, cost2, List.of(stack), extraData));
+			//?}
+
 		});
 
 		VillagerServerRecipe.registerFunctionProcessor(SetPotionFunction.class, (function, cost1, cost2, offerStacks, doubleTradePriceEnchantments, extraData) -> {
@@ -547,10 +553,11 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	}
 
 
+	//~ if >=26.3 'NumberProvider'->'ContextIntProvider' {
 	public static MinMaxValue getMinMax(NumberProvider provider) {
 
-		if (provider instanceof ConstantValue(float value))
-			return new MinMaxValue((int) value, (int) value);
+		if (provider instanceof ConstantValue constantValue)
+			return new MinMaxValue((int) constantValue.value(), (int) constantValue.value());
 
 		if (provider instanceof BinomialDistributionGenerator(NumberProvider n, NumberProvider p))
 			return new MinMaxValue(0, getMinMax(n).max());
@@ -579,6 +586,7 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	public static MinMaxValue getMinMax(Holder<NumberProvider> holder) {
 		return getMinMax(holder.value());
 	}
+	//~}
 
 	public record MinMaxValue(int min, int max) {
 
@@ -612,3 +620,4 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 	}
 
 }
+//?}

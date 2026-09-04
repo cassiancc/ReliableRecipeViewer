@@ -8,26 +8,27 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
 
 public class SearchBar extends EditBox {
 
     private final ItemViewOverlay itemViewOverlay;
-	private ChatFormatting color = ChatFormatting.WHITE;
+	private int color = 16777215;
 
     public SearchBar(Font font, int x, int y, int width, int height, Component message, ItemViewOverlay itemViewOverlay) {
         super(font, x, y, width, height, message);
         this.itemViewOverlay = itemViewOverlay;
         this.addFormatter((text, offset) -> {
-			ChatFormatting style = color;
+			int style = color;
 			MutableComponent component = Component.empty();
 			for (String s : text.splitWithDelimiters(" ", 0)) {
 				var filter = PrefixedFilter.findFilterInQuery(s);
 				if (filter != null) {
-					style = filter.color();
+					style = filter.color().getValue();
 				} else if (offset == 0 || s.contains(" ")) {
-					style = ChatFormatting.WHITE;
+					style = 16777215;
 				}
-				component.append(Component.literal(s).withStyle(style));
+				component.append(Component.literal(s).withColor(style));
 			}
 			if (offset == 0)
 				color = style;

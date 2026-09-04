@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public class VillagerClientRecipeType implements ReliableClientRecipeType {
 
-    protected static final VillagerClientRecipeType INSTANCE = new VillagerClientRecipeType();
+    public static final VillagerClientRecipeType INSTANCE = new VillagerClientRecipeType();
 
     private static final ReferenceCondition REFERENCE_CONDITION = (stack, viewRecipe) -> {
         if(!(stack.getItem() instanceof BlockItem blockItem))
