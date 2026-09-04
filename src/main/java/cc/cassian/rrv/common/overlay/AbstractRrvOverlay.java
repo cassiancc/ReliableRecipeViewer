@@ -201,7 +201,7 @@ public abstract class AbstractRrvOverlay {
 
 
     protected boolean isPositionBlocked(int x, int y, int width, int height) {
-        List<BlockingGuiComponent> relevantComponents = OverlayManager.INSTANCE.allGuiBlockings().stream().filter(blockingGuiComponent -> this.getBlockingPredicate().isBlocking(blockingGuiComponent)).toList();
+        List<BlockingGuiComponent> relevantComponents = OverlayManager.INSTANCE.exclusionAreas().stream().filter(blockingGuiComponent -> this.getBlockingPredicate().isBlocking(blockingGuiComponent)).toList();
 
 
         for (BlockingGuiComponent blocking : relevantComponents) {
@@ -222,10 +222,10 @@ public abstract class AbstractRrvOverlay {
         this.effectiveHeight = this.height;
 
 
-        if (OverlayManager.INSTANCE.allGuiBlockings().isEmpty())
+        if (OverlayManager.INSTANCE.exclusionAreas().isEmpty())
             return;
 
-        List<BlockingGuiComponent> relevantBlockings = OverlayManager.INSTANCE.allGuiBlockings().stream().filter(blockingGuiComponent -> blockingGuiComponent.hasIntersectionWith(this.x, this.y, this.width, this.height)).toList();
+        List<BlockingGuiComponent> relevantBlockings = OverlayManager.INSTANCE.exclusionAreas().stream().filter(blockingGuiComponent -> blockingGuiComponent.hasIntersectionWith(this.x, this.y, this.width, this.height)).toList();
         if (relevantBlockings.isEmpty())
             return;
 

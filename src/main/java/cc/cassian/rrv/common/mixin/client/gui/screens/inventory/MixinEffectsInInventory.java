@@ -40,7 +40,7 @@ public abstract class MixinEffectsInInventory {
     private void injectBlocking$0(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci){
 
         List<Identifier> effectsToRemove = new ArrayList<>();
-        for(BlockingGuiComponent guiBlock : OverlayManager.INSTANCE.allGuiBlockings()){
+        for(BlockingGuiComponent guiBlock : OverlayManager.INSTANCE.exclusionAreas()){
 
             if(!guiBlock.id().getPath().startsWith("mobeffect_"))
                 continue;
@@ -52,14 +52,14 @@ public abstract class MixinEffectsInInventory {
 
         }
 
-        OverlayManager.INSTANCE.removeGuiBlocking(effectsToRemove::contains, !effectsToRemove.isEmpty());
+        OverlayManager.INSTANCE.removeExclusionArea(effectsToRemove::contains, !effectsToRemove.isEmpty());
     }
 
     @Inject(method = "extractBackground", at = @At("RETURN"))
     private void injectBlocking$1(final GuiGraphicsExtractor graphics, final Font font, final Component effectName, final Component duration, final int x0, final int y0, final boolean isAmbient, final int maxTextureWidth, CallbackInfoReturnable<Integer> cir){
 
         if (effectName.getContents() instanceof TranslatableContents translatableContents) {
-            OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
+            OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(
                     Identifier.withDefaultNamespace("mobeffect_" +  translatableContents.getKey()), x0, y0, cir.getReturnValue(), 32
             ));
         }

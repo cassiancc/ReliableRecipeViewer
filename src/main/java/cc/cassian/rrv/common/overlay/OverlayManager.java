@@ -36,7 +36,7 @@ public class OverlayManager implements ExclusionAreaManager {
     private boolean newScreenQueued = false;
 
     public static List<OverlayManagementEvents.AddExclusionAreasEvent> EXCLUSION_AREA_EVENTS = new ArrayList<>();
-    private final List<BlockingGuiComponent> guiBlockings = new ArrayList<>();
+    private final List<BlockingGuiComponent> exclusionAreas = new ArrayList<>();
 
     public boolean hasQueuedWidgetUpdate() {
         return this.queuedWidgetUpdate;
@@ -246,7 +246,7 @@ public class OverlayManager implements ExclusionAreaManager {
 
 		ArrayList<net.minecraft.network.chat.Component> underMouse = new ArrayList<>();
         Font font = Minecraft.getInstance().font;
-        this.guiBlockings.forEach(blockingGuiComponent -> {
+        this.exclusionAreas.forEach(blockingGuiComponent -> {
             String name = blockingGuiComponent.id().toString();
             guiGraphics.text(font, name, blockingGuiComponent.x(), blockingGuiComponent.y(), -1);
 
@@ -270,8 +270,14 @@ public class OverlayManager implements ExclusionAreaManager {
     }
 
 
+    /// See {@link OverlayManager#removeExclusionArea(Identifier, boolean)}
+    @Deprecated(since = "8.10.0")
     public void removeGuiBlocking(Identifier id, boolean updateOverlays) {
-        this.guiBlockings.removeIf(blockingGuiComponent -> blockingGuiComponent.id().equals(id));
+        removeExclusionArea(id, updateOverlays);
+    }
+
+    public void removeExclusionArea(Identifier id, boolean updateOverlays) {
+        this.exclusionAreas.removeIf(blockingGuiComponent -> blockingGuiComponent.id().equals(id));
 
         if (updateOverlays) {
             this.updateOverlaysAndWidgets(true);
@@ -279,8 +285,14 @@ public class OverlayManager implements ExclusionAreaManager {
 
     }
 
+    /// See {@link OverlayManager#removeExclusionArea(Predicate, boolean)}
+    @Deprecated
     public void removeGuiBlocking(Predicate<Identifier> filter, boolean updateOverlays) {
-        this.guiBlockings.removeIf(blockingGuiComponent -> filter.test(blockingGuiComponent.id()));
+        removeExclusionArea(filter, updateOverlays);
+    }
+
+    public void removeExclusionArea(Predicate<Identifier> filter, boolean updateOverlays) {
+        this.exclusionAreas.removeIf(blockingGuiComponent -> filter.test(blockingGuiComponent.id()));
 
         if (updateOverlays) {
             this.updateOverlaysAndWidgets(true);
@@ -288,21 +300,32 @@ public class OverlayManager implements ExclusionAreaManager {
 
     }
 
-    public void setGuiBlocking(BlockingGuiComponent comp) {
-        HashSet<BlockingGuiComponent> old = new HashSet<>(this.guiBlockings);
-        this.removeGuiBlocking(comp.id(), false);
-        this.guiBlockings.add(comp);
+    /// Deprecated, see {@link #setExclusionArea(BlockingGuiComponent)}
+    @Deprecated(since = "8.10.0")
+    public void setGuiBlocking(BlockingGuiComponent area) {
+        setExclusionArea(area);
+    }
 
-        if (!(old.containsAll(this.guiBlockings) && old.size() == this.guiBlockings.size())) {
+    public void setExclusionArea(BlockingGuiComponent area) {
+        HashSet<BlockingGuiComponent> old = new HashSet<>(this.exclusionAreas);
+        this.removeExclusionArea(area.id(), false);
+        this.exclusionAreas.add(area);
+
+        if (!(old.containsAll(this.exclusionAreas) && old.size() == this.exclusionAreas.size())) {
             this.setQueuedWidgetUpdate(true);
         }
-
-
     }
 
 
+    /// See {@link #exclusionAreas}
+    @Deprecated(since = "8.10.0")
     public List<BlockingGuiComponent> allGuiBlockings() {
-        return this.guiBlockings;
+        return exclusionAreas();
+    }
+
+    @Override
+    public List<BlockingGuiComponent> exclusionAreas() {
+        return this.exclusionAreas;
     }
 
 

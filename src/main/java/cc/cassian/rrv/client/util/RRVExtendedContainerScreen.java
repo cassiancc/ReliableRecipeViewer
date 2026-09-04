@@ -44,7 +44,7 @@ public interface RRVExtendedContainerScreen {
 	}
 
 	static void extractOverlay(AbstractRrvOverlay.InventoryPositionInfo info, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
+		OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(
 				RRVClientUtil.CONTAINER,
 				info.leftPos(),
 				info.topPos(),

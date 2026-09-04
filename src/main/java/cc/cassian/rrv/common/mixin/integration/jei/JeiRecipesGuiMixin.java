@@ -74,7 +74,7 @@ public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedCo
 				this,
 				this.width, this.height, this.area.x(), this.area.y(), this.area.width(), this.area.height());
 
-		OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
+		OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(
 				RRVClientUtil.CONTAINER,
 				info.leftPos(),
 				info.topPos(),

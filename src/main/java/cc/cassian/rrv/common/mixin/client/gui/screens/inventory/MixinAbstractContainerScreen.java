@@ -60,7 +60,7 @@ public abstract class MixinAbstractContainerScreen extends Screen
     public final void rrv$callInit() {
         AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo(this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
 
-        OverlayManager.INSTANCE.setGuiBlocking(new BlockingGuiComponent(
+        OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(
                 RRVClientUtil.CONTAINER,
                 info.leftPos(),
                 info.topPos(),

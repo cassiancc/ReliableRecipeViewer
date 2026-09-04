@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public interface ExclusionAreaManager {
-	void removeGuiBlocking(Identifier id, boolean updateOverlays);
+	void removeExclusionArea(Identifier id, boolean updateOverlays);
 
-	void removeGuiBlocking(Predicate<Identifier> filter, boolean updateOverlays);
+	void removeExclusionArea(Predicate<Identifier> filter, boolean updateOverlays);
 
-	void setGuiBlocking(BlockingGuiComponent comp);
+	void setExclusionArea(BlockingGuiComponent comp);
 
-	List<BlockingGuiComponent> allGuiBlockings();
+	List<BlockingGuiComponent> exclusionAreas();
 }
