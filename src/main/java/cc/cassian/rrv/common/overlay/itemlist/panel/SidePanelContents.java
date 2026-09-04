@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.overlay.itemlist.panel;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
+import cc.cassian.rrv.client.recipe.ClientUnlockManager;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
@@ -73,6 +74,35 @@ public class SidePanelContents {
 		filter(availableItems);
 		RrvUtil.sortByName(availableItems);
 		return availableItems;
+	}
+
+	public static List<ItemStack> unlocked(SidePanelContents contents) {
+		ArrayList<ItemStack> availableItems = new ArrayList<>();
+		if (!(contents.creativeScreen))
+			ClientRecipeCache.INSTANCE.getRecipes().stream().filter((recipe)-> RRVClientUtil.matchesAnyTransferClass(recipe, RRVClientUtil.currentScreen())).sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
+				ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
+				ClientUnlockManager.INSTANCE.unlockItem(stack);
+				setResultAndAdd(recipe, stack, availableItems);
+			});
+		if (availableItems.isEmpty()) {
+			ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(Comparator.comparing(ReliableClientRecipe::entryId)).forEach(recipe->{
+				ItemStack stack = recipe.getResults().getFirst().getValidContents().getFirst();
+				ClientUnlockManager.INSTANCE.unlockItem(stack);
+				setResultAndAdd(recipe, stack, availableItems);
+			});
+		}
+		return availableItems;
+	}
+
+	private static void setResultAndAdd(ReliableClientRecipe recipe, ItemStack ingredient, List<ItemStack> availableItems) {
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.putString("rrv_result", recipe.entryId().toString());
+		ingredient.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag));
+		availableItems.stream().filter(ingredient1-> ItemStack.isSameItem(ingredient1, ingredient)).findFirst().ifPresentOrElse(stack->{
+			CompoundTag compoundTag1 = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+			compoundTag1.remove("rrv_result");
+			stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag1));
+		}, ()-> availableItems.add(ingredient));
 	}
 
 	public static void filter(List<ItemStack> availableItems) {

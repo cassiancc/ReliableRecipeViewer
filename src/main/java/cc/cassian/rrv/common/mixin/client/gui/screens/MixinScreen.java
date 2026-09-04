@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.mixin.client.gui.screens;
 
 import cc.cassian.rrv.client.recipe.ClientRecipeManager;
+import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.overlay.OverlayManager;
