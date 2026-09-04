@@ -400,11 +400,15 @@ public class StackGroupManager {
     public static List<ItemStack> getGroupItems(AbstractStackGroup group) {
         List<ItemStack> items = new ArrayList<>();
         if (ItemViewOverlay.INSTANCE.currentlyIndexing()) return List.of();
-        ItemFilters.fullStackList().forEach(stack -> {
-            if (group.match(stack)) {
-                items.add(stack);
-            }
-        });
+        try {
+            ItemFilters.fullStackList().forEach(stack -> {
+                if (group.match(stack)) {
+                    items.add(stack);
+                }
+            });
+        } catch (ConcurrentModificationException ignored) {
+            // this is rare and needs further investigation
+        }
 
         sortByGroupOrder(items, group.getId());
         return items;

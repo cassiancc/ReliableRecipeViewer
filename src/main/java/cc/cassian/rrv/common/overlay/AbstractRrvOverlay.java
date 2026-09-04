@@ -31,6 +31,7 @@ public abstract class AbstractRrvOverlay {
 
     private final List<ItemSlot> itemSlots = new ArrayList<>();
     private final List<ItemSlot> lastItemSlots = new ArrayList<>();
+    private boolean needsBackground = true;
 
     protected int x, y, width, height;
 
@@ -93,6 +94,14 @@ public abstract class AbstractRrvOverlay {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean needsBackground() {
+        return needsBackground;
+    }
+
+    public void setNeedsBackground(boolean needsBackground) {
+        this.needsBackground = needsBackground;
     }
 
     public boolean isEnabled() {

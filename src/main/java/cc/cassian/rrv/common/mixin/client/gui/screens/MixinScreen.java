@@ -26,8 +26,7 @@ import java.util.Optional;
 @Mixin(Screen.class)
 public abstract class MixinScreen extends AbstractContainerEventHandler implements Renderable {
 
-
-    @Final
+	@Final
 	@Shadow protected Font font;
 
 	//~ if >26 'render'->'extractRenderState'
@@ -39,6 +38,14 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
 			guiGraphics.text(this.font, statusMsg, guiGraphics.guiWidth() - this.font.width(statusMsg) - 2, 2, -1);
 		}
     }
+
+	@Inject(method = "extractBackground", at = @At("RETURN"))
+	private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+		Screen screen = (Screen) (Object) this;
+		if (screen instanceof RRVExtendedContainerScreen) {
+			OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
+		}
+	}
 
 	@Inject(method = "defaultHandleGameClickEvent", at = @At("HEAD"), cancellable = true)
 	private static void click(ClickEvent event, Minecraft minecraft, Screen activeScreen, CallbackInfo ci) {

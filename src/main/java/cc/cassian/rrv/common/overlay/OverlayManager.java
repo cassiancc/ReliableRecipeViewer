@@ -9,6 +9,7 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.OverlayDisplay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -224,11 +225,18 @@ public class OverlayManager implements ExclusionAreaManager {
 
     public void renderAllBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (Configs.CLIENT_SETTINGS.drawBackground())
-            PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.extractBackground(guiGraphics, mouseX, mouseY, partialTicks));
+            PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> {
+                if (overlay.needsBackground())
+				    overlay.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
+                overlay.setNeedsBackground(false);
+			});
     }
 
     public void renderAll(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> overlay.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks));
+        PRESENT_OVERLAYS.stream().filter(AbstractRrvOverlay::isEnabled).forEach(overlay -> {
+			overlay.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+            overlay.setNeedsBackground(true);
+		});
 
         if (RRVClientUtil.showDebugScreen())
             this.renderDebug(guiGraphics, mouseX, mouseY, partialTicks);
@@ -236,11 +244,13 @@ public class OverlayManager implements ExclusionAreaManager {
 
     public void renderDebug(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 
-
+		ArrayList<net.minecraft.network.chat.Component> underMouse = new ArrayList<>();
+        Font font = Minecraft.getInstance().font;
         this.guiBlockings.forEach(blockingGuiComponent -> {
-            guiGraphics.text(Minecraft.getInstance().font, blockingGuiComponent.id().toString(), blockingGuiComponent.x(), blockingGuiComponent.y(), -1);
+            String name = blockingGuiComponent.id().toString();
+            guiGraphics.text(font, name, blockingGuiComponent.x(), blockingGuiComponent.y(), -1);
 
-            Random rand = new Random(blockingGuiComponent.id().toString().chars().sum());
+            Random rand = new Random(name.chars().sum());
             int debugColor = new Color(rand.nextInt(255 + 1), rand.nextInt(255 + 1), rand.nextInt(255 + 1)).getRGB();
 
             guiGraphics.horizontalLine(blockingGuiComponent.x(), blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y(), debugColor);
@@ -248,8 +258,14 @@ public class OverlayManager implements ExclusionAreaManager {
 
             guiGraphics.verticalLine(blockingGuiComponent.x(), blockingGuiComponent.y(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
             guiGraphics.verticalLine(blockingGuiComponent.x() + blockingGuiComponent.width(), blockingGuiComponent.y(), blockingGuiComponent.y() + blockingGuiComponent.height(), debugColor);
-
+            if (blockingGuiComponent.hasIntersectionWith(mouseX, mouseY, 8, 8)) {
+                underMouse.add(net.minecraft.network.chat.Component.literal(name));
+            }
         });
+
+        if (!underMouse.isEmpty()) {
+            guiGraphics.setComponentTooltipForNextFrame(font, underMouse, mouseX, mouseY);
+        }
 
     }
 

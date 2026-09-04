@@ -9,3 +9,5 @@
 
 ### Fixed
 - Side panel highlight area extending outside the overlay's box.
+- Overlay background is no longer rendered on top of container screens.
+- Creative search is no longer broken by RRV.
