@@ -47,9 +47,10 @@ public interface ReliableClientRecipe {
             }
     );
 
-    /// Renamed to [ReliableClientRecipe#getType()] in 8.0.0
+    //? if <26.3 {
+    /// Renamed to [ReliableClientRecipe#getType()] in 8.0.0. Removed in 26.3, and removal will be backported when possible.
     /// @return The client recipe type of this recipe
-    @Deprecated(since = "8.0.0")
+    @Deprecated(since = "8.0.0", forRemoval = true)
     default ReliableClientRecipeType getViewType() {
         return getType();
     }
@@ -59,6 +60,11 @@ public interface ReliableClientRecipe {
     default ReliableClientRecipeType getType() {
         return getViewType();
     }
+    //?} else {
+    /*/// Provides the [ReliableClientRecipeType] of this client recipe.
+    /// @return The client recipe type of this recipe
+    ReliableClientRecipeType getType();
+    *///?}
 
     /// Bind the SlotContents of the recipe to the according slots
     ///

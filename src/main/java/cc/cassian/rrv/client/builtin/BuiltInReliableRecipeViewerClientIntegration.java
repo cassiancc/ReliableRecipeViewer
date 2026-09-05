@@ -474,10 +474,12 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                 Repairable repairable = stack.get(DataComponents.REPAIRABLE);
                 var damagedStack = stack.copy();
                 damagedStack.setDamageValue(stack.getMaxDamage() / 2);
-                assert repairable != null;
-                recipeList.add(new AnvilCombiningClientRecipe(entry.getKey().identifier().withPrefix("/anvil_repairing/"), SlotContent.of(damagedStack), SlotContent.of(repairable.items()), SlotContent.of(stack), -10));
-                recipeList.add(new CraftingClientRecipe.Builder(entry.getKey().identifier().withPrefix("/repairing/"), SlotContent.of(damagedStack), SlotContent.of(damagedStack)).setResult(SlotContent.of(stack)).setPriority(-10).build());
-            }
+				if (damagedStack.isDamaged()) { // this feels weird, but works around enchancement preventing durability damage
+					assert repairable != null;
+					recipeList.add(new AnvilCombiningClientRecipe(entry.getKey().identifier().withPrefix("/anvil_repairing/"), SlotContent.of(damagedStack), SlotContent.of(repairable.items()), SlotContent.of(stack), -10));
+					recipeList.add(new CraftingClientRecipe.Builder(entry.getKey().identifier().withPrefix("/repairing/"), SlotContent.of(damagedStack), SlotContent.of(damagedStack)).setResult(SlotContent.of(stack)).setPriority(-10).build());
+				}
+         }
         });
     }
 
