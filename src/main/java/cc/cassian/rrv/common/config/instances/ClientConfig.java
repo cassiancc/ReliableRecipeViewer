@@ -30,7 +30,10 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean showButtons = true;
 	private boolean recipeBookButton = false;
 	private boolean recipeBookTheme = true;
+	//? fabric
 	private LocalFallback localFallback = LocalFallback.WHEN_NEEDED;
+	//? neoforge
+	//private LocalFallback localFallback = LocalFallback.DISABLED;
 	private boolean recipeSharing = true;
 	private Map<IndexSource, Boolean> indexSource = IndexSource.DEFAULT;
 	private boolean jeiPanel = false;

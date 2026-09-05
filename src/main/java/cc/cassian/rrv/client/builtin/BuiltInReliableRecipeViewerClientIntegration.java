@@ -165,6 +165,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 			ItemView.addMobFood(EntityType.RABBIT, ItemTags.RABBIT_FOOD);
 			ItemView.addMobFood(EntityType.SNIFFER, ItemTags.SNIFFER_FOOD);
 			ItemView.addMobFood(EntityType.STRIDER, ItemTags.STRIDER_FOOD);
+			ItemView.addMobFood(EntityType.TURTLE, ItemTags.TURTLE_FOOD);
 			ItemView.addMobFood(EntityType.TRADER_LLAMA, ItemTags.LLAMA_FOOD);
 			//? if >26.2 {
 			/*ItemView.addMobFood(EntityType.VILLAGER, SlotContent.ofItemList(BuiltInRegistries.ITEM.stream().filter(p->p.getDefaultInstance().has(DataComponents.VILLAGER_FOOD)).toList()));

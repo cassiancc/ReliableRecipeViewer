@@ -172,8 +172,11 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         int yo = context.recipePosition().top() + context.mouseY();
         if (this.hovered) {
             var tooltip = new  ArrayList<Component>();
-            var style = entityType.getCategory().isFriendly() ? ChatFormatting.GREEN : ChatFormatting.RED;
-            tooltip.add(Component.empty().append(entityName).withStyle(style));
+			ChatFormatting style;
+            if (previewEntity instanceof NeutralMob) style = ChatFormatting.YELLOW;
+            else if (entityType.getCategory().isFriendly()) style = ChatFormatting.GREEN;
+			else style = ChatFormatting.RED;
+			tooltip.add(Component.empty().append(entityName).withStyle(style));
             if (ModCompat.ITEM_DESCRIPTIONS)
                 ItemDescriptionsCompat.addEntityDescription(tooltip, entityType, entityName);
             ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(entityId.getNamespace()), tooltip, true);
