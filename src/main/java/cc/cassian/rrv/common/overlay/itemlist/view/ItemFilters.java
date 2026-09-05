@@ -78,6 +78,7 @@ public class ItemFilters {
     /// @param query The query
     /// @return A list of matching item stacks
     public static List<ItemStack> defaultFilter(String query) {
+        if (query.isEmpty()) return fullStackList();
         List<ItemStack> firstPrio = new ArrayList<>(); // exact matches
         List<ItemStack> secondPrio = new ArrayList<>(); // partial matches, aliases, tooltips
         List<ItemStack> thirdPrio = new ArrayList<>(); // single word matches, partial tooltip matches
