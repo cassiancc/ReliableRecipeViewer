@@ -113,6 +113,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     modCompileOnly("maven.modrinth:modmenu:${property("deps.modmenu")}")
+    modLocalRuntime("maven.modrinth:modmenu:${property("deps.modmenu")}")
 
     modCompileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         exclude(group = "com.terraformersmc")
@@ -143,8 +144,6 @@ dependencies {
     }
 
     if (stonecutter.eval(mcVersion, "<26.3")) {
-        modLocalRuntime("maven.modrinth:modmenu:${property("deps.modmenu")}")
-
         modCompileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
         modLocalRuntime("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
 //        modLocalRuntime("eu.pb4:polydex:${property("deps.polydex")}")
@@ -223,7 +222,7 @@ val additionalVersions: List<String> = additionalVersionsStr
 
 publishMods {
     file = loomx.modJar.map { it.archiveFile.get() }
-    type = if (stonecutter.eval(stonecutter.current.version, ">=26.3")) {
+    type = if (stonecutter.eval(stonecutter.current.version, ">=26.4")) {
         BETA
     } else {
         STABLE

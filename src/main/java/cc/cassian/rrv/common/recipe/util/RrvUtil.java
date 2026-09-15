@@ -187,8 +187,8 @@ public class RrvUtil {
     }
 
     /// Creates a recipe map from a collection of recipes - constructor removed in 26.3. Might eventually be swapped out for an abstraction layer.
-	public static RecipeMap createRecipeMap(Collection<RecipeHolder<?>> recipes) {
-        //? if >26.2 {
+	public static RecipeMap createRecipeMap(List<RecipeHolder<?>> recipes) {
+        //? if >26.2 && fabric {
         /*ImmutableMultimap.Builder<RecipeType<?>, RecipeHolder<?>> byType = ImmutableMultimap.builder();
         ImmutableMap.Builder<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey = ImmutableMap.builder();
 
@@ -196,8 +196,9 @@ public class RrvUtil {
             byType.put(recipe.value().getType(), recipe);
             byKey.put(recipe.id(), recipe);
         }
-
         return new RecipeMap(byType.build(), byKey.build());
+        *///?} else if neoforge && >26.2 {
+        /*return RecipeMap.createClient(recipes);
         *///?} else {
         return RecipeMap.create(recipes);
         //?} 

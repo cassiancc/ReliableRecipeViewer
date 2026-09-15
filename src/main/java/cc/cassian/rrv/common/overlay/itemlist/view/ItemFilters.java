@@ -18,6 +18,7 @@ import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.*;
+import com.mojang.blaze3d.Blaze3D;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.TypedDataComponent;
@@ -488,6 +489,7 @@ public class ItemFilters {
             index.add("values", encodedStacks);
             index.add("aliases", encodedAliases);
             ReliableRecipeViewer.GSON.toJson(index, writer);
+            //~ if >26.2 'Util.getPlatform()'->'Blaze3D'
             Util.getPlatform().openPath(RRVPlatform.INSTANCE.getDataDirectory());
             return ClientConfigScreen.clientSetting("export_item_view.success");
         } catch (Exception e) {

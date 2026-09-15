@@ -23,6 +23,8 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 
+import java.util.List;
+
 public class FabricClientEntrypoint implements ClientModInitializer {
 
     @Override
@@ -48,7 +50,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
 
         ClientRecipeSynchronizedEvent.EVENT.register((client, recipes) -> {
-            ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(recipes.recipes());
+            ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(List.copyOf(recipes.recipes()));
             ClientRecipeCache.INSTANCE.buildRecipeCache(true);
 //            client.execute(()->{
 //                if (ItemFilters.needsCache() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
