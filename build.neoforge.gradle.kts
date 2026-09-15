@@ -9,6 +9,7 @@ val minecraft = stonecutter.current.version
 val mcVersion = stonecutter.current.project.substringBeforeLast('-')
 
 tasks.named<ProcessResources>("processResources") {
+    duplicatesStrategy = DuplicatesStrategy.WARN
     fun prop(name: String) = project.property(name) as String
 
     val props = HashMap<String, String>().apply {
@@ -124,8 +125,15 @@ dependencies {
         compileOnly("org.sinytra.forgified-fabric-api:fabric-recipe-api-v1:9.0.16+a1e31eec4c")
     }
 
+    if (stonecutter.eval(mcVersion, ">26.2")) {
+        compileOnly("mezz.jei:jei-26.2-neoforge:${property("deps.jei")}")
+
+    } else {
+        compileOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
+
+    }
+
     // JEI support
-    compileOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
 //    runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
 
 }

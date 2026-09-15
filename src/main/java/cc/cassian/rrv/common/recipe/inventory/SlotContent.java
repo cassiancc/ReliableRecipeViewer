@@ -13,6 +13,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? neoforge {
 /*import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 *///?}
 //? fabric {
@@ -309,7 +310,10 @@ public class SlotContent {
             return SlotContent.of(potionIngredient.ingredient());
         }
 
+        //? fabric
         return SlotContent.of(DefaultCustomIngredients.components(potionIngredient.ingredient(), patch.build()));
+        //? neoforge
+        //return SlotContent.of(new DataComponentIngredient(potionIngredient.ingredient().getValues(), patch.build(), true).display());
     }
 
     public static SlotContent of(net.minecraft.world.item.crafting.TransmuteResult transmuteResult, Item fallback) {

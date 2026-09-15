@@ -38,6 +38,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @EventBusSubscriber(modid = ReliableRecipeViewer.MOD_ID, value = Dist.CLIENT)
@@ -102,7 +103,7 @@ public class NeoForgeClientEntrypoint {
 
     @SubscribeEvent
     public static void receiveRecipes(RecipesReceivedEvent event) {
-		Collection<RecipeHolder<?>> newRecipes = new ArrayList<>(event.getRecipeMap().values());
+		List<RecipeHolder<?>> newRecipes = new ArrayList<>(event.getRecipeMap().values());
 		newRecipes.addAll(ReliableRecipeViewerClient.LOCAL_RECIPES.values());
 		ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(newRecipes);
 		if (!event.getRecipeTypes().isEmpty())

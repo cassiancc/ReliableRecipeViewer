@@ -194,10 +194,10 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     public void extractSlots(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!slotsBeingUpdated()) {
             ItemSlot.currentFrameSlots = this.itemSlots();
-            extractSlots(this.itemSlots(), guiGraphics, mouseX, mouseY, partialTicks);
+            extractSlots(new ArrayList<>(this.itemSlots()), guiGraphics, mouseX, mouseY, partialTicks);
             ItemSlot.currentFrameSlots = null;
         } else {
-            extractSlots(this.lastItemSlots(), guiGraphics, mouseX, mouseY, partialTicks);
+            extractSlots(new ArrayList<>(this.lastItemSlots()), guiGraphics, mouseX, mouseY, partialTicks);
         }
     }
 
