@@ -1,3 +1,8 @@
+## [8.10.8]
+
+### Fixed
+- Compatibility issues with 1.21.11 and 26.3.
+
 ## [8.10.7]
 
 ### Added

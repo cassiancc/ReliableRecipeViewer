@@ -40,8 +40,8 @@ public class ReliableRecipeViewerClient {
     public static final KeyMapping ADD_BOOKMARK_KEYBIND = new KeyMapping("key.rrv.bookmark", InputConstants.KEY_A, RRV_CATEGORY);
     public static final KeyMapping USE_QUICK_CRAFT = new KeyMapping("key.rrv.quickcraft", InputConstants.KEY_LCONTROL, RRV_CATEGORY);
 
-    public static final KeyMapping GO_BACK_RECIPE = new KeyMapping("key.rrv.go_back", InputConstants.Type.MOUSE, 3, RRV_CATEGORY);
-    public static final KeyMapping GO_FORWARD_RECIPE = new KeyMapping("key.rrv.go_forward", InputConstants.Type.MOUSE, 4, RRV_CATEGORY);
+    public static final KeyMapping GO_BACK_RECIPE = new KeyMapping("key.rrv.go_back", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_4, RRV_CATEGORY);
+    public static final KeyMapping GO_FORWARD_RECIPE = new KeyMapping("key.rrv.go_forward", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_5, RRV_CATEGORY);
 
     public static final KeyMapping USE_CHEATMODE = new KeyMapping("key.rrv.cheatmode", InputConstants.KEY_LALT, RRV_ADMIN_CATEGORY);
 

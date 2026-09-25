@@ -1,2 +1,2 @@
 ### Fixed
-- Compatibility issues with 1.21.11 and 26.3.
+- Incorrect default binding for back/forward mouse buttons.
