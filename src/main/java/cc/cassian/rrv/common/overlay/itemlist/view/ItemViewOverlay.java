@@ -355,7 +355,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
 
         Item item = stack.getItem();
         // plz don't touch my baby
-        return prefixedFilter ? this.availableItems.stream().noneMatch(other -> other.getItem() == item) : !tooltipMatch;
+        return prefixedFilter ? this.filteredItems.stream().noneMatch(other -> other.getItem() == item) : !tooltipMatch;
     }
 
     private boolean tooltipMatch(ItemStack stack, ExtendedTooltipFlag tooltipFlag) {
