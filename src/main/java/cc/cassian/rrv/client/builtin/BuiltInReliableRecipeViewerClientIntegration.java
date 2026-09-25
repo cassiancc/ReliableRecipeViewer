@@ -534,10 +534,12 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
                         worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_off_", block), waxed, axes, SlotContent.of(block)));
                         worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/wax_", block), SlotContent.of(block), SlotContent.of(Items.HONEYCOMB), waxed));
                     }
+					//? if <26.3 {
                     if (blockReference.getData(NeoForgeDataMaps.STRIPPABLES) != null) {
                         worldInteractionRecipes.add(new WorldInteractionClientRecipe(blockName("/world_interaction/strip_", block), SlotContent.of(block), axes, SlotContent.of(blockReference.getData(NeoForgeDataMaps.STRIPPABLES).strippedBlock())));
                     }
-                    *///?}
+					//?}
+				*///?}
 
                 if (block instanceof ConcretePowderBlock concretePowderBlock) {
                     worldInteractionRecipes.add(new WorldInteractionClientRecipe(id.withPrefix("/world_interaction/").withSuffix("_solidify"), SlotContent.of(block), SlotContent.of(new FluidStack(Fluids.WATER)), SlotContent.of(((ConcretePowderBlockAccessor) concretePowderBlock).getConcrete())));

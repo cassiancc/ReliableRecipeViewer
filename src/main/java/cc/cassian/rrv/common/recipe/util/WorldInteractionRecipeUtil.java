@@ -2,7 +2,6 @@ package cc.cassian.rrv.common.recipe.util;
 
 //? if >26.2 {
 /*import net.minecraft.core.component.BlockTransformer;
-
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.mixin.world.level.predicates.MatchingBlockTagPredicateAccessor;
 import cc.cassian.rrv.common.mixin.world.level.predicates.MatchingBlocksPredicateAccessor;
@@ -47,10 +46,11 @@ public class WorldInteractionRecipeUtil {
 	}
 
 	private static void createTransformerRecipeFromRule(ArrayList<WorldInteractionClientRecipe> recipeList, SlotContent tool, RuleBasedStateProvider.Rule rule, SlotContent before) {
-		if (rule.then().value() instanceof SimpleStateProvider simpleStateProvider) {
+		BlockStateProvider value = rule.then().value();
+		if (value instanceof SimpleStateProvider simpleStateProvider) {
 			createTransformerRecipe(recipeList, tool, simpleStateProvider, before);
-		} else if (rule.then().value() instanceof CopyPropertiesProvider(BlockStateProvider source)) {
-			createTransformerRecipe(recipeList, tool, source, before);
+		} else if (value instanceof CopyPropertiesProvider(Holder<BlockStateProvider> source)) {
+			createTransformerRecipe(recipeList, tool, source.value(), before);
 		}
 	}
 
