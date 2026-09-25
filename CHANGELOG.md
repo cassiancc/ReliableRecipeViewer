@@ -1,3 +1,11 @@
+## [8.10.5]
+
+### Added
+- Support for NeoForge 26.3.
+
+### Fixed
+- Issues on release 26.3.
+
 ## [8.10.4]
 
 ### Changed
