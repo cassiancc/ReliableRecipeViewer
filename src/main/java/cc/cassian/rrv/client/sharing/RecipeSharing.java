@@ -9,7 +9,6 @@ import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePaylo
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.Identifier;
@@ -20,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class RecipeSharing {
+	static boolean serverSupported = false;
+
 	public static void sendMessage(ReliableClientRecipe recipe, Component sender) {
 		RRVClientUtil.sendMessage(getMessage(recipe, sender));
 	}
@@ -43,6 +44,14 @@ public class RecipeSharing {
 
 	public static void shareRecipe(Identifier currentRecipe) {
 		ClientNetworkManager.sendPacketToServer(new ServerboundShareRecipePayload(currentRecipe));
+	}
+
+	public static void setServerSupported(boolean b) {
+		serverSupported = b;
+	}
+
+	public static boolean serverSupportsRecipeSharing() {
+		return serverSupported;
 	}
 
 	public record ShowRecipe(Component recipeType, String recipeTypeNamespace, ItemStack result) implements HoverEvent {

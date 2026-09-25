@@ -1,5 +1,6 @@
 package cc.cassian.rrv.client;
 
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.sharing.RecipeSharing;
@@ -7,9 +8,11 @@ import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
+import cc.cassian.rrv.common.network.payload.reload.ClientboundServerConfigPayload;
 import cc.cassian.rrv.common.network.payload.sharing.ClientboundShareRecipePayload;
 import cc.cassian.rrv.common.network.payload.transfer.ClientboundUpdateTransferCachePayload;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
+import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 //? fabric {
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -71,6 +74,10 @@ public class ClientNetworkManager {
             return;
         }
         RecipeSharing.sendMessage(recipes.getFirst(), payload.senderName());
+    }
+
+    public static void handleServerConfigPayload(ClientContext context, ClientboundServerConfigPayload clientboundServerConfigPayload) {
+       RecipeSharing.setServerSupported(clientboundServerConfigPayload.recipeSharing());
     }
 
     /// Registers all RRV payloads

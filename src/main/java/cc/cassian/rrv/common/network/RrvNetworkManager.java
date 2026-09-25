@@ -8,6 +8,7 @@ import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
 import cc.cassian.rrv.common.network.payload.compat.ClientboundCompatPayload;
 import cc.cassian.rrv.common.network.payload.mode.ServerboundPickCheatmodeItemPayload;
 import cc.cassian.rrv.common.network.payload.recipe.*;
+import cc.cassian.rrv.common.network.payload.reload.ClientboundServerConfigPayload;
 import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPayload;
 import cc.cassian.rrv.common.network.payload.sharing.ClientboundShareRecipePayload;
 import cc.cassian.rrv.common.network.payload.sharing.ServerboundShareRecipePayload;
@@ -251,6 +252,7 @@ public class RrvNetworkManager {
         });
 
         registerClientbound(ClientboundShareRecipePayload.TYPE, ClientboundShareRecipePayload.STREAM_CODEC, ClientNetworkManager::handleClientboundRecipeSharingPayload);
+        registerClientbound(ClientboundServerConfigPayload.TYPE, ClientboundServerConfigPayload.STREAM_CODEC, ClientNetworkManager::handleServerConfigPayload);
 
 
         return this;

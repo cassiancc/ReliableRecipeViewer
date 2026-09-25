@@ -338,7 +338,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
                 shareButton.setTooltip(Tooltip.create(Component.translatable("rrv.sharing.share", Component.literal(currentRecipe.entryId().toString()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD)));
 
                 shareButton.active = true;
-                shareButton.visible = shareButtonData.visible() && Configs.CLIENT_SETTINGS.isRecipeSharing();
+                shareButton.visible = shareButtonData.visible() && RecipeSharing.serverSupportsRecipeSharing() && Configs.CLIENT_SETTINGS.isRecipeSharing();
 
                 this.shareButtons.add(shareButton);
                 this.addRenderableWidget(shareButton);

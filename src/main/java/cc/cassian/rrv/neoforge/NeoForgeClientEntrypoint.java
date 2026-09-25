@@ -104,7 +104,9 @@ public class NeoForgeClientEntrypoint {
     @SubscribeEvent
     public static void receiveRecipes(RecipesReceivedEvent event) {
 		List<RecipeHolder<?>> newRecipes = new ArrayList<>(event.getRecipeMap().values());
-		newRecipes.addAll(ReliableRecipeViewerClient.LOCAL_RECIPES.values());
+		if (newRecipes.isEmpty()) {
+			newRecipes.addAll(ReliableRecipeViewerClient.LOCAL_RECIPES.values());
+		}
 		ReliableRecipeViewerClient.LOCAL_RECIPES = RrvUtil.createRecipeMap(newRecipes);
 		if (!event.getRecipeTypes().isEmpty())
 			ClientRecipeCache.INSTANCE.buildRecipeCache(true);

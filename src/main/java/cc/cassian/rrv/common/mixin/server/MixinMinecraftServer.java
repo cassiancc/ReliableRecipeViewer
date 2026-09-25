@@ -21,6 +21,6 @@ public abstract class MixinMinecraftServer {
 
     @Inject(method = "stopServer", at = @At("HEAD"))
     private void rrv$saveServerConfigs(CallbackInfo ci) {
-        ReliableRecipeViewer.saveServerConfigs();
+        ReliableRecipeViewer.saveServerConfigs((MinecraftServer) (Object) this);
     }
 }

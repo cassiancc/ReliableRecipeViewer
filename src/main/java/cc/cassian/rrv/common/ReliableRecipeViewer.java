@@ -2,12 +2,12 @@ package cc.cassian.rrv.common;
 
 import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
-import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
+import cc.cassian.rrv.common.network.payload.reload.ClientboundServerConfigPayload;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.inventory.MenuType;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +35,11 @@ public class ReliableRecipeViewer {
         ServerConfigs.SERVER_SETTINGS.load();
     }
 
-    public static void saveServerConfigs() {
+    public static void saveServerConfigs(MinecraftServer server) {
         ServerConfigs.SERVER_SETTINGS.save();
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            ReliableRecipeViewer.networkManager().sendPacket(player, new ClientboundServerConfigPayload(ServerConfigs.SERVER_SETTINGS));
+        }
     }
 
 }

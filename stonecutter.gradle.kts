@@ -18,6 +18,7 @@ stonecutter parameters {
 stonecutter tasks {
     order("publishModrinth")
     order("publishCurseforge")
+    order("publishToMavenLocal")
 }
 
 for (version in stonecutter.versions.map { it.version }.distinct()) tasks.register("publish$version") {

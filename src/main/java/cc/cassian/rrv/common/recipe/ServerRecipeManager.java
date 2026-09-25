@@ -6,9 +6,11 @@ import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
 import cc.cassian.rrv.api.recipe.ItemView;
+import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.recipe.*;
+import cc.cassian.rrv.common.network.payload.reload.ClientboundServerConfigPayload;
 import cc.cassian.rrv.common.network.payload.reload.ClientboundServerReloadPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundFinishStackSensitivesPayload;
 import cc.cassian.rrv.common.network.payload.stack.ClientboundStackSensitivePayload;
@@ -168,7 +170,7 @@ public class ServerRecipeManager {
             ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundTypeUpdateEndPayload(type));
         });
         ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundFinishUpdatesPayload());
-
+        ReliableRecipeViewer.networkManager().sendPacket(serverPlayer, new ClientboundServerConfigPayload(ServerConfigs.SERVER_SETTINGS));
     }
 
     public void reloadRecipes() {
