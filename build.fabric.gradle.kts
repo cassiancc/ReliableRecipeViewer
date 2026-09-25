@@ -147,7 +147,7 @@ dependencies {
         }
 
         modCompileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
-        modLocalRuntime("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
+//        modLocalRuntime("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
 //        modLocalRuntime("eu.pb4:polydex:${property("deps.polydex")}")
         modLocalRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
         modLocalRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")

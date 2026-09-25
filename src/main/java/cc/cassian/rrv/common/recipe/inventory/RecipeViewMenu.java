@@ -805,7 +805,7 @@ public class RecipeViewMenu {
 
         int recipeHeight = this.getClientRecipeType().getDisplayHeight();
 
-        int maxPossibleHeight = (int) (RRVClientUtil.currentScreen().height * 0.87346);
+        int maxPossibleHeight = getMaxPossibleHeight();
         int technicallyFitting = Math.min(this.getRecipes().size(), maxPossibleHeight / recipeHeight);
         int imageheightRequired = (technicallyFitting * recipeHeight) + (technicallyFitting * BUFFER_ZONE + TOP_SPACE + BOTTOM_SPACE);
 
@@ -816,6 +816,10 @@ public class RecipeViewMenu {
         }
 
         return technicallyFitting;
+    }
+
+    private static int getMaxPossibleHeight() {
+        return (int) (Minecraft.getInstance().getWindow().getGuiScaledHeight() * 0.87346);
     }
 
     public void updateTransferCache() {
