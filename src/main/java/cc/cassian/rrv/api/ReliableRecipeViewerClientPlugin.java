@@ -10,7 +10,7 @@ public interface ReliableRecipeViewerClientPlugin {
 
 
     /**
-     * Called once on game launch to register client recipe wrappers ({@link cc.cassian.rrv.api.recipe.ItemView#addClientRecipeWrapper}) and client reload callbacks ({@link cc.cassian.rrv.api.recipe.ItemView#addClientReloadCallback}).
+     * Called once on game launch to register client recipe providers ({@link cc.cassian.rrv.api.recipe.ItemView#addClientRecipeProvider}), client recipe wrappers for server recipes, and client reload callbacks ({@link cc.cassian.rrv.api.recipe.ItemView#addClientReloadCallback}).
      */
     void onIntegrationInitialize();
 }

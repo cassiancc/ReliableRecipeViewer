@@ -4,6 +4,7 @@ import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.options.*;
+import cc.cassian.rrv.common.config.widgets.IntegerEditBox;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
@@ -156,6 +157,8 @@ public class ClientConfigScreen extends Screen {
 
         addChild(styleHelper, "recipe_screen_position", "centered", "top", configs.isCenterRecipeScreen(), (u, b) -> configs.setCenterRecipeScreen(b));
         addChild(styleHelper, "workstation_display", configs.getWorkstationDisplay(), WorkstationDisplay.values(), (u, workstationDisplay)-> configs.setWorkstationDisplay(workstationDisplay));
+        addChild(styleHelper, "item_view_max_width", configs.getItemViewPanelMaxWidth(), (u, workstationDisplay)-> configs.setItemViewPanelMaxWidth(workstationDisplay));
+        addChild(styleHelper, "side_panel_max_width", configs.getSidePanelMaxWidth(), (u, workstationDisplay)-> configs.setSidePanelMaxWidth(workstationDisplay));
 
         linearLayout.addChild(style);
 
@@ -271,6 +274,12 @@ public class ClientConfigScreen extends Screen {
 
     private void addChild(GridLayout.RowHelper linearLayout, String key, boolean currentValue, CycleButton.OnValueChange<Boolean> newValueSetter) {
         CycleButton<Boolean> widget = CycleButton.booleanBuilder(Component.translatable("rrv.client_settings.boolean.enabled"), Component.translatable("rrv.client_settings.boolean.disabled"), currentValue).create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter);
+        addTooltip(key, widget);
+        linearLayout.addChild(widget);
+    }
+
+    private void addChild(GridLayout.RowHelper linearLayout, String key, int currentValue, CycleButton.OnValueChange<Integer> newValueSetter) {
+        CycleButton<Integer> widget = CycleButton.builder(c-> c == 0 ? Component.translatable("options.guiScale.auto") : Component.translatable("rrv.client_settings.unit.items", String.valueOf(c)), currentValue).withValues(0, 1, 2, 3, 4, 5, 6,7,8,9,10).create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter);
         addTooltip(key, widget);
         linearLayout.addChild(widget);
     }

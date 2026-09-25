@@ -449,10 +449,15 @@ public class RrvUtil {
 
 
 	public static void execute(Runnable o) {
-        if (Configs.CLIENT_SETTINGS.isUpdateOnBackgroundThread()) {
-            Util.backgroundExecutor().execute(o);
-        } else {
-            o.run();
+        try {
+            if (Configs.CLIENT_SETTINGS.isUpdateOnBackgroundThread()) {
+                Util.backgroundExecutor().execute(o);
+            } else {
+                o.run();
+            }
+        } catch (ConcurrentModificationException e) {
+            // FIXME
+            ReliableRecipeViewer.LOGGER.debug("RRV: Suppressing concurrent modification crash", e);
         }
 	}
 }

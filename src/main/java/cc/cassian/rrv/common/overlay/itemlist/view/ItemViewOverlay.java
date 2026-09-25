@@ -153,6 +153,8 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         //-14 for cleaner appearance
         this.width = invInfo.screenWidth() - ((invInfo.screenWidth() - 176) / 2 + 176) - 14;
         this.width -= (this.width - 4) % ITEM_ENTRY_SIZE;
+        if (Configs.CLIENT_SETTINGS.getItemViewPanelMaxWidth()>0)
+            this.width = Math.min(this.width, ((ITEM_ENTRY_SIZE+1)*Configs.CLIENT_SETTINGS.getItemViewPanelMaxWidth())+4);
 
         this.height = screen.height;
 

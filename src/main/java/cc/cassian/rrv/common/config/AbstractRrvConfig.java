@@ -91,6 +91,13 @@ public abstract class AbstractRrvConfig {
         this.data().add(group, o);
     }
 
+    protected void save(String group, String key, int newValue) {
+        var o = this.data().getAsJsonObject(group);
+        if (o == null) o = new JsonObject();
+        o.addProperty(key, newValue);
+        this.data().add(group, o);
+    }
+
     protected <T> void save(String group, String key, T newValue, Codec<T> codec) {
         var o = this.data().getAsJsonObject(group);
         if (o == null) o = new JsonObject();
@@ -122,6 +129,15 @@ public abstract class AbstractRrvConfig {
             var o = this.data().getAsJsonObject(group);
             if (o.has(key))
                 return o.get(key).getAsBoolean();
+        }
+        return defaultValue;
+    }
+
+    protected int load(String group, String key, int defaultValue) {
+        if (this.data().has(group)) {
+            var o = this.data().getAsJsonObject(group);
+            if (o.has(key))
+                return o.get(key).getAsInt();
         }
         return defaultValue;
     }

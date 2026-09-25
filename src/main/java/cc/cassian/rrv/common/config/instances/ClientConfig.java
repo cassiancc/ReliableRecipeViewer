@@ -45,6 +45,8 @@ public class ClientConfig extends AbstractRrvConfig {
 	private boolean showExclusionAreas = false;
 	private boolean searchTooltips = true;
 	private boolean updateOnBackgroundThread = false;
+	private int sidePanelMaxWidth = 6;
+	private int itemViewPanelMaxWidth = 6;
 
 	public ClientConfig() {
 		super("client_settings");
@@ -342,6 +344,9 @@ public class ClientConfig extends AbstractRrvConfig {
 				save();
 			}
 		});
+		this.itemViewPanelMaxWidth = load("style", "item_view_panel_max_width", this.itemViewPanelMaxWidth);
+		this.sidePanelMaxWidth = load("style", "side_panel_max_width", this.sidePanelMaxWidth);
+
 
 		if (ModCompat.JEI) {
 			this.jeiPanel = load("jei","panel", this.jeiPanel);
@@ -391,6 +396,8 @@ public class ClientConfig extends AbstractRrvConfig {
 		save("development", "show_exclusion_areas", this.showExclusionAreas);
 		save("advanced", "search_tooltips", this.searchTooltips);
 		save("advanced", "update_on_background_thread", this.updateOnBackgroundThread);
+		save("style", "item_view_panel_max_width", this.itemViewPanelMaxWidth);
+		save("style", "side_panel_max_width", this.sidePanelMaxWidth);
 
 		// remove deprecated config fields from v8.6.x and below
 		remove("enabled");
@@ -421,5 +428,21 @@ public class ClientConfig extends AbstractRrvConfig {
 
 	public void setUpdateOnBackgroundThread(boolean updateOnBackgroundThread) {
 		this.updateOnBackgroundThread = updateOnBackgroundThread;
+	}
+
+	public int getSidePanelMaxWidth() {
+		return sidePanelMaxWidth;
+	}
+
+	public void setSidePanelMaxWidth(int sidePanelMaxWidth) {
+		this.sidePanelMaxWidth = sidePanelMaxWidth;
+	}
+
+	public int getItemViewPanelMaxWidth() {
+		return itemViewPanelMaxWidth;
+	}
+
+	public void setItemViewPanelMaxWidth(int itemViewPanelMaxWidth) {
+		this.itemViewPanelMaxWidth = itemViewPanelMaxWidth;
 	}
 }

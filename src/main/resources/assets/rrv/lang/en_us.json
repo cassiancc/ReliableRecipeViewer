@@ -197,6 +197,12 @@
   "rrv.client_settings.local_fallback.enabled": "Enabled",
   "rrv.client_settings.local_fallback.when_needed": "When Needed",
   "rrv.client_settings.local_fallback.disabled": "Disabled",
+  "rrv.client_settings.item_view_max_width": "Item View Max Width",
+  "rrv.client_settings.unit.items": "%s items",
+  "rrv.client_settings.item_view_max_width.tooltip": "How wide (in items) can the item view panel (generally positioned right) can grow to. Dependent on GUI scale.",
+  "rrv.client_settings.side_panel_max_width": "Side Panel Max Width",
+  "rrv.client_settings.side_panel_max_width.tooltip": "How wide (in items) can the side panel (generally positioned left) can grow to. Dependent on GUI scale.",
+
   "rrv.client_settings.general": "General",
   "rrv.client_settings.advanced": "Advanced",
   "rrv.client_settings.style": "Style",

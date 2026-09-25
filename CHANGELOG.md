@@ -1,3 +1,8 @@
+## [8.10.6]
+
+### Fixed
+- Crash with Jade.
+
 ## [8.10.5]
 
 ### Added
