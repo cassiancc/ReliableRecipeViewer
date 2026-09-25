@@ -113,7 +113,6 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric-loader")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
     modCompileOnly("maven.modrinth:modmenu:${property("deps.modmenu")}")
-    modLocalRuntime("maven.modrinth:modmenu:${property("deps.modmenu")}")
 
     modCompileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
         exclude(group = "com.terraformersmc")
@@ -132,10 +131,7 @@ dependencies {
         exclude(group = "mcp.mobius.waila")
         exclude(group = "lol.bai")
     }
-    modLocalRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
-        exclude(group = "mcp.mobius.waila")
-        exclude(group = "lol.bai")
-    }
+
 
     if (stonecutter.eval(mcVersion, ">26")) {
         modCompileOnly("eu.pb4:polydex:${property("deps.polydex")}")
@@ -144,6 +140,12 @@ dependencies {
     }
 
     if (stonecutter.eval(mcVersion, "<26.3")) {
+        modLocalRuntime("maven.modrinth:modmenu:${property("deps.modmenu")}")
+        modLocalRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
+            exclude(group = "mcp.mobius.waila")
+            exclude(group = "lol.bai")
+        }
+
         modCompileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
         modLocalRuntime("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
 //        modLocalRuntime("eu.pb4:polydex:${property("deps.polydex")}")
