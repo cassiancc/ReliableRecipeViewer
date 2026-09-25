@@ -24,6 +24,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
@@ -339,11 +340,15 @@ public class ItemFilters {
     /// @return 0 means no match; 1 means first priority; 2 means second priority
     ///
     /// Used for correct listing of item stacks by match accuracy
-    protected static int getTooltipMatch(ItemStack stack, String query) {
+    private static int getTooltipMatch(ItemStack stack, String query) {
 
         List<Component> lore = RRVClientUtil.getTooltipFromItem(stack);
 
-        for (Component line : lore) {
+        return getListMatch(lore, query);
+    }
+
+    static int getListMatch(List<Component> list, String query) {
+        for (Component line : list) {
             Integer x = getMatch(query, line);
             if (x != null) return x;
         }
@@ -365,6 +370,11 @@ public class ItemFilters {
                     return getMatch(query, component);
                 }
             }
+        } else if (line.getContents() instanceof PlainTextContents.LiteralContents(String text)) {
+            if (text.startsWith(query))
+                return 1;
+            if (text.contains(query))
+                return 2;
         }
         return null;
     }

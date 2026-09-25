@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.overlay.OverlayView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.recipe.InternalRecipeManager;
+import cc.cassian.rrv.client.util.ExtendedTooltipFlag;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.RRVPlatform;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
@@ -341,10 +342,32 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         if (!this.itemFilterMode)
             return false;
 
+        var tooltipMatch = tooltipMatch(stack, ExtendedTooltipFlag.ADVANCED);
+
+        boolean prefixedFilter = false;
+
+        for (var filter : PrefixedFilter.values()) {
+            if (this.currentQuery.startsWith(filter.prefix())) {
+                prefixedFilter = true;
+                break;
+            }
+        }
+
+        if (!prefixedFilter)
+            return !tooltipMatch;
+
         Item item = stack.getItem();
 
-        return this.availableItems.stream().noneMatch(other -> other.getItem() == item)
-                && ItemFilters.getTooltipMatch(stack, this.currentQuery) == 0;
+        return this.availableItems.stream()
+                .noneMatch(other -> other.getItem() == item);
+    }
+
+    private boolean tooltipMatch(ItemStack stack, ExtendedTooltipFlag tooltipFlag) {
+        List<Component> lore = RRVClientUtil.getTooltipFromItem(Minecraft.getInstance(), stack, tooltipFlag);
+        lore.add(stack.getHoverName());
+        lore.add(stack.getItemName());
+
+        return ItemFilters.getListMatch(lore, this.currentQuery) != 0;
     }
 
     public void createSearchbarElement(InventoryPositionInfo info) {
