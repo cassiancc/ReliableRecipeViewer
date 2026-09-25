@@ -7,7 +7,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
-@Mixin(targets = "net.minecraft.world.item.alchemy.PotionBrewing")
+//~ if >26.2 'PotionBrewing'->'PotionContents'
+@Mixin(net.minecraft.world.item.alchemy.PotionBrewing.class)
 public interface PotionBrewingAccessor {
     //? if <26.3 {
 

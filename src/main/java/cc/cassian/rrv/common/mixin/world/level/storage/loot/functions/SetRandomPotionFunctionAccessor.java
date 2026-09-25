@@ -7,7 +7,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Optional;
 
-@Mixin(targets = "net.minecraft.world.level.storage.loot.functions.SetRandomPotionFunction")
+//~ if <26 'SetRandomPotionFunction'->'EnchantRandomlyFunction'
+@Mixin(net.minecraft.world.level.storage.loot.functions.SetRandomPotionFunction.class)
 public interface SetRandomPotionFunctionAccessor {
     @Accessor(value = "options")
     Optional<HolderSet<Potion>> getOptions();
