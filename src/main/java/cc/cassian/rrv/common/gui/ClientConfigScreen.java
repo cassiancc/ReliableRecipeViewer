@@ -279,7 +279,7 @@ public class ClientConfigScreen extends Screen {
     }
 
     private void addChild(GridLayout.RowHelper linearLayout, String key, int currentValue, CycleButton.OnValueChange<Integer> newValueSetter) {
-        CycleButton<Integer> widget = CycleButton.builder(c-> c == 0 ? Component.translatable("options.guiScale.auto") : Component.translatable("rrv.client_settings.unit.items", String.valueOf(c)), currentValue).withValues(0, 1, 2, 3, 4, 5, 6,7,8,9,10).create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter);
+        CycleButton<Integer> widget = CycleButton.builder(c-> c == 0 ? Component.translatable("options.guiScale.auto") : Component.translatable("rrv.client_settings.unit.items", String.valueOf(c)), currentValue).withValues(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15).create(0, 0, buttonWidth, 20, clientSetting(key), newValueSetter);
         addTooltip(key, widget);
         linearLayout.addChild(widget);
     }
