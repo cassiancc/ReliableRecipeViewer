@@ -97,10 +97,14 @@ public class RRVClientUtil {
         return getTooltipFromItem(Minecraft.getInstance(), itemStack);
     }
 
-
     /// Modified copy of [Screen#getTooltipFromItem] that supports extended tooltip flags.
     public static List<Component> getTooltipFromItem(final Minecraft minecraft, final ItemStack itemStack) {
         ExtendedTooltipFlag tooltipFlag = minecraft.options.advancedItemTooltips ? ExtendedTooltipFlag.ADVANCED : ExtendedTooltipFlag.NORMAL;
+        return getTooltipFromItem(minecraft, itemStack, tooltipFlag);
+    }
+
+    /// Modified copy of [Screen#getTooltipFromItem] that supports extended tooltip flags.
+    public static List<Component> getTooltipFromItem(final Minecraft minecraft, final ItemStack itemStack, final ExtendedTooltipFlag tooltipFlag) {
         return itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, tooltipFlag);
     }
 
