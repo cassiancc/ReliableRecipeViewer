@@ -65,12 +65,11 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
         slotDefinition.addItemSlot(0, 42, 80);
 
-        for (int row = 0; row < 6; row++) {
+        for (int row = 0; row < 6; row++) { // TODO: change this once tried out what amount would be nice. Also change getSlotCount
             for (int i = 0; i < 3; i++) {
-                slotDefinition.addItemSlot(row * 9 + i+1, i * 18 + 106, 9 + row * 18);
+                slotDefinition.addItemSlot(row * 3 + i+1, i * 18 + 106, 9 + row * 18);
             }
         }
-
     }
 
     @Override
