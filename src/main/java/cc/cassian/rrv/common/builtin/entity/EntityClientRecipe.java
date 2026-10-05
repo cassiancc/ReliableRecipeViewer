@@ -34,17 +34,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static cc.cassian.rrv.common.ReliableRecipeViewer.LOGGER;
 import static cc.cassian.rrv.common.recipe.ItemViewRecipes.MOB_FOOD;
 
 public class EntityClientRecipe implements ReliableClientRecipe {
     private static final Identifier FOOD_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/food_slot.png");
     private static final Identifier FOOD_EMPTY = Identifier.withDefaultNamespace("hud/food_empty");
     private static final Identifier FOOD_FULL = Identifier.withDefaultNamespace("hud/food_full");
+    private static final Identifier DROPS_SLOT = ReliableRecipeViewer.of("entity_drops_slot");
     private final EntityType<?> entityType;
     private final Identifier entityId;
     private final List<SlotContent> drops;
     private final Identifier fieldGuideSprite;
     private final boolean hasFieldGuideSprite;
+    private final int dropsRowCount;
 
     private LivingEntity previewEntity;
 
@@ -59,6 +62,8 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         List<SlotContent> drops = serverRecipe.getDrops();
         List<SlotContent> dropContents = new ArrayList<>();
 
+        if (drops.size() > this.getType().getSlotCount() - 1) LOGGER.warn("Entity {} drops more items than entity recipe can display ({}, max {}), extra will be hidden.", entityId, drops.size(), this.getType().getSlotCount() - 1);
+
         for (int i = 0; i < this.getType().getSlotCount(); i++) {
             if (drops.size() > i)
                 dropContents.add(drops.get(i));
@@ -67,6 +72,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         }
 
         this.drops = dropContents;
+        this.dropsRowCount = Math.clamp(Math.ceilDiv(drops.size(), 3), 3, 7);
 
         this.fieldGuideSprite = entityId.withPath("textures/fieldguide/entries/%s.png"::formatted);
         this.hasFieldGuideSprite = Minecraft.getInstance().getResourceManager().getResource(fieldGuideSprite).isPresent();
@@ -164,6 +170,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
         Component entityName = this.entityType.getDescription();
 
+        context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, DROPS_SLOT, 105, 8, 54, 18 * dropsRowCount);
         this.renderEntity(context);
 
 		this.hovered = context.mouseX() >= 5 && context.mouseX() < 5 + 64 && context.mouseY() >= 3 && context.mouseY() < 3 + 64;

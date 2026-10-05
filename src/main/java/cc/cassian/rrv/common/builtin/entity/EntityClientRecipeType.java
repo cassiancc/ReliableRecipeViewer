@@ -53,10 +53,9 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
         return BACKGROUND;
     }
 
-    //Mob loot should not exceed 54 slots
     @Override
     public int getSlotCount() {
-        return 55;
+        return 22; // Food slot and 21 (3x7) drops slots
     }
 
     @Override
@@ -65,7 +64,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
 
         slotDefinition.addItemSlot(0, 42, 80);
 
-        for (int row = 0; row < 6; row++) { // TODO: change this once tried out what amount would be nice. Also change getSlotCount
+        for (int row = 0; row < 7; row++) {
             for (int i = 0; i < 3; i++) {
                 slotDefinition.addItemSlot(row * 3 + i+1, i * 18 + 106, 9 + row * 18);
             }
