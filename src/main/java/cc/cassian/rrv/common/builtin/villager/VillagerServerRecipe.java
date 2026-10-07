@@ -457,10 +457,10 @@ public class VillagerServerRecipe implements ReliableServerRecipe {
 							if (accessor.add()) {
 								accessor.enchantments()
 										.forEach(
-												(enchantment, levelProvider) -> enchantments.set(enchantment, Mth.clamp(enchantments.getLevel(enchantment) + getMinMax(levelProvider).getAverage(), 0, 255))
+												(enchantment, levelProvider) -> enchantments.set(enchantment, Math.clamp(enchantments.getLevel(enchantment) + getMinMax(levelProvider).getAverage(), 0, 255))
 										);
 							} else {
-								accessor.enchantments().forEach((enchantment, levelProvider) -> enchantments.set(enchantment, Mth.clamp(getMinMax(levelProvider).min(), 0, 255)));
+								accessor.enchantments().forEach((enchantment, levelProvider) -> enchantments.set(enchantment, Math.clamp(getMinMax(levelProvider).min(), 0, 255)));
 							}
 						}
 				);

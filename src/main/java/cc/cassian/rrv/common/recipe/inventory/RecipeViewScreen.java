@@ -554,10 +554,10 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         } else if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER) && workstationSlot != null && workstationSlot.isHovered()) {
             int max = menu.getCraftReferences().size() - 1;
             if (scrollY < 0)
-                menu.setCurrentCraftReference(Mth.clamp(menu.getCurrentCraftReference()+1, 0, max));
+                menu.setCurrentCraftReference(Math.clamp(menu.getCurrentCraftReference()+1, 0, max));
 
             if (scrollY > 0)
-                menu.setCurrentCraftReference(Mth.clamp(menu.getCurrentCraftReference()-1, 0, max));
+                menu.setCurrentCraftReference(Math.clamp(menu.getCurrentCraftReference()-1, 0, max));
 
             return true;
         }

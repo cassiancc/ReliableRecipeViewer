@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 
 import java.util.Locale;
 
@@ -60,9 +61,22 @@ public class SidePanelButton extends ReliableSpriteIconButton {
         return Component.translatable("rrv.side_panel.btn", Component.translatable("rrv.client_settings.sidepanel." + Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase(Locale.ROOT)));
     }
 
+    //? if <26.4 {
     @Override
     //~ if >26 'render'-> 'extract'
     protected void extractSprite(final GuiGraphicsExtractor graphics, final int x, final int y) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("side_panel_"+ Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase(Locale.ROOT)), x, y, this.spriteWidth, this.spriteHeight, this.alpha);
     }
+    //?} else {
+
+    /*@Override
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        if (isHoveredOrFocused()) {
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.enabledFocused(), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
+        } else {
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.enabled(), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
+        }
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ReliableRecipeViewer.of("side_panel_"+ Configs.CLIENT_SETTINGS.getSidePanel().name().toLowerCase(Locale.ROOT)), getX(), getY(), getWidth(), getHeight(), this.alpha);
+    }
+    *///?}
 }
