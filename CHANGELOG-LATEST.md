@@ -1,9 +1,7 @@
 ### Added
-- Recipe sharing server config is now synced to the client.
+- Mob drops page is now paginated (thanks @OffsetMonkey538).
+- Support for 26.4-snapshot-4.
 
 ### Fixed
-- Incorrect default binding for back/forward mouse buttons.
-- Block transformer recipes not loading correctly.
-- Crash with newer builds of NeoForge 26.3.
-- Filtering items with tooltips (thanks @Maganoos!)
-- Log spam on NeoForge from duplicated recipes.
+- Crash when a Villager type is added without trades.
+- Crash on NeoForge when `getCreatorModId` returns `null`.

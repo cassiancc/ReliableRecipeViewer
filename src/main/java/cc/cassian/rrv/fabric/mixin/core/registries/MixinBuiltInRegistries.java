@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinBuiltInRegistries {
 
 
+    //~ if >26.3 'Lnet/minecraft/core/registries/BuiltInRegistries;createContents()V'->'Lnet/minecraft/core/registries/BuiltinRegistryBuilder;bootStrap()V'
     @Inject(method = "bootStrap", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/registries/BuiltInRegistries;createContents()V", shift = At.Shift.AFTER))
     private static void injectFluidItems(CallbackInfo ci) {
         FabricEntrypoint.buildFluidItems();
