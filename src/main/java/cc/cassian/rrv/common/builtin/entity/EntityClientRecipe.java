@@ -80,11 +80,11 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
         this.prevPageButton = new ReliableSpriteIconButton(12, Component.translatable("rrv.previous_page"), 8, LEFT_ARROW, LEFT_ARROW, LEFT_ARROW_DISABLED, _ -> onPageChangeButtonPressed(-1));
         this.prevPageButton.active = false;
-        this.prevPageButton.visible = dropsPages != 1;
+        this.prevPageButton.visible = dropsPages > 1;
 
         this.nextPageButton = new ReliableSpriteIconButton(12, Component.translatable("rrv.next_page"), 8, RIGHT_ARROW, RIGHT_ARROW, RIGHT_ARROW_DISABLED, _ -> onPageChangeButtonPressed(1));
         this.nextPageButton.active = true;
-        this.nextPageButton.visible = dropsPages != 1;
+        this.nextPageButton.visible = dropsPages > 1;
 
         this.fieldGuideSprite = entityId.withPath("textures/fieldguide/entries/%s.png"::formatted);
         this.hasFieldGuideSprite = Minecraft.getInstance().getResourceManager().getResource(fieldGuideSprite).isPresent();
@@ -197,7 +197,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
         context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, DROPS_SLOT, 105, 3, 54, 18 * dropsRows);
 
-        if (this.dropsPages != 1) {
+        if (this.dropsPages > 1) {
             final Font font = Minecraft.getInstance().font;
             final String text = this.currentDropsPage + 1 + "/" + this.dropsPages;
             context.guiGraphics().text(font, text, 132 - font.width(text) / 2, 136 - font.lineHeight / 2, 0xFF404040, false);
