@@ -18,6 +18,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -143,6 +144,11 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         /// General constructor.
         public Builder(Identifier id) {
             this.id = id;
+        }
+
+        public Builder(Identifier id, Recipe<?> recipe) {
+            this(id, recipe.placementInfo().ingredients().stream().map(SlotContent::of).toList());
+            this.setResult(SlotContent.of(recipe.display().getFirst().result()));
         }
 
         /// Constructor for shapeless recipes.
