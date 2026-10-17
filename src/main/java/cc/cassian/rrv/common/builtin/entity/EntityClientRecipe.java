@@ -168,7 +168,11 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         if (level == null)
             return;
 
+        //? if >26.1 {
+        /*Entity entity = this.getEntityType().create(level, new EntitySpawnRequest(EntitySpawnReason.LOAD, true));
+         *///?} else {
         Entity entity = this.getEntityType().create(level, EntitySpawnReason.LOAD);
+        //?}
         if (entity instanceof LivingEntity livingEntity) {
             this.previewEntity = livingEntity;
             this.previewEntity.setYBodyRot(30.0F);
