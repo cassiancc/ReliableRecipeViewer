@@ -1,7 +1,6 @@
 ### Added
-- Mob drops page is now paginated (thanks @OffsetMonkey538).
-- Support for 26.4-snapshot-4.
+- Helper method in crafting recipe builder that creates a display from a `RecipeDisplay` and `PlacementInfo`.
 
 ### Fixed
-- Crash when a Villager type is added without trades.
-- Crash on NeoForge when `getCreatorModId` returns `null`.
+- Entity recipes not working correctly in Peaceful (thanks @OffsetMonkey538!)
+- Entity recipes showing pagination when page count is 0 (thanks @OffsetMonkey538!)
