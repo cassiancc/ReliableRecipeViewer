@@ -11,6 +11,7 @@ import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import com.google.common.collect.LinkedHashMultimap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -110,7 +111,10 @@ public class ItemViewRecipes {
      * @return The corresponding item to a fluid
      */
     public Item itemForFluid(Fluid fluid) {
+        //? fabric
         return this.fluidItemMap.getOrDefault(fluid, Items.AIR);
+        //? neoforge
+        //return BuiltInRegistries.ITEM.getValue(BuiltInRegistries.FLUID.getKey(fluid));
     }
 
     /// @return Whether any of the provided [SlotContent]s contain an [ItemStack] matching the components of the given stack

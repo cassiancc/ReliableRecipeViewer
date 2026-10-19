@@ -1,6 +1,6 @@
 ### Added
-- Helper method in crafting recipe builder that creates a display from a `RecipeDisplay` and `PlacementInfo`.
+- Utility methods on `RecipeScreenContext` for rendering tooltips.
 
 ### Fixed
-- Entity recipes not working correctly in Peaceful (thanks @OffsetMonkey538!)
-- Entity recipes showing pagination when page count is 0 (thanks @OffsetMonkey538!)
+- On NeoForge, fluid item names are now pulled from fluid types.
+- On NeoForge, some recipes involving fluid items not working correctly.

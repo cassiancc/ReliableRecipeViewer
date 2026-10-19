@@ -324,7 +324,7 @@ public class SlotContent {
 
     public static SlotContent of(FluidStack fluidStack) {
         if (fluidStack == null) return SlotContent.of();
-        return new SlotContent(List.of(fluidStack.createItemStack()));
+        return SlotContent.of(fluidStack.createItemStack());
     }
 
     public static SlotContent ofFluidList(List<FluidStack> fluidStacks) {

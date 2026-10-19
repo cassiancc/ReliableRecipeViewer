@@ -43,7 +43,7 @@ public class FluidItem extends BlockItem {
         //? fabric
         return FluidVariantAttributes.getName(FluidStack.fromItemStack(itemStack).toFluidVariant());
         //? neoforge
-        //return super.getName(itemStack);
+        //return fluid.getFluidType().getDescription(FluidStack.fromItemStack(itemStack).toLoaderFluidStack());
     }
 
     @Override
