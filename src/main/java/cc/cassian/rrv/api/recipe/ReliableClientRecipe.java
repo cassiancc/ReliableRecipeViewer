@@ -47,8 +47,8 @@ public interface ReliableClientRecipe {
             }
     );
 
-    //? if <26.3 {
-    /// Renamed to [ReliableClientRecipe#getType()] in 8.0.0. Removed in 26.3, and removal will be backported when possible.
+    //? if <26.2 {
+    /// Renamed to [ReliableClientRecipe#getType()] in 8.0.0. Removed in 26.2, and removal will be backported when possible.
     /// @return The client recipe type of this recipe
     @Deprecated(since = "8.0.0", forRemoval = true)
     default ReliableClientRecipeType getViewType() {

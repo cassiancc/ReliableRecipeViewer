@@ -34,6 +34,7 @@ public class UpgradingClientRecipeType implements ReliableClientRecipeType {
         return Identifier.fromNamespaceAndPath("example-mod", "textures/gui/type/upgrading.png"); // The background texture of your recipe.
     }
 
+	/// Optional on 8.11.0 and above.
     @Override
     public int getSlotCount() {
         return 3; //The amount of slots required to show a single recipe of this type - this includes two inputs and a result.

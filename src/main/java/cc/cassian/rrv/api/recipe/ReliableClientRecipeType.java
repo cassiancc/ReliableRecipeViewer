@@ -1,8 +1,11 @@
 package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.overlay.ButtonData;
+import cc.cassian.rrv.api.util.SlotCountDefinition;
+import cc.cassian.rrv.common.recipe.inventory.RecipeSlot;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
+import cc.cassian.rrv.common.recipe.inventory.SlotPlacement;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -11,6 +14,7 @@ import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Client-Side representation of a recipe type
@@ -38,11 +42,6 @@ public interface ReliableClientRecipeType {
         @Override
         public Identifier getGuiTexture() {
             return null;
-        }
-
-        @Override
-        public int getSlotCount() {
-            return 0;
         }
 
         @Override
@@ -97,13 +96,18 @@ public interface ReliableClientRecipeType {
         return true;
     }
 
-    /**
-     *
-     * @return The number of slots <b>one</b> recipe requires for display
-     */
-    int getSlotCount();
+	/**
+	 *
+	 * @return The number of slots <b>one</b> recipe requires for display.
+     * Not necessary to override since 8.11.0 as it can be calculated automatically from {@link #placeSlots(RecipeViewMenu.SlotDefinition)}.
+	 */
+	default int getSlotCount() {
+        SlotCountDefinition slotDefinition = new SlotCountDefinition();
+        placeSlots(slotDefinition);
+        return slotDefinition.getSlotCount();
+	}
 
-    /**
+	/**
      * Place the slots of the recipe's type in the gui
      *
      * @param slotDefinition An empty SlotDefinition
