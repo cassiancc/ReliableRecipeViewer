@@ -165,29 +165,12 @@ dependencies {
 
 stonecutter {
     replacements.string {
+        direction = eval(current.version, ">26.3")
+        replace("net.minecraft.client.renderer.RenderPipelines", "net.minecraft.client.renderer.pipeline.RenderPipelines")
+    }
+    replacements.string {
         direction = eval(current.version, ">26.1")
         replace("EntityType.", "EntityTypes.")
-    }
-    replacements.string {
-        direction = eval(current.version, ">=26.1")
-        replace("GuiGraphics ", "GuiGraphicsExtractor ")
-        replace("GuiGraphics.", "GuiGraphicsExtractor.")
-        replace("GuiGraphics;", "GuiGraphicsExtractor;")
-    }
-    replacements.string {
-        direction = eval(current.version, "<26.1")
-        replace(".fakeItem(", ".renderFakeItem(")
-        replace(".itemDecorations(", ".renderItemDecorations(")
-        replace(".horizontalLine(", ".hLine(")
-        replace(".verticalLine(", ".vLine(")
-        replace("guiGraphics.text(", "guiGraphics.drawString(")
-        replace("guiGraphics().text(", "guiGraphics().drawString(")
-        replace("guiGraphics.textWithWordWrap(", "guiGraphics.drawWordWrap(")
-        replace("guiGraphics().textWithWordWrap(", "guiGraphics().drawWordWrap(")
-        replace("net.minecraft.world.item.ItemStackTemplate", "cc.cassian.rrv.backport.ItemStackTemplate")
-        replace("extractBackground", "renderBackground")
-        replace("net.fabricmc.fabric.api.networking.v1.context.PacketContext", "xyz.nucleoid.packettweaker.PacketContext")
-        replace("centeredText", "drawCenteredString")
     }
 }
 

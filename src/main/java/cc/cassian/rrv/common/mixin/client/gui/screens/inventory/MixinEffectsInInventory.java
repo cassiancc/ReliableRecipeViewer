@@ -37,7 +37,10 @@ public abstract class MixinEffectsInInventory {
 
     //~ if >26 'render'->'extractRenderState'
     @Inject(method = "extractRenderState", at = @At("HEAD"))
-    private void injectBlocking$0(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci){
+    private void injectBlocking$0(GuiGraphicsExtractor graphics,
+                                  //? if <26.4
+                                  int mouseX, int mouseY,
+                                  CallbackInfo ci){
 
         List<Identifier> effectsToRemove = new ArrayList<>();
         for(BlockingGuiComponent guiBlock : OverlayManager.INSTANCE.exclusionAreas()){

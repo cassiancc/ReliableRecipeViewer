@@ -50,8 +50,14 @@ public class ClientConfigScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractBackground(graphics, mouseX, mouseY, a);
+    public void extractBackground(GuiGraphicsExtractor graphics
+                              //? if <26.4
+            , int mouseX, int mouseY, float a
+    ) {
+        super.extractBackground(graphics
+                //? if <26.4
+                , mouseX, mouseY, a
+        );
         extractListBackground(graphics);
         extractListSeparators(graphics);
     }

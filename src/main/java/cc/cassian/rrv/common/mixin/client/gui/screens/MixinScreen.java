@@ -31,7 +31,10 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
 
 	//~ if >26 'render'->'extractRenderState'
     @Inject(method = "extractRenderState", at = @At("RETURN"))
-    private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics, int i, int j, float f, CallbackInfo ci){
+    private void extractRenderStateRecipeProgress(GuiGraphicsExtractor guiGraphics,
+		  	//? if <26.4
+			int i, int j, float f,
+												  CallbackInfo ci){
         String statusMsg = ClientRecipeManager.INSTANCE.status().get();
 
         if(!ClientRecipeManager.INSTANCE.status().isIdle()) {
@@ -40,9 +43,17 @@ public abstract class MixinScreen extends AbstractContainerEventHandler implemen
     }
 
 	@Inject(method = "extractBackground", at = @At("RETURN"))
-	private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+	private void injectOverlayBackground(GuiGraphicsExtractor guiGraphics,
+										 //? if <26.4
+										 int mouseX, int mouseY, float partialTicks,
+										 CallbackInfo ci) {
 		Screen screen = (Screen) (Object) this;
 		if (screen instanceof RRVExtendedContainerScreen) {
+			//? if >26.3 {
+			/*var mouseX = guiGraphics.mouseX();
+			var mouseY = guiGraphics.mouseY();
+			var partialTicks = guiGraphics.partialTicks();
+			*///?}
 			OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}

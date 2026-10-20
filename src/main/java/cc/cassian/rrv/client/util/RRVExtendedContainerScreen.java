@@ -43,6 +43,12 @@ public interface RRVExtendedContainerScreen {
 
 	}
 
+	//? if >26.3 {
+	/*static void extractOverlay(AbstractRrvOverlay.InventoryPositionInfo info, GuiGraphicsExtractor guiGraphics) {
+		extractOverlay(info, guiGraphics, guiGraphics.mouseX(), guiGraphics.mouseY(), guiGraphics.partialTicks());
+	}
+	*///?}
+
 	static void extractOverlay(AbstractRrvOverlay.InventoryPositionInfo info, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(
 				RRVClientUtil.CONTAINER,

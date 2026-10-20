@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
+import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
@@ -814,6 +815,9 @@ public class RecipeViewMenu {
 
             imageheightRequired = (technicallyFitting * recipeHeight) + (technicallyFitting * BUFFER_ZONE + TOP_SPACE + BOTTOM_SPACE);
         }
+
+        if (technicallyFitting == 0)
+            return 1;
 
         return technicallyFitting;
     }

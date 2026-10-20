@@ -74,10 +74,16 @@ public abstract class MixinAbstractContainerScreen extends Screen
     //~ if >26 'render' ->'extract' {
     @Inject(method = "extractContents", at = @At("TAIL"))
     //~}
-    private void injectOverlay$1(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    private void injectOverlay$1(GuiGraphicsExtractor guiGraphics,
+                                 //? if <26.4
+                                 int mouseX, int mouseY, float partialTicks,
+                                 CallbackInfo ci) {
         if (minecraft == null) return;
         AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo((AbstractContainerScreen<? extends AbstractContainerMenu>) (Object) this, this.width, this.height, this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
-        RRVExtendedContainerScreen.extractOverlay(info, guiGraphics, mouseX, mouseY, partialTicks);
+        RRVExtendedContainerScreen.extractOverlay(info, guiGraphics
+                //? if <26.4
+                , mouseX, mouseY, partialTicks
+        );
     }
 
     @Inject(method = "mouseScrolled", at = @At("TAIL"), cancellable = true)

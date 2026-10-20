@@ -208,11 +208,6 @@ public class BuiltInReliableRecipeViewerIntegration implements ReliableRecipeVie
 
                         if (listing instanceof VillagerTrades.TypeSpecificTrade typeSpecificTrade)
                             recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(VillagerServerRecipe.VillagerOfferType.TYPE_SPECIFIC, typeSpecificTrade)));
-
-                        //? neoforge {
-                        /^if (listing instanceof net.neoforged.neoforge.common.BasicItemListing basicItemListing)
-                            recipeList.add(new VillagerServerRecipe(profession, professionLevel, new VillagerServerRecipe.VillagerDataObject<>(cc.cassian.rrv.backport.BackportNeoForgeUtil.NEOFORGE_BASIC, basicItemListing)));
-                        ^///?}
                     });
                 });
 

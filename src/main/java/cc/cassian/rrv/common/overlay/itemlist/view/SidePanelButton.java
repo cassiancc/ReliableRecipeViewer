@@ -70,7 +70,10 @@ public class SidePanelButton extends ReliableSpriteIconButton {
     //?} else {
 
     /*@Override
-    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    public void extractContents(GuiGraphicsExtractor graphics
+            //? if <26.4
+            , int mouseX, int mouseY, float a
+    ) {
         if (isHoveredOrFocused()) {
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.enabledFocused(), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
         } else {

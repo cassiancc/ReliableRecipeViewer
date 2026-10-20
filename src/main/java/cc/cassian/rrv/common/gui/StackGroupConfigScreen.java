@@ -128,11 +128,19 @@ public class StackGroupConfigScreen extends ClientConfigScreen {
         this.rebuildWidgets();
     }
 
-    //~ if >26 'render'->'extractRenderState' {
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-    //~}
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics
+           //? if <26.4
+            , int mouseX, int mouseY, float partialTick
+    ) {
+        super.extractRenderState(guiGraphics
+                //? if <26.4
+                , mouseX, mouseY, partialTick
+        );
+        //? if >26.3 {
+        /*var mouseX = guiGraphics.mouseX();
+        var mouseY = guiGraphics.mouseY();
+        *///?}
         if (expandedWidget != null) {
             guiGraphics.nextStratum();
             boolean clipped = scrollArea != null;

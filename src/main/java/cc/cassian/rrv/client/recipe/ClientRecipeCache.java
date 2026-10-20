@@ -1,5 +1,6 @@
 package cc.cassian.rrv.client.recipe;
 
+import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableServerRecipeType;
@@ -30,6 +31,7 @@ public class ClientRecipeCache {
 
     private final HashMap<Identifier, List<Identifier>> multiRecipeMap;
     private final HashMap<Identifier, ReliableClientRecipe> recipeMap;
+    private final HashMap<Identifier, ReliableClientRecipeType> recipeTypeMap;
     private final HashMap<Identifier, Identifier> clientEntryMap;
     private final HashMap<Item, List<Identifier>> byItemIngredient, byItemResult;
 
@@ -47,6 +49,7 @@ public class ClientRecipeCache {
 
         this.multiRecipeMap = new LinkedHashMap<>();
         this.recipeMap = new HashMap<>();
+        this.recipeTypeMap = new LinkedHashMap<>();
         this.byItemIngredient = new HashMap<>();
         this.byItemResult = new HashMap<>();
 
@@ -106,6 +109,10 @@ public class ClientRecipeCache {
         return List.copyOf(recipeMap.values()).stream().filter(this::enabled).toList();
     }
 
+    public List<ReliableClientRecipeType> getRecipeTypes() {
+        return List.copyOf(recipeTypeMap.values()).stream().filter(this::enabled).toList();
+    }
+
 
     public List<ReliableClientRecipe> getRecipesForCraftingInput(ItemStack inputStack) {
         List<ReliableClientRecipe> recipes = new ArrayList<>();
@@ -122,7 +129,11 @@ public class ClientRecipeCache {
     }
 
     private boolean enabled(ReliableClientRecipe clientRecipe) {
-        return Configs.CATEGORIES.enabled(clientRecipe.getType());
+        return enabled(clientRecipe.getType());
+    }
+
+    private boolean enabled(ReliableClientRecipeType clientRecipe) {
+        return Configs.CATEGORIES.enabled(clientRecipe);
     }
 
     public List<ReliableClientRecipe> getRecipesForCraftingOutput(ItemStack outputStack) {
@@ -222,6 +233,9 @@ public class ClientRecipeCache {
         if (fromNewSystem)
             this.clientEntryMap.put(uniqueId, modEntryId);
         this.recipeMap.put(uniqueId, wrapped);
+        if (!this.recipeTypeMap.containsKey(wrapped.getType().getId())) {
+            this.recipeTypeMap.put(wrapped.getType().getId(), wrapped.getType());
+        }
 
         // populate ingredient map with ingredients and workstations
         wrapped.getIngredients().forEach(ingredient -> ingredient.getValidContents().forEach(stack -> {
@@ -265,5 +279,6 @@ public class ClientRecipeCache {
 
             this.byItemResult.forEach((item, identifiers) -> identifiers.remove(id));
         });
+        this.recipeTypeMap.clear();
     }
 }

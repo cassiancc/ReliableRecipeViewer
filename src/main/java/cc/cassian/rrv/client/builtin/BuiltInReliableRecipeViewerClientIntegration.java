@@ -508,8 +508,12 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 
         BuiltInRegistries.ITEM.entrySet().forEach(itemEntry -> {
             if (itemEntry.getValue() instanceof FluidItem fluidItem) {
-                Item bucket = fluidItem.getFluid().getBucket();
-                if (bucket == null || bucket.getDefaultInstance().isEmpty()) return;
+				//? if >26.3 {
+				/*var bucket = BuiltInRegistries.ITEM.get(fluidItem.getFluid().getBucket()).map(Holder::value).orElse(Items.AIR);
+				*///?} else {
+				var bucket = fluidItem.getFluid().getBucket();
+				//?}
+				if (bucket == null || bucket.getDefaultInstance().isEmpty()) return;
 				//~ if >26 'ItemStack'->'ItemStackTemplate'
                 worldInteractionRecipes.add(new WorldInteractionClientRecipe(itemEntry.getKey().identifier().withPath("/world_interaction/%s_bucketing"::formatted), SlotContent.of(new FluidStack(fluidItem.getFluid())), SlotContent.of(Optional.ofNullable(bucket.getCraftingRemainder()).orElse(new ItemStackTemplate(Items.BUCKET))), SlotContent.of(bucket)));
             }

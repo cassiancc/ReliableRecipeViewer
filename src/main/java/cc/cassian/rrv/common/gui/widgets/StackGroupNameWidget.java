@@ -179,8 +179,14 @@ public class StackGroupNameWidget extends AbstractWidget {
     }
 
     @Override
-    //~ if >26 'renderWidget'-> 'extractWidgetRenderState'
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics
+            //? if <26.4
+            , int mouseX, int mouseY, float partialTick
+    ) {
+        //? if >26.3 {
+        /*var mouseX = guiGraphics.mouseX();
+        var mouseY = guiGraphics.mouseY();
+        *///?}
         isTitleHovered = titleContains(mouseX, mouseY);
 
         int color = 0xFFFFFFFF;

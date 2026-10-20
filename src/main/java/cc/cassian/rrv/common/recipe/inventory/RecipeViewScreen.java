@@ -405,12 +405,20 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         guiGraphics.text(this.font, this.guiTitle, this.titleLabelX, this.titleLabelY, color, false);
     }
 
-    //~ if >26 'render'->'extractRenderState' {
     @Override
-    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-    //~}
-    //~ if >26 'render'->'extract'
+    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics
+           //? if <26.4
+            , int mouseX, int mouseY, float partialTicks
+    ) {
+        super.extractRenderState(guiGraphics
+                //? if <26.4
+                , mouseX, mouseY, partialTicks
+        );
+        //? if >26.3 {
+        /*var mouseX = guiGraphics.mouseX();
+        var mouseY = guiGraphics.mouseY();
+        var partialTicks = guiGraphics.partialTicks();
+        *///?}
         this.extractContents(guiGraphics, mouseX, mouseY, partialTicks);
         this.extractTooltip(guiGraphics, mouseX, mouseY);
         if (isHoveringOverTitle(mouseX, mouseY)) {
@@ -438,7 +446,10 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
         int xo = this.leftPos;
         int yo = this.topPos;
         //~ if >26 'render(' ->'extractRenderState('
-        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(graphics
+                //? if <26.4
+                , mouseX, mouseY, partialTicks
+        );
         graphics.pose().pushMatrix();
         graphics.pose().translate((float)xo, (float)yo);
         this.extractLabels(graphics, mouseX, mouseY);
@@ -760,8 +771,19 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     }
 
     @Override
-    public void extractBackground(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
+    public void extractBackground(@NonNull GuiGraphicsExtractor guiGraphics
+              //? if <26.4
+            , int mouseX, int mouseY, float partialTicks
+    ) {
+        super.extractBackground(guiGraphics
+                //? if <26.4
+                , mouseX, mouseY, partialTicks
+        );
+        //? if >26.3 {
+        /*var mouseX = guiGraphics.mouseX();
+        var mouseY = guiGraphics.mouseY();
+        var partialTicks = guiGraphics.partialTicks();
+        *///?}
 
         // render deselected icons
         renderRecipeTypeButtons(guiGraphics, mouseX, mouseY, partialTicks, false);

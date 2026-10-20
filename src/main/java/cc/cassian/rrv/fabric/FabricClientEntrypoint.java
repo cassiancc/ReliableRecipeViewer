@@ -66,11 +66,23 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (screen instanceof RRVExtendedContainerScreen) {
-                ScreenEvents.afterBackground(screen).register((screen2, guiGraphics, mouseX, mouseY, partialTicks)->{
-                    OverlayManager.INSTANCE.renderAllBackground(guiGraphics, mouseX, mouseY, partialTicks);
+                ScreenEvents.afterBackground(screen).register((screen2, guiGraphics
+                       //? if <26.4
+                        , mouseX, mouseY, partialTicks
+                )->{
+                    OverlayManager.INSTANCE.renderAllBackground(guiGraphics
+                            //? if <26.4
+                            , mouseX, mouseY, partialTicks
+                    );
                 });
                 //~ if <26 'Extract'->'Render'
-                ScreenEvents.beforeExtract(screen).register((screen2, guiGraphics, mouseX, mouseY, partialTicks)->{
+                ScreenEvents.beforeExtract(screen).register((screen2, guiGraphics
+                         //? if <26.4
+                        , mouseX, mouseY, partialTicks
+                )->{
+                    //? if >26.3 {
+                    /*var partialTicks = guiGraphics.partialTicks();
+                    *///?}
                     OverlayManager.EXCLUSION_AREA_EVENTS.forEach(event-> event.addExclusionAreas(screen2, OverlayManager.INSTANCE, partialTicks));
                 });
             }

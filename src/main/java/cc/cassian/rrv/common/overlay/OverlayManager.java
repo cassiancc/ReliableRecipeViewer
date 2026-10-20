@@ -222,6 +222,12 @@ public class OverlayManager implements ExclusionAreaManager {
         return b;
     }
 
+    //? if >26.3 {
+    /*public void renderAllBackground(GuiGraphicsExtractor guiGraphics) {
+        renderAllBackground(guiGraphics, guiGraphics.mouseX(), guiGraphics.mouseY(), guiGraphics.partialTicks());
+    }
+    *///?}
+
 
     public void renderAllBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (Configs.CLIENT_SETTINGS.drawBackground())

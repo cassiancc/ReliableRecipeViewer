@@ -1,10 +1,8 @@
 ### Added
-- Utility methods on `RecipeScreenContext` for rendering tooltips.
-- `ReliableClientRecipeType#getSlotCount` is now calculated automatically, and no longer needs to be overridden.
+- Support for 26.4-snapshot-5.
 
 ### Changed
-- Backported removal of `ReliableClientRecipe#getViewType` to 26.2.
+- Recipe menu will now always show at least one recipe regardless of space.
 
-### Fixed
-- On NeoForge, fluid item names are now pulled from fluid types.
-- On NeoForge, some recipes involving fluid items not working correctly.
+### Removed
+- All support for 1.21.11.
