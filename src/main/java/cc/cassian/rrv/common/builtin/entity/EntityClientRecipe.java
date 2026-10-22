@@ -22,26 +22,34 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.AABB;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static cc.cassian.rrv.common.recipe.ItemViewRecipes.MOB_FOOD;
 
 public class EntityClientRecipe implements ReliableClientRecipe {
-    private static final Identifier FOOD_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/food_slot.png");
+    private static final Identifier WIDE_SLOT_TEXTURE = ReliableRecipeViewer.of("textures/gui/wide_slot.png");
     private static final Identifier FOOD_EMPTY = Identifier.withDefaultNamespace("hud/food_empty");
     private static final Identifier FOOD_FULL = Identifier.withDefaultNamespace("hud/food_full");
     private static final Identifier DROPS_SLOT = ReliableRecipeViewer.of("entity_drops_slot");
@@ -49,6 +57,11 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     private static final Identifier LEFT_ARROW_DISABLED = ReliableRecipeViewer.of("arrow/left_disabled");
     private static final Identifier RIGHT_ARROW = ReliableRecipeViewer.of("arrow/right");
     private static final Identifier RIGHT_ARROW_DISABLED = ReliableRecipeViewer.of("arrow/right_disabled");
+    private static final Rect2i FOOD_BOUNDING_BOX = new Rect2i(9, 79, 58, 18);
+    private static final Rect2i DROPS_BOUNDING_BOX = new Rect2i(72, 19, 30, 30);
+    private static final Rect2i ENTITY_BOUNDING_BOX = new Rect2i(5, 3, 64, 64);
+    private static final Rect2i BIOME_BOUNDING_BOX = new Rect2i(9, 97, 58, 18);
+    private static final Rect2i BIOME_BOUNDING_BOX_ALT = new Rect2i(9, 97, 58, 18);
     private final EntityType<?> entityType;
     private final Identifier entityId;
     private final List<SlotContent> drops;
@@ -58,13 +71,17 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     private final int dropsPages;
     private final ReliableSpriteIconButton nextPageButton;
     private final ReliableSpriteIconButton prevPageButton;
+    private final ArrayList<Identifier> biomes;
 
     private LivingEntity previewEntity;
 
     private int currentDropsPage = 0;
     private int animationTick = 0;
+    private int biomeTick = 0;
     private boolean hovered = false;
     private boolean renderingFood = false;
+    private int biomeIndex = 0;
+    public static Identifier UNDEFINED = Identifier.fromNamespaceAndPath("immersiveoverlays", "textures/immersiveoverlays/undefined.png");
 
     public EntityClientRecipe(EntityServerRecipe serverRecipe) {
         this.entityType = serverRecipe.getEntityType();
@@ -90,6 +107,17 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
         this.fieldGuideSprite = entityId.withPath("textures/fieldguide/entries/%s.png"::formatted);
         this.hasFieldGuideSprite = Minecraft.getInstance().getResourceManager().getResource(fieldGuideSprite).isPresent();
+        this.biomes = new ArrayList<>();
+        if (RRVPlatform.INSTANCE.isModLoaded("immersiveoverlays")) {
+            for (Map.Entry<ResourceKey<Biome>, Biome> biomeEntry : Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).entrySet()) {
+                Biome biome = biomeEntry.getValue();
+                biome.getMobSettings().getMobs(entityType.getCategory()).unwrap().forEach(spawnerDataWeighted -> {
+                    if (spawnerDataWeighted.value().type().equals(entityType)) {
+                        biomes.add(biomeEntry.getKey().identifier());
+                    }
+                });
+            }
+        }
     }
 
     private void onPageChangeButtonPressed(final int offset) {
@@ -161,6 +189,15 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         this.animationTick++;
         if (this.animationTick >= 360)
             this.animationTick = 0;
+        this.biomeTick++;
+        if (this.biomeTick > 32 && !this.biomes.isEmpty()) {
+			if (this.biomes.size()-1 > this.biomeIndex + 1) {
+				this.biomeIndex++;
+			} else {
+				this.biomeIndex = 0;
+			}
+			this.biomeTick = 0;
+        }
     }
 
     @Override
@@ -211,10 +248,8 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
         this.renderEntity(context);
 
-		this.hovered = context.mouseX() >= 5 && context.mouseX() < 5 + 64 && context.mouseY() >= 3 && context.mouseY() < 3 + 64;
+        this.hovered = ENTITY_BOUNDING_BOX.contains(context.mouseX(), context.mouseY());
 
-        int xo = context.recipePosition().left() + context.mouseX();
-        int yo = context.recipePosition().top() + context.mouseY();
         if (this.hovered) {
             var tooltip = new  ArrayList<Component>();
 			ChatFormatting style;
@@ -228,27 +263,65 @@ public class EntityClientRecipe implements ReliableClientRecipe {
             if (ModCompat.ITEM_DESCRIPTIONS)
                 ItemDescriptionsCompat.addEntityDescription(tooltip, entityType, entityName);
             ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(entityId.getNamespace()), tooltip, true);
-            context.guiGraphics().setComponentTooltipForNextFrame(context.font(), tooltip, xo, yo);
+            context.setTooltip(tooltip);
         }
-        if (renderingFood) {
-            int x = 16;
-            int y = 84;
-            context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, FOOD_SLOT_TEXTURE, 9, y-5, 0, 0, 58, 18, 58, 18);
-            context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_EMPTY, x, y, 9, 9);
-            context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_FULL, x, y, 9, 9);
+        renderFood(context);
+        context.setTooltip(Tooltip.create(Component.translatable("view.rrv.type.entity.drops")), DROPS_BOUNDING_BOX);
+        renderBiomes(context);
 
-		    if (context.screen() instanceof RRVExtendedContainerScreen recipeViewScreen && !recipeViewScreen.rrv$hoveredStack().isEmpty())
-			    return;
+    }
 
-            if (context.mouseX() >= 9 && context.mouseX() < 9 + 58 && context.mouseY() >= 79 && context.mouseY() < 79 + 18) {
-                context.guiGraphics().setTooltipForNextFrame(context.font(), Tooltip.create(Component.translatable("view.rrv.type.entity.food")).toCharSequence(Minecraft.getInstance()), xo, yo);
+    private void renderBiomes(RecipeScreenContext context) {
+		if (biomes.isEmpty()) {
+			return;
+		}
+        var box = renderingFood ? BIOME_BOUNDING_BOX : BIOME_BOUNDING_BOX_ALT;
+
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, WIDE_SLOT_TEXTURE, box.getX(), box.getY(), 0, 0, box.getWidth(), box.getHeight(), box.getWidth(), box.getHeight());
+        context.guiGraphics().fakeItem(Items.RED_BED.getDefaultInstance(), box.getX()+5, box.getY()+1);
+		var id = getBiomeSprite(biomes.get(biomeIndex), true);
+        context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, id, box.getX()+34, box.getY()+1, 0, 0, 16, 16, 16, 16);
+        context.setTooltip(List.of(
+                Component.translatable("view.rrv.type.entity.spawns"),
+                Component.translatable("view.rrv.type.entity.spawns_item", Component.translatable(biomes.get(biomeIndex).toLanguageKey("biome")).withStyle(ChatFormatting.GRAY))
+        ), box);
+	}
+
+    private void renderFood(RecipeScreenContext context) {
+		if (!renderingFood) {
+			return;
+		}
+		int x = 16;
+		int y = 84;
+		context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, WIDE_SLOT_TEXTURE, 9, y-5, 0, 0, 58, 18, 58, 18);
+		context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_EMPTY, x, y, 9, 9);
+		context.guiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_FULL, x, y, 9, 9);
+
+		if (context.screen() instanceof RRVExtendedContainerScreen recipeViewScreen && !recipeViewScreen.rrv$hoveredStack().isEmpty()) {
+			return;
+		}
+
+		context.setTooltip(Tooltip.create(Component.translatable("view.rrv.type.entity.food")), FOOD_BOUNDING_BOX);
+	}
+
+    public static Identifier getBiomeSprite(Identifier biome, boolean allowRedirect) {
+        var manager = Minecraft.getInstance().getResourceManager();
+        var path = "textures/immersiveoverlays/" + biome.getPath();
+        var key = Identifier.fromNamespaceAndPath(biome.getNamespace(), "%s.png".formatted(path));
+        var redirect = Identifier.fromNamespaceAndPath(biome.getNamespace(), "%s.txt".formatted(path));
+        if (manager.getResource(key).isPresent())
+            return key;
+        else {
+            if (manager.getResource(redirect).isPresent() && allowRedirect) {
+                try {
+                    return getBiomeSprite(Objects.requireNonNull(Identifier.tryParse(manager.openAsReader(redirect).lines().toList().getFirst())), false);
+                } catch (Exception e) {
+                    return UNDEFINED;
+                }
+            } else {
+                return UNDEFINED;
             }
-
         }
-        if (context.mouseX() >= 72 && context.mouseX() < 72 + 30 && context.mouseY() >= 19 && context.mouseY() < 19 + 30) {
-            context.guiGraphics().setTooltipForNextFrame(context.font(), Tooltip.create(Component.translatable("view.rrv.type.entity.drops")).toCharSequence(Minecraft.getInstance()), xo, yo);
-        }
-
     }
 
     private void renderEntity(RecipeScreenContext context) {

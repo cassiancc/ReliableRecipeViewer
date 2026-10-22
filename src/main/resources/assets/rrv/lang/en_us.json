@@ -30,6 +30,8 @@
   "view.rrv.type.entity.allay_duplication": "\u00a78» While dancing to music",
   "view.rrv.type.entity.food": "Can be fed to this animal.",
   "view.rrv.type.entity.drops": "Dropped by this entity.",
+  "view.rrv.type.entity.spawns": "Spawn Locations",
+  "view.rrv.type.entity.spawns_item": "\u00a78» %s",
   "view.rrv.type.item_tag": "Item Tags",
   "view.rrv.type.block_tag": "Block Tags",
   "view.rrv.type.info": "Info",
