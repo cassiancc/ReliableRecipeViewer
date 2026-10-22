@@ -23,9 +23,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemStack;
@@ -66,7 +68,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
 
     public EntityClientRecipe(EntityServerRecipe serverRecipe) {
         this.entityType = serverRecipe.getEntityType();
-        this.entityId = entityType.builtInRegistryHolder().key().identifier();
+        this.entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
 
         this.drops = new ArrayList<>(serverRecipe.getDrops());
 
@@ -220,6 +222,9 @@ public class EntityClientRecipe implements ReliableClientRecipe {
             else if (entityType.getCategory().isFriendly()) style = ChatFormatting.GREEN;
 			else style = ChatFormatting.RED;
 			tooltip.add(Component.empty().append(entityName).withStyle(style));
+            if (!entityType.isAllowedInPeaceful() && Minecraft.getInstance().level.getDifficulty().equals(Difficulty.PEACEFUL)) {
+                tooltip.add(Component.translatable("item.spawn_egg.peaceful").withStyle(ChatFormatting.RED));
+            }
             if (ModCompat.ITEM_DESCRIPTIONS)
                 ItemDescriptionsCompat.addEntityDescription(tooltip, entityType, entityName);
             ReliableRecipeViewerClient.addNamespaceTooltip(RRVPlatform.INSTANCE.getModNameForNamespace(entityId.getNamespace()), tooltip, true);
