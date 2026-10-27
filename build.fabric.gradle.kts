@@ -166,7 +166,8 @@ dependencies {
 stonecutter {
     replacements.string {
         direction = eval(current.version, ">26.3")
-        replace("net.minecraft.client.renderer.RenderPipelines", "net.minecraft.client.renderer.pipeline.RenderPipelines")
+        replace("net.minecraft.client.renderer.RenderPipelines", "net.minecraft.client.gui.GuiPipeline")
+        replace("RenderPipelines.GUI_TEXTURED", "GuiPipeline.TEXTURED")
     }
     replacements.string {
         direction = eval(current.version, ">26.1")

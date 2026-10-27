@@ -1,11 +1,13 @@
 //? fabric {
 package cc.cassian.rrv.fabric;
 
+import cc.cassian.rrv.client.extra.FluidItemSpecialRenderer;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.client.extra.FluidItemModel;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.integration.ModCompat;
@@ -22,6 +24,11 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+//? if =26.4 {
+/*import net.minecraft.client.core.registries.BuiltInClientRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
+*///?}
 
 import java.util.List;
 
@@ -92,6 +99,10 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         //~}
         //~}
         //~}
+
+        //? if >=26.4 {
+        /*Registry.register(BuiltInClientRegistries.SPECIAL_MODEL_RENDERER_TYPE, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem"), FluidItemSpecialRenderer.Unbaked.MAP_CODEC);
+        *///?}
     }
 
 }

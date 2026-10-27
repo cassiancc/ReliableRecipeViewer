@@ -12,6 +12,8 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+//? if >=26.4
+//import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -28,8 +30,14 @@ public abstract class MixinEditBox extends AbstractWidget {
     }
 
     //~ if =26.3 '(Lcom/mojang/blaze3d/pipeline/RenderPipeline'->'(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline' {
-    //~ if >26 'renderWidget'->'extractWidgetRenderState'
-    @WrapOperation(method = "extractWidgetRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"))
+    @WrapOperation(method = "extractWidgetRenderState", at = @At(value = "INVOKE", target =
+            //? if >=26.4 {
+            /*"Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lnet/minecraft/client/gui/GuiPipeline;Lnet/minecraft/resources/Identifier;IIII)V"
+            *///?} else {
+            "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"
+            //?}
+    ))
+    //~ if >=26.4 'RenderPipeline'->'GuiPipeline'
     private void extractRenderStateFilterMode(GuiGraphicsExtractor instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height, Operation<Void> original) {
     //~}
         EditBox editBox = (EditBox) (Object) this;

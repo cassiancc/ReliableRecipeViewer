@@ -81,7 +81,14 @@ public class FluidItem extends BlockItem {
             return this;
         }
 
-        @Override
+        //? if >=26.4 {
+        /*@Override
+        public FluidItemProperties modelId(Identifier modelId) {
+            super.modelId(modelId);
+            return this;
+        }
+        *///?}
+
         public Identifier effectiveModel() {
             return Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem");
         }

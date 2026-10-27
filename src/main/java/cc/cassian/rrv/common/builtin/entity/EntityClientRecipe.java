@@ -20,10 +20,10 @@ import cc.cassian.rrv.common.rendering.RrvGuiRenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -31,6 +31,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemStack;
@@ -111,11 +112,18 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         if (RRVPlatform.INSTANCE.isModLoaded("immersiveoverlays")) {
             for (Map.Entry<ResourceKey<Biome>, Biome> biomeEntry : Minecraft.getInstance().level.registryAccess().lookupOrThrow(Registries.BIOME).entrySet()) {
                 Biome biome = biomeEntry.getValue();
-                biome.getMobSettings().getMobs(entityType.getCategory()).unwrap().forEach(spawnerDataWeighted -> {
-                    if (spawnerDataWeighted.value().type().equals(entityType)) {
-                        biomes.add(biomeEntry.getKey().identifier());
-                    }
-                });
+                //? if >26.2 {
+                /*var mobs = biome.getAttributes().get(EnvironmentAttributes.NATURAL_MOB_SPAWNS).applyModifier(Minecraft.getInstance().level.environmentAttributes().getDimensionValue(EnvironmentAttributes.NATURAL_MOB_SPAWNS)).getMobsInCategory(entityType.getCategory());
+                *///?} else {
+                var mobs = biome.getMobSettings().getMobs(entityType.getCategory());
+                //?}
+                if (mobs != null) {
+                    mobs.unwrap().forEach(spawnerDataWeighted -> {
+                        if (spawnerDataWeighted.value().type().equals(entityType)) {
+                            biomes.add(biomeEntry.getKey().identifier());
+                        }
+                    });
+                }
             }
         }
     }
@@ -278,7 +286,7 @@ public class EntityClientRecipe implements ReliableClientRecipe {
         var box = renderingFood ? BIOME_BOUNDING_BOX : BIOME_BOUNDING_BOX_ALT;
 
         context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, WIDE_SLOT_TEXTURE, box.getX(), box.getY(), 0, 0, box.getWidth(), box.getHeight(), box.getWidth(), box.getHeight());
-        context.guiGraphics().fakeItem(Items.RED_BED.getDefaultInstance(), box.getX()+5, box.getY()+1);
+        context.guiGraphics().fakeItem(BuiltInRegistries.ITEM.getValue(Identifier.parse("red_bed")).getDefaultInstance(), box.getX()+5, box.getY()+1);
 		var id = getBiomeSprite(biomes.get(biomeIndex), true);
         context.guiGraphics().blit(RenderPipelines.GUI_TEXTURED, id, box.getX()+34, box.getY()+1, 0, 0, 16, 16, 16, 16);
         context.setTooltip(List.of(

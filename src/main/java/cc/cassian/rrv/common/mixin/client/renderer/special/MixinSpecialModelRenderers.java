@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SpecialModelRenderers.class)
 public abstract class MixinSpecialModelRenderers {
 
+    //? if <26.4 {
     @Shadow
     @Final
     private static ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends SpecialModelRenderer.Unbaked>> ID_MAPPER;
@@ -25,4 +26,5 @@ public abstract class MixinSpecialModelRenderers {
     private static void injectFluidItemRenderer(CallbackInfo ci) {
         ID_MAPPER.put(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem"), FluidItemSpecialRenderer.Unbaked.MAP_CODEC);
     }
+    //?}
 }

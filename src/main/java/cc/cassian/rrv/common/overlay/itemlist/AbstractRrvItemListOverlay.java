@@ -166,8 +166,9 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
                         if (this.isPositionBlocked(x, y, ITEM_ENTRY_SIZE, ITEM_ENTRY_SIZE))
                             continue;
 
-                        if (currentStackPos < this.availableItems().size())
-                            this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
+                        if (!this.availableItems().isEmpty() && currentStackPos < this.availableItems().size()) {
+							this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
+						}
 
                         currentStackPos++;
                         continue;

@@ -1,6 +1,7 @@
 //? fabric {
 package cc.cassian.rrv.fabric;
 
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.command.RrvCommand;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.polymer.PolymerIntegration;
@@ -63,6 +64,8 @@ public class FabricEntrypoint implements ModInitializer {
                             new FluidItem.FluidItemProperties()
                                     .fluid(fluid)
                                     .setItemId(ResourceKey.create(Registries.ITEM, itemLocation))
+                                    //? if >=26.4
+                                    //.modelId(Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem"))
                     ));
 
             fluidItemMap.put(fluid, item);
