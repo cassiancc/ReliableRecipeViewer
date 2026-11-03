@@ -7,7 +7,10 @@ public class RecipeSlot extends Slot {
 	private final boolean highlightWithoutContents;
 
 	public RecipeSlot(Container viewContainer, int index, int x, int y, boolean highlightWithoutContents) {
-		super(viewContainer, index, x, y);
+		super(viewContainer, index, x, y
+				//? if >=26.4
+				//, Section.CONTAINER
+		);
 		this.highlightWithoutContents = highlightWithoutContents;
 	}
 

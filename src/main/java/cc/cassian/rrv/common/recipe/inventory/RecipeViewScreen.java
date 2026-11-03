@@ -16,6 +16,7 @@ import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.config.options.WrapScrolling;
+import cc.cassian.rrv.common.gui.VersionedScreen;
 import cc.cassian.rrv.common.integration.ItemDescriptionsCompat;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
@@ -58,7 +59,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExtendedContainerScreen {
+public class RecipeViewScreen extends VersionedScreen implements GuiWidgetAccess, RRVExtendedContainerScreen {
 
     private static final Identifier RECIPE_SCREEN = ReliableRecipeViewer.of("recipe_screen");
     private static final Identifier VIEW_LOCATION = ReliableRecipeViewer.of("textures/gui/recipe_view.png");
@@ -98,7 +99,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     protected int topPos;
 
     public RecipeViewScreen(RecipeViewMenu recipeViewMenu, Inventory inventory, Component component) {
-        super(component);
+        super(component, recipeViewMenu.getParentScreen());
         this.menu = recipeViewMenu;
 
         this.transferButtons = new ArrayList<>();
@@ -128,6 +129,11 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 
     public RecipeViewMenu getMenu() {
         return this.menu;
+    }
+
+    @Override
+    public Screen getParentScreen() {
+        return getMenu().getParentScreen();
     }
 
     @Override
@@ -305,7 +311,7 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 			int guiTop = getTopPos() + menu.guiOffsetTop(i);
 			int finalI = i;
 			RecipeViewMenu.DisplayInfo info = new RecipeViewMenu.DisplayInfo(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight());
-            currentRecipe.addRecipeWidgets(new RecipeScreenContext(this,this, this.font, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), null, (int) Minecraft.getInstance().mouseHandler.xpos(), (int) Minecraft.getInstance().mouseHandler.ypos(), 0));
+            currentRecipe.addRecipeWidgets(new RecipeScreenContext(this,this, this.font, new ReliableClientRecipe.RecipePosition(guiLeft, guiTop, recipeType.getDisplayWidth(), recipeType.getDisplayHeight()), null, (int) Minecraft.getInstance().mouseHandler.getScaledXPos(Minecraft.getInstance().getWindow()), (int) Minecraft.getInstance().mouseHandler.getScaledYPos(Minecraft.getInstance().getWindow()), 0));
 
             if (!ItemViewOverlay.INSTANCE.wasWarned()) {
                 // transfer button
@@ -406,19 +412,8 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     }
 
     @Override
-    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics
-           //? if <26.4
-            , int mouseX, int mouseY, float partialTicks
-    ) {
-        super.extractRenderState(guiGraphics
-                //? if <26.4
-                , mouseX, mouseY, partialTicks
-        );
-        //? if >26.3 {
-        /*var mouseX = guiGraphics.mouseX();
-        var mouseY = guiGraphics.mouseY();
-        var partialTicks = guiGraphics.partialTicks();
-        *///?}
+    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         this.extractContents(guiGraphics, mouseX, mouseY, partialTicks);
         this.extractTooltip(guiGraphics, mouseX, mouseY);
         if (isHoveringOverTitle(mouseX, mouseY)) {
@@ -441,15 +436,10 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
 
     long lastChanged = 0;
 
-    //~ if >26 'render' ->'extract'
     public void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int xo = this.leftPos;
         int yo = this.topPos;
-        //~ if >26 'render(' ->'extractRenderState('
-        super.extractRenderState(graphics
-                //? if <26.4
-                , mouseX, mouseY, partialTicks
-        );
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().pushMatrix();
         graphics.pose().translate((float)xo, (float)yo);
         this.extractLabels(graphics, mouseX, mouseY);
@@ -771,19 +761,8 @@ public class RecipeViewScreen extends Screen implements GuiWidgetAccess, RRVExte
     }
 
     @Override
-    public void extractBackground(@NonNull GuiGraphicsExtractor guiGraphics
-              //? if <26.4
-            , int mouseX, int mouseY, float partialTicks
-    ) {
-        super.extractBackground(guiGraphics
-                //? if <26.4
-                , mouseX, mouseY, partialTicks
-        );
-        //? if >26.3 {
-        /*var mouseX = guiGraphics.mouseX();
-        var mouseY = guiGraphics.mouseY();
-        var partialTicks = guiGraphics.partialTicks();
-        *///?}
+    public void extractBackground(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
         // render deselected icons
         renderRecipeTypeButtons(guiGraphics, mouseX, mouseY, partialTicks, false);

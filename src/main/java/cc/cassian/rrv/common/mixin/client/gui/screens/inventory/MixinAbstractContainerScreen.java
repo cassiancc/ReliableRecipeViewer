@@ -8,6 +8,8 @@ import cc.cassian.rrv.common.overlay.OverlayManager;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+//? if >=26.4
+//import net.minecraft.client.gui.components.inventory.SlotWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -40,9 +42,16 @@ public abstract class MixinAbstractContainerScreen extends Screen
     @Shadow
     protected int imageHeight;
 
+    //? if <26.4 {
+
     @Shadow
     @Nullable
     protected Slot hoveredSlot;
+    //?} else {
+
+    /*@Shadow
+    protected abstract SlotWidget getHoveredSlot();
+    *///?}
 
     protected MixinAbstractContainerScreen(Component component) {
         super(component);
@@ -71,9 +80,7 @@ public abstract class MixinAbstractContainerScreen extends Screen
         RRVExtendedContainerScreen.updateWidgets(this);
     }
 
-    //~ if >26 'render' ->'extract' {
     @Inject(method = "extractContents", at = @At("TAIL"))
-    //~}
     private void injectOverlay$1(GuiGraphicsExtractor guiGraphics,
                                  //? if <26.4
                                  int mouseX, int mouseY, float partialTicks,
@@ -86,12 +93,6 @@ public abstract class MixinAbstractContainerScreen extends Screen
         );
     }
 
-    @Inject(method = "mouseScrolled", at = @At("TAIL"), cancellable = true)
-    private void injectOverlay$2(double mouseX, double mouseY, double scrolledX, double scrolledY, CallbackInfoReturnable<Boolean> cir) {
-        if (OverlayManager.INSTANCE.scrollMouse(mouseX, mouseY, scrolledX, scrolledY))
-            cir.setReturnValue(true);
-    }
-
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void injectOverlay$3(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         var pressed = handleKeyPress(this, event);
@@ -102,6 +103,10 @@ public abstract class MixinAbstractContainerScreen extends Screen
 
     @Override
     public ItemStack rrv$hoveredStack() {
+        //? if >=26.4 {
+        /*if (getHoveredSlot() == null) return ItemStack.EMPTY;
+        var hoveredSlot = getHoveredSlot().slot();
+        *///?}
         return hoveredSlot != null ? hoveredSlot.getItem() : ItemStack.EMPTY;
     }
 

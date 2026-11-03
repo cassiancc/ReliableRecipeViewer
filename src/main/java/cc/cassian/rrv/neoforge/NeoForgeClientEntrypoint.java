@@ -20,6 +20,7 @@ import cc.cassian.rrv.common.recipe.util.RrvUtil;
 //? if >26
 import cc.cassian.rrv.fabric.FabricClientUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -74,9 +75,18 @@ public class NeoForgeClientEntrypoint {
     }
 
 	@SubscribeEvent
-	public static void extractBackground(ScreenEvent.Render.Pre neoEvent) {
+	public static void addExclusionAreas(ScreenEvent.Render.Pre neoEvent) {
 		if (neoEvent.getScreen() instanceof RRVExtendedContainerScreen) {
 			OverlayManager.EXCLUSION_AREA_EVENTS.forEach(event-> event.addExclusionAreas(neoEvent.getScreen(), OverlayManager.INSTANCE, neoEvent.getPartialTick()));
+		}
+	}
+
+	@SubscribeEvent
+	public static void scrollOverlay(ScreenEvent.MouseScrolled.Pre neoEvent) {
+		if (neoEvent.getScreen() instanceof AbstractContainerScreen) {
+			if (OverlayManager.INSTANCE.scrollMouse(neoEvent.getMouseX(), neoEvent.getMouseY(), neoEvent.getScrollDeltaX(), neoEvent.getScrollDeltaY())) {
+				neoEvent.setCanceled(true);
+			}
 		}
 	}
 

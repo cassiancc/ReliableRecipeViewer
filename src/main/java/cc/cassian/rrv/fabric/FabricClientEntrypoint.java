@@ -15,15 +15,14 @@ import cc.cassian.rrv.common.integration.polymer.client.PolymerClientIntegration
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.fabricmc.api.ClientModInitializer;
-//~ if >26 'ClientWorldEvents'-> 'ClientLevelEvents' {
-//~ if >26 'KeyBinding'-> 'KeyMapping' {
-//~ if >26 '.keybinding.'-> '.keymapping.' {
-//~ if >26 'AFTER_CLIENT_WORLD_CHANGE'-> 'AFTER_CLIENT_LEVEL_CHANGE' {
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
+import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 //? if =26.4 {
 /*import net.minecraft.client.core.registries.BuiltInClientRegistries;
 import net.minecraft.core.Registry;
@@ -44,8 +43,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         FabricClientUtil.initializeClient();
 
         ReliableRecipeViewerClient.RRV_KEY_MAPPINGS.forEach(KeyMappingHelper::registerKeyMapping);
-        //~ if >26 '.EntityModelLayerRegistry'-> '.ModelLayerRegistry' {
-        net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
+        ModelLayerRegistry.registerModelLayer(ReliableRecipeViewerClient.FLUID_ITEM_MODEL_LAYER, FluidItemModel::createFluidLayer);
 
         ReliableRecipeViewerClient.loadConfigs();
 
@@ -72,6 +70,9 @@ public class FabricClientEntrypoint implements ClientModInitializer {
         });
 
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (screen instanceof AbstractContainerScreen<?>) {
+                ScreenMouseEvents.allowMouseScroll(screen).register((screen1, mouseX, mouseY, horizontalAmount, verticalAmount) -> !OverlayManager.INSTANCE.scrollMouse(mouseX, mouseY, horizontalAmount, verticalAmount));
+            }
             if (screen instanceof RRVExtendedContainerScreen) {
                 ScreenEvents.afterBackground(screen).register((screen2, guiGraphics
                        //? if <26.4
@@ -82,7 +83,6 @@ public class FabricClientEntrypoint implements ClientModInitializer {
                             , mouseX, mouseY, partialTicks
                     );
                 });
-                //~ if <26 'Extract'->'Render'
                 ScreenEvents.beforeExtract(screen).register((screen2, guiGraphics
                          //? if <26.4
                         , mouseX, mouseY, partialTicks
@@ -94,11 +94,6 @@ public class FabricClientEntrypoint implements ClientModInitializer {
                 });
             }
         });
-        //~}
-        //~}
-        //~}
-        //~}
-        //~}
 
         //? if >=26.4 {
         /*Registry.register(BuiltInClientRegistries.SPECIAL_MODEL_RENDERER_TYPE, Identifier.fromNamespaceAndPath(ReliableRecipeViewer.MOD_ID, "fluiditem"), FluidItemSpecialRenderer.Unbaked.MAP_CODEC);

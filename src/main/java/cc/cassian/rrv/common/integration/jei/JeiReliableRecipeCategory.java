@@ -91,8 +91,13 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, ReliableClientRecipe recipe, IFocusGroup focuses) {
+		//? if >=26.4 {
+		/*int xpos = (int) Minecraft.getInstance().mouseHandler.getScaledXPos(Minecraft.getInstance().getWindow());
+		int ypos = (int) Minecraft.getInstance().mouseHandler.getScaledYPos(Minecraft.getInstance().getWindow());
+		*///?} else {
 		int xpos = (int) Minecraft.getInstance().mouseHandler.xpos();
 		int ypos = (int) Minecraft.getInstance().mouseHandler.ypos();
+		//?}
 		GuiWidgetAccess guiWidgetAccess = new GuiWidgetAccess() {
 			public <T extends GuiEventListener & Renderable & NarratableEntry> T addRecipeWidget(T widget) {
 				builder.addGuiEventListener(new IJeiGuiEventListener() {
@@ -128,7 +133,10 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 
 					@Override
 					public boolean keyPressed(double mouseX, double mouseY, int keyCode, int scanCode, int modifiers) {
-						return widget.keyPressed(new KeyEvent(keyCode, scanCode, modifiers));
+						return widget.keyPressed(new KeyEvent(keyCode, scanCode, modifiers
+								//? if >=26.4
+								//, false
+						));
 					}
 				});
 				builder.addDrawable(new IDrawable() {

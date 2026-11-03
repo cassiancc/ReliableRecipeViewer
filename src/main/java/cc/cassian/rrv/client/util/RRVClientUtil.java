@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
+import cc.cassian.rrv.common.gui.VersionedScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
@@ -49,11 +50,8 @@ public class RRVClientUtil {
 
     private static Screen getParentScreen() {
         var oldScreen = currentScreen();
-        if (oldScreen instanceof RecipeViewScreen recipeViewScreen) {
-            return recipeViewScreen.getMenu().getParentScreen();
-        }
-        else if (oldScreen instanceof ClientConfigScreen clientConfigScreen) {
-            return clientConfigScreen.getParentScreen();
+        if (oldScreen instanceof VersionedScreen rrvScreen) {
+            return rrvScreen.getParentScreen();
         }
         else if (ModCompat.JEI) {
             return JeiCompatibilityUtil.getJeiParentScreen(oldScreen);

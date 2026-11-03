@@ -458,6 +458,9 @@ public class RrvUtil {
         } catch (ConcurrentModificationException e) {
             // FIXME
             ReliableRecipeViewer.LOGGER.debug("RRV: Suppressing concurrent modification crash", e);
+        } catch (IndexOutOfBoundsException e) {
+            // FIXME
+            ReliableRecipeViewer.LOGGER.debug("RRV: Suppressing index modification crash", e);
         }
 	}
 }

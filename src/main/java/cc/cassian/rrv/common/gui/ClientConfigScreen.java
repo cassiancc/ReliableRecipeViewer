@@ -4,7 +4,6 @@ import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.instances.ClientConfig;
 import cc.cassian.rrv.common.config.options.*;
-import cc.cassian.rrv.common.config.widgets.IntegerEditBox;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
@@ -23,17 +22,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
-//? if <26
-//import cc.cassian.rrv.backport.ScrollableLayout;
 
-public class ClientConfigScreen extends Screen {
+public class ClientConfigScreen extends VersionedScreen {
 
     private static final Component TITLE = clientSetting("title");
     public static final Component ENABLED = Component.translatable("rrv.category_settings.enabled").withStyle(ChatFormatting.GREEN);
     public static final Component DISABLED = Component.translatable("rrv.category_settings.disabled").withStyle(ChatFormatting.RED);
     public static final int PADDING = 4;
-
-    private final Screen lastScreen;
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 32, 32);
     public int buttonWidth;
@@ -44,27 +39,18 @@ public class ClientConfigScreen extends Screen {
     }
 
     public ClientConfigScreen(Component title, Screen lastScreen) {
-        super(title);
-
-        this.lastScreen = lastScreen;
+        super(title, lastScreen);
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics
-                              //? if <26.4
-            , int mouseX, int mouseY, float a
-    ) {
-        super.extractBackground(graphics
-                //? if <26.4
-                , mouseX, mouseY, a
-        );
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
         extractListBackground(graphics);
         extractListSeparators(graphics);
     }
 
     private static final Identifier MENU_LIST_BACKGROUND = Identifier.withDefaultNamespace("textures/gui/menu_list_background.png");
     private static final Identifier INWORLD_MENU_LIST_BACKGROUND = Identifier.withDefaultNamespace("textures/gui/inworld_menu_list_background.png");
-
 
     protected void extractListBackground(final GuiGraphicsExtractor graphics) {
         Identifier menuListBackground = this.minecraft.level == null ? MENU_LIST_BACKGROUND : INWORLD_MENU_LIST_BACKGROUND;
@@ -299,10 +285,6 @@ public class ClientConfigScreen extends Screen {
     public void onClose() {
         Configs.CLIENT_SETTINGS.save();
         Configs.STACK_GROUPS.save();
-        RRVClientUtil.setScreen(this.lastScreen);
+        RRVClientUtil.setScreen(this.getParentScreen());
     }
-
-	public Screen getParentScreen() {
-		return lastScreen;
-	}
 }

@@ -19,6 +19,7 @@ public abstract class MixinAnvilScreen<T extends AbstractContainerMenu> extends 
         super(title);
     }
 
+    //? if <26.4 {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void injectOverlay$3(KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir) {
 
@@ -29,4 +30,5 @@ public abstract class MixinAnvilScreen<T extends AbstractContainerMenu> extends 
                 cir.setReturnValue(true);
 		}
     }
+    //?}
 }
