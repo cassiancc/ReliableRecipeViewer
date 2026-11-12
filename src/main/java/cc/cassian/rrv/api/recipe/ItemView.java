@@ -493,19 +493,15 @@ public class ItemView {
                 }
             }
         }
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
             var enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
 			assert enchantments != null;
-			enchantments.keySet().forEach(enchantment -> {
-                if (isExcludedEnchantment(enchantment)) {
-                    atomicBoolean.set(true);
-                }
-            });
-        }
-        if (atomicBoolean.get()) {
-            return true;
-        }
+			for (Holder<Enchantment> enchantment : enchantments.keySet()) {
+				if (isExcludedEnchantment(enchantment)) {
+					return true;
+				}
+			}
+		}
         return isExcludedItem(stack.getItem());
     }
 

@@ -27,7 +27,7 @@ public class BookmarkManager {
         }
     }
     private static void updateIndex(SidePanelOverlay.Reason reason) {
-        Minecraft.getInstance().execute(() -> SidePanelOverlay.INSTANCE.updateSidePanelIndex(reason));
+        Minecraft.getInstance().execute(() -> SidePanelOverlay.INSTANCE.updateDisplayedItems(reason));
     }
 
     public List<ItemStackTemplate> availableItems() {

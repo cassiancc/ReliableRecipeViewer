@@ -57,7 +57,7 @@ public class ClientNetworkManager {
         if (RRVClientUtil.currentScreen() instanceof RecipeViewScreen viewScreen) {
 			viewScreen.getMenu().updateTransferCache();
             if (SidePanelOverlay.showCraftables()) {
-				SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.INVENTORY_CHANGE);
+				SidePanelOverlay.INSTANCE.updateDisplayedItems(SidePanelOverlay.Reason.INVENTORY_CHANGE);
 			}
 		}
     }

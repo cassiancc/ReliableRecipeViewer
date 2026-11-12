@@ -211,7 +211,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     public void refreshInvalidatedIndex() {
         var client = Minecraft.getInstance();
         var info = OverlayManager.INSTANCE.currentInfo();
-        if (this.indexRefreshPending && client.level != null && info != null && info.screen() == client.screen) {
+        if (this.indexRefreshPending && client.level != null && info != null && info.screen() == RRVClientUtil.currentScreen()) {
             this.updateQuery(this.currentQuery);
         }
     }
@@ -247,7 +247,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
             return;
         boolean searchTooltips = Configs.CLIENT_SETTINGS.isSearchTooltips();
         var level = Minecraft.getInstance().level;
-        var screen = Minecraft.getInstance().screen;
+        var screen = RRVClientUtil.currentScreen();
         List<DefaultSearch.Entry> snapshot = List.copyOf(entries);
         this.currentlySearching = true;
         CompletableFuture.supplyAsync(() -> DefaultSearch.match(snapshot, defaultQuery, searchTooltips), Util.backgroundExecutor())
@@ -256,7 +256,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
                     if (error != null) {
                         ReliableRecipeViewer.LOGGER.error("Failed to filter the item index", error);
                     }
-                    if (level != Minecraft.getInstance().level || screen != Minecraft.getInstance().screen) {
+                    if (level != Minecraft.getInstance().level || screen != RRVClientUtil.currentScreen()) {
                         if (generation != this.searchGeneration && Minecraft.getInstance().level != null)
                             this.startSearch();
                         return;
@@ -307,7 +307,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.filteredItems = List.copyOf(results);
         this.displayedQuery = query;
         this.updateDisplayedItems();
-        SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
+        SidePanelOverlay.INSTANCE.updateDisplayedItems(SidePanelOverlay.Reason.SEARCH);
         this.updateButtons();
     }
 

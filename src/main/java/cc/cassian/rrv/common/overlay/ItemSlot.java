@@ -248,7 +248,7 @@ public class ItemSlot {
                     StackGroupManager.toggleGroup(Identifier.parse(groupId));
                     ItemViewOverlay.INSTANCE.updateDisplayedItems();
                     if (SidePanelOverlay.INSTANCE.isEnabled()) {
-                        SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.OTHER);
+                        SidePanelOverlay.INSTANCE.updateDisplayedItems(SidePanelOverlay.Reason.OTHER);
                     }
                 }
                 return;

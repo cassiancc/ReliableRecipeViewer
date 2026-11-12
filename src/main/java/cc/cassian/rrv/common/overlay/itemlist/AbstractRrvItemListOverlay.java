@@ -141,9 +141,11 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return false;
     }
 
-    /**
-     * Responsible for adding the item entries to the overlay
-     */
+    public void updateDisplayedItems() {
+
+    }
+
+    /// Responsible for adding the item entries to the overlay
     public void updateSlots() {
         List<ItemSlot> newSlots = new ArrayList<>();
 

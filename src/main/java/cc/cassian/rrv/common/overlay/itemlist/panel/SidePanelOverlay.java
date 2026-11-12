@@ -73,7 +73,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         this.initForScreen(info.screen(), info);
         super.onScreenChanged(info);
         this.currentScreen = info.screen();
-        this.updateSidePanelIndex(Reason.SCREEN_CHANGE);
+        this.updateDisplayedItems(Reason.SCREEN_CHANGE);
         this.createButtons(createTitleText(), checkedX()+16, itemEndX - 24, checkedX()+2, itemEndX - 15);
     }
 
@@ -113,10 +113,16 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
     }
 
-    /**
-     * Updates the list of item slots
-     */
-	public void updateSidePanelIndex(Reason reason) {
+    @Deprecated
+    public void updateSidePanelIndex(Reason reason) {
+        updateDisplayedItems(reason);
+    }
+
+    public void updateDisplayedItems() {
+        updateDisplayedItems(Reason.OTHER);
+    }
+
+    public void updateDisplayedItems(Reason reason) {
         var screen = RRVClientUtil.currentScreen();
         if (isRecipeViewScreen(screen) && reason.equals(Reason.SCREEN_CHANGE)) return;
         if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
@@ -182,7 +188,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.CRAFTABLES);
             else
                 Configs.CLIENT_SETTINGS.setSidePanel(SidePanel.BOOKMARKS);
-            updateSidePanelIndex(Reason.BUTTON);
+            updateDisplayedItems(Reason.BUTTON);
             return true;
         }
         return false;

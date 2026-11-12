@@ -355,7 +355,7 @@ public class ClientConfig extends AbstractRrvConfig {
 		}
 		this.showExclusionAreas = load("development", "show_exclusion_areas", this.showExclusionAreas);
 		this.searchTooltips = load("advanced", "search_tooltips", this.searchTooltips);
-		this.updateOnBackgroundThread = load("advanced", "update_on_background_thread", this.updateOnBackgroundThread);
+		this.updateOnBackgroundThread = true;
 
 		if (loadedDeprecatedConfig) {
 			ReliableRecipeViewer.LOGGER.info("Upgraded config file from v8.6 to v8.7.");
