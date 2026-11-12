@@ -26,7 +26,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 //? if >26.1
@@ -39,7 +38,6 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -50,10 +48,7 @@ import static cc.cassian.rrv.common.recipe.ItemViewRecipes.*;
 public class ItemView {
 
     /// A list of client-side excluded items that won't show up in the ItemView overlay
-    private static final List<Item> EXCLUDED_ITEMS = new ArrayList<>();
-
-    /// A list of client-side excluded item stacks that won't show up in the ItemView overlay
-    private static final List<ItemStackTemplate> EXCLUDED_ITEM_STACKS = new ArrayList<>();
+    private static final List<Predicate<ItemStackTemplate>> EXCLUDED_ITEMS = new ArrayList<>();
 
     /// A list of client-side excluded enchantments that won't show up in the ItemView overlay
     private static final List<ResourceKey<Enchantment>> EXCLUDED_ENCHANTMENTS = new ArrayList<>();
@@ -131,7 +126,44 @@ public class ItemView {
     ///
     /// @param item The excluded item
     public static void excludeItem(Item item) {
-        excludeItems(item);
+        EXCLUDED_ITEMS.add(itemStackTemplate -> itemStackTemplate.is(item));
+    }
+
+    /// Register multiple items to exclude at once. Note that RRV also supports the standardized `c:hidden\_from\_recipe\_viewers` tag.
+    ///
+    /// @param items An array of items to exclude
+    public static void excludeItems(Item... items) {
+        List<Item> list = List.of(items);
+        EXCLUDED_ITEMS.add(itemStackTemplate -> list.contains(itemStackTemplate.item().value()));
+    }
+
+    /// Register a tag to hide items with. Note that RRV also supports the standardized `c:hidden\_from\_recipe\_viewers` tag.
+    ///
+    /// @param items An array of items to exclude
+    public static void excludeItems(TagKey<Item> items) {
+        EXCLUDED_ITEMS.add(c->c.is(items));
+    }
+
+    /// Register a predicate to hide items with. Note that RRV also supports the standardized `c:hidden\_from\_recipe\_viewers` tag.
+    ///
+    /// @param items An array of items to exclude
+    public static void excludeItems(Predicate<ItemStackTemplate> items) {
+        EXCLUDED_ITEMS.add(items);
+    }
+
+    /// A method used to exclude an item stack from the ItemView index. To hide all item stacks of a certain item, use [ItemView#excludeItem] or the convention tag.
+    ///
+    /// **Note**: This does not hide the item from recipes, only the index.
+    ///
+    /// **Example**:
+    /// ```
+    /// ItemView.excludeItemStack(Items.STONE.getDefaultInstance))
+    /// ```
+    ///
+    /// @param items The excluded item(s)
+    public static void excludeItemStack(ItemStack... items) {
+        List<ItemStackTemplate> list = Arrays.stream(items).map(ItemStackTemplate::fromNonEmptyStack).toList();
+        EXCLUDED_ITEMS.add(list::contains);
     }
 
 
@@ -144,27 +176,9 @@ public class ItemView {
     /// ItemView.excludeItemStack(Items.STONE.getDefaultInstance))
     /// ```
     ///
-    /// @param item The excluded item
-    public static void excludeItemStack(ItemStack... item) {
-        for (ItemStack itemStack : item) {
-            if (!itemStack.isEmpty())
-                EXCLUDED_ITEM_STACKS.add(ItemStackTemplate.fromNonEmptyStack(itemStack));
-        }
-    }
-
-
-    /// A method used to exclude an item stack from the ItemView index. To hide all item stacks of a certain item, use [ItemView#excludeItem] or the convention tag.
-    ///
-    /// **Note**: This does not hide the item from recipes, only the index.
-    ///
-    /// **Example**:
-    /// ```
-    /// ItemView.excludeItemStack(Items.STONE.getDefaultInstance))
-    /// ```
-    ///
-    /// @param item The excluded item
-    public static void excludeItemStack(ItemStackTemplate... item) {
-		EXCLUDED_ITEM_STACKS.addAll(Arrays.asList(item));
+    /// @param items The excluded item(s)
+    public static void excludeItemStack(ItemStackTemplate... items) {
+		EXCLUDED_ITEMS.add(itemStackTemplate -> Arrays.asList(items).contains(itemStackTemplate));
     }
 
     /// A method used to exclude a recipe from the recipe screen.
@@ -226,13 +240,6 @@ public class ItemView {
         for (Identifier recipeType : recipeTypes) {
             excludeRecipeCategory(recipeType);
         }
-    }
-
-    /// Register multiple items to exclude at once. Note that RRV also supports the standardized `c:hidden\_from\_recipe\_viewers` tag.
-    ///
-    /// @param items An array of items to exclude
-    public static void excludeItems(Item... items) {
-        Arrays.stream(items).filter(item -> !EXCLUDED_ITEMS.contains(item)).forEach(EXCLUDED_ITEMS::add);
     }
 
     /// A method used to exclude an enchantment from the ItemView index. Note that RRV also supports the standardized `c:hidden\_from\_recipe\_viewers` tag.
@@ -323,7 +330,7 @@ public class ItemView {
     }
 
     /// @return The list of currently excluded items (client-side)
-    public static List<Item> getExcludedItems() {
+    public static List<Predicate<ItemStackTemplate>> getExcludedItems() {
         return EXCLUDED_ITEMS;
     }
 
@@ -474,7 +481,7 @@ public class ItemView {
 	}
 
     public static boolean isExcludedItem(Item item) {
-        return EXCLUDED_ITEMS.contains(item);
+        return EXCLUDED_ITEMS.stream().anyMatch(c-> c.test(new ItemStackTemplate(item)));
     }
 
     public static boolean isExcludedRecipe(Identifier recipeType, Identifier recipe) {
@@ -484,7 +491,7 @@ public class ItemView {
     }
 
     public static boolean isExcludedItem(ItemStack stack) {
-        if (stack == null || stack.isEmpty() || EXCLUDED_ITEM_STACKS.contains(ItemStackTemplate.fromNonEmptyStack(stack))) return true;
+        if (stack == null || stack.isEmpty() || EXCLUDED_ITEMS.stream().anyMatch(c->c.test(ItemStackTemplate.fromNonEmptyStack(stack)))) return true;
         if (stack.has(DataComponents.POTION_CONTENTS)) {
             Optional<Holder<Potion>> potion = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
             if (potion.isPresent()) {

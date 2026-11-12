@@ -217,7 +217,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             BuiltInRegistries.ITEM.listTagIds().forEach((tag) -> {
                 if (!HIDDEN_ITEM_TAGS.contains(tag.location())) {
                     Optional<HolderSet.Named<Item>> tagContents = BuiltInRegistries.ITEM.get(tag);
-                    if (tagContents.isPresent() && !tagContents.get().stream().allMatch(item -> ItemView.getExcludedItems().contains(item.value()))) {
+                    if (tagContents.isPresent() && !tagContents.get().stream().allMatch(item -> ItemView.isExcludedItem(item.value()))) {
                         recipeList.add(new ItemTagClientRecipe(tag));
                     }
                 }
@@ -226,7 +226,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             BuiltInRegistries.BLOCK.listTagIds().forEach((tag) -> {
                 if (!HIDDEN_BLOCK_TAGS.contains(tag.location())) {
                     Optional<HolderSet.Named<Block>> tagContents = BuiltInRegistries.BLOCK.get(tag);
-                    if (tagContents.isPresent() && !tagContents.get().stream().allMatch(item -> ItemView.getExcludedItems().contains(item.value().asItem()))) {
+                    if (tagContents.isPresent() && !tagContents.get().stream().allMatch(item -> ItemView.isExcludedItem(item.value().asItem()))) {
                         recipeList.add(new BlockTagClientRecipe(tag));
                     }
                 }
