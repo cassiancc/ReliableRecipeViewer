@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay.itemlist.panel;
 
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.common.RRVPlatform;
@@ -128,6 +129,7 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
         List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(Configs.CLIENT_SETTINGS.getSidePanel().getStacks(new SidePanelContents(reason, Minecraft.getInstance().player, screen instanceof CreativeModeInventoryScreen)));
         if (screen == this.currentScreen) {
+            expandedItems.removeIf(ItemView::isExcludedItem);
             this.availableItems = List.copyOf(expandedItems);
             this.updateSlots();
         }
