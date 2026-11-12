@@ -45,9 +45,10 @@ public class ItemFilters {
 
     public static final HashMultimap<Item, String> ALIASES = HashMultimap.create();
     /// A list of [ItemStack]s that can be shown in the item view. Cleared when the player disconnects from a world, reloads resource packs, or changes the index source. Rebuilt by calling [ItemFilters#fullStackList()].
-    private static final List<ItemStack> CACHED_STACKS = new ArrayList<>();
+    private static @Nullable List<ItemStack> cachedStacks;
     /// A list of [ItemStack]s from the Unique Recipe Output index soruce.
-    private static final List<ItemStack> CACHED_RECIPE_OUTPUTS = new ArrayList<>();
+    private static @Nullable List<ItemStack> cachedRecipeOutputs;
+    private static long cacheGeneration;
 
     @ApiStatus.Internal
     public static Runnable RESET_OVERLAY = () -> {};
@@ -340,7 +341,7 @@ public class ItemFilters {
     /// @return 0 means no match; 1 means first priority; 2 means second priority
     ///
     /// Used for correct listing of item stacks by match accuracy
-    private static int getTooltipMatch(ItemStack stack, String query) {
+    static int getTooltipMatch(ItemStack stack, String query) {
 
         List<Component> lore = RRVClientUtil.getTooltipFromItem(stack);
 
@@ -379,7 +380,7 @@ public class ItemFilters {
         return null;
     }
 
-    /// @return A cached list of all items that can be displayed in the ViewOverlay
+    /// @return An unmodifiable snapshot of all items that can be displayed in the ViewOverlay.
     ///
     /// **Also includes all stack-sensitives**
     public static List<ItemStack> fullStackList() {
@@ -410,25 +411,34 @@ public class ItemFilters {
             }
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.REGISTRY)) {
+                Map<Item, List<ItemStack>> stacksByItem = new IdentityHashMap<>();
+                results.forEach(stack -> stacksByItem.computeIfAbsent(stack.getItem(), ignored -> new ArrayList<>()).add(stack));
                 BuiltInRegistries.ITEM.forEach(item -> {
                     ItemStack e = new ItemStack(item);
-                    if (results.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, e)))
+                    List<ItemStack> existing = stacksByItem.computeIfAbsent(e.getItem(), ignored -> new ArrayList<>());
+                    if (existing.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, e))) {
                         results.add(e);
-                    results.addAll(ClientRecipeCache.INSTANCE.streamStackSensitives(item).filter(stack-> results.stream().noneMatch(c-> ItemStack.isSameItemSameComponents(stack, c))).toList());
+                        existing.add(e);
+                    }
+                    List<ItemStack> sensitive = ClientRecipeCache.INSTANCE.streamStackSensitives(item)
+                            .filter(stack -> stacksByItem.getOrDefault(stack.getItem(), List.of()).stream()
+                                    .noneMatch(c -> ItemStack.isSameItemSameComponents(stack, c))).toList();
+                    results.addAll(sensitive);
+                    sensitive.forEach(stack -> stacksByItem.computeIfAbsent(stack.getItem(), ignored -> new ArrayList<>()).add(stack));
                 });
             }
 
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT)) {
-                if (CACHED_RECIPE_OUTPUTS.isEmpty()) {
+                if (cachedRecipeOutputs == null) {
                     var list = new ArrayList<ItemStack>();
                     ClientRecipeCache.INSTANCE.getRecipes().stream().sorted(RRVClientUtil::compare).forEach(r-> {
                         addUniqueItem(r.getResults(), list);
                     });
                     RrvUtil.sortByName(list);
-                    CACHED_RECIPE_OUTPUTS.addAll(list);
+                    cachedRecipeOutputs = List.copyOf(list);
                 }
 
-                CACHED_RECIPE_OUTPUTS.forEach(stack -> {
+                cachedRecipeOutputs.forEach(stack -> {
                     if (results.stream().noneMatch(c-> makeDefaultChecks(stack, c))) {
                         results.add(stack);
                     }
@@ -441,10 +451,10 @@ public class ItemFilters {
             if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.RESOURCE_PACKS))
                 ResourceRecipeManager.replaceIndex(results);
 
-            CACHED_STACKS.addAll(results);
+            cachedStacks = List.copyOf(results);
         }
 
-        return CACHED_STACKS;
+        return Objects.requireNonNull(cachedStacks);
     }
 
     private static void addUniqueItem(List<SlotContent> r, ArrayList<ItemStack> list) {
@@ -516,23 +526,30 @@ public class ItemFilters {
     /// Clear the cached stacks and force a rebuild.
 	public static void clearCaches(boolean clearCachedRecipeOutputs) {
         ReliableRecipeViewer.LOGGER.debug("RRV: Clearing cached index!");
-		CACHED_STACKS.clear();
+		cachedStacks = null;
+        cacheGeneration++;
         if (clearCachedRecipeOutputs) {
-            clearCachedRecipeOutputs();
+            cachedRecipeOutputs = null;
         }
         RESET_OVERLAY.run();
 	}
 
     /// Clear the cached stacks and force a rebuild.
     public static void clearCachedRecipeOutputs() {
-        CACHED_RECIPE_OUTPUTS.clear();
+        cachedRecipeOutputs = null;
+        if (Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT)) {
+            cachedStacks = null;
+            cacheGeneration++;
+            RESET_OVERLAY.run();
+        }
     }
 
     /// Whether the cache needs to be rebuilt.
 	public static boolean needsCache() {
-        if (CACHED_RECIPE_OUTPUTS.isEmpty() && Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT)) {
-            return true;
-        }
-		return CACHED_STACKS.isEmpty();
+		return cachedStacks == null || (cachedRecipeOutputs == null && Configs.CLIENT_SETTINGS.getIndexSource(IndexSource.UNIQUE_RECIPE_OUTPUT));
 	}
+
+    static long cacheGeneration() {
+        return cacheGeneration;
+    }
 }

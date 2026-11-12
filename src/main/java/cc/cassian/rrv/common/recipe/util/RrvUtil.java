@@ -447,20 +447,11 @@ public class RrvUtil {
         return stacks;
     }
 
-
-	public static void execute(Runnable o) {
-        try {
-            if (Configs.CLIENT_SETTINGS.isUpdateOnBackgroundThread()) {
-                Util.backgroundExecutor().execute(o);
-            } else {
-                o.run();
-            }
-        } catch (ConcurrentModificationException e) {
-            // FIXME
-            ReliableRecipeViewer.LOGGER.debug("RRV: Suppressing concurrent modification crash", e);
-        } catch (IndexOutOfBoundsException e) {
-            // FIXME
-            ReliableRecipeViewer.LOGGER.debug("RRV: Suppressing index modification crash", e);
+    public static void execute(Runnable task) {
+        if (Configs.CLIENT_SETTINGS.isUpdateOnBackgroundThread()) {
+            Util.backgroundExecutor().execute(task);
+        } else {
+            task.run();
         }
-	}
+    }
 }

@@ -57,11 +57,9 @@ public class SidePanelContents {
 
 			// if the workstation is not supported, search by what craftables exist
 			if (availableItems.isEmpty()) {
-				try {
-					inventory.forEach(inventoryItem -> {
-						ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, availableItems, player, false));
-					});
-				} catch (ConcurrentModificationException ignored) {}
+				inventory.forEach(inventoryItem -> {
+					ClientRecipeCache.INSTANCE.getRecipesForCraftingInput(inventoryItem).forEach(recipe -> updateRecipes(recipe, availableItems, player, false));
+				});
 			}
 
 			// save last available items for when searching occurs

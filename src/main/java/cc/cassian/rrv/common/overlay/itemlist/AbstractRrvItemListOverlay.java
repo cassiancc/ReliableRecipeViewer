@@ -8,19 +8,16 @@ import cc.cassian.rrv.common.overlay.ItemSlot;
 import cc.cassian.rrv.common.overlay.itemlist.panel.SidePanelOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import static cc.cassian.rrv.common.config.options.WrapScrolling.shouldWrapScroll;
@@ -33,6 +30,7 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
     public ReliableSpriteIconButton back = null;
     protected int itemStartX, itemStartY, itemEndX, itemEndY;
     protected int startIndex;
+    protected int slotUpdaters;
     private int fittingPerPage;
 
     protected List<ItemStack> availableItems;
@@ -143,74 +141,64 @@ public abstract class AbstractRrvItemListOverlay extends AbstractRrvOverlay {
         return false;
     }
 
-    protected int slotUpdaters = 0;
-
     /**
      * Responsible for adding the item entries to the overlay
      */
     public void updateSlots() {
-        slotUpdaters += 1;
-        Minecraft.getInstance().execute(()->{
-            this.lastItemSlots().clear();
-            this.lastItemSlots().addAll(this.itemSlots());
-        });
-        RrvUtil.execute(()->{
-            this.itemSlots().clear();
+        List<ItemSlot> newSlots = new ArrayList<>();
 
-            int currentStackPos = this.startIndex;
+        int currentStackPos = this.startIndex;
 
-            for (int y = this.itemStartY; y <= this.itemEndY - ITEM_ENTRY_SIZE; y += ITEM_ENTRY_SIZE) {
-                for (int x = this.itemStartX; x <= this.itemEndX - ITEM_ENTRY_SIZE; x += ITEM_ENTRY_SIZE) {
+        for (int y = this.itemStartY; y <= this.itemEndY - ITEM_ENTRY_SIZE; y += ITEM_ENTRY_SIZE) {
+            for (int x = this.itemStartX; x <= this.itemEndX - ITEM_ENTRY_SIZE; x += ITEM_ENTRY_SIZE) {
 
-                    if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
-                        if (this.isPositionBlocked(x, y, ITEM_ENTRY_SIZE, ITEM_ENTRY_SIZE))
-                            continue;
-
-                        if (!this.availableItems().isEmpty() && currentStackPos < this.availableItems().size()) {
-							this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
-						}
-
-                        currentStackPos++;
+                if (Configs.CLIENT_SETTINGS.isItemWrapMode()) {
+                    if (this.isPositionBlocked(x, y, ITEM_ENTRY_SIZE, ITEM_ENTRY_SIZE))
                         continue;
+
+                    if (!this.availableItems().isEmpty() && currentStackPos < this.availableItems().size()) {
+                        newSlots.add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
                     }
 
-                    if (x >= this.effectiveX && x <= this.effectiveX + this.effectiveWidth - ITEM_ENTRY_SIZE && y >= this.effectiveY && y <= this.effectiveY + this.effectiveHeight - ITEM_ENTRY_SIZE) {
-
-                        if (currentStackPos < this.availableItems().size())
-                            this.itemSlots().add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
-
-                        currentStackPos++;
-                    }
-
+                    currentStackPos++;
+                    continue;
                 }
+
+                if (x >= this.effectiveX && x <= this.effectiveX + this.effectiveWidth - ITEM_ENTRY_SIZE && y >= this.effectiveY && y <= this.effectiveY + this.effectiveHeight - ITEM_ENTRY_SIZE) {
+
+                    if (currentStackPos < this.availableItems().size())
+                        newSlots.add(new ItemSlot(this.availableItems().get(currentStackPos), x, y, this instanceof SidePanelOverlay));
+
+                    currentStackPos++;
+                }
+
             }
+        }
 
-            this.fittingPerPage = currentStackPos - this.startIndex;
-            Minecraft.getInstance().execute(this::updateButtons);
-            slotUpdaters = 0;
-        });
-
+        this.fittingPerPage = currentStackPos - this.startIndex;
+        this.lastItemSlots().clear();
+        this.lastItemSlots().addAll(this.itemSlots());
+        this.itemSlots().clear();
+        this.itemSlots().addAll(newSlots);
+        this.updateButtons();
     }
 
     public void extractSlots(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (!slotsBeingUpdated()) {
-            ItemSlot.currentFrameSlots = this.itemSlots();
+        ItemSlot.currentFrameSlots = this.itemSlots();
+        try {
             extractSlots(new ArrayList<>(this.itemSlots()), guiGraphics, mouseX, mouseY, partialTicks);
+        } finally {
             ItemSlot.currentFrameSlots = null;
-        } else {
-            extractSlots(new ArrayList<>(this.lastItemSlots()), guiGraphics, mouseX, mouseY, partialTicks);
         }
     }
 
     private static void extractSlots(List<ItemSlot> slots, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        try {
-            for (ItemSlot slot : slots) {
-                if (slot == null) {
-                    return;
-                }
-                slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        for (ItemSlot slot : slots) {
+            if (slot == null) {
+                return;
             }
-        } catch (ConcurrentModificationException ignored) {}
+            slot.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        }
     }
 
     public int fittingPerPage() {

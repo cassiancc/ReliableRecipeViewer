@@ -28,7 +28,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NonNull;
 
@@ -73,9 +72,9 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
     public void onScreenChanged(InventoryPositionInfo info) {
         this.initForScreen(info.screen(), info);
         super.onScreenChanged(info);
+        this.currentScreen = info.screen();
         this.updateSidePanelIndex(Reason.SCREEN_CHANGE);
         this.createButtons(createTitleText(), checkedX()+16, itemEndX - 24, checkedX()+2, itemEndX - 15);
-        this.currentScreen = info.screen();
     }
 
     public MutableComponent createTitleText() {
@@ -118,20 +117,14 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
      * Updates the list of item slots
      */
 	public void updateSidePanelIndex(Reason reason) {
-        slotUpdaters += 1;
-		Util.backgroundExecutor().execute(() -> {
-            var screen = RRVClientUtil.currentScreen();
-            if (isRecipeViewScreen(screen) && reason.equals(Reason.SCREEN_CHANGE)) return; // prevent opening the recipe screen from changing the craftables
-            if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
-            this.availableItems.clear();
-            List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(Configs.CLIENT_SETTINGS.getSidePanel().getStacks(new SidePanelContents(reason, Minecraft.getInstance().player, screen instanceof CreativeModeInventoryScreen)));
-            if (screen == this.currentScreen && this.availableItems.isEmpty()) {
-                this.availableItems.addAll(expandedItems);
-                this.updateSlots();
-            }
-            slotUpdaters -= 1;
-        });
-
+        var screen = RRVClientUtil.currentScreen();
+        if (isRecipeViewScreen(screen) && reason.equals(Reason.SCREEN_CHANGE)) return;
+        if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
+        List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(Configs.CLIENT_SETTINGS.getSidePanel().getStacks(new SidePanelContents(reason, Minecraft.getInstance().player, screen instanceof CreativeModeInventoryScreen)));
+        if (screen == this.currentScreen) {
+            this.availableItems = List.copyOf(expandedItems);
+            this.updateSlots();
+        }
         updateButtons();
     }
 

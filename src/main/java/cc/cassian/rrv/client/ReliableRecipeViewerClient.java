@@ -53,7 +53,7 @@ public class ReliableRecipeViewerClient {
         OverlayManager.registerOverlay(ItemViewOverlay.INSTANCE);
         OverlayManager.registerOverlay(SidePanelOverlay.INSTANCE);
 
-        ItemFilters.RESET_OVERLAY = ItemViewOverlay.INSTANCE::firstPage;
+        ItemFilters.RESET_OVERLAY = ItemViewOverlay.INSTANCE::onIndexInvalidated;
     }
 
     public static void loadConfigs() {

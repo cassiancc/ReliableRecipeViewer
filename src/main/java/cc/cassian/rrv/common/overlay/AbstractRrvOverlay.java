@@ -158,14 +158,14 @@ public abstract class AbstractRrvOverlay {
     protected abstract boolean scrollMouse(double mouseX, double mouseY, double scrolledX, double scrolledY);
 
     /**
-	 * The current list of item slots. These are updated on a background thread to prevent large lag spikes. If they are actively being modified (see {@link AbstractRrvItemListOverlay#slotsBeingUpdated()}, check {@link AbstractRrvOverlay#lastItemSlots()})
+	 * The current list of item slots, owned by the client thread.
 	 */
     public List<ItemSlot> itemSlots() {
         return this.itemSlots;
     }
 
     /**
-     * The last safe (not actively being modified) list of item slots. For the current list, see {@link AbstractRrvOverlay#itemSlots()}
+     * The previous list of item slots. For the current list, see {@link AbstractRrvOverlay#itemSlots()}.
     */
     public List<ItemSlot> lastItemSlots() {
         return this.lastItemSlots;

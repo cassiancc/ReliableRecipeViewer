@@ -44,7 +44,7 @@ public class ClientConfig extends AbstractRrvConfig {
 	private Map<PrefixedFilter, PrefixedFilter.Configuration> searchFilters = PrefixedFilter.DEFAULT;
 	private boolean showExclusionAreas = false;
 	private boolean searchTooltips = true;
-	private boolean updateOnBackgroundThread = false;
+	private boolean updateOnBackgroundThread = true;
 	private int sidePanelMaxWidth = 6;
 	private int itemViewPanelMaxWidth = 6;
 

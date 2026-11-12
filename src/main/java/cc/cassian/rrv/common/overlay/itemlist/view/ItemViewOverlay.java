@@ -52,6 +52,8 @@ import org.jspecify.annotations.NonNull;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import static cc.cassian.rrv.common.overlay.ItemSlot.ITEM_ENTRY_SIZE;
 
@@ -67,9 +69,13 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
     private static final int FOOTER_HEIGHT = 20;
 
     private String currentQuery;
+    private String displayedQuery = "";
     boolean itemFilterMode;
     private boolean warned = false;
-    private final List<ItemStack> filteredItems = new ArrayList<>();
+    private List<ItemStack> filteredItems = List.of();
+    private long searchGeneration;
+    private boolean currentlySearching;
+    private boolean indexRefreshPending;
 
     public ItemViewOverlay() {
         super(-1, -1, -1, -1);
@@ -187,63 +193,136 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
      * @param newQuery The text that will be searched for.
      */
     private void updateQuery(String newQuery) {
-        slotUpdaters += 1;
-        RrvUtil.execute(() -> {
-            if (!newQuery.equals(this.currentQuery))
-                this.startIndex = 0;
+        this.indexRefreshPending = false;
+        if (!newQuery.equals(this.currentQuery))
+            this.startIndex = 0;
+        this.currentQuery = newQuery;
+        this.searchGeneration++;
+        if (!this.currentlySearching)
+            this.startSearch();
+    }
 
-            this.currentQuery = newQuery;
+    public void onIndexInvalidated() {
+        this.firstPage();
+        this.searchGeneration++;
+        this.indexRefreshPending = true;
+    }
 
-            // advanced filtering
-            if (newQuery.contains(" ")) {
+    public void refreshInvalidatedIndex() {
+        var client = Minecraft.getInstance();
+        var info = OverlayManager.INSTANCE.currentInfo();
+        if (this.indexRefreshPending && client.level != null && info != null && info.screen() == client.screen) {
+            this.updateQuery(this.currentQuery);
+        }
+    }
 
-                ArrayList<String> objects = new ArrayList<>();
-
-                for (String query : newQuery.split(" ")) {
-                    if (!PrefixedFilter.startsWithPrefix(query)) {
-                        objects.add(query);
-                    }
-                }
-
-                this.filteredItems.clear();
-                this.filteredItems.addAll(ItemFilters.defaultFilter(String.join(" ", objects).strip()));
-
-                for (String query : getCurrentQueries()) {
-                    ItemFilters.advancedFilter(filteredItems, query);
-                }
-                // standard filtering
-            } else {
-                this.filteredItems.clear();
-                this.filteredItems.addAll(ItemFilters.filter(newQuery));
+    private void startSearch() {
+        String query = this.currentQuery;
+        long generation = this.searchGeneration;
+        boolean advanced = query.contains(" ");
+        List<String> unprefixed = new ArrayList<>();
+        if (advanced) {
+            for (String word : query.split(" ")) {
+                if (!PrefixedFilter.startsWithPrefix(word))
+                    unprefixed.add(word);
             }
+        }
+        String defaultQuery = advanced ? String.join(" ", unprefixed).strip() : query;
+        if (!Configs.CLIENT_SETTINGS.isUpdateOnBackgroundThread() ||
+                (!advanced && PrefixedFilter.startsWithPrefix(query)) || defaultQuery.isEmpty()) {
+            List<ItemStack> results = new ArrayList<>(advanced ? ItemFilters.defaultFilter(defaultQuery) : ItemFilters.filter(query));
+            this.publishSearch(query, results, advanced, generation);
+            return;
+        }
 
-            this.filteredItems.removeIf(ItemView::isExcludedItem);
+        List<ItemStack> stacks = ItemFilters.fullStackList();
+        long indexGeneration = ItemFilters.cacheGeneration();
+        List<DefaultSearch.Entry> entries = new ArrayList<>(stacks.size());
+        for (ItemStack stack : stacks) {
+            List<String> aliases = ItemFilters.ALIASES.get(stack.getItem()).stream()
+                    .map(alias -> alias.toLowerCase(Locale.ROOT)).toList();
+            entries.add(new DefaultSearch.Entry(stack.getDisplayName().getString().toLowerCase(Locale.ROOT), aliases));
+        }
+        if (generation != this.searchGeneration || indexGeneration != ItemFilters.cacheGeneration())
+            return;
+        boolean searchTooltips = Configs.CLIENT_SETTINGS.isSearchTooltips();
+        var level = Minecraft.getInstance().level;
+        var screen = Minecraft.getInstance().screen;
+        List<DefaultSearch.Entry> snapshot = List.copyOf(entries);
+        this.currentlySearching = true;
+        CompletableFuture.supplyAsync(() -> DefaultSearch.match(snapshot, defaultQuery, searchTooltips), Util.backgroundExecutor())
+                .whenComplete((matches, error) -> Minecraft.getInstance().execute(() -> {
+                    this.currentlySearching = false;
+                    if (error != null) {
+                        ReliableRecipeViewer.LOGGER.error("Failed to filter the item index", error);
+                    }
+                    if (level != Minecraft.getInstance().level || screen != Minecraft.getInstance().screen) {
+                        if (generation != this.searchGeneration && Minecraft.getInstance().level != null)
+                            this.startSearch();
+                        return;
+                    }
+                    if (generation != this.searchGeneration || indexGeneration != ItemFilters.cacheGeneration()
+                            || searchTooltips != Configs.CLIENT_SETTINGS.isSearchTooltips()) {
+                        this.startSearch();
+                    } else if (error == null) {
+                        this.publishSearch(query, this.finishDefaultSearch(stacks, matches, defaultQuery), advanced, generation);
+                    }
+                }));
+    }
 
-            this.updateDisplayedItems();
+    private List<ItemStack> finishDefaultSearch(List<ItemStack> stacks, int[] matches, String query) {
+        List<ItemStack> first = new ArrayList<>();
+        List<ItemStack> second = new ArrayList<>();
+        List<ItemStack> third = new ArrayList<>();
+        for (int i = 0; i < matches.length; i++) {
+            ItemStack stack = stacks.get(i);
+            switch (matches[i]) {
+                case DefaultSearch.FIRST -> first.add(stack);
+                case DefaultSearch.SECOND -> second.add(stack);
+                case DefaultSearch.THIRD -> third.add(stack);
+                case DefaultSearch.ALIAS -> {
+                    if (!second.contains(stack)) second.add(stack);
+                }
+                case DefaultSearch.TOOLTIP -> {
+                    int match = ItemFilters.getTooltipMatch(stack, query);
+                    if (match == 1) second.add(stack);
+                    if (match == 2) third.add(stack);
+                }
+                default -> {}
+            }
+        }
+        first.addAll(second);
+        first.addAll(third);
+        return first;
+    }
 
-            SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
-
-            Minecraft.getInstance().execute(this::updateButtons);
-            slotUpdaters -= 1;
-        });
+    private void publishSearch(String query, List<ItemStack> results, boolean advanced, long generation) {
+        if (advanced) {
+            for (String word : query.split(" "))
+                ItemFilters.advancedFilter(results, word);
+        }
+        results.removeIf(ItemView::isExcludedItem);
+        if (generation != this.searchGeneration)
+            return;
+        this.filteredItems = List.copyOf(results);
+        this.displayedQuery = query;
+        this.updateDisplayedItems();
+        SidePanelOverlay.INSTANCE.updateSidePanelIndex(SidePanelOverlay.Reason.SEARCH);
+        this.updateButtons();
     }
 
     public void updateDisplayedItems() {
-        slotUpdaters += 1;
-        RrvUtil.execute(()->{
-            List<ItemStack> items = this.filteredItems;
-            if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
-                boolean isSearching = isSearchingStackGroups();
-                if (isSearching) {
-                    items = StackGroupManager.appendMatchingGroups(this.currentQuery, items);
-                }
-                items = StackGroupManager.applyGrouping(items, isSearching);
+        List<ItemStack> items = new ArrayList<>(this.filteredItems);
+        if (Configs.STACK_GROUPS.areStackGroupsEnabled()) {
+            boolean isSearching = !this.displayedQuery.isEmpty();
+            if (isSearching) {
+                items = StackGroupManager.appendMatchingGroups(this.displayedQuery, items);
             }
-            this.availableItems = items;
-            this.availableItems.removeIf(ItemView::isExcludedItem);
-            this.updateSlots();
-            slotUpdaters -= 1;
-        });
+            items = StackGroupManager.applyGrouping(items, isSearching);
+        }
+        items.removeIf(ItemView::isExcludedItem);
+        this.availableItems = List.copyOf(items);
+        this.updateSlots();
     }
 
     @Override
@@ -347,7 +426,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         boolean prefixedFilter = false;
 
         for (var filter : PrefixedFilter.values()) {
-            if (this.currentQuery.startsWith(filter.prefix())) {
+            if (this.displayedQuery.startsWith(filter.prefix())) {
                 prefixedFilter = true;
                 break;
             }
@@ -363,7 +442,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         lore.add(stack.getHoverName());
         lore.add(stack.getItemName());
 
-        return ItemFilters.getListMatch(lore, this.currentQuery) != 0;
+        return ItemFilters.getListMatch(lore, this.displayedQuery) != 0;
     }
 
     public void createSearchbarElement(InventoryPositionInfo info) {

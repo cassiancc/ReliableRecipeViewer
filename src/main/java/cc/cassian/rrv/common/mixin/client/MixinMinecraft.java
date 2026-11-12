@@ -35,6 +35,11 @@ public abstract class MixinMinecraft {
         ItemFilters.clearCaches();
     }
 
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void refreshItemIndex(CallbackInfo ci) {
+        ItemViewOverlay.INSTANCE.refreshInvalidatedIndex();
+    }
+
     //? <26.2 {
     @Inject(method = "setScreen", at = @At("HEAD"))
     private void clearBlockings(Screen screen, CallbackInfo ci){
