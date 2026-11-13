@@ -318,7 +318,7 @@ public class OverlayManager implements ExclusionAreaManager {
         this.exclusionAreas.add(area);
 
         if (!(old.containsAll(this.exclusionAreas) && old.size() == this.exclusionAreas.size())) {
-            this.setQueuedWidgetUpdate(true);
+            this.updateOverlaysAndWidgets(true);
         }
     }
 
