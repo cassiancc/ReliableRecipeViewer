@@ -38,10 +38,12 @@ public record ItemStackModifierSetPayload(List<ItemStack> itemStacks) implements
 		PacketContext ctx = PacketContext.get();
 		for (ItemStack stack : stacks) {
 			if (PolymerItemUtils.isPolymerServerItem(stack, ctx)) {
-				modifiedStacks.add(PolymerItemUtils.getPolymerItemStack(stack, ctx
-						//? if >26
-						, buf.registryAccess()
-				));
+				//FIXME Polymer 26.4
+				//? if >=26.4 {
+				/*modifiedStacks.add(stack);
+				*///?} else {
+				modifiedStacks.add(PolymerItemUtils.getPolymerItemStack(stack, ctx, buf.registryAccess()));
+				//?}
 			}
 		}
 		try {

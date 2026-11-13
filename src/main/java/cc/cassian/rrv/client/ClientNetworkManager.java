@@ -5,6 +5,7 @@ import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.sharing.RecipeSharing;
 import cc.cassian.rrv.client.util.RRVClientUtil;
+import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.ServerboundRequestRrvUpdate;
@@ -56,10 +57,10 @@ public class ClientNetworkManager {
     public static void handleClientboundUpdateTransferCachePayload(ClientNetworkManager.ClientContext context, ClientboundUpdateTransferCachePayload payload) {
         if (RRVClientUtil.currentScreen() instanceof RecipeViewScreen viewScreen) {
 			viewScreen.getMenu().updateTransferCache();
-            if (SidePanelOverlay.showCraftables()) {
-				SidePanelOverlay.INSTANCE.updateDisplayedItems(SidePanelOverlay.Reason.INVENTORY_CHANGE);
-			}
 		}
+        if (RRVClientUtil.currentScreen() instanceof RRVExtendedContainerScreen && SidePanelOverlay.showCraftables()) {
+            SidePanelOverlay.INSTANCE.updateDisplayedItems(SidePanelOverlay.Reason.INVENTORY_CHANGE);
+        }
     }
 
     public static void handleClientboundRecipeSharingPayload(ClientNetworkManager.ClientContext context, ClientboundShareRecipePayload payload) {

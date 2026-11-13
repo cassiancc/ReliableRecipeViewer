@@ -448,10 +448,6 @@ public class RrvUtil {
     }
 
     public static void execute(Runnable task) {
-        if (Configs.CLIENT_SETTINGS.isUpdateOnBackgroundThread()) {
-            Util.backgroundExecutor().execute(task);
-        } else {
-            task.run();
-        }
+        Util.backgroundExecutor().execute(task);
     }
 }

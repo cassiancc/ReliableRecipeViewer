@@ -33,6 +33,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -481,7 +482,10 @@ public class ItemView {
 	}
 
     public static boolean isExcludedItem(Item item) {
-        return EXCLUDED_ITEMS.stream().anyMatch(c-> c.test(new ItemStackTemplate(item)));
+        return EXCLUDED_ITEMS.stream().anyMatch(c-> {
+            if (item.getDefaultInstance().isEmpty()) return true;
+            return c.test(new ItemStackTemplate(item));
+        });
     }
 
     public static boolean isExcludedRecipe(Identifier recipeType, Identifier recipe) {

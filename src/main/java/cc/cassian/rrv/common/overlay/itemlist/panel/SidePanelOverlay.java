@@ -17,6 +17,7 @@ import cc.cassian.rrv.common.overlay.itemlist.bookmark.BookmarkManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemViewOverlay;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.stackgroup.StackGroupManager;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -114,7 +115,6 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         }
     }
 
-    @Deprecated
     public void updateSidePanelIndex(Reason reason) {
         updateDisplayedItems(reason);
     }
@@ -127,12 +127,16 @@ public class SidePanelOverlay extends AbstractRrvItemListOverlay {
         var screen = RRVClientUtil.currentScreen();
         if (isRecipeViewScreen(screen) && reason.equals(Reason.SCREEN_CHANGE)) return;
         if (RRVPlatform.INSTANCE.isDevelopment()) ReliableRecipeViewer.LOGGER.debug("Updating side panel index due to {}", reason);
-        List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(Configs.CLIENT_SETTINGS.getSidePanel().getStacks(new SidePanelContents(reason, Minecraft.getInstance().player, screen instanceof CreativeModeInventoryScreen)));
-        if (screen == this.currentScreen) {
-            expandedItems.removeIf(ItemView::isExcludedItem);
-            this.availableItems = List.copyOf(expandedItems);
-            this.updateSlots();
-        }
+        RrvUtil.execute(()->{
+            List<ItemStack> expandedItems = StackGroupManager.expandGroupsInList(Configs.CLIENT_SETTINGS.getSidePanel().getStacks(new SidePanelContents(reason, Minecraft.getInstance().player, screen instanceof CreativeModeInventoryScreen)));
+            Minecraft.getInstance().execute(()->{
+                if (screen == this.currentScreen) {
+                    expandedItems.removeIf(ItemView::isExcludedItem);
+                    this.availableItems = List.copyOf(expandedItems);
+                    this.updateSlots();
+                }
+            });
+        });
         updateButtons();
     }
 

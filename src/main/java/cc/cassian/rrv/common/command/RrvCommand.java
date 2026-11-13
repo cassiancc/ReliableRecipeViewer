@@ -1,38 +1,47 @@
 package cc.cassian.rrv.common.command;
 
-import cc.cassian.rrv.common.ReliableRecipeViewer;
-import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.ServerConfigs;
 import cc.cassian.rrv.common.network.RrvNetworkManager;
 import cc.cassian.rrv.common.network.payload.sharing.ClientboundShareRecipePayload;
-import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import cc.cassian.rrv.common.recipe.ServerRecipeManager;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+//? if >=26.4 {
+/*import net.minecraft.commands.arguments.BooleanArgument;
+import net.minecraft.commands.arguments.StringArgument;
+import net.minecraft.server.permissions.PermissionProviderCheck;
+import net.minecraft.commands.CommandPermissionLevels;
+*///?} else {
+import java.util.function.Predicate;
+import cc.cassian.rrv.common.recipe.util.RrvUtil;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+//?}
 import net.minecraft.commands.arguments.IdentifierArgument;
-import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+
 
 import static net.minecraft.commands.Commands.argument;
 
 public class RrvCommand {
+
+    //? if >=26.4 {
+    /*public static final PermissionProviderCheck<CommandSourceStack> HAS_PERMISSION = Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS);
+    *///?} else {
+    public static final Predicate<CommandSourceStack> HAS_PERMISSION = RrvUtil::hasPermission;
+    //?}
 
 
     /// Reloads all recipes and sends them to all clients
@@ -64,7 +73,7 @@ public class RrvCommand {
         );
         commandDispatcher.register(
                 Commands.literal("rrv_admin")
-                        .requires(RrvUtil::hasPermission)
+                        .requires(HAS_PERMISSION)
                         .then(RrvCommand.shareRecipeConfig())
                         //? fabric {
                         .then(RrvCommand.syncRecipeSerializer())
@@ -77,12 +86,14 @@ public class RrvCommand {
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> shareRecipe() {
+        //~ if >=26.4 'StringArgumentType.string'->'StringArgument.string'
         return Commands.literal("share_recipe").then(argument("id", StringArgumentType.string())
                 .executes(context -> {
                     if (!ServerConfigs.SERVER_SETTINGS.isRecipeSharing()) {
                         context.getSource().sendFailure(Component.translatableWithFallback("rrv.sharing.denied","Recipe sharing is not enabled on this server"));
                         return -1;
                     }
+                    //~ if >=26.4 'StringArgumentType.getString'->'StringArgument.getString'
                     final String text = StringArgumentType.getString(context, "id");
                     final Identifier id = Identifier.tryParse(text);
                     if (id == null) return -1;
@@ -98,8 +109,10 @@ public class RrvCommand {
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> shareRecipeConfig() {
+        //~ if >=26.4 'BoolArgumentType.'->'BooleanArgument.'
         return Commands.literal("recipe_sharing").then(argument("enabled", BoolArgumentType.bool())
                 .executes(context -> {
+                    //~ if >=26.4 'BoolArgumentType.'->'BooleanArgument.'
                     final boolean enabled = BoolArgumentType.getBool(context, "enabled");
                     ServerConfigs.SERVER_SETTINGS.setRecipeSharing(enabled);
                     context.getSource().sendSuccess(()-> Component.literal("Recipe sharing has been %s on this server".formatted(enabled ? "enabled" : "disabled")), true);
@@ -110,6 +123,8 @@ public class RrvCommand {
     //? fabric {
     private static ArgumentBuilder<CommandSourceStack, ?> syncRecipeSerializer() {
         return Commands.literal("sync_recipe_serializer").then(argument("serializer", IdentifierArgument.id())
+                //FIXME 26.4
+                //? if <26.4
                 .suggests(new RecipeSerializerSuggestionProvider())
                 .executes(context -> {
                     final Identifier enabled = IdentifierArgument.getId(context, "serializer");
