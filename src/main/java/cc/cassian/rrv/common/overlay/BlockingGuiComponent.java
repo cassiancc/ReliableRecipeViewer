@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.overlay;
 
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.Identifier;
 
@@ -18,6 +19,11 @@ public record BlockingGuiComponent(Identifier id, int x, int y, int width, int h
     @SuppressWarnings("unused") // helper method for mods like Trinkets that use Rect2i
     public BlockingGuiComponent(Identifier id, Rect2i rectangle) {
         this(id, rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+    }
+
+    @SuppressWarnings("unused") // helper method for mods that use ScreenRectangle
+    public BlockingGuiComponent(Identifier id, ScreenRectangle rectangle) {
+        this(id, rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height());
     }
 
     public boolean hasIntersectionWith(int x, int y, int width, int height) {
