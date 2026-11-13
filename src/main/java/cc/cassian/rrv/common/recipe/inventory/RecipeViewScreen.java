@@ -842,7 +842,6 @@ public class RecipeViewScreen extends VersionedScreen implements GuiWidgetAccess
             if (data.getSlotResults().get(slotId))
                 continue;
 
-            int actualSlotId = slotId + (displayId * current.getType().getSlotCount());
             Slot invSlot = this.getMenu().getSlot(displayId, slotId);
 
             int x = invSlot.x;

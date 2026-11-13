@@ -1,6 +1,7 @@
 package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.client.RecipeScreenContext;
+import cc.cassian.rrv.api.util.SlotCountDefinition;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -71,7 +72,24 @@ public interface ReliableClientRecipe {
     /// @param slotFillContext The context the [SlotContent]s is bound to
     void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext);
 
-    /// @return A list of [SlotContent]s, representing the ingredients of this recipe
+
+    /// @return The number of slots **one** recipe requires for display.
+    /// Not necessary to override since 8.11.0 as it can be calculated automatically from [#placeSlots(RecipeViewMenu.SlotDefinition)].
+    default int getSlotCount() {
+        SlotCountDefinition slotDefinition = new SlotCountDefinition();
+        placeSlots(slotDefinition);
+        return slotDefinition.getSlotCount();
+    }
+
+	/// Place the slots of the recipe's type in the gui
+	///
+	/// @param slotDefinition An empty SlotDefinition
+    @SuppressWarnings("all")
+	default void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
+		getType().placeSlots(slotDefinition);
+	}
+
+	/// @return A list of [SlotContent]s, representing the ingredients of this recipe
     List<SlotContent> getIngredients();
 
     /// @return A list of [SlotContent]s, representing the results of this recipe

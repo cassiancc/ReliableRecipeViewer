@@ -215,7 +215,7 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 			addSlotContent(builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT), ingredient);
 		}
 
-		recipeType.placeSlots(slotDefinition);
+		recipe.placeSlots(slotDefinition);
 
 	}
 

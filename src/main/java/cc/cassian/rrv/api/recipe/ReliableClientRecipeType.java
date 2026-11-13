@@ -12,6 +12,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -43,10 +44,6 @@ public interface ReliableClientRecipeType {
         @Override
         public Identifier getGuiTexture() {
             return null;
-        }
-
-        @Override
-        public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
         }
 
         @Override
@@ -83,7 +80,8 @@ public interface ReliableClientRecipeType {
     }
 
 	/// @return The number of slots **one** recipe requires for display.
-	/// Not necessary to override since 8.11.0 as it can be calculated automatically from [#placeSlots(RecipeViewMenu.SlotDefinition)].
+	/// Not necessary to override since 8.11.0 as it can be calculated automatically from [ReliableClientRecipe#placeSlots(RecipeViewMenu.SlotDefinition)].
+    @Deprecated(forRemoval = true)
 	default int getSlotCount() {
         SlotCountDefinition slotDefinition = new SlotCountDefinition();
         placeSlots(slotDefinition);
@@ -93,9 +91,12 @@ public interface ReliableClientRecipeType {
 	/// Place the slots of the recipe's type in the gui
 	///
 	/// @param slotDefinition An empty SlotDefinition
-	void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition);
+	@Deprecated(forRemoval = true)
+	default void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
+		throw new NotImplementedException("ReliableClientRecipe#placeSlots was not implemented!");
+	}
 
-    /// @return A unique id of the recipe's type
+	/// @return A unique id of the recipe's type
     Identifier getId();
 
 
