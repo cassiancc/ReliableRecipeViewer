@@ -102,7 +102,7 @@ public class RrvNetworkManager {
      */
     public static <T extends CustomPacketPayload> void registerClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, ClientNetworkManager.PayloadHandler<ClientNetworkManager.ClientContext, T> clientHandler) {
         //? fabric {
-        registerClientboundPayload(type, codec);
+        PayloadTypeRegistry.clientboundPlay().register(type, codec);
         if (RRVPlatform.INSTANCE.isClientSide()) {
             ClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
         }
@@ -113,18 +113,24 @@ public class RrvNetworkManager {
         *///?}
     }
 
-
     /**
-     * Registers a new clientbound packet type
+     * Registers a new large clientbound packet type
      *
      * @param type          The packet type
      * @param codec         The codec for the packet
+     * @param clientHandler The client payload handler
      */
-    public static <T extends CustomPacketPayload> void registerClientboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
+    public static <T extends CustomPacketPayload> void registerLargeClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, ClientNetworkManager.PayloadHandler<ClientNetworkManager.ClientContext, T> clientHandler) {
         //? fabric {
-        //~ if <26 'clientboundPlay'->'playS2C'
-        PayloadTypeRegistry.clientboundPlay().register(type, codec);
-        //?}
+        PayloadTypeRegistry.clientboundPlay().registerLarge(type, codec, 64 * 1024 * 1024); // 64 MB is used to match Fabric's recipe sync. If issues still arise, this can be adjusted.
+        if (RRVPlatform.INSTANCE.isClientSide()) {
+            ClientNetworkManager.registerClientboundReciever(type, codec, clientHandler);
+        }
+        //?} else {
+        /*event.playToClient(type, codec, (payload, context) -> {
+           clientHandler.handle(new ClientNetworkManager.ClientContext(Optional.empty()), payload);
+        });
+        *///?}
     }
 
     /**
@@ -189,7 +195,7 @@ public class RrvNetworkManager {
         registerClientbound(ClientboundTypeUpdateStartPayload.TYPE, ClientboundTypeUpdateStartPayload.STREAM_CODEC, (context, payload) -> {
             InternalRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.startCaching(payload.recipeType(), payload.amount()));
         });
-        registerClientbound(ClientboundTypeUpdatePayload.TYPE, ClientboundTypeUpdatePayload.STREAM_CODEC, (context, payload) -> {
+        registerLargeClientbound(ClientboundTypeUpdatePayload.TYPE, ClientboundTypeUpdatePayload.STREAM_CODEC, (context, payload) -> {
             InternalRecipeManager.INSTANCE.queueTask(() -> LowEndRecipeCache.INSTANCE.cacheModRecipe(payload.entry()));
         });
         registerClientbound(ClientboundTypeUpdateEndPayload.TYPE, ClientboundTypeUpdateEndPayload.STREAM_CODEC, (context, payload) -> {

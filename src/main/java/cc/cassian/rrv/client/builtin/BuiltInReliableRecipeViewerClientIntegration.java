@@ -125,7 +125,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
             if (Configs.CLIENT_SETTINGS.getIndexSource().containsKey(IndexSource.CREATIVE))
                 ItemView.excludeItemStack(new ItemStack(Items.SUSPICIOUS_STEW));
             excludeTag(BuiltInRegistries.BLOCK, CommonTags.EXCLUDED_BLOCKS);
-            excludeTag(BuiltInRegistries.ITEM, CommonTags.EXCLUDED_ITEMS);
+            ItemView.excludeItems(CommonTags.EXCLUDED_ITEMS);
             excludeTag(BuiltInRegistries.FLUID, CommonTags.EXCLUDED_FLUIDS);
             hideRecipes();
             StackGroupManager.reload();
@@ -273,9 +273,7 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 							/*var result = new ItemStackTemplate(accessor.getResult().item().orElse(ingredients.getFirst().builtInRegistryHolder()), accessor.getResult().count(), accessor.getResult().components());
 							*///?} else if >26 {
 							var result = accessor.getResult();
-							//?} else {
-							/*var result = new ItemStackTemplate(accessor.getResult());
-							*///?}
+							//?}
 							results.add(result);
 						});
 
@@ -283,7 +281,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 							recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getInput(), accessor.getMaterial()).setResult(results).build());
 
 					}
-					//? if >26 {
 					case DyeRecipe dyeRecipe -> {
 						DyeRecipeAccessor accessor = (DyeRecipeAccessor) dyeRecipe;
 
@@ -372,7 +369,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 						}
 						recipeList.add(new CraftingClientRecipe.Builder(id, accessor.getTarget(), accessor.getBanner()).setResult(SlotContent.of(results)).setDependentIndex(1).build());
 					}
-					//?}
 					case RepairItemRecipe repairItemRecipe ->
 						// Repairing
 							addRepairingRecipes(recipeList);

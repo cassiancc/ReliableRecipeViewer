@@ -180,7 +180,7 @@ public class ItemViewOverlay extends AbstractRrvItemListOverlay {
         this.itemEndY = this.y + this.height - FOOTER_HEIGHT;
 
         if (Configs.CLIENT_SETTINGS.isRecipeBookTheme()) {
-            this.itemStartX+=8;
+            this.itemStartX+=10;
             this.itemStartY+=26;
             this.itemEndY-=10;
         }

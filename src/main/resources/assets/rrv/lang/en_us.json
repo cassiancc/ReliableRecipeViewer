@@ -28,7 +28,7 @@
   "view.rrv.type.entity.goat_horn": "\u00a78» Dropped when Goats ram into a hard surface",
   "view.rrv.type.entity.egg_lay": "\u00a78» Laid by Chickens every 7.5 minutes",
   "view.rrv.type.entity.allay_duplication": "\u00a78» While dancing to music",
-  "view.rrv.type.entity.food": "Can be fed to this animal.",
+  "view.rrv.type.entity.food": "Can be fed to this entity.",
   "view.rrv.type.entity.drops": "Dropped by this entity.",
   "view.rrv.type.entity.spawns": "Spawn Locations",
   "view.rrv.type.entity.spawns_item": "\u00a78» %s",
