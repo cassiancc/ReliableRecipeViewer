@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(BookCloningRecipe.class)
 public interface BookCloningRecipeAccessor {
-    //? if >26 {
     @Accessor
     Ingredient getSource();
 
@@ -18,5 +17,4 @@ public interface BookCloningRecipeAccessor {
 
     @Accessor
     ItemStackTemplate getResult();
-    //?}
 }

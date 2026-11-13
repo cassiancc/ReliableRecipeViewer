@@ -45,12 +45,10 @@ public class NeoForgeEntrypoint {
 				} catch (Exception ignored) {}
             }
         });
-        //? if >26 {
         if (ModCompat.LAUNCHPAD && ModCompat.FABRIC_RECIPE_API) {
             ReliableRecipeViewer.LOGGER.info("Initializing RRV integration for Fabric mods through Launchpad.");
             FabricUtil.initialize();
         }
-        //?}
     }
 
     @SubscribeEvent

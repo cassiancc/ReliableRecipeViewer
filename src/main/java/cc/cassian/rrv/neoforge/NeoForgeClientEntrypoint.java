@@ -58,12 +58,10 @@ public class NeoForgeClientEntrypoint {
 				} catch (Exception ignored) {}
 			}
 		});
-		//? if >26 {
 		if (ModCompat.LAUNCHPAD && ModCompat.FABRIC_RECIPE_API) {
 			ReliableRecipeViewer.LOGGER.info("Initializing RRV client integration for Fabric mods through Launchpad.");
 			FabricClientUtil.initializeClient();
 		}
-		//?}
         ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ()-> (mod, screen) -> new ClientConfigScreen(screen));
     }
 

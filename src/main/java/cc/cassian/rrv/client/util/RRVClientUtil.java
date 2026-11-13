@@ -131,12 +131,7 @@ public class RRVClientUtil {
     }
 
     public static void sendMessage(Component message) {
-        Minecraft.getInstance().player
-                //? if >26 {
-                .sendSystemMessage(message);
-                 //?} else {
-                /*.displayClientMessage(message, false);
-        *///?}
+        Minecraft.getInstance().player.sendSystemMessage(message);
     }
 
     public static int compare(ReliableClientRecipe first, ReliableClientRecipe second) {
