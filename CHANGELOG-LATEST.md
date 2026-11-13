@@ -4,6 +4,7 @@
 - Support for 26.4-snapshot-8.
   - Auto-completion for recipe serializers does not yet work.
   - Polymer support is not complete, Polymer does not yet support 26.4.
+- `ClientRecipeManager` now allows querying recipes by key.
 
 ### Changed
 - Recipe sync now uses Fabric's packet splitter, should resolve #93.

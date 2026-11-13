@@ -10,6 +10,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,5 +58,9 @@ public class ClientRecipeManager {
     public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipesForType(RecipeType<T> type) {
         return ReliableRecipeViewerClient.LOCAL_RECIPES.byType(type);
     }
+
+	public RecipeHolder<?> getRecipesByKey(ResourceKey<Recipe<?>> recipe) {
+		return ReliableRecipeViewerClient.LOCAL_RECIPES.byKey(recipe);
+	}
 
 }
