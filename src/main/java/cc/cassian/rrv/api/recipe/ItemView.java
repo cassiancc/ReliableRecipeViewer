@@ -355,13 +355,13 @@ public class ItemView {
         return EXCLUDED_POTIONS;
     }
 
-    /// Opens a recipe view for the client player containing all recipes that use the specified stack as an ingredient ([ReliableClientRecipe#getIngredients], ([ReliableClientRecipeType#getCraftReferences])).
+    /// Opens a recipe view for the client player containing all recipes that use the specified stack as an ingredient ([ReliableClientRecipe#getIngredients], ([ItemView#getWorkstations])).
     /// @param stack The ingredient [ItemStack]
     public static void openForStackIngredient(ItemStack stack) {
         ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.INPUT);
     }
 
-    /// Opens a recipe view for the client player containing all recipes that use the specified stack as an ingredient ([ReliableClientRecipe#getIngredients], ([ReliableClientRecipeType#getCraftReferences])).
+    /// Opens a recipe view for the client player containing all recipes that use the specified stack as an ingredient ([ReliableClientRecipe#getIngredients], ([ItemView#getWorkstations])).
     /// @param stack The ingredient [ItemStack]
     public static void openForStackIngredient(ItemStack stack, ReliableClientRecipeType type) {
         ItemViewOverlay.INSTANCE.openRecipeView(stack, ActionType.INPUT, type);
@@ -458,6 +458,36 @@ public class ItemView {
 		});
     }
 
+    /// Associates a new workstation with a given recipe type.
+    /// Workstations are used to redirect the player to a list of this type's recipes that are associated with the reference item.
+    /// Run this via [ItemView#addClientReloadCallback(ReloadCallback)] to ensure it's registered on time.
+    public static void addWorkstation(ReliableClientRecipeType type, ItemStack workstation) {
+        WORKSTATIONS.put(type.getId(), ItemStackTemplate.fromNonEmptyStack(workstation));
+    }
+
+    /// Associates a new workstation with a given recipe type.
+    /// Workstations are used to redirect the player to a list of this type's recipes that are associated with the reference item.
+    /// Run this via [ItemView#addClientReloadCallback(ReloadCallback)] to ensure it's registered on time.
+    public static void addWorkstation(ReliableClientRecipeType type, ItemStackTemplate workstation) {
+        WORKSTATIONS.put(type.getId(), workstation);
+    }
+
+    /// Associates a new workstation with a given recipe type.
+    /// Workstations are used to redirect the player to a list of this type's recipes that are associated with the reference item.
+    /// Run this via [ItemView#addClientReloadCallback(ReloadCallback)] to ensure it's registered on time.
+    public static void addWorkstation(ReliableClientRecipeType type, Item workstation) {
+        WORKSTATIONS.put(type.getId(), new ItemStackTemplate(workstation));
+    }
+
+    /// Retrieves a list of workstations associated with a specific recipe type, including workstations added via [ItemView#addWorkstation] and hardcoded references in [ReliableClientRecipeType#getCraftReferences().
+    /// Workstations are used to redirect the player to a list of this type's recipes that are associated with the reference item.
+    public static List<ItemStackTemplate> getWorkstations(ReliableClientRecipeType type) {
+        var list = new ArrayList<>(WORKSTATIONS.get(type.getId()));
+        list.addAll(type.getCraftReferences().stream().map(ItemStackTemplate::fromNonEmptyStack).toList());
+        list.removeIf(ItemView::isExcludedItem);
+        return list;
+    }
+
     /// Mods can add an info recipe via the API rather than via a resource pack.
     /// Run this via [ItemView#addClientReloadCallback] to ensure it's registered on time.
     ///
@@ -492,6 +522,10 @@ public class ItemView {
         if (EXCLUDED_RECIPES.containsKey(recipeType))
             return EXCLUDED_RECIPES.get(recipeType).contains(recipe);
         return false;
+    }
+
+    public static boolean isExcludedItem(ItemStackTemplate stack) {
+        return isExcludedItem(stack.create());
     }
 
     public static boolean isExcludedItem(ItemStack stack) {

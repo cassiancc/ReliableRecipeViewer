@@ -9,12 +9,15 @@ import cc.cassian.rrv.api.util.MobFood;
 import cc.cassian.rrv.common.builtin.info.InfoClientRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.Fireworks;
@@ -222,6 +225,9 @@ public class ItemViewRecipes {
         };
     }
 
+
+    /// A list of workstations to be added to the hardcoded list.
+    public static final HashMultimap<Identifier, ItemStackTemplate> WORKSTATIONS = HashMultimap.create();
     /// A list of food to be added to the index.
     public static final HashMap<EntityType<?>, MobFood> MOB_FOOD = new HashMap<>();
     /// A list of mob drops to be added to the index.

@@ -1,5 +1,6 @@
 package cc.cassian.rrv.common.integration.jei;
 
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.recipe.ClientRecipeCache;
@@ -45,6 +46,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -120,8 +122,8 @@ public class ReliableRecipeViewerJeiPlugin implements IModPlugin {
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 		RECIPE_CATEGORIES.forEach((category, recipeType) -> {
-			for (ItemStack craftReference : category.getCraftReferences()) {
-				registration.addCraftingStation(recipeType, craftReference);
+			for (ItemStackTemplate craftReference : ItemView.getWorkstations(category)) {
+				registration.addCraftingStation(recipeType, craftReference.create());
 			}
 		});
 	}

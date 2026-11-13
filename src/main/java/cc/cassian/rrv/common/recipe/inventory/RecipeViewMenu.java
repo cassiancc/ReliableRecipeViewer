@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.recipe.inventory;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.client.ClientNetworkManager;
@@ -30,6 +31,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.util.*;
 import java.util.function.Function;
@@ -240,7 +242,7 @@ public class RecipeViewMenu {
     }
 
     public void nextReference() {
-        this.currentCraftReference = Math.min(this.currentCraftReference + 1, this.clientRecipeType.getCraftReferences().size() - this.getDisplayableCraftReferences());
+        this.currentCraftReference = Math.min(this.currentCraftReference + 1, ItemView.getWorkstations(clientRecipeType).size() - this.getDisplayableCraftReferences());
         this.updateReferences();
     }
 
@@ -390,15 +392,15 @@ public class RecipeViewMenu {
 
 
     public int getDisplayableCraftReferences() {
-        List<ItemStack> craftReferences = this.getClientRecipeType().getCraftReferences();
+        List<ItemStackTemplate> craftReferences = ItemView.getWorkstations(this.getClientRecipeType());
         return Math.min(craftReferences.size(), (this.getHeight() - 4) / 25);
     }
 
     private void updateReferences() {
         if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
-            List<ItemStack> craftReferences = this.clientRecipeType.getCraftReferences();
-            for (int i = this.currentCraftReference; i < Math.min(this.clientRecipeType.getCraftReferences().size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
-                this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i));
+            List<ItemStackTemplate> craftReferences = ItemView.getWorkstations(clientRecipeType);
+            for (int i = this.currentCraftReference; i < Math.min(ItemView.getWorkstations(clientRecipeType).size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
+                this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i).create());
             }
         }
     }
@@ -847,7 +849,7 @@ public class RecipeViewMenu {
     /// Returns a list of workstations or craft references for a given set of recipes.
     /// Currently only used in footer view due to issues with the sidebar view.
     List<ItemStack> getCraftReferences() {
-        return getClientRecipeType().getCraftReferences().stream().filter(e->{
+        return ItemView.getWorkstations(getClientRecipeType()).stream().map(ItemStackTemplate::create).filter(e->{
 			for (ReliableClientRecipe reliableClientRecipe : getCurrentDisplay()) {
                 if (getClientRecipeType().getCraftReferenceCondition().matches(e, reliableClientRecipe))
                     return true;
