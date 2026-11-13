@@ -77,6 +77,7 @@ public class RecipeViewMenu {
     private final List<RecipeTransferData> transferData;
 
     public final NonNullList<Slot> slots = NonNullList.create();
+    private final Map<Integer, NonNullList<Slot>> slotsByRecipe = new HashMap<>();
 
     public RecipeViewMenu(Screen parentScreen, int containerId, Inventory inventory, List<? extends ReliableClientRecipe> recipes, ItemStack origin, ActionType originType, ArrayList<RecipeViewMenu> viewHistory) {
         this(parentScreen,containerId, inventory,recipes, origin, originType, viewHistory, ReliableClientRecipeType.NONE);
@@ -347,7 +348,7 @@ public class RecipeViewMenu {
             for (SlotPlacement placement : slotDefinition.getItemSlots()) {
                 var properties = placement.properties();
                 var slot = placement.function().apply(new RecipeSlot.Properties(properties.container(), properties.slotId(), properties.x() + this.guiOffsetLeft(), properties.y() + this.guiOffsetTop(recipeIndex), properties.highlightWithoutContents()));
-                this.addSlot(slot);
+                this.addSlot(recipeIndex, slot);
             }
 
             SlotFillContext slotFillContext = new SlotFillContext();
@@ -854,24 +855,31 @@ public class RecipeViewMenu {
         }).toList();
     }
 
-    protected Slot addSlot(final Slot slot) {
+    protected Slot addSlot(int displayIndex, final Slot slot) {
         slot.index = this.slots.size();
+        NonNullList<Slot> slots1 = this.slotsByRecipe.getOrDefault(displayIndex, NonNullList.create());
+        slots1.add(slot);
+        this.slotsByRecipe.put(displayIndex, slots1);
         this.slots.add(slot);
         return slot;
+    }
+
+    public List<Slot> getSlots() {
+		return slots;
     }
 
     public NonNullList<ItemStack> getItems() {
         NonNullList<ItemStack> itemStacks = NonNullList.create();
 
-        for(Slot slot : this.slots) {
+        for(Slot slot : this.getSlots()) {
             itemStacks.add(slot.getItem());
         }
 
         return itemStacks;
     }
 
-    public Slot getSlot(final int index) {
-        return this.slots.get(index);
+    public Slot getSlot(int displayIndex, final int index) {
+        return this.slotsByRecipe.get(displayIndex).get(index);
     }
 
 

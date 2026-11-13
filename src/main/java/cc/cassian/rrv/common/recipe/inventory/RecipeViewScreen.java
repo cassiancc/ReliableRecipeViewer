@@ -695,7 +695,7 @@ public class RecipeViewScreen extends VersionedScreen implements GuiWidgetAccess
     }
 
     protected void extractSlots(final GuiGraphicsExtractor graphics) {
-        for (Slot slot : this.menu.slots) {
+        for (Slot slot : this.menu.getSlots()) {
             if (slot.isActive()) {
                 this.extractSlot(graphics, slot);
             }
@@ -732,7 +732,7 @@ public class RecipeViewScreen extends VersionedScreen implements GuiWidgetAccess
     }
 
     @Nullable Slot getHoveredSlot(final double x, final double y) {
-        for (Slot slot : this.menu.slots) {
+        for (Slot slot : this.menu.getSlots()) {
             if (slot.isActive() && this.isHovering(slot, x, y)) {
                 return slot;
             }
@@ -804,7 +804,7 @@ public class RecipeViewScreen extends VersionedScreen implements GuiWidgetAccess
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, recipeType.getGuiTexture(), 0, 0, 0, 0, recipeType.getDisplayWidth(), recipeType.getDisplayHeight(), recipeType.getDisplayWidth(), recipeType.getDisplayHeight());
 
             //Optional slot rendering
-            this.getMenu().slots.stream().filter(slot -> this.getMenu().isOptionalSlot(slot.index) && slot.hasItem()).forEach(slot -> {
+            this.getMenu().getSlots().stream().filter(slot -> this.getMenu().isOptionalSlot(slot.index) && slot.hasItem()).forEach(slot -> {
                 guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(slot.x - (guiLeft - this.leftPos) - 1, slot.y - (guiTop - this.getTopPos()) - 1);
                 this.getMenu().getOptionalSlotRenderer(slot.index).extractRenderState(guiGraphics, mouseX - guiLeft, mouseY - guiTop, partialTicks);
@@ -843,7 +843,7 @@ public class RecipeViewScreen extends VersionedScreen implements GuiWidgetAccess
                 continue;
 
             int actualSlotId = slotId + (displayId * current.getType().getSlotCount());
-            Slot invSlot = this.getMenu().getSlot(actualSlotId);
+            Slot invSlot = this.getMenu().getSlot(displayId, slotId);
 
             int x = invSlot.x;
             int y = invSlot.y;
