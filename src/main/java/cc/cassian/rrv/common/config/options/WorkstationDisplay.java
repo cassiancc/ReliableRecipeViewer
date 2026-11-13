@@ -7,7 +7,7 @@ import java.util.Locale;
 
 public enum WorkstationDisplay implements StringRepresentable {
 	IN_FOOTER,
-	IN_SIDEBAR,
+//	IN_SIDEBAR,
 	HIDE;
 
 	@Override

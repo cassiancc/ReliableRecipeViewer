@@ -47,7 +47,7 @@ public class RecipeViewMenu {
     protected static final int BOTTOM_SPACE = 24;
 
     private final Player player;
-    private ViewContainer viewContainer;
+    private final List<ViewContainer> viewContainers = new ArrayList<>();
 
     private List<? extends ReliableClientRecipe> recipes;
     private ReliableClientRecipeType clientRecipeType;
@@ -155,7 +155,6 @@ public class RecipeViewMenu {
         if (!this.sortedByType.isEmpty())
             return;
 
-        this.viewContainer = new ViewContainer(0);
         this.clientRecipeType = ReliableClientRecipeType.NONE;
 
     }
@@ -331,9 +330,9 @@ public class RecipeViewMenu {
 
         this.currentCraftReference = 0;
 
-        for (int i = 0; i < this.currentDisplay.size(); i++) {
+        for (int recipeIndex = 0; recipeIndex < this.currentDisplay.size(); recipeIndex++) {
 
-            ReliableClientRecipe recipe = this.currentDisplay.get(i);
+            ReliableClientRecipe recipe = this.currentDisplay.get(recipeIndex);
             recipe.getIngredients().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
             recipe.getResults().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
 
@@ -343,27 +342,26 @@ public class RecipeViewMenu {
                 slotContent.bindResult(recipe.entryId()); //FIXME this should only be applied to the stacks on the screen, not the actual recipe's stacks
             });
 
-            SlotDefinition slotDefinition = new SlotDefinition(viewContainer);
+            SlotDefinition slotDefinition = new SlotDefinition(this.viewContainers.get(recipeIndex));
             this.clientRecipeType.placeSlots(slotDefinition);
-            for (SlotPlacement function : slotDefinition.getItemSlots()) {
-                var properties = function.properties();
-                var slot = function.function().apply(new RecipeSlot.Properties(properties.container(), properties.slotId()+ (i * this.getClientRecipeType().getSlotCount()), properties.x() + this.guiOffsetLeft(), properties.y() + this.guiOffsetTop(i), properties.highlightWithoutContents()));
+            for (SlotPlacement placement : slotDefinition.getItemSlots()) {
+                var properties = placement.properties();
+                var slot = placement.function().apply(new RecipeSlot.Properties(properties.container(), properties.slotId(), properties.x() + this.guiOffsetLeft(), properties.y() + this.guiOffsetTop(recipeIndex), properties.highlightWithoutContents()));
                 this.addSlot(slot);
             }
 
             SlotFillContext slotFillContext = new SlotFillContext();
             recipe.bindSlots(slotFillContext);
 
-            for (int j = 0; j < this.getClientRecipeType().getSlotCount(); j++) {
-                int slotId = j + (i * this.getClientRecipeType().getSlotCount());
-                ItemStack stackByIndex = slotFillContext.contentBySlot(j).getByIndex(slotFillContext.contentBySlot(j).index());
-                this.viewContainer.setItem(slotId, stackByIndex);
+            for (int slotId = 0; slotId < this.getClientRecipeType().getSlotCount(); slotId++) {
+                ItemStack stackByIndex = slotFillContext.contentBySlot(slotId).getByIndex(slotFillContext.contentBySlot(slotId).index());
+                this.viewContainers.get(recipeIndex).setItem(slotId, stackByIndex);
 
-                if (slotFillContext.getAdditionalTooltips().containsKey(j))
-                    this.additionalStackModifiers.put(slotId, slotFillContext.getAdditionalTooltips().get(j));
+                if (slotFillContext.getAdditionalTooltips().containsKey(slotId))
+                    this.additionalStackModifiers.put(slotId, slotFillContext.getAdditionalTooltips().get(slotId));
 
-                if (slotFillContext.getOptionalSlotRenderers().containsKey(j))
-                    this.optionalSlotRenderers.put(slotId, slotFillContext.getOptionalSlotRenderers().get(j));
+                if (slotFillContext.getOptionalSlotRenderers().containsKey(slotId))
+                    this.optionalSlotRenderers.put(slotId, slotFillContext.getOptionalSlotRenderers().get(slotId));
 
             }
 
@@ -381,11 +379,11 @@ public class RecipeViewMenu {
         this.updateDependencies();
 
 
-        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
-            for (int i = 0; i < this.getDisplayableCraftReferences(); i++) {
-                this.addSlot(new RecipeSlot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i, false));
-            }
-        }
+//        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
+//            for (int i = 0; i < this.getDisplayableCraftReferences(); i++) {
+//                this.addSlot(new RecipeSlot(this.viewContainer, this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + i, -25 + 4, 4 + 4 + i * 24 + i, false));
+//            }
+//        }
 
         this.updateReferences();
     }
@@ -397,12 +395,12 @@ public class RecipeViewMenu {
     }
 
     private void updateReferences() {
-        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
-            List<ItemStackTemplate> craftReferences = ItemView.getWorkstations(clientRecipeType);
-            for (int i = this.currentCraftReference; i < Math.min(ItemView.getWorkstations(clientRecipeType).size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
-                this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i).create());
-            }
-        }
+//        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
+//            List<ItemStackTemplate> craftReferences = ItemView.getWorkstations(clientRecipeType);
+//            for (int i = this.currentCraftReference; i < Math.min(ItemView.getWorkstations(clientRecipeType).size(), this.currentCraftReference + this.getDisplayableCraftReferences()); i++) {
+//                this.getSlot(this.clientRecipeType.getSlotCount() * this.getCurrentDisplay().size() + (i - this.currentCraftReference)).set(craftReferences.get(i).create());
+//            }
+//        }
     }
 
     public void quickCraft(ReliableClientRecipe currentRecipe, int index) {
@@ -723,7 +721,10 @@ public class RecipeViewMenu {
 
 
             this.setMenuSizes();
-            this.viewContainer = new ViewContainer(this.clientRecipeType.getSlotCount() * this.maxPossiblePerPage + this.getDisplayableCraftReferences());
+            this.viewContainers.clear();
+            for (int i = 0; i < maxPossiblePerPage; i++) {
+                this.viewContainers.add(new ViewContainer(clientRecipeType.getSlotCount()));
+            }
 
             this.updateByPage();
 
@@ -766,7 +767,7 @@ public class RecipeViewMenu {
 
                 //Exclude DependencySlots
                 if (!slotFillContext.contentDependencies.containsKey(j))
-                    this.viewContainer.setItem(j + (i * this.getClientRecipeType().getSlotCount()), slotFillContext.contentBySlot(j).next());
+                    this.viewContainers.get(i).setItem(j, slotFillContext.contentBySlot(j).next());
             }
 
         }
@@ -784,7 +785,7 @@ public class RecipeViewMenu {
             for (int j = 0; j < this.getClientRecipeType().getSlotCount(); j++) {
 
                 if (slotFillContext.contentDependencies.containsKey(j))
-                    this.viewContainer.setItem(j + (i * this.getClientRecipeType().getSlotCount()), slotFillContext.contentBySlot(j).getByIndex(Math.min(slotFillContext.contentDependencies.get(j).get(), slotFillContext.contentBySlot(j).size() - 1)));
+                    this.viewContainers.get(i).setItem(j, slotFillContext.contentBySlot(j).getByIndex(Math.min(slotFillContext.contentDependencies.get(j).get(), slotFillContext.contentBySlot(j).size() - 1)));
             }
         }
     }
@@ -796,11 +797,6 @@ public class RecipeViewMenu {
     public ReliableClientRecipeType getClientRecipeType() {
         return this.clientRecipeType;
     }
-
-    public ViewContainer getViewContainer() {
-        return this.viewContainer;
-    }
-
 
     private int calculateRecipesPerPage() {
         if (this.getRecipes().isEmpty())
@@ -891,7 +887,7 @@ public class RecipeViewMenu {
         }
 
         public void addItemSlot(int slotId, int x, int y) {
-            this.itemSlots.put(slotId, new SlotPlacement(new RecipeSlot.Properties(viewContainer, slotId, x, y, highlightWithoutContents), properties -> new RecipeSlot(properties)));
+            this.itemSlots.put(slotId, new SlotPlacement(new RecipeSlot.Properties(viewContainer, slotId, x, y, highlightWithoutContents), RecipeSlot::new));
         }
 
         public void addItemSlot(int slotId, int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
@@ -929,14 +925,6 @@ public class RecipeViewMenu {
 
         public void bindSlot(int slotId, SlotContent slotContent) {
             this.contents.put(slotId, slotContent);
-        }
-
-        /**
-		 * Typo'd, use {@link #bindDependentSlot(int, Supplier, SlotContent)}
-		 */
-        @Deprecated(since = "6.4.0", forRemoval = true)
-        public void bindDepedantSlot(int slotId, Supplier<Integer> dependentIndex, SlotContent slotContent) {
-            bindDependentSlot(slotId, dependentIndex, slotContent);
         }
 
         public void bindDependentSlot(int slotId, Supplier<Integer> dependentIndex, SlotContent slotContent) {

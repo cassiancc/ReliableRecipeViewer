@@ -542,17 +542,18 @@ public class RecipeViewScreen extends VersionedScreen implements GuiWidgetAccess
             return true;
 
         // scroll through workstations
-        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
-            if (mouseX <= this.leftPos && mouseX >= this.leftPos - 25 && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight) {
-                if (scrollY < 0)
-                    this.getMenu().nextReference();
-
-                if (scrollY > 0)
-                    this.getMenu().prevReference();
-
-                return true;
-            }
-        } else if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER) && workstationSlot != null && workstationSlot.isHovered()) {
+//        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
+//            if (mouseX <= this.leftPos && mouseX >= this.leftPos - 25 && mouseY >= this.getTopPos() && mouseY <= this.getTopPos() + this.imageHeight) {
+//                if (scrollY < 0)
+//                    this.getMenu().nextReference();
+//
+//                if (scrollY > 0)
+//                    this.getMenu().prevReference();
+//
+//                return true;
+//            }
+//        } else
+        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_FOOTER) && workstationSlot != null && workstationSlot.isHovered()) {
             int max = menu.getCraftReferences().size() - 1;
             if (scrollY < 0)
                 menu.setCurrentCraftReference(Math.clamp(menu.getCurrentCraftReference()+1, 0, max));
@@ -778,17 +779,17 @@ public class RecipeViewScreen extends VersionedScreen implements GuiWidgetAccess
 
         //Render craft references
 
-        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
-            for (int i = 0; i < this.getMenu().getDisplayableCraftReferences(); i++) {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 25, this.getTopPos() + 4 + i * 24 + i, 231, 48, 25, 24, 256, 256);
-            }
-
-            if (this.getMenu().getCurrentCraftReference() > 0)
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
-
-            if (this.getMenu().getCurrentCraftReference() < getMenu().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
-        }
+//        if (Configs.CLIENT_SETTINGS.getWorkstationDisplay().equals(WorkstationDisplay.IN_SIDEBAR)) {
+//            for (int i = 0; i < this.getMenu().getDisplayableCraftReferences(); i++) {
+//                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 25, this.getTopPos() + 4 + i * 24 + i, 231, 48, 25, 24, 256, 256);
+//            }
+//
+//            if (this.getMenu().getCurrentCraftReference() > 0)
+//                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 - 1 - 4, 248, 72, 8, 4, 256, 256);
+//
+//            if (this.getMenu().getCurrentCraftReference() < getMenu().getCraftReferences().size() - this.getMenu().getDisplayableCraftReferences())
+//                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VIEW_LOCATION, this.leftPos - 4 - 5 - 8, this.getTopPos() + 4 + (this.getMenu().getDisplayableCraftReferences()) * 25, 248, 76, 8, 4, 256, 256);
+//        }
 
         int guiLeft = this.leftPos + this.getMenu().guiOffsetLeft();
 
