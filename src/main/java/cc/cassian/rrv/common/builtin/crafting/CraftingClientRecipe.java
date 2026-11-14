@@ -66,7 +66,7 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
         //Result Slot
         var slot = builder.addItemSlot(98, 22).bindSlot(this.result);
         if (dependentIndex != -1)
-            slot.bindDependentSlot( ()->this.ingredients.get(dependentIndex).index());
+            slot.bindDependentSlot(()->this.ingredients.get(dependentIndex).index());
     }
 
     @Override

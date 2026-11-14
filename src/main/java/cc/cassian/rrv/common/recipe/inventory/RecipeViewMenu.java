@@ -350,7 +350,7 @@ public class RecipeViewMenu {
 
             SlotPlacementDefinition slotDefinition = new SlotPlacementDefinition(this.viewContainers.get(recipeIndex));
             recipe.addSlots(slotDefinition);
-            container.setSize(slotDefinition.getItemSlots().size());
+            container.setSize(slotDefinition.getSlotCount());
             currentDisplayContext.add(slotDefinition);
             for (SlotPlacement placement : slotDefinition.getItemSlots()) {
                 var properties = placement.properties();

@@ -52,7 +52,8 @@ public class SlotPlacementDefinition {
 	/// Hardcoding item slot ids is not recommended and only available to preserve 8.0 compatibility.
 	@Deprecated(since = "9.0.0", forRemoval = true)
 	public SlotBuilder addItemSlot(int slotId, int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
-		this.itemSlots.put(slotId, new SlotPlacement(new RecipeSlot.Properties(viewContainer,slots, x, y, highlightWithoutContents), recipeSlot));
+		this.itemSlots.put(slotId, new SlotPlacement(new RecipeSlot.Properties(viewContainer, slotId, x, y, highlightWithoutContents), recipeSlot));
+		this.slots = Math.max(this.slots, slotId + 1);
 		return new SlotBuilder(this, slotId);
 	}
 
@@ -89,6 +90,6 @@ public class SlotPlacementDefinition {
 	}
 
 	public int getSlotCount() {
-		return this.itemSlots.keySet().stream().max(Integer::compareTo).orElse(0)+1;
+		return this.itemSlots.keySet().stream().max(Integer::compareTo).orElse(-1) + 1;
 	}
 }
