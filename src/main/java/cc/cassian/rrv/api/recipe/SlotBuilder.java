@@ -3,9 +3,18 @@ package cc.cassian.rrv.api.recipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
-public record SlotBuilder(SlotPlacementDefinition slotPlacement, int slotId) {
+public class SlotBuilder {
+	private final SlotPlacementDefinition slotPlacement;
+	private final int slotId;
+
+	public SlotBuilder(SlotPlacementDefinition slotPlacement, int slotId) {
+		this.slotPlacement = slotPlacement;
+		this.slotId = slotId;
+	}
+
 	/// Bind contents to the slot.
 	///
 	/// @return this builder for chaining
@@ -41,4 +50,34 @@ public record SlotBuilder(SlotPlacementDefinition slotPlacement, int slotId) {
 		slotPlacement.getStackValidators().put(slotId, stackValidator);
 		return this;
 	}
+
+	public SlotPlacementDefinition slotPlacement() {
+		return slotPlacement;
+	}
+
+	public int slotId() {
+		return slotId;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) return true;
+		if (obj == null || obj.getClass() != this.getClass()) return false;
+		var that = (SlotBuilder) obj;
+		return Objects.equals(this.slotPlacement, that.slotPlacement) &&
+				this.slotId == that.slotId;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(slotPlacement, slotId);
+	}
+
+	@Override
+	public String toString() {
+		return "SlotBuilder[" +
+				"slotPlacement=" + slotPlacement + ", " +
+				"slotId=" + slotId + ']';
+	}
+
 }

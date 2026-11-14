@@ -8,12 +8,16 @@ import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.client.util.GuiWidgetAccess;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.extra.FluidStack;
+import cc.cassian.rrv.common.recipe.inventory.RecipeSlot;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -36,15 +40,18 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Function;
 
 final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientRecipe> {
 	private final ReliableClientRecipeType recipeType;
 	private final IRecipeType<ReliableClientRecipe> recipeClass;
 
-	private RecipeViewMenu.SlotFillContext slotFillContext = new RecipeViewMenu.SlotFillContext();
+	private SlotPlacementDefinition slotFillContext;
 
 	JeiReliableRecipeCategory(ReliableClientRecipeType recipeType, IRecipeType<ReliableClientRecipe> recipeClass) {
 		this.recipeType = recipeType;
@@ -196,21 +203,64 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, ReliableClientRecipe recipe, IFocusGroup focuses) {
-		// FIXME reimplement JEI compat
-//		slotFillContext = new RecipeViewMenu.SlotFillContext();
-//		recipe.bindSlots(slotFillContext);
+		final int[] slots = {0};
 
-		// TODO do this better
-//		SlotPlacementDefinition slotDefinition = new SlotPlacementDefinition(null) {
-//			public SlotBuilder addItemSlot(int x, int y) {
-//				var slot = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, x, y);
-//				SlotContent slotContent = slotFillContext.contentBySlot(slotId);
-//				addSlotContent(slot, slotContent);
-//				if (slotFillContext.getOptionalSlotRenderers().containsKey(slotId)) // TODO do this better
-//					slot.setStandardSlotBackground();
-//				return null;
-//			}
-//		};
+		slotFillContext = new SlotPlacementDefinition(null) {
+			public SlotBuilder addItemSlot(int x, int y) {
+				return addSlot(builder, x, y, slots);
+			}
+
+			@Override
+			public SlotBuilder addItemSlot(int slotId, int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
+				return addSlot(builder, x, y, slots);
+			}
+
+			@Override
+			public SlotBuilder addItemSlot(int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
+				return addSlot(builder, x, y, slots);
+			}
+
+			@Override
+			public SlotBuilder addItemSlot(int slotId, int x, int y) {
+				return addSlot(builder, x, y, slots);
+			}
+
+			private SlotBuilder addSlot(IRecipeLayoutBuilder builder, int x, int y, int[] slots) {
+				var slot = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, x, y);
+
+				return new SlotBuilder(slotFillContext, slots[0]++) {
+					@Override
+					public SlotBuilder bindSlot(SlotContent slotContent) {
+						addSlotContent(slot, slotContent);
+						return this;
+					}
+
+					@Override
+					public SlotBuilder bindOptionalSlot(RecipeViewMenu.OptionalSlotRenderer optionalSlotRenderer) {
+						slot.setBackground(new IDrawable() {
+							@Override
+							public int getWidth() {
+								return 18;
+							}
+
+							@Override
+							public int getHeight() {
+								return 18;
+							}
+
+							@Override
+							public void draw(GuiGraphicsExtractor guiGraphicsExtractor, int xOffset, int yOffset) {
+								guiGraphicsExtractor.pose().pushMatrix();
+								guiGraphicsExtractor.pose().translate(xOffset, yOffset);
+								optionalSlotRenderer.extractRenderState(guiGraphicsExtractor, 0, 0, 0);
+								guiGraphicsExtractor.pose().popMatrix();
+							}
+						}, -1, -1);
+						return this;
+					}
+				};
+			}
+		};
 
 		for (SlotContent ingredient : recipe.getIngredients()) {
 			addSlotContent(builder.addInvisibleIngredients(RecipeIngredientRole.INPUT), ingredient);
@@ -219,7 +269,7 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 			addSlotContent(builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT), ingredient);
 		}
 
-//		recipe.addSlots(slotDefinition);
+		recipe.addSlots(slotFillContext);
 
 	}
 

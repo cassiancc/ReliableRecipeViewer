@@ -14,6 +14,8 @@
 
 ### Fixed
 - Inventory changes now update the craftables page correctly.
+- Moving `BlockingGuiComponent`s no longer cause lag and update correctly.
+- JEI support now renders optional slots correctly.
 
 ### Removed
 - Temporarily removed sidebar workstation display while refactors are ongoing.
