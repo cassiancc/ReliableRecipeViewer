@@ -15,13 +15,20 @@ public class SlotBuilder {
 		this.slotId = slotId;
 	}
 
-	/// Bind contents to the slot.
+	/// Add contents to the slot.
 	///
 	/// @return this builder for chaining
-	public SlotBuilder bindSlot(SlotContent slotContent) {
+	public SlotBuilder addContents(SlotContent slotContent) {
 		if (slotContent == null) return this;
 		slotPlacement.getContents().put(slotId, slotContent);
 		return this;
+	}
+
+	/// Bind contents to the slot. Alias of [#addContents] for clarity when porting from 8.0.
+	///
+	/// @return this builder for chaining
+	public SlotBuilder bindSlot(SlotContent slotContent) {
+		return addContents(slotContent);
 	}
 
 	/// Dependent slots will change their contents based on a provided index.
@@ -32,12 +39,28 @@ public class SlotBuilder {
 		return this;
 	}
 
-	/// Optional slots are only rendered if they contain an ItemStack.
+	/// Optional slots are only rendered if they contain an ItemStack. Alias of [#addSlotBackground] for 8.0 clarity.
 	///
 	/// @param optionalSlotRenderer The renderer used for this slot
 	/// @return this builder for chaining
 	public SlotBuilder bindOptionalSlot(RecipeViewMenu.OptionalSlotRenderer optionalSlotRenderer) {
+		return addSlotBackground(optionalSlotRenderer);
+	}
+
+	/// Optional slots are only rendered if they contain an ItemStack.
+	///
+	/// @param optionalSlotRenderer The renderer used for this slot
+	/// @return this builder for chaining
+	public SlotBuilder addSlotBackground(RecipeViewMenu.OptionalSlotRenderer optionalSlotRenderer) {
 		slotPlacement.getOptionalSlotRenderers().put(slotId, optionalSlotRenderer);
+		return this;
+	}
+
+	/// Optional slots are only rendered if they contain an ItemStack.
+	///
+	/// @return this builder for chaining
+	public SlotBuilder addDefaultSlotBackground() {
+		slotPlacement.getOptionalSlotRenderers().put(slotId, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
 		return this;
 	}
 

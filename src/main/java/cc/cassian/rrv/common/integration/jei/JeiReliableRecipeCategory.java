@@ -233,13 +233,13 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 
 				return new SlotBuilder(slotFillContext, slots[0]++) {
 					@Override
-					public SlotBuilder bindSlot(SlotContent slotContent) {
+					public SlotBuilder addContents(SlotContent slotContent) {
 						addSlotContent(slot, slotContent);
 						return this;
 					}
 
 					@Override
-					public SlotBuilder bindOptionalSlot(RecipeViewMenu.OptionalSlotRenderer optionalSlotRenderer) {
+					public SlotBuilder addSlotBackground(RecipeViewMenu.OptionalSlotRenderer optionalSlotRenderer) {
 						slot.setBackground(new IDrawable() {
 							@Override
 							public int getWidth() {

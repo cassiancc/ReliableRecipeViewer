@@ -49,7 +49,7 @@ public class SlotPlacementDefinition {
 
 	//? if <26.4 {
 	/// Hardcoding item slot ids is not recommended and only available to preserve 8.0 compatibility.
-	@Deprecated(forRemoval = true)
+	@Deprecated(since = "9.0.0", forRemoval = true)
 	public SlotBuilder addItemSlot(int slotId, int x, int y) {
 		return addItemSlot(slotId, x, y, RecipeSlot::new);
 	}
