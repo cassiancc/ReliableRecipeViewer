@@ -1,5 +1,7 @@
 ### Added
 - Background threading has been refactored and should now work more reliably.
+- Slots can now be added and bound in a client recipe class via `ReliableClientRecipe#addSlots`.
+  - `ReliableClientRecipeType#placeSlots` and `ReliableClientRecipe#bindSlots` have been deprecated.
 - Excluded items now accept and are based on predicates.
 - Support for 26.4-snapshot-8.
   - Auto-completion for recipe serializers does not yet work.

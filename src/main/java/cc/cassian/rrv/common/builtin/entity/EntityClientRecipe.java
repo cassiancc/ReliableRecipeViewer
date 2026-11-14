@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.entity;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.api.util.MobFood;
 import cc.cassian.rrv.client.ReliableRecipeViewerClient;
 import cc.cassian.rrv.client.util.RRVClientUtil;
@@ -146,7 +147,8 @@ public class EntityClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+    public void addSlots(SlotPlacementDefinition builder) {
+        builder.setHighlightWithoutContents(false);
         if (previewEntity instanceof Animal animal) {
             if (!MOB_FOOD.containsKey(entityType)) {
                 List<ItemStack> food = new ArrayList<>();
@@ -161,16 +163,20 @@ public class EntityClientRecipe implements ReliableClientRecipe {
             MobFood mobFood = MOB_FOOD.get(entityType);
             SlotContent slotContent = mobFood.slotContent();
             if (!slotContent.isEmpty()) {
-                slotFillContext.bindSlot(0, slotContent);
-                mobFood.lore().ifPresent(lore-> slotFillContext.addAdditionalStackModifier(0, lore));
+                var slot = builder.addItemSlot(42, 80).bindSlot(slotContent);
+                mobFood.lore().ifPresent(slot::addAdditionalStackModifier);
                 renderingFood = true;
             }
         } else {
             renderingFood = false;
         }
 
-        for (int i = 0; i < this.drops.size(); i++) {
-            slotFillContext.bindSlot(i + 1, this.drops.get((i + this.currentDropsPage * 21) % this.drops.size()));
+        for (int row = 0; row < 7; row++) {
+            for (int i = 0; i < 3; i++) {
+                int index = row * 3 + i;
+                if (index<this.drops.size())
+                    builder.addItemSlot(i * 18 + 106, 4 + row * 18).bindSlot(this.drops.get(index));
+            }
         }
     }
 

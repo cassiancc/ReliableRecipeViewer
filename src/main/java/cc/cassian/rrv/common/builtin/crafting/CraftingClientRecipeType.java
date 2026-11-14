@@ -47,27 +47,6 @@ public class CraftingClientRecipeType implements ReliableClientRecipeType {
         return BACKGROUND;
     }
 
-
-    @Override
-    public int getSlotCount() {
-        return 10;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-
-        //Input slots
-        for (int y = 0; y < 3; y++) {
-            for (int x = 0; x < 3; x++) {
-                slotDefinition.addItemSlot(x + y * 3, 4 + x * 18,  4 + y * 18);
-            }
-        }
-
-        //Result Slot
-        slotDefinition.addItemSlot(9, 98, 22);
-
-    }
-
     @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.CRAFTING_TABLE), new ItemStack(Items.CRAFTER));

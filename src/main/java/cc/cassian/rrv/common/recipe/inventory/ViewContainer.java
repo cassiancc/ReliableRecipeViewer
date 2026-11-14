@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 
 public class ViewContainer implements Container {
 
-    private final NonNullList<ItemStack> items;
-    private final int size;
+    private NonNullList<ItemStack> items;
+    private int size;
 
     protected ViewContainer(int size){
         this.size = size;
@@ -61,5 +61,10 @@ public class ViewContainer implements Container {
         this.items.clear();
     }
 
-
+	public void setSize(int i) {
+		this.size = i;
+        NonNullList<ItemStack> list = NonNullList.withSize(i, ItemStack.EMPTY);
+        list.addAll(this.items);
+        this.items = list;
+	}
 }

@@ -3,6 +3,8 @@ package cc.cassian.rrv.common.integration.jei;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotBuilder;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.client.util.GuiWidgetAccess;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.extra.FluidStack;
@@ -194,19 +196,21 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, ReliableClientRecipe recipe, IFocusGroup focuses) {
-		slotFillContext = new RecipeViewMenu.SlotFillContext();
-		recipe.bindSlots(slotFillContext);
+		// FIXME reimplement JEI compat
+//		slotFillContext = new RecipeViewMenu.SlotFillContext();
+//		recipe.bindSlots(slotFillContext);
 
 		// TODO do this better
-		RecipeViewMenu.SlotDefinition slotDefinition = new RecipeViewMenu.SlotDefinition(null) {
-			public void addItemSlot(int slotId, int x, int y) {
-				var slot = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, x, y);
-				SlotContent slotContent = slotFillContext.contentBySlot(slotId);
-				addSlotContent(slot, slotContent);
-				if (slotFillContext.getOptionalSlotRenderers().containsKey(slotId)) // TODO do this better
-					slot.setStandardSlotBackground();
-			}
-		};
+//		SlotPlacementDefinition slotDefinition = new SlotPlacementDefinition(null) {
+//			public SlotBuilder addItemSlot(int x, int y) {
+//				var slot = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, x, y);
+//				SlotContent slotContent = slotFillContext.contentBySlot(slotId);
+//				addSlotContent(slot, slotContent);
+//				if (slotFillContext.getOptionalSlotRenderers().containsKey(slotId)) // TODO do this better
+//					slot.setStandardSlotBackground();
+//				return null;
+//			}
+//		};
 
 		for (SlotContent ingredient : recipe.getIngredients()) {
 			addSlotContent(builder.addInvisibleIngredients(RecipeIngredientRole.INPUT), ingredient);
@@ -215,7 +219,7 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 			addSlotContent(builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT), ingredient);
 		}
 
-		recipe.placeSlots(slotDefinition);
+//		recipe.addSlots(slotDefinition);
 
 	}
 

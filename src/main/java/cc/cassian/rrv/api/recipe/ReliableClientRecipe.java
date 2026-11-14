@@ -1,9 +1,9 @@
 package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.client.RecipeScreenContext;
-import cc.cassian.rrv.api.util.SlotCountDefinition;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
+import cc.cassian.rrv.common.recipe.inventory.RecipeSlot;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.rendering.AnimationTicker;
 import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipeType;
@@ -11,7 +11,6 @@ import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
@@ -20,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface ReliableClientRecipe {
 
@@ -67,26 +68,63 @@ public interface ReliableClientRecipe {
     ReliableClientRecipeType getType();
     *///?}
 
-    /// Bind the SlotContents of the recipe to the according slots
-    ///
-    /// @param slotFillContext The context the [SlotContent]s is bound to
-    void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext);
-
-
-    /// @return The number of slots **one** recipe requires for display.
-    /// Not necessary to override since 8.11.0 as it can be calculated automatically from [#placeSlots(RecipeViewMenu.SlotDefinition)].
-    default int getSlotCount() {
-        SlotCountDefinition slotDefinition = new SlotCountDefinition();
-        placeSlots(slotDefinition);
-        return slotDefinition.getSlotCount();
-    }
-
-	/// Place the slots of the recipe's type in the gui
+	/// Bind the SlotContents of the recipe to the according slots. Replaced by [#addSlots]
 	///
-	/// @param slotDefinition An empty SlotDefinition
+	/// @param slotFillContext The context the [SlotContent]s is bound to
+	@Deprecated(since = "9.0.0", forRemoval = true)
+	default void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+
+	}
+
+	/// Place the slots and contents of the recipe type in the GUI.
+	///
+	/// @param builder An empty [SlotPlacementDefinition]
     @SuppressWarnings("all")
-	default void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-		getType().placeSlots(slotDefinition);
+	default void addSlots(SlotPlacementDefinition builder) {
+        var slotBuilders = new HashMap<Integer, SlotBuilder>();
+		getType().placeSlots(new RecipeViewMenu.SlotDefinition(builder.viewContainer) {
+            @Override
+            public void addItemSlot(int slotId, int x, int y) {
+                slotBuilders.put(slotId, builder.addItemSlot(slotId, x, y));
+            }
+
+            @Override
+            public void addItemSlot(int slotId, int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
+                slotBuilders.put(slotId, builder.addItemSlot(slotId, x, y, recipeSlot));
+            }
+
+            @Override
+            public void setHighlightWithoutContents(boolean highlightWithoutContents) {
+                builder.setHighlightWithoutContents(highlightWithoutContents);
+            }
+        });
+        var context = new RecipeViewMenu.SlotFillContext() {
+            @Override
+            public void bindSlot(int slotId, SlotContent slotContent) {
+                slotBuilders.get(slotId).bindSlot(slotContent);
+            }
+
+            @Override
+            public void bindOptionalSlot(int slotId, SlotContent slotContent, RecipeViewMenu.OptionalSlotRenderer optionalSlotRenderer) {
+                slotBuilders.get(slotId).bindSlot(slotContent).bindOptionalSlot(optionalSlotRenderer);
+            }
+
+            @Override
+            public void bindDependentSlot(int slotId, Supplier<Integer> dependentIndex, SlotContent slotContent) {
+                slotBuilders.get(slotId).bindSlot(slotContent).bindDependentSlot(dependentIndex);
+            }
+
+            @Override
+            public void addAdditionalStackModifier(int slotId, RecipeViewMenu.AdditionalStackModifier tooltipProvider) {
+                slotBuilders.get(slotId).addAdditionalStackModifier(tooltipProvider);
+            }
+
+            @Override
+            public void addStackValidator(int slotId, RecipeViewMenu.StackValidator stackValidator) {
+                slotBuilders.get(slotId).addStackValidator(stackValidator);
+            }
+        };
+        bindSlots(context);
 	}
 
 	/// @return A list of [SlotContent]s, representing the ingredients of this recipe

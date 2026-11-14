@@ -4,13 +4,12 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.client.ClientNetworkManager;
-import cc.cassian.rrv.client.recipe.ClientRecipeCache;
 import cc.cassian.rrv.client.util.RRVClientUtil;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.config.options.WorkstationDisplay;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.jei.recipe.JeiClientRecipe;
 import cc.cassian.rrv.common.integration.jei.recipe.JeiClientRecipeType;
@@ -58,6 +57,7 @@ public class RecipeViewMenu {
     private int currentPage;
 
     private final List<ReliableClientRecipe> currentDisplay;
+    private final List<SlotPlacementDefinition> currentDisplayContext;
 
     private final LinkedHashMap<ReliableClientRecipeType, List<ReliableClientRecipe>> sortedByType;
     private final List<ReliableClientRecipeType> viewTypeOrder;
@@ -136,6 +136,7 @@ public class RecipeViewMenu {
 
         this.currentPage = 0;
         this.currentDisplay = new ArrayList<>();
+        this.currentDisplayContext = new ArrayList<>();
 
         if (ModCompat.POLYDEX) {
             this.sortedByType.put(PolydexClientRecipeType.INSTANCE, List.of(new PolydexClientRecipe(originType, origin)));
@@ -321,6 +322,8 @@ public class RecipeViewMenu {
         this.additionalStackModifiers.clear();
         this.optionalSlotRenderers.clear();
 
+        this.viewContainers.clear();
+        this.currentDisplayContext.clear();
         this.slots.clear();
 
         this.currentDisplay.forEach(ReliableClientRecipe::fadeRecipe);
@@ -334,7 +337,8 @@ public class RecipeViewMenu {
         for (int recipeIndex = 0; recipeIndex < this.currentDisplay.size(); recipeIndex++) {
 
             ReliableClientRecipe recipe = this.currentDisplay.get(recipeIndex);
-            this.viewContainers.add(new ViewContainer(recipe.getSlotCount()));
+            ViewContainer container = new ViewContainer(0);
+            this.viewContainers.add(container);
             recipe.getIngredients().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
             recipe.getResults().forEach(slotContent -> slotContent.bindOrigin(this.origin, this.originType));
 
@@ -344,26 +348,25 @@ public class RecipeViewMenu {
                 slotContent.bindResult(recipe.entryId()); //FIXME this should only be applied to the stacks on the screen, not the actual recipe's stacks
             });
 
-            SlotDefinition slotDefinition = new SlotDefinition(this.viewContainers.get(recipeIndex));
-            recipe.placeSlots(slotDefinition);
+            SlotPlacementDefinition slotDefinition = new SlotPlacementDefinition(this.viewContainers.get(recipeIndex));
+            recipe.addSlots(slotDefinition);
+            container.setSize(slotDefinition.getItemSlots().size());
+            currentDisplayContext.add(slotDefinition);
             for (SlotPlacement placement : slotDefinition.getItemSlots()) {
                 var properties = placement.properties();
                 var slot = placement.function().apply(new RecipeSlot.Properties(properties.container(), properties.slotId(), properties.x() + this.guiOffsetLeft(), properties.y() + this.guiOffsetTop(recipeIndex), properties.highlightWithoutContents()));
                 this.addSlot(recipeIndex, slot);
             }
 
-            SlotFillContext slotFillContext = new SlotFillContext();
-            recipe.bindSlots(slotFillContext);
-
-            for (int slotId = 0; slotId < recipe.getSlotCount(); slotId++) {
-                ItemStack stackByIndex = slotFillContext.contentBySlot(slotId).getByIndex(slotFillContext.contentBySlot(slotId).index());
+			for (int slotId = 0; slotId < slotDefinition.getSlotCount(); slotId++) {
+                ItemStack stackByIndex = slotDefinition.contentBySlot(slotId).getByIndex(slotDefinition.contentBySlot(slotId).index());
                 this.viewContainers.get(recipeIndex).setItem(slotId, stackByIndex);
 
-                if (slotFillContext.getAdditionalTooltips().containsKey(slotId))
-                    this.additionalStackModifiers.put(slotId, slotFillContext.getAdditionalTooltips().get(slotId));
+                if (slotDefinition.getAdditionalTooltips().containsKey(slotId))
+                    this.additionalStackModifiers.put(slotId, slotDefinition.getAdditionalTooltips().get(slotId));
 
-                if (slotFillContext.getOptionalSlotRenderers().containsKey(slotId))
-                    this.optionalSlotRenderers.put(slotId, slotFillContext.getOptionalSlotRenderers().get(slotId));
+                if (slotDefinition.getOptionalSlotRenderers().containsKey(slotId))
+                    this.optionalSlotRenderers.put(slotId, slotDefinition.getOptionalSlotRenderers().get(slotId));
 
             }
 
@@ -446,8 +449,7 @@ public class RecipeViewMenu {
         ReliableClientRecipe currentLooking = this.getCurrentDisplay().get(displayId);
 
 
-        RecipeViewMenu.SlotFillContext context = new RecipeViewMenu.SlotFillContext();
-        currentLooking.bindSlots(context);
+        SlotPlacementDefinition context = this.currentDisplayContext.get(displayId);
 
         LocalPlayer player = minecraft.player;
 
@@ -756,15 +758,13 @@ public class RecipeViewMenu {
     protected void tickContents() {
 
         for (int i = 0; i < this.currentDisplay.size(); i++) {
-            ReliableClientRecipe recipe = this.currentDisplay.get(i);
 
-            SlotFillContext slotFillContext = new SlotFillContext();
-            recipe.bindSlots(slotFillContext);
+            SlotPlacementDefinition slotFillContext = currentDisplayContext.get(i);
 
-            for (int j = 0; j < recipe.getSlotCount(); j++) {
+            for (int j = 0; j < slotFillContext.getSlotCount(); j++) {
 
                 //Exclude DependencySlots
-                if (!slotFillContext.contentDependencies.containsKey(j))
+                if (!slotFillContext.getContentDependencies().containsKey(j))
                     this.viewContainers.get(i).setItem(j, slotFillContext.contentBySlot(j).next());
             }
 
@@ -775,15 +775,13 @@ public class RecipeViewMenu {
 
     protected void updateDependencies() {
         for (int i = 0; i < this.currentDisplay.size(); i++) {
-            ReliableClientRecipe recipe = this.currentDisplay.get(i);
 
-            SlotFillContext slotFillContext = new SlotFillContext();
-            recipe.bindSlots(slotFillContext);
+            SlotPlacementDefinition slotFillContext = currentDisplayContext.get(i);
 
-            for (int j = 0; j < recipe.getSlotCount(); j++) {
+            for (int j = 0; j < slotFillContext.getSlotCount(); j++) {
 
-                if (slotFillContext.contentDependencies.containsKey(j))
-                    this.viewContainers.get(i).setItem(j, slotFillContext.contentBySlot(j).getByIndex(Math.min(slotFillContext.contentDependencies.get(j).get(), slotFillContext.contentBySlot(j).size() - 1)));
+                if (slotFillContext.getContentDependencies().containsKey(j))
+                    this.viewContainers.get(i).setItem(j, slotFillContext.contentBySlot(j).getByIndex(Math.min(slotFillContext.getContentDependencies().get(j).get(), slotFillContext.contentBySlot(j).size() - 1)));
             }
         }
     }
@@ -880,6 +878,7 @@ public class RecipeViewMenu {
     }
 
 
+    @Deprecated
     public static class SlotDefinition {
 
         public final HashMap<Integer, SlotPlacement> itemSlots;
@@ -909,6 +908,7 @@ public class RecipeViewMenu {
 
     }
 
+    @Deprecated
     public static class SlotFillContext {
 
         private final HashMap<Integer, SlotContent> contents;

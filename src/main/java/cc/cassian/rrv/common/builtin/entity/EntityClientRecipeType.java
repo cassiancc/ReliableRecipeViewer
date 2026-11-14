@@ -54,24 +54,6 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 22; // Food slot and 21 (3x7) drops slots
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        slotDefinition.setHighlightWithoutContents(false);
-
-        slotDefinition.addItemSlot(0, 42, 80);
-
-        for (int row = 0; row < 7; row++) {
-            for (int i = 0; i < 3; i++) {
-                slotDefinition.addItemSlot(row * 3 + i+1, i * 18 + 106, 4 + row * 18);
-            }
-        }
-    }
-
-    @Override
     public Identifier getId() {
         return Identifier.withDefaultNamespace("entity_loot");
     }
@@ -88,10 +70,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
     public void renderIcon(RecipeViewScreen screen, int x, int y, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         List<ReliableClientRecipe> currentDisplay = screen.getMenu().getCurrentDisplay();
         if (!currentDisplay.isEmpty() && currentDisplay.getFirst() instanceof EntityClientRecipe entityClientRecipe) {
-            //~ if <26 'itemHolder'->'nullableItemHolder'
             var itemHolder = SpawnEggItem.byId(entityClientRecipe.getEntityType());
-            //? if <26
-            //var itemHolder = Optional.ofNullable(nullableItemHolder);
             if (itemHolder.isPresent()) {
                 guiGraphics.fakeItem(new ItemStack(itemHolder.get()), x, y);
                 return;

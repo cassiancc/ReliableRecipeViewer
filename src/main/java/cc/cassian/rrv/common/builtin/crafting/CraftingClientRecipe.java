@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.crafting;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -53,13 +54,20 @@ public class CraftingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-        this.ingredients.forEach(slotFillContext::bindSlot);
-		if (dependentIndex != -1)
-        	slotFillContext.bindDependentSlot(9, ()->this.ingredients.get(dependentIndex).index(), this.result);
-		else
-			slotFillContext.bindSlot(9, this.result);
-	}
+    public void addSlots(SlotPlacementDefinition builder) {
+        //Input slots
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                SlotContent slotContent = this.ingredients.get(x + y * 3);
+                builder.addItemSlot(4 + x * 18,  4 + y * 18).bindSlot(slotContent);
+            }
+        }
+
+        //Result Slot
+        var slot = builder.addItemSlot(98, 22).bindSlot(this.result);
+        if (dependentIndex != -1)
+            slot.bindDependentSlot( ()->this.ingredients.get(dependentIndex).index());
+    }
 
     @Override
     public void renderRecipe(RecipeScreenContext context) {

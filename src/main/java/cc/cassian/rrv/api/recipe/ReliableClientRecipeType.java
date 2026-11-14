@@ -1,61 +1,56 @@
 package cc.cassian.rrv.api.recipe;
 
 import cc.cassian.rrv.api.overlay.ButtonData;
-import cc.cassian.rrv.api.util.SlotCountDefinition;
-import cc.cassian.rrv.common.recipe.inventory.RecipeSlot;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
-import cc.cassian.rrv.common.recipe.inventory.SlotPlacement;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Function;
 
-/**
- * Client-Side representation of a recipe type
- */
+/// Clientside representation of a recipe type.
 public interface ReliableClientRecipeType {
 
-    ReliableClientRecipeType NONE = new ReliableClientRecipeType() {
+    static ReliableClientRecipeType simple(Identifier id, int width, int height, @Nullable Identifier texture, ItemStack icon) {
+        return new ReliableClientRecipeType() {
+            @Override
+            public Component getDisplayName() {
+                return Component.translatable(id.toLanguageKey("rrv.type"));
+            }
 
-        @Override
-        public Component getDisplayName() {
-            return Component.empty();
-        }
-        
+            @Override
+            public int getDisplayWidth() {
+                return width;
+            }
 
-        @Override
-        public int getDisplayWidth() {
-            return 0;
-        }
+            @Override
+            public int getDisplayHeight() {
+                return height;
+            }
 
-        @Override
-        public int getDisplayHeight() {
-            return 0;
-        }
+            @Override
+            public @Nullable Identifier getGuiTexture() {
+                return texture;
+            }
 
-        @Override
-        public Identifier getGuiTexture() {
-            return null;
-        }
+            @Override
+            public Identifier getId() {
+                return id;
+            }
 
-        @Override
-        public Identifier getId() {
-            return null;
-        }
+            @Override
+            public ItemStack getIcon() {
+                return icon;
+            }
+        };
+    }
 
-        @Override
-        public ItemStack getIcon() {
-            return new ItemStack(Items.BARRIER);
-        }
-    };
+    ReliableClientRecipeType NONE = simple(null, 0, 0, null, new ItemStack(Items.BARRIER));
 
     /// @return The name that is displayed as the recipe type in the view screen
     Component getDisplayName();
@@ -80,20 +75,18 @@ public interface ReliableClientRecipeType {
     }
 
 	/// @return The number of slots **one** recipe requires for display.
-	/// Not necessary to override since 8.11.0 as it can be calculated automatically from [ReliableClientRecipe#placeSlots(RecipeViewMenu.SlotDefinition)].
-    @Deprecated(forRemoval = true)
+	/// RRV 8.11.x calculated this automatically from [ReliableClientRecipe#placeSlots(RecipeViewMenu.SlotDefinition)], and this method was replaced entirely by [ReliableClientRecipe#addSlots] since v9.0..
+    @Deprecated(since = "9.0.0", forRemoval = true)
 	default int getSlotCount() {
-        SlotCountDefinition slotDefinition = new SlotCountDefinition();
-        placeSlots(slotDefinition);
-        return slotDefinition.getSlotCount();
+       return 0;
 	}
 
-	/// Place the slots of the recipe's type in the gui
+	/// Place the slots of the recipe's type in the gui. Handled in [ReliableClientRecipe#addSlots] since v9.0.
 	///
 	/// @param slotDefinition An empty SlotDefinition
-	@Deprecated(forRemoval = true)
+	@Deprecated(since = "9.0.0", forRemoval = true)
 	default void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-		throw new NotImplementedException("ReliableClientRecipe#placeSlots was not implemented!");
+		throw new NotImplementedException("ReliableClientRecipe#addSlots was not implemented!");
 	}
 
 	/// @return A unique id of the recipe's type
