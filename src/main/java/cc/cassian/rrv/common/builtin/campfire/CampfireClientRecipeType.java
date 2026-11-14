@@ -48,22 +48,6 @@ public class CampfireClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 2;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-
-        //Ingredient
-        slotDefinition.addItemSlot(0, 3, 4);
-
-        //Cooked result
-        slotDefinition.addItemSlot(1, 60, 4);
-    }
-
-
-    @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.CAMPFIRE));
     }

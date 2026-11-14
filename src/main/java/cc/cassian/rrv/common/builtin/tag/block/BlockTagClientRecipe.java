@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.tag.block;
 import cc.cassian.rrv.api.recipe.ItemView;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,15 +47,23 @@ public class BlockTagClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-		slotFillContext.bindSlot(0, this.tagKeyContent);
-		for (int i = 0; i < Math.min(55-1, this.items.size()); i++) {
-			if (i < 9)
-				slotFillContext.bindSlot(i+1, this.items.get(i));
-			else
-				slotFillContext.bindOptionalSlot(i+1, this.items.get(i), RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
-		}
+	public void addSlots(SlotPlacementDefinition builder) {
+		builder.setHighlightWithoutContents(false);
 
+		builder.addItemSlot(tagKeyContent,73,8);
+		int index = 0;
+		for (int row = 0; row < 6; row++) {
+			for (int i = 0; i < 9; i++) {
+				if (index >= this.items.size()) {
+					break;
+				}
+				var slot = builder.addItemSlot(this.items.get(index), i * 18 + 1, 45 + row * 18);
+				if (index >= 9) {
+					slot.bindOptionalSlot(RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
+				}
+				index++;
+			}
+		}
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.brewing;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -49,15 +50,17 @@ public class BrewingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+    public void addSlots(SlotPlacementDefinition slotDefinition) {
+        //Result
+        slotDefinition.addItemSlot(this.result, 4, 5);
 
-        slotFillContext.bindSlot(0, this.result);
-        slotFillContext.bindSlot(1, this.reagent);
+        //reagent
+        slotDefinition.addItemSlot(this.reagent, 61, 6);
 
-        slotFillContext.bindSlot(2, this.bottle1);
-        slotFillContext.bindSlot(3, this.bottle2);
-        slotFillContext.bindSlot(4, this.bottle3);
-
+        //Ingredient bottles
+        slotDefinition.addItemSlot(this.bottle1, 38, 40);
+        slotDefinition.addItemSlot(this.bottle2, 61, 47);
+        slotDefinition.addItemSlot(this.bottle3, 84, 40);
     }
 
     @Override

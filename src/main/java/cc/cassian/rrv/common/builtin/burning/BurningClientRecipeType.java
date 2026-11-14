@@ -37,16 +37,6 @@ public class BurningClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 1;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        slotDefinition.addItemSlot(0, 4, 4);
-    }
-
-    @Override
     public Identifier getId() {
         return Identifier.withDefaultNamespace("furnace_burning");
     }

@@ -74,6 +74,8 @@ public interface ReliableClientRecipeType {
         return true;
     }
 
+    //? if <26.4 {
+
 	/// @return The number of slots **one** recipe requires for display.
 	/// RRV 8.11.x calculated this automatically from [ReliableClientRecipe#placeSlots(RecipeViewMenu.SlotDefinition)], and this method was replaced entirely by [ReliableClientRecipe#addSlots] since v9.0..
     @Deprecated(since = "9.0.0", forRemoval = true)
@@ -88,6 +90,7 @@ public interface ReliableClientRecipeType {
 	default void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 		throw new NotImplementedException("ReliableClientRecipe#addSlots was not implemented!");
 	}
+    //?}
 
 	/// @return A unique id of the recipe's type
     Identifier getId();

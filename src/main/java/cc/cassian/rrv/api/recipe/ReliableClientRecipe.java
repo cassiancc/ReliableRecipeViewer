@@ -33,8 +33,14 @@ public interface ReliableClientRecipe {
                 }
 
                 @Override
+                public void addSlots(SlotPlacementDefinition builder) {
+
+                }
+
+                //? if <26.4 {
                 public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
                 }
+                //?}
 
                 @Override
                 public List<SlotContent> getIngredients() {
@@ -68,6 +74,7 @@ public interface ReliableClientRecipe {
     ReliableClientRecipeType getType();
     *///?}
 
+    //? if <26.4 {
 	/// Bind the SlotContents of the recipe to the according slots. Replaced by [#addSlots]
 	///
 	/// @param slotFillContext The context the [SlotContent]s is bound to
@@ -126,6 +133,13 @@ public interface ReliableClientRecipe {
         };
         bindSlots(context);
 	}
+    //?} else {
+    /*/// Place the slots and contents of the recipe type in the GUI.
+    ///
+    /// @param builder An empty [SlotPlacementDefinition]
+    @SuppressWarnings("all")
+    void addSlots(SlotPlacementDefinition builder);
+    *///?}
 
 	/// @return A list of [SlotContent]s, representing the ingredients of this recipe
     List<SlotContent> getIngredients();

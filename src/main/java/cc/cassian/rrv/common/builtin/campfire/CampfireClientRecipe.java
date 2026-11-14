@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.builtin.campfire;
 
 import cc.cassian.rrv.api.client.RecipeScreenContext;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
@@ -42,9 +43,13 @@ public class CampfireClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-        slotFillContext.bindSlot(0, this.input);
-        slotFillContext.bindSlot(1, this.result);
+    public void addSlots(SlotPlacementDefinition slotDefinition) {
+
+        //Ingredient
+        slotDefinition.addItemSlot(this.input, 3, 4);
+
+        //Cooked result
+        slotDefinition.addItemSlot(this.result, 60, 4);
     }
 
     @Override

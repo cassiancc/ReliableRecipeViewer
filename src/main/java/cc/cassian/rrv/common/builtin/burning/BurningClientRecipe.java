@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.burning;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
@@ -53,11 +54,11 @@ public class BurningClientRecipe implements ReliableClientRecipe {
         return BurningClientRecipeType.INSTANCE;
     }
 
-    @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-        slotFillContext.bindSlot(0, this.fuel);
-    }
 
+    @Override
+    public void addSlots(SlotPlacementDefinition slotDefinition) {
+        slotDefinition.addItemSlot(this.fuel, 4, 4);
+    }
     @Override
     public List<SlotContent> getIngredients() {
         return List.of(this.fuel);

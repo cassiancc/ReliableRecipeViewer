@@ -65,22 +65,6 @@ public class VillagerClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 3;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-
-        //Currency
-        slotDefinition.addItemSlot(0, 38, 26);
-        slotDefinition.addItemSlot(1, 64, 26);
-
-        //offer
-        slotDefinition.addItemSlot(2, 122, 27);
-    }
-
-    @Override
     public Identifier getId() {
         return Identifier.withDefaultNamespace("villager_trading");
     }

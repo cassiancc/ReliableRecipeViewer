@@ -1,6 +1,7 @@
 package cc.cassian.rrv.common.builtin.blasting;
 
 import cc.cassian.rrv.api.client.RecipeScreenContext;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.builtin.BuiltInReliableRecipeViewerIntegration;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
@@ -43,10 +44,10 @@ public class BlastingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-        slotFillContext.bindSlot(0, this.input);
-        slotFillContext.bindSlot(1, FUEL);
-        slotFillContext.bindSlot(2, this.result);
+    public void addSlots(SlotPlacementDefinition slotFillContext) {
+        slotFillContext.addItemSlot(this.input, 4, 4);
+        slotFillContext.addItemSlot(FUEL, 4, 40);
+        slotFillContext.addItemSlot(this.result, 64, 22);
     }
 
     @Override

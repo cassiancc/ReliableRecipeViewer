@@ -47,24 +47,6 @@ public class SmeltingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 3;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-
-        //Input Slot
-        slotDefinition.addItemSlot(0, 4, 4);
-
-        //Fuel Slot
-        slotDefinition.addItemSlot(1, 4, 40);
-
-        //Result Slot
-        slotDefinition.addItemSlot(2, 64, 22);
-    }
-
-    @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.FURNACE));
     }

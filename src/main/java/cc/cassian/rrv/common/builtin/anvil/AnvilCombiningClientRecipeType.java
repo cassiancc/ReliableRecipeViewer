@@ -48,24 +48,6 @@ public class AnvilCombiningClientRecipeType implements ReliableClientRecipeType 
 	}
 
 	@Override
-	public int getSlotCount() {
-		return 3;
-	}
-
-	@Override
-	public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-
-		//Base
-		slotDefinition.addItemSlot(0, 4, 4);
-
-		//Repair Ingredient
-		slotDefinition.addItemSlot(1, 53, 4);
-
-		//Result
-		slotDefinition.addItemSlot(2, 111, 4);
-	}
-
-	@Override
 	public List<ItemStack> getCraftReferences() {
 		return List.of(Items.ANVIL.getDefaultInstance(), Items.CHIPPED_ANVIL.getDefaultInstance(), Items.DAMAGED_ANVIL.getDefaultInstance());
 	}

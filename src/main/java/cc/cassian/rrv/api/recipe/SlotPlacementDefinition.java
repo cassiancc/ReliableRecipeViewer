@@ -34,6 +34,10 @@ public class SlotPlacementDefinition {
 		this.optionalSlotRenderers = new HashMap<>();
 	}
 
+	public SlotBuilder addItemSlot(SlotContent content, int x, int y) {
+		return addItemSlot(x, y, RecipeSlot::new).bindSlot(content);
+	}
+
 	public SlotBuilder addItemSlot(int x, int y) {
 		return addItemSlot(x, y, RecipeSlot::new);
 	}
@@ -43,6 +47,7 @@ public class SlotPlacementDefinition {
 		return new SlotBuilder(this, this.slots++);
 	}
 
+	//? if <26.4 {
 	/// Hardcoding item slot ids is not recommended and only available to preserve 8.0 compatibility.
 	@Deprecated(forRemoval = true)
 	public SlotBuilder addItemSlot(int slotId, int x, int y) {
@@ -56,6 +61,7 @@ public class SlotPlacementDefinition {
 		this.slots = Math.max(this.slots, slotId + 1);
 		return new SlotBuilder(this, slotId);
 	}
+	//?}
 
 	public void setHighlightWithoutContents(boolean highlightWithoutContents) {
 		this.highlightWithoutContents = highlightWithoutContents;

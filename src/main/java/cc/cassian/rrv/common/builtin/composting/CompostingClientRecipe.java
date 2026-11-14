@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.composting;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.Minecraft;
@@ -32,9 +33,9 @@ public class CompostingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-        slotFillContext.bindSlot(0, this.compost);
-        slotFillContext.bindSlot(1, SlotContent.of(Items.BONE_MEAL));
+    public void addSlots(SlotPlacementDefinition slotDefinition) {
+        slotDefinition.addItemSlot(this.compost, 4, 4);
+        slotDefinition.addItemSlot(SlotContent.of(Items.BONE_MEAL), 90, 4);
     }
 
     @Override

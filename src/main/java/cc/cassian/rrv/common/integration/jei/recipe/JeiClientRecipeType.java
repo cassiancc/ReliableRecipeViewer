@@ -33,6 +33,7 @@ public class JeiClientRecipeType implements ReliableClientRecipeType {
 		return null;
 	}
 
+	//? if <26.4 {
 	@Override
 	public int getSlotCount() {
 		return 0;
@@ -42,6 +43,7 @@ public class JeiClientRecipeType implements ReliableClientRecipeType {
 	public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
 
 	}
+	//?}
 
 	@Override
 	public int getPriority() {

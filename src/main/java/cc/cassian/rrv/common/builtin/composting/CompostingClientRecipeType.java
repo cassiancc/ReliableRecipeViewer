@@ -37,17 +37,6 @@ public class CompostingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 2;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        slotDefinition.addItemSlot(0, 4, 4);
-        slotDefinition.addItemSlot(1, 90, 4);
-    }
-
-    @Override
     public Identifier getId() {
         return Identifier.withDefaultNamespace("composting");
     }

@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.client.ClientNetworkManager;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
 import cc.cassian.rrv.common.integration.polymer.network.StackActionPayload;
@@ -34,8 +35,15 @@ public class PolydexClientRecipe implements ReliableClientRecipe {
 		return PolydexClientRecipeType.INSTANCE;
 	}
 
+	//? if <26.4 {
 	@Override
 	public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+
+	}
+	//?}
+
+	@Override
+	public void addSlots(SlotPlacementDefinition builder) {
 
 	}
 

@@ -3,7 +3,7 @@ package cc.cassian.rrv.common.builtin.villager;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
-//~ if >26 'backport' -> 'common.builtin.villager'
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -70,13 +70,13 @@ public class VillagerClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+    public void addSlots(SlotPlacementDefinition builder) {
+        //Currency
+        builder.addItemSlot(this.cost1, 38, 26);
+        builder.addItemSlot(this.cost2, 64, 26).bindDependentSlot(this.offer::index);
 
-        slotFillContext.bindDependentSlot(0, this.offer::index, this.cost1);
-        slotFillContext.bindSlot(1, this.cost2);
-
-        slotFillContext.bindSlot(2, this.offer);
-
+        //offer
+        builder.addItemSlot(this.offer, 122, 27);
     }
 
     @Override

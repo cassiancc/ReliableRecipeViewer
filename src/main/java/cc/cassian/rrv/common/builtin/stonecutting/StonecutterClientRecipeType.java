@@ -48,17 +48,6 @@ public class StonecutterClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 2;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        slotDefinition.addItemSlot(0, 4, 4);
-        slotDefinition.addItemSlot(1, 60, 4);
-    }
-
-    @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.STONECUTTER));
     }

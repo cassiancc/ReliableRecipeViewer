@@ -48,28 +48,6 @@ public class SmithingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 4;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-
-        //Base
-        slotDefinition.addItemSlot(0, 3, 4);
-
-        //Addition
-        slotDefinition.addItemSlot(1, 22, 4);
-
-        //Template
-        slotDefinition.addItemSlot(2, 40, 4);
-
-        //Result
-        slotDefinition.addItemSlot(3, 94, 4);
-    }
-
-
-    @Override
     public List<ItemStack> getCraftReferences() {
         return List.of(new ItemStack(Items.SMITHING_TABLE));
     }

@@ -34,25 +34,6 @@ public class ItemTagClientRecipeType implements ReliableClientRecipeType {
         return GUI_BACKGROUND;
     }
 
-    // Tags should not exceed 54 slots
-    @Override
-    public int getSlotCount() {
-        return 55;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        slotDefinition.setHighlightWithoutContents(false);
-
-        slotDefinition.addItemSlot(0,73,8);
-        for (int row = 0; row < 6; row++) {
-            for (int i = 0; i < 9; i++) {
-                slotDefinition.addItemSlot(row * 9 + i+1, i * 18 + 1, 45 + row * 18);
-            }
-        }
-
-    }
-
     @Override
     public Identifier getId() {
         return ReliableRecipeViewer.of("item_tag");

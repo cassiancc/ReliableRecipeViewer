@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.builtin.smithing;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.recipe.ItemViewRecipes;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -104,13 +105,18 @@ public class SmithingClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+    public void addSlots(SlotPlacementDefinition builder) {
+        //Base
+        builder.addItemSlot(this.template, 3, 4).bindOptionalSlot(RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
 
-        slotFillContext.bindOptionalSlot(0, this.template, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
-        slotFillContext.bindOptionalSlot(1, this.base, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
-        slotFillContext.bindOptionalSlot(2, this.additionIngredient, RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
+        //Addition
+        builder.addItemSlot(this.base, 22, 4).bindOptionalSlot(RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
 
-        slotFillContext.bindDependentSlot(3, this::getResult, this.result);
+        //Template
+        builder.addItemSlot(this.additionIngredient, 40, 4).bindOptionalSlot(RecipeViewMenu.OptionalSlotRenderer.DEFAULT);
+
+        //Result
+        builder.addItemSlot(this.result, 94, 4).bindDependentSlot(this::getResult);
     }
 
     @Override

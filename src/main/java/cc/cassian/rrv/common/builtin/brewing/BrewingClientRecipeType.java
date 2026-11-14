@@ -38,25 +38,6 @@ public class BrewingClientRecipeType implements ReliableClientRecipeType {
     }
 
     @Override
-    public int getSlotCount() {
-        return 5;
-    }
-
-    @Override
-    public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-        //Result
-        slotDefinition.addItemSlot(0, 4, 5);
-
-        //reagent
-        slotDefinition.addItemSlot(1, 61, 6);
-
-        //Ingredient bottles
-        slotDefinition.addItemSlot(2, 38, 40);
-        slotDefinition.addItemSlot(3, 61, 47);
-        slotDefinition.addItemSlot(4, 84, 40);
-    }
-
-    @Override
     public Identifier getId() {
         return Identifier.withDefaultNamespace("brewing");
     }

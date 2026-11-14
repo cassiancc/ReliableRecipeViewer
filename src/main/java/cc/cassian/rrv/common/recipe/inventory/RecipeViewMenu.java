@@ -878,7 +878,8 @@ public class RecipeViewMenu {
     }
 
 
-    @Deprecated
+    //? if <26.4 {
+    @Deprecated(since = "9.0.0", forRemoval = true)
     public static class SlotDefinition {
 
         public final HashMap<Integer, SlotPlacement> itemSlots;
@@ -908,7 +909,7 @@ public class RecipeViewMenu {
 
     }
 
-    @Deprecated
+    @Deprecated(since = "9.0.0", forRemoval = true)
     public static class SlotFillContext {
 
         private final HashMap<Integer, SlotContent> contents;
@@ -982,6 +983,7 @@ public class RecipeViewMenu {
             return this.stackValidators;
         }
     }
+    //?}
 
 
     /**

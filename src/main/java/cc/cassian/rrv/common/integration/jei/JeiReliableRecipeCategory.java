@@ -211,19 +211,22 @@ final class JeiReliableRecipeCategory implements IRecipeCategory<ReliableClientR
 			}
 
 			@Override
-			public SlotBuilder addItemSlot(int slotId, int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
-				return addSlot(builder, x, y, slots);
-			}
-
-			@Override
 			public SlotBuilder addItemSlot(int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
 				return addSlot(builder, x, y, slots);
 			}
 
+			//? if <26.4 {
 			@Override
 			public SlotBuilder addItemSlot(int slotId, int x, int y) {
 				return addSlot(builder, x, y, slots);
 			}
+
+
+			@Override
+			public SlotBuilder addItemSlot(int slotId, int x, int y, Function<RecipeSlot.Properties, RecipeSlot> recipeSlot) {
+				return addSlot(builder, x, y, slots);
+			}
+			//?}
 
 			private SlotBuilder addSlot(IRecipeLayoutBuilder builder, int x, int y, int[] slots) {
 				var slot = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, x, y);

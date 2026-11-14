@@ -2,6 +2,7 @@ package cc.cassian.rrv.common.builtin.anvil;
 
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -27,7 +28,6 @@ public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
         this.priority = priority;
     }
 
-
     @Override
     public int getPriority() {
         return priority;
@@ -44,11 +44,15 @@ public class AnvilCombiningClientRecipe implements ReliableClientRecipe {
     }
 
     @Override
-    public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
+    public void addSlots(SlotPlacementDefinition builder) {
+        //Base
+        builder.addItemSlot(this.left, 4, 4);
 
-        slotFillContext.bindSlot(0, this.left);
-        slotFillContext.bindSlot(1, this.right);
-        slotFillContext.bindSlot(2, this.result);
+        //Repair Ingredient
+        builder.addItemSlot(this.right, 53, 4);
+
+        //Result
+        builder.addItemSlot(this.result, 111, 4);
     }
 
     @Override

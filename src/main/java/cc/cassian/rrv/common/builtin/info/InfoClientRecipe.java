@@ -3,6 +3,7 @@ package cc.cassian.rrv.common.builtin.info;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.inventory.SlotContent;
@@ -64,8 +65,8 @@ public class InfoClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
-	public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-		slotFillContext.bindSlot(0, this.key);
+	public void addSlots(SlotPlacementDefinition builder) {
+		builder.addItemSlot(this.key, 53, 3);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import cc.cassian.rrv.api.ActionType;
 import cc.cassian.rrv.api.client.RecipeScreenContext;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipeType;
+import cc.cassian.rrv.api.recipe.SlotPlacementDefinition;
 import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewMenu;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
@@ -32,9 +33,16 @@ public class JeiClientRecipe implements ReliableClientRecipe {
 	}
 
 	@Override
+	public void addSlots(SlotPlacementDefinition builder) {
+
+	}
+
+	//? if <26.4 {
+	@Override
 	public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
 
 	}
+	//?}
 
 	@Override
 	public void renderRecipe(RecipeScreenContext context) {

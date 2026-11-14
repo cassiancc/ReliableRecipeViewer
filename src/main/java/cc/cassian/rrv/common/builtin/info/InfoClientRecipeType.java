@@ -34,16 +34,6 @@ public class InfoClientRecipeType implements ReliableClientRecipeType {
 	}
 
 	@Override
-	public int getSlotCount() {
-		return 1;
-	}
-
-	@Override
-	public void placeSlots(RecipeViewMenu.SlotDefinition slotDefinition) {
-		slotDefinition.addItemSlot(0, 53, 3);
-	}
-
-	@Override
 	public Identifier getId() {
 		return ReliableRecipeViewer.of("info");
 	}
