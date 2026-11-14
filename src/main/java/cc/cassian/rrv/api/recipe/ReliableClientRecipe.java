@@ -37,11 +37,6 @@ public interface ReliableClientRecipe {
 
                 }
 
-                //? if <26.4 {
-                public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-                }
-                //?}
-
                 @Override
                 public List<SlotContent> getIngredients() {
                     return List.of();

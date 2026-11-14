@@ -64,6 +64,7 @@
     "client.renderer.item.MixinSpecialModelWrapper",
     "client.renderer.special.MixinSpecialModelRenderers",
     "integration.ControlifyRecipeViewScreenMixin",
+    "integration.jei.JeiGuiTextFieldFilterMixin",
     "integration.jei.JeiRecipesGuiMixin",
     "world.item.CreativeModeTabsMixin"
   ]

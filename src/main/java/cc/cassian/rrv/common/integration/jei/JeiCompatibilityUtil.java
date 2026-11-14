@@ -1,10 +1,12 @@
 package cc.cassian.rrv.common.integration.jei;
 
 import cc.cassian.rrv.api.ActionType;
+import cc.cassian.rrv.client.util.RRVExtendedContainerScreen;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.extra.FluidStack;
 import cc.cassian.rrv.common.mixin.integration.jei.JeiBookmarkOverlayAccessor;
 import cc.cassian.rrv.common.mixin.integration.jei.RecipesGuiAccessor;
+import cc.cassian.rrv.common.overlay.AbstractRrvOverlay;
 import cc.cassian.rrv.common.overlay.itemlist.view.ReliableSpriteIconButton;
 import cc.cassian.rrv.common.recipe.item.FluidItem;
 import mezz.jei.api.constants.VanillaTypes;
@@ -24,6 +26,7 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -125,5 +128,11 @@ public class JeiCompatibilityUtil {
 
 	public static boolean isJeiRecipeViewScreen(Screen screen) {
 		return screen instanceof IRecipesGui;
+	}
+
+	public static void extractOverlay(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		var gui = (RecipesGui) screen;
+		AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo(screen, gui.width, gui.height, gui.getArea().x(), gui.getArea().y(), gui.getArea().width(), gui.getArea().height());
+		RRVExtendedContainerScreen.extractOverlay(info, guiGraphics, mouseX, mouseY, partialTicks);
 	}
 }

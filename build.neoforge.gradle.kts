@@ -98,6 +98,7 @@ repositories {
         url = uri("https://maven.blamejared.com/")
         content {
             includeGroup("mezz.jei")
+            includeGroup("net.mezzdev.config")
         }
     }
     mavenCentral()
@@ -125,16 +126,14 @@ dependencies {
         compileOnly("org.sinytra.forgified-fabric-api:fabric-recipe-api-v1:9.0.16+a1e31eec4c")
     }
 
-    if (stonecutter.eval(mcVersion, ">26.2")) {
-        compileOnly("mezz.jei:jei-26.2-neoforge:${property("deps.jei")}")
-
+    // JEI support
+    if (stonecutter.eval(mcVersion, ">26.3")) {
+        compileOnly("mezz.jei:jei-26.3-neoforge:${property("deps.jei")}")
     } else {
         compileOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
-
+        runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
     }
 
-    // JEI support
-//    runtimeOnly("mezz.jei:jei-${property("deps.minecraft")}-neoforge:${property("deps.jei")}")
 
 }
 

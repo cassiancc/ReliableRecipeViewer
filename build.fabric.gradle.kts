@@ -101,6 +101,7 @@ repositories {
         url = uri("https://maven.blamejared.com/")
         content {
             includeGroup("mezz.jei")
+            includeGroup("net.mezzdev.config")
         }
     }
     mavenCentral()
@@ -139,7 +140,7 @@ dependencies {
         modCompileOnly("maven.modrinth:polydex:${property("deps.polydex")}")
     }
 
-    if (stonecutter.eval(mcVersion, "<26.3")) {
+    if (stonecutter.eval(mcVersion, "<26.4")) {
         modLocalRuntime("maven.modrinth:modmenu:${property("deps.modmenu")}")
         modLocalRuntime("cc.cassian.item-descriptions:item-descriptions-fabric:${property("deps.item_descriptions")}") {
             exclude(group = "mcp.mobius.waila")
@@ -149,17 +150,17 @@ dependencies {
         modCompileOnly("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
         modLocalRuntime("mezz.jei:jei-${property("deps.minecraft")}-fabric:${property("deps.jei")}")
 //        modLocalRuntime("eu.pb4:polydex:${property("deps.polydex")}")
-        modLocalRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
-        modLocalRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
-        modLocalRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
-        modLocalRuntime("eu.pb4:polymer-virtual-entity:${property("deps.polymer")}")
-        modLocalRuntime("maven.modrinth:jade:${property("deps.jade")}")
-        if (hasProperty("deps.badpackets")) {
-            localRuntime("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
-            localRuntime("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
-        }
+//        modLocalRuntime("eu.pb4:polymer-core:${property("deps.polymer")}")
+//        modLocalRuntime("eu.pb4:polymer-resource-pack:${property("deps.polymer")}")
+//        modLocalRuntime("eu.pb4:polymer-resource-pack-extras:${property("deps.polymer")}")
+//        modLocalRuntime("eu.pb4:polymer-virtual-entity:${property("deps.polymer")}")
+//        modLocalRuntime("maven.modrinth:jade:${property("deps.jade")}")
+//        if (hasProperty("deps.badpackets")) {
+//            localRuntime("mcp.mobius.waila:wthit:fabric-${property("deps.wthit")}")
+//            localRuntime("lol.bai:badpackets:fabric-${property("deps.badpackets")}")
+//        }
     } else {
-        compileOnly("mezz.jei:jei-26.2-fabric:30.11.0.66")
+        compileOnly("mezz.jei:jei-26.3-fabric:31.17.0.113")
     }
 }
 

@@ -12,7 +12,6 @@ import cc.cassian.rrv.common.mixin.world.item.alchemy.PotionBrewingAccessor;
 import net.minecraft.world.entity.npc.villager.Villager;
 //?}
 import cc.cassian.rrv.common.builtin.composting.CompostingClientRecipe;
-import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.*;
@@ -23,7 +22,6 @@ import cc.cassian.rrv.common.builtin.brewing.BrewingClientRecipe;
 import cc.cassian.rrv.common.builtin.burning.BurningClientRecipe;
 import cc.cassian.rrv.common.builtin.campfire.CampfireClientRecipe;
 import cc.cassian.rrv.common.builtin.crafting.CraftingClientRecipe;
-import cc.cassian.rrv.common.builtin.crafting.recipes.ShapelessServerRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityClientRecipe;
 import cc.cassian.rrv.common.builtin.entity.EntityServerRecipe;
 import cc.cassian.rrv.common.builtin.interaction.WorldInteractionClientRecipe;
@@ -35,7 +33,6 @@ import cc.cassian.rrv.common.builtin.stonecutting.StonecutterClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.item.ItemTagClientRecipe;
 import cc.cassian.rrv.common.builtin.tag.block.BlockTagClientRecipe;
 import cc.cassian.rrv.common.builtin.villager.VillagerClientRecipe;
-//~ if >26 'backport' -> 'common.builtin.villager'
 import cc.cassian.rrv.common.builtin.villager.VillagerServerRecipe;
 import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.IndexSource;
@@ -183,7 +180,6 @@ public class BuiltInReliableRecipeViewerClientIntegration implements ReliableRec
 			if (unwrapped.getDrops().isEmpty() && !ItemViewRecipes.MOB_FOOD.containsKey(unwrapped.getEntityType())) return Collections.emptyList();
 			return List.of(new EntityClientRecipe(unwrapped));
 		});
-        ItemView.addClientRecipeWrapper(ShapelessServerRecipe.TYPE, unwrapped -> List.of(new CraftingClientRecipe.Builder(null, unwrapped.getIngredients()).setResult(unwrapped.getResult()).build()));
         ItemView.addClientRecipeProvider(recipeList -> {
             ClientLevel level = Minecraft.getInstance().level;
             if (level == null) return;

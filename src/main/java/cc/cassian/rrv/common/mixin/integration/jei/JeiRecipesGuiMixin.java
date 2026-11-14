@@ -13,6 +13,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.SearchBarPosition;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -58,8 +59,8 @@ public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedCo
 		this.rrv$callInit();
 	}
 
-	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lmezz/jei/common/config/IClientConfig;isCenterSearchBarEnabled()Z"), require = 0)
-	private boolean centered(IClientConfig instance, Operation<Boolean> original) {
+	@WrapOperation(method = "updateSize", at = @At(value = "INVOKE", target = "Lmezz/jei/common/config/SearchBarPosition;isCentered()Z"), require = 0)
+	private boolean centered(SearchBarPosition instance, Operation<Boolean> original) {
 		if (Configs.CLIENT_SETTINGS.isCenterSearch() && !Configs.CLIENT_SETTINGS.isJeiPanel()) {
 			return true;
 		}
@@ -85,36 +86,9 @@ public abstract class JeiRecipesGuiMixin extends Screen implements RRVExtendedCo
 		RRVExtendedContainerScreen.updateWidgets(this);
 	}
 
-	@Inject(method = "extractRenderState", at = @At("TAIL"))
-	private void injectOverlay$1(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-		if (minecraft == null || Configs.CLIENT_SETTINGS.isJeiPanel()) return;
-		AbstractRrvOverlay.InventoryPositionInfo info = new AbstractRrvOverlay.InventoryPositionInfo(this, this.width, this.height, this.area.x(), this.area.y(), this.area.width(), this.area.height());
-		RRVExtendedContainerScreen.extractOverlay(info, guiGraphics, mouseX, mouseY, partialTicks);
-	}
-
-	@Inject(method = "mouseScrolled", at = @At("TAIL"), cancellable = true)
-	private void injectOverlay$2(double mouseX, double mouseY, double scrolledX, double scrolledY, CallbackInfoReturnable<Boolean> cir) {
-		if (minecraft == null || Configs.CLIENT_SETTINGS.isJeiPanel()) return;
-		if (OverlayManager.INSTANCE.scrollMouse(mouseX, mouseY, scrolledX, scrolledY))
-			cir.setReturnValue(true);
-	}
-
-	@Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-	private void injectOverlay$3(KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir) {
-		var pressed = handleKeyPress(this, keyEvent);
-		if (pressed) {
-			cir.setReturnValue(true);
-		}
-	}
-
 	@Override
 	public ItemStack rrv$hoveredStack() {
 		return getIngredientUnderMouse(VanillaTypes.ITEM_STACK).orElse(null);
-	}
-
-	@WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z"))
-	private boolean injectOverlay$3(RecipesGui instance, MouseButtonEvent mouseButtonEvent, boolean b, Operation<Boolean> original){
-		return super.mouseClicked(mouseButtonEvent, b) | OverlayManager.INSTANCE.mouseClicked(mouseButtonEvent, b);
 	}
 
 	@Inject(method = "onClose", at = @At("HEAD"))

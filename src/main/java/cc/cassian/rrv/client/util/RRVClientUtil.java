@@ -4,16 +4,15 @@ import cc.cassian.rrv.api.ReliableRecipeViewerClientPlugin;
 import cc.cassian.rrv.api.recipe.ReliableClientRecipe;
 import cc.cassian.rrv.common.ReliableRecipeViewer;
 import cc.cassian.rrv.common.config.Configs;
-import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.gui.VersionedScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
 import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.integration.polymer.client.ClientPolymerItemUtils;
-import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
@@ -148,4 +147,12 @@ public class RRVClientUtil {
         }
 		return player.canUseGameMasterBlocks() && Minecraft.getInstance().options.operatorItemsTab().get();
 	}
+
+	public static boolean hasOverlay(Screen screen) {
+		return screen instanceof AbstractContainerScreen<?> || jeiHasOverlay(screen);
+	}
+
+    public static boolean jeiHasOverlay(Screen screen) {
+        return ModCompat.JEI && !Configs.CLIENT_SETTINGS.isJeiPanel() && JeiCompatibilityUtil.isJeiRecipeViewScreen(screen);
+    }
 }

@@ -35,13 +35,6 @@ public class PolydexClientRecipe implements ReliableClientRecipe {
 		return PolydexClientRecipeType.INSTANCE;
 	}
 
-	//? if <26.4 {
-	@Override
-	public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-
-	}
-	//?}
-
 	@Override
 	public void addSlots(SlotPlacementDefinition builder) {
 

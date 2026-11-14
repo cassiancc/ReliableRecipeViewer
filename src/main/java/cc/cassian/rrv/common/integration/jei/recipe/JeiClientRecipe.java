@@ -37,13 +37,6 @@ public class JeiClientRecipe implements ReliableClientRecipe {
 
 	}
 
-	//? if <26.4 {
-	@Override
-	public void bindSlots(RecipeViewMenu.SlotFillContext slotFillContext) {
-
-	}
-	//?}
-
 	@Override
 	public void renderRecipe(RecipeScreenContext context) {
 		if (context.screen() instanceof RecipeViewScreen screen1) {

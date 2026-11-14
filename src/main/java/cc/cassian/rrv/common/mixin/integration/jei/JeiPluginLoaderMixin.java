@@ -16,7 +16,7 @@ import java.util.List;
 @Mixin({PluginLoader.class})
 public class JeiPluginLoaderMixin {
 	@Inject(method = "createRecipeCategories", at = @At(value = "HEAD"))
-	private static void hideJeiButtons(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, JeiHelpers jeiHelpers, CallbackInfoReturnable<List<IRecipeCategory<?>>> cir) {
+	private static void getPlugins(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, JeiHelpers jeiHelpers, CallbackInfoReturnable<List<IRecipeCategory<?>>> cir) {
 		JeiCompatibilityUtil.PLUGINS.addAll(plugins.stream().map(iModPlugin -> iModPlugin.getPluginUid().getNamespace()).toList());
 	}
 }

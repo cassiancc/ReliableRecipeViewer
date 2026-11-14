@@ -13,14 +13,13 @@ import cc.cassian.rrv.common.config.Configs;
 import cc.cassian.rrv.common.config.options.LocalFallback;
 import cc.cassian.rrv.common.gui.ClientConfigScreen;
 import cc.cassian.rrv.common.integration.ModCompat;
+import cc.cassian.rrv.common.integration.jei.JeiCompatibilityUtil;
 import cc.cassian.rrv.common.overlay.OverlayManager;
 import cc.cassian.rrv.common.overlay.itemlist.view.ItemFilters;
 import cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen;
 import cc.cassian.rrv.common.recipe.util.RrvUtil;
-//? if >26
 import cc.cassian.rrv.fabric.FabricClientUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -66,9 +65,12 @@ public class NeoForgeClientEntrypoint {
     }
 
     @SubscribeEvent
-    public static void extractBackground(ScreenEvent.Render.Background event) {
-        if (event.getScreen() instanceof RRVExtendedContainerScreen) {
-			OverlayManager.INSTANCE.renderAllBackground(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+    public static void extractBackground(ScreenEvent.Render.Background neoEvent) {
+        if (neoEvent.getScreen() instanceof RRVExtendedContainerScreen) {
+			OverlayManager.INSTANCE.renderAllBackground(neoEvent.getGuiGraphics(), neoEvent.getMouseX(), neoEvent.getMouseY(), neoEvent.getPartialTick());
+		}
+		if (RRVClientUtil.jeiHasOverlay(neoEvent.getScreen())) {
+			JeiCompatibilityUtil.extractOverlay(neoEvent.getScreen(), neoEvent.getGuiGraphics(), neoEvent.getMouseX(), neoEvent.getMouseY(), neoEvent.getPartialTick());
 		}
     }
 
@@ -81,8 +83,26 @@ public class NeoForgeClientEntrypoint {
 
 	@SubscribeEvent
 	public static void scrollOverlay(ScreenEvent.MouseScrolled.Pre neoEvent) {
-		if (neoEvent.getScreen() instanceof AbstractContainerScreen) {
+		if (RRVClientUtil.hasOverlay(neoEvent.getScreen())) {
 			if (OverlayManager.INSTANCE.scrollMouse(neoEvent.getMouseX(), neoEvent.getMouseY(), neoEvent.getScrollDeltaX(), neoEvent.getScrollDeltaY())) {
+				neoEvent.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void keybindOverlay(ScreenEvent.KeyPressed.Pre neoEvent) {
+		if (RRVClientUtil.hasOverlay(neoEvent.getScreen())) {
+			if (OverlayManager.INSTANCE.keyPressed(neoEvent.getKeyEvent())) {
+				neoEvent.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void mouseButtonOverlay(ScreenEvent.MouseButtonPressed.Pre neoEvent) {
+		if (RRVClientUtil.jeiHasOverlay(neoEvent.getScreen())) {
+			if (OverlayManager.INSTANCE.mouseClicked(neoEvent.getMouseButtonEvent(), neoEvent.isDoubleClick())) {
 				neoEvent.setCanceled(true);
 			}
 		}
