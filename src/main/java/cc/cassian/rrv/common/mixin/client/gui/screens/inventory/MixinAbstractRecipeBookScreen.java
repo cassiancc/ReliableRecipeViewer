@@ -51,11 +51,13 @@ public abstract class MixinAbstractRecipeBookScreen<T extends RecipeBookMenu> ex
 
     }
 
+    //? if <26.4 {
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
     private void injectOverlay$2(CharacterEvent characterEvent, CallbackInfoReturnable<Boolean> cir) {
         if (OverlayManager.INSTANCE.isTextWidgetFocused() && this.getFocused() instanceof EditBox box && box.charTyped(characterEvent))
             cir.setReturnValue(true);
     }
+    //?}
 
     @Override
     public boolean rrv$triggerInitLater() {

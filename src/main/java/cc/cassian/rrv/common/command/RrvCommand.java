@@ -15,6 +15,8 @@ import net.minecraft.commands.Commands;
 //? if >=26.4 {
 /*import net.minecraft.commands.arguments.BooleanArgument;
 import net.minecraft.commands.arguments.StringArgument;
+import net.minecraft.commands.suggestions.SuggestionContext;
+import net.minecraft.commands.suggestions.SuggestionProviders;
 import net.minecraft.server.permissions.PermissionProviderCheck;
 import net.minecraft.commands.CommandPermissionLevels;
 *///?} else {
@@ -123,9 +125,7 @@ public class RrvCommand {
     //? fabric {
     private static ArgumentBuilder<CommandSourceStack, ?> syncRecipeSerializer() {
         return Commands.literal("sync_recipe_serializer").then(argument("serializer", IdentifierArgument.id())
-                //FIXME 26.4
-                //? if <26.4
-                .suggests(new RecipeSerializerSuggestionProvider())
+                .suggests(RECIPE_SERIALIZERS)
                 .executes(context -> {
                     final Identifier enabled = IdentifierArgument.getId(context, "serializer");
 
@@ -141,6 +141,15 @@ public class RrvCommand {
                 }));
     }
 
+
+    //? if >=26.4 {
+    /*public static final SuggestionProvider<CommandSourceStack> RECIPE_SERIALIZERS = SuggestionProviders.serverOnly(
+            (server, ctx, builder) -> SuggestionContext.suggest(
+                    BuiltInRegistries.RECIPE_SERIALIZER.keySet().stream().map(Identifier::toString), builder
+            )
+    );
+    *///?} else {
+    public static final SuggestionProvider<CommandSourceStack> RECIPE_SERIALIZERS = new RecipeSerializerSuggestionProvider();
     public static class RecipeSerializerSuggestionProvider implements SuggestionProvider<CommandSourceStack> {
         @Override
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
@@ -155,6 +164,7 @@ public class RrvCommand {
             return builder.buildFuture();
         }
     }
+    //?}
 
     //?} else {
     /*private static ArgumentBuilder<CommandSourceStack, ?> syncRecipeType() {

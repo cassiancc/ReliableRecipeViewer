@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.TypedEntityData;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class EntityClientRecipeType implements ReliableClientRecipeType {
         if(!(craftReference.getItem() instanceof SpawnEggItem spawnEggItem) || !(viewRecipe instanceof EntityClientRecipe entityViewRecipe))
             return true;
 
+        //~ if >=26.4 'spawnEggItem'->'TypedEntityData'
         return spawnEggItem.getType(craftReference) == entityViewRecipe.getEntityType();
 
     };

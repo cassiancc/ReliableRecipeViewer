@@ -23,10 +23,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-//? if =26.4 {
+//? if >=26.4 {
 /*import net.minecraft.client.core.registries.BuiltInClientRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
+import cc.cassian.rrv.client.extra.FluidItemSpecialRenderer;
+import cc.cassian.rrv.common.ReliableRecipeViewer;
 *///?}
 
 import java.util.List;
@@ -87,6 +89,11 @@ public class FabricClientEntrypoint implements ClientModInitializer {
                             , mouseX, mouseY, partialTicks
                     );
                     if (RRVClientUtil.jeiHasOverlay(screen)) {
+                        //? if >=26.4 {
+                        /*var mouseX = guiGraphics.mouseX();
+                        var mouseY = guiGraphics.mouseY();
+                        var partialTicks = guiGraphics.partialTicks();
+                        *///?}
                         JeiCompatibilityUtil.extractOverlay(screen, guiGraphics, mouseX, mouseY, partialTicks);
                     }
                 });

@@ -5,7 +5,6 @@
   - Mods using these methods designed to integrate with RRV 8 remain compatible, though note that to port to 26.4 you will need to update your integration to RRV 9.
 - Excluded items now accept and are based on predicates.
 - Support for 26.4-snapshot-8.
-  - Auto-completion for recipe serializers does not yet work.
   - Polymer support is not complete, Polymer does not yet support 26.4.
   - RRV 9 on 26.4 removes RRV 8 backwards compatibility to make the experience developing new mods and integrations on 26.4 smoother.
 - `ClientRecipeManager` now allows querying recipes by key.

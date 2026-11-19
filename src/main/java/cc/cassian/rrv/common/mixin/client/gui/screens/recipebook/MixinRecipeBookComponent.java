@@ -2,8 +2,12 @@ package cc.cassian.rrv.common.mixin.client.gui.screens.recipebook;
 
 import cc.cassian.rrv.common.overlay.BlockingGuiComponent;
 import cc.cassian.rrv.common.overlay.OverlayManager;
+import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+//? if <26.4 {
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
+//?}
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,8 +20,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(RecipeBookComponent.class)
-public abstract class MixinRecipeBookComponent {
+public abstract class MixinRecipeBookComponent
+    //? if >=26.4
+        //extends AbstractContainerWidget
+{
 
+    //? if <26.4 {
 
     @Shadow
     public abstract int getXOrigin();
@@ -32,6 +40,15 @@ public abstract class MixinRecipeBookComponent {
     @Shadow
     @Final
     private List<RecipeBookTabButton> tabButtons;
+	//?} else {
+
+    /*@Shadow
+    protected abstract boolean isVisibleAccordingToBookData();
+
+    public MixinRecipeBookComponent(int x, int y, int width, int height, Component message, ScrollbarSettings scrollbarSettings) {
+        super(x, y, width, height, message, scrollbarSettings);
+    }
+    *///?}
 
     @Inject(method = "init", at = @At("TAIL"))
     private void injectBlocking$0(CallbackInfo ci) {
@@ -50,6 +67,7 @@ public abstract class MixinRecipeBookComponent {
     private void setGuiBlocking() {
 
 
+        //? if <26.4 {
         if (!this.visible) {
             OverlayManager.INSTANCE.removeExclusionArea(Identifier -> Identifier.getPath().startsWith("recipetabbutton_"), false);
             OverlayManager.INSTANCE.removeExclusionArea(Identifier.withDefaultNamespace("recipebook"), false);
@@ -64,6 +82,12 @@ public abstract class MixinRecipeBookComponent {
                 147,
                 166
         ));
+        //?} else {
+        /*if (isVisibleAccordingToBookData())
+            OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(Identifier.withDefaultNamespace("recipe_book"),getRectangle()));
+        else
+            OverlayManager.INSTANCE.removeExclusionArea(Identifier.withDefaultNamespace("recipe_book"), true);
+        *///?}
 
 
     }
@@ -71,6 +95,7 @@ public abstract class MixinRecipeBookComponent {
     @Inject(method = "updateTabs", at = @At("TAIL"))
     private void injectBlocking$2(CallbackInfo ci) {
 
+        //? if <26.4 {
         OverlayManager.INSTANCE.removeExclusionArea(Identifier -> Identifier.getPath().startsWith("recipetabbutton_"), false);
 
 
@@ -86,5 +111,11 @@ public abstract class MixinRecipeBookComponent {
                         tabButton.getHeight()
                 ));
         }
+        //?} else {
+        /*if (isVisibleAccordingToBookData())
+            OverlayManager.INSTANCE.setExclusionArea(new BlockingGuiComponent(Identifier.withDefaultNamespace("recipe_book"),getRectangle()));
+        else
+            OverlayManager.INSTANCE.removeExclusionArea(Identifier.withDefaultNamespace("recipe_book"), true);
+        *///?}
     }
 }
