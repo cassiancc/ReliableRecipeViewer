@@ -116,6 +116,8 @@ dependencies {
     modCompileOnly("maven.modrinth:modmenu:${property("deps.modmenu")}")
 
     modCompileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
+        capabilities { requireCapability("dev.isxander:controlify-fabric") }
+
         exclude(group = "com.terraformersmc")
         exclude(group = "maven.modrinth")
         exclude(group = "net.caffeinemc")

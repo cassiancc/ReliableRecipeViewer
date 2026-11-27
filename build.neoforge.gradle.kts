@@ -106,6 +106,8 @@ repositories {
 
 dependencies {
     compileOnly("dev.isxander:controlify:${property("deps.controlify")}") {
+        capabilities { requireCapability("dev.isxander:controlify-neoforge") }
+
         isTransitive = false;
     }
     compileOnly("dev.isxander:yet-another-config-lib:${property("deps.yacl")}") {
